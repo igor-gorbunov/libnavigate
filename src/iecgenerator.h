@@ -21,6 +21,7 @@
 #define IEC_GENERATOR_H
 
 #include <iecmessage.h>
+#include <sys/types.h>
 
 //
 // Generator for IEC 61162-1 (2000-07) messages

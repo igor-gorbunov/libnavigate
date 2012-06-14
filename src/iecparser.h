@@ -21,6 +21,7 @@
 #define IEC_PARSER_H
 
 #include <iecmessage.h>
+#include <sys/types.h>
 
 //
 // Parser of IEC 61162-1 (2000-07) messages
