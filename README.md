@@ -1,4 +1,4 @@
 libnavi
 =======
 
-Library for generating/parsing maritime navigation protocol (IEC 61162-1 2000-07)
+Library for generating/parsing maritime navigation protocol (IEC 61162-1 2000-07).
