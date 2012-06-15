@@ -22,5 +22,5 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 
 bin_PROGRAMS = test
 test_SOURCES = entry.c
-test_LDADD = $(top_srcdir)/src/libnavi.a
+test_LDADD = $(top_srcdir)/src/libnavi.a -lm
 

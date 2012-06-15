@@ -21,6 +21,16 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+
+// DTM - Datum reference
+// Local geodetic datum and datum offsets from a reference datum. This sentence
+// is used to define the datum to which a position location, and geographic
+// locations in subsequent sentences, are referenced. Lattitude, longitude and
+// altitude offsets from the reference datum, and the selection of the reference
+// datum, are also provided.
+// $--DTM,ccc,a,x.x,a,x.x,a,x.x,ccc*hh<cr><lf>
+static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize);
 
 //
 // ZDA - Time and date
@@ -51,6 +61,7 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _DSI:
 	case _DSR:
 	case _DTM:
+		return IecCompose_DTM((const struct dtm_t *)msg, buffer, maxsize);
 	case _FSI:
 	case _GBS:
 	case _GGA:
@@ -124,8 +135,10 @@ static int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
 static int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
 	size_t maxsize, int notnull);
 
-/*static int IecPrint_DatumSubdivision(dtm_t::LocalDatumSub_t lds,*/
-/*	char *pbuffer, size_t size, bool notnull = true);*/
+//
+// Prints local datum subdivision
+static int IecPrint_DatumSubdivision(enum naviLocalDatumSub_t lds,
+	char *buffer, size_t maxsize, int notnull);
 
 //
 // Prints a floating point value
@@ -174,6 +187,47 @@ static int IecPrint_ModeIndicatorArray(enum naviModeIndicator_t mi[],
 //
 // Removes trailing zeroes of a floating point zeroes
 static int RemoveTrailingZeroes(char *buffer, size_t maxsize);
+
+static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
+{
+	int result;
+
+	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], locdatum[4],
+		locdatumsub[2], latofs[32], latsign[2], lonofs[32], lonsign[2],
+		altofs[32], refdatum[4], cs[3];
+
+	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	result += IecPrint_Datum(msg->ld, locdatum, sizeof(locdatum),
+		msg->vfields & DTM_VALID_LOCALDATUM);
+	result += IecPrint_DatumSubdivision(msg->lds, locdatumsub,
+		sizeof(locdatumsub), msg->vfields & DTM_VALID_LOCALDATUMSUB);
+	result += IecPrint_Double(msg->latofs.offset, latofs, sizeof(latofs),
+		msg->vfields & DTM_VALID_LATOFFSET);
+	result += IecPrint_OffsetSign(msg->latofs.offsign, latsign, sizeof(latsign),
+		msg->vfields & DTM_VALID_LATOFFSET);
+	result += IecPrint_Double(msg->lonofs.offset, lonofs, sizeof(lonofs),
+		msg->vfields & DTM_VALID_LONOFFSET);
+	result += IecPrint_OffsetSign(msg->lonofs.offsign, lonsign, sizeof(lonsign),
+		msg->vfields & DTM_VALID_LONOFFSET);
+	result += IecPrint_Double(msg->altoffset, altofs, sizeof(altofs),
+		msg->vfields & DTM_VALID_ALTITUDEOFFSET);
+	result += IecPrint_Datum(msg->rd, refdatum, sizeof(refdatum),
+		msg->vfields & DTM_VALID_REFERENCEDATUM);
+
+	result += 17;
+	if (result > IEC_MESSAGE_MAXSIZE)
+	{
+		printf("IecCompose_DTM : Message length exceeds maximum allowed.\n");
+		return -EMSGSIZE;
+	}
+
+	result = snprintf(iecmsg, sizeof(iecmsg),
+		"$%sDTM,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, locdatum, locdatumsub,
+		latofs, latsign, lonofs, lonsign, altofs, refdatum, "%s");
+	IecPrint_Checksum(iecmsg, result, cs);
+
+	return snprintf(buffer, maxsize, iecmsg, cs);
+}
 
 static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize)
 {
@@ -387,5 +441,97 @@ static int RemoveTrailingZeroes(char *buffer, size_t maxsize)
 	}
 
 	return maxsize;
+}
+
+static int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
+	size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		switch (datum)
+		{
+		case _WGS84:
+			return snprintf(buffer, maxsize, "W84");
+		case _WGS72:
+			return snprintf(buffer, maxsize, "W72");
+		case _SGS85:
+			return snprintf(buffer, maxsize, "S85");
+		case _PE90:
+			return snprintf(buffer, maxsize, "P90");
+		case _UserDefined:
+			return snprintf(buffer, maxsize, "999");
+		}
+
+		return -EPROTOTYPE;
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+static int IecPrint_DatumSubdivision(enum naviLocalDatumSub_t lds,
+	char *buffer, size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		switch (lds)
+		{
+		default:
+			return -EPROTOTYPE;
+		}
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+static int IecPrint_Double(double value, char *buffer, size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result;
+
+		value = value * 10000000.0;
+		value = round(value);
+		value = value / 10000000.0;
+
+		result = snprintf(buffer, maxsize, "%.7f", value);
+		return RemoveTrailingZeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+static int IecPrint_OffsetSign(enum naviOffsetSign_t sign, char *buffer,
+	size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		switch (sign)
+		{
+		case _North:
+			return snprintf(buffer, maxsize, "N");
+		case _South:
+			return snprintf(buffer, maxsize, "S");
+		case _East:
+			return snprintf(buffer, maxsize, "E");
+		case _West:
+			return snprintf(buffer, maxsize, "W");
+		}
+
+		return -EPROTOTYPE;
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
 }
 

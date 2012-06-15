@@ -14,3 +14,12 @@
 # Backup files
 *.*~
 
+# Cached data
+autom4te.cache
+config.log
+config.status
+src/.deps
+tests/.deps
+tests/test
+Makefile
+
