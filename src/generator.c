@@ -19,6 +19,14 @@
 
 #include <iecgenerator.h>
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
+
+//
+// ZDA - Time and date
+// UTC, day, month, year and local time zone.
+// $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<cr><lf>
+static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize);
 
 int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	char *buffer, size_t maxsize)
@@ -94,13 +102,290 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _XDR:
 	case _XTE:
 	case _XTR:
+		break;
 	case _ZDA:
+		return IecCompose_ZDA((const struct zda_t *)msg, buffer, maxsize);
 	case _ZDL:
 	case _ZFO:
 	case _ZTG:
 		break;
 	}
 
-	return -ENOSYS;
+	return -EAFNOSUPPORT;
+}
+
+//
+// Prints talker identifier
+static int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
+	size_t maxsize);
+
+//
+// Prints datum
+static int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
+	size_t maxsize, int notnull);
+
+/*static int IecPrint_DatumSubdivision(dtm_t::LocalDatumSub_t lds,*/
+/*	char *pbuffer, size_t size, bool notnull = true);*/
+
+//
+// Prints a floating point value
+static int IecPrint_Double(double value, char *buffer,
+	size_t maxsize, int notnull);
+
+//
+// Prints offset sign
+static int IecPrint_OffsetSign(enum naviOffsetSign_t sign, char *buffer,
+	size_t maxsize, int notnull);
+
+//
+// Prints checksum of the generated message
+static int IecPrint_Checksum(char *msg, size_t maxsize, char *cs);
+
+//
+// Prints latitude (llll.ll)
+static int IecPrint_Latitude(double value, char *buffer,
+	size_t maxsize, int notnull);
+
+//
+// Prints longitude (yyyyy.yy)
+static int IecPrint_Longitude(double value, char *buffer,
+	size_t maxsize, int notnull);
+
+//
+// Prints UTC
+static int IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
+	size_t maxsize, int notnull);
+
+//
+// Prints message status
+static int IecPrint_Status(enum naviStatus_t status, char *buffer,
+	size_t maxsize);
+
+//
+// Prints mode indicator
+static int IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
+	size_t maxsize);
+
+//
+// Prints array of mode indicators
+static int IecPrint_ModeIndicatorArray(enum naviModeIndicator_t mi[],
+	char *buffer, size_t maxsize, int notnull);
+
+//
+// Removes trailing zeroes of a floating point zeroes
+static int RemoveTrailingZeroes(char *buffer, size_t maxsize);
+
+static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize)
+{
+	int result;
+
+	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], utc[32], day[3],
+		month[3], year[5], lzhours[4], lzmins[3], cs[3];
+
+	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	result += IecPrint_Utc((const struct naviUtc_t *)&msg->utc, utc,
+		sizeof(utc), msg->vfields & ZDA_VALID_UTC);
+	result += snprintf(day, sizeof(day),
+		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->day);
+	result += snprintf(month, sizeof(month),
+		(msg->vfields & ZDA_VALID_MONTH) ? "%02u" : "", msg->month);
+	result += snprintf(year, sizeof(year),
+		(msg->vfields & ZDA_VALID_YEAR) ? "%04u" : "", msg->year);
+
+	memset(lzhours, 0, sizeof(lzhours));
+	memset(lzmins, 0, sizeof(lzmins));
+
+	// Local zone hours (00 h to +/-13 h), Local zone minutes (00 to +59)
+	if (msg->vfields & ZDA_VALID_LOCALZONE)
+	{
+		char sign[2];
+		int lz = msg->lzoffset;
+
+		snprintf(sign, sizeof(sign), lz >= 0 ? "" : "-");
+		if (lz < 0)
+		{
+			lz = -lz;
+		}
+
+		result += snprintf(lzhours, sizeof(lzhours), "%s%02d", sign, lz / 60);
+		result += snprintf(lzmins, sizeof(lzmins), "%02u", lz % 60);
+	}
+
+	result += 15;
+	if (result > IEC_MESSAGE_MAXSIZE)
+	{
+		printf("IecCompose_ZDA : Message length exceeds maximum allowed.\n");
+		return -EMSGSIZE;
+	}
+
+	result = snprintf(iecmsg, sizeof(iecmsg), "$%sZDA,%s,%s,%s,%s,%s,%s*%s\r\n",
+		talkerid, utc, day, month, year, lzhours, lzmins, "%s");
+	IecPrint_Checksum(iecmsg, result, cs);
+
+	return snprintf(buffer, maxsize, iecmsg, cs);
+}
+
+static int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
+	size_t maxsize)
+{
+	switch (tid)
+	{
+	case _AG:
+		return snprintf(buffer, maxsize, "AG");
+	case _AP:
+		return snprintf(buffer, maxsize, "AP");
+	case _AI:
+		return snprintf(buffer, maxsize, "AI");
+	case _CD:
+		return snprintf(buffer, maxsize, "CD");
+	case _CR:
+		return snprintf(buffer, maxsize, "CR");
+	case _CS:
+		return snprintf(buffer, maxsize, "CS");
+	case _CT:
+		return snprintf(buffer, maxsize, "CT");
+	case _CV:
+		return snprintf(buffer, maxsize, "CV");
+	case _CX:
+		return snprintf(buffer, maxsize, "CX");
+	case _DE:
+		return snprintf(buffer, maxsize, "DE");
+	case _DF:
+		return snprintf(buffer, maxsize, "DF");
+	case _EC:
+		return snprintf(buffer, maxsize, "EC");
+	case _EI:
+		return snprintf(buffer, maxsize, "EI");
+	case _EP:
+		return snprintf(buffer, maxsize, "EP");
+	case _ER:
+		return snprintf(buffer, maxsize, "ER");
+	case _GA:
+		return snprintf(buffer, maxsize, "GA");
+	case _GP:
+		return snprintf(buffer, maxsize, "GP");
+	case _GL:
+		return snprintf(buffer, maxsize, "GL");
+	case _GN:
+		return snprintf(buffer, maxsize, "GN");
+	case _GW:
+		return snprintf(buffer, maxsize, "GW");
+	case _HC:
+		return snprintf(buffer, maxsize, "HC");
+	case _HE:
+		return snprintf(buffer, maxsize, "HE");
+	case _HN:
+		return snprintf(buffer, maxsize, "HN");
+	case _II:
+		return snprintf(buffer, maxsize, "II");
+	case _IN:
+		return snprintf(buffer, maxsize, "IN");
+	case _LC:
+		return snprintf(buffer, maxsize, "LC");
+	case _P:
+		return snprintf(buffer, maxsize, "P");
+	case _RA:
+		return snprintf(buffer, maxsize, "RA");
+	case _SD:
+		return snprintf(buffer, maxsize, "SD");
+	case _SN:
+		return snprintf(buffer, maxsize, "SN");
+	case _SS:
+		return snprintf(buffer, maxsize, "SS");
+	case _TI:
+		return snprintf(buffer, maxsize, "TI");
+	case _VD:
+		return snprintf(buffer, maxsize, "VD");
+	case _VM:
+		return snprintf(buffer, maxsize, "VM");
+	case _VW:
+		return snprintf(buffer, maxsize, "VW");
+	case _VR:
+		return snprintf(buffer, maxsize, "VR");
+	case _YX:
+		return snprintf(buffer, maxsize, "YX");
+	case _ZA:
+		return snprintf(buffer, maxsize, "ZA");
+	case _ZC:
+		return snprintf(buffer, maxsize, "ZC");
+	case _ZQ:
+		return snprintf(buffer, maxsize, "ZQ");
+	case _ZV:
+		return snprintf(buffer, maxsize, "ZV");
+	case _WI:
+		return snprintf(buffer, maxsize, "WI");
+	}
+
+	return -EPROTOTYPE;
+}
+
+static int IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
+	size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result = snprintf(buffer, maxsize, "%02u%02u%02u.%03u",
+			utc->hour % 24, utc->min % 60, utc->sec % 60, utc->msec % 1000);
+		return RemoveTrailingZeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+static int IecPrint_Checksum(char *msg, size_t maxsize, char *cs)
+{
+	if ((msg == NULL) || (maxsize <= 0) || (cs == NULL))
+	{
+		return -EINVAL;
+	}
+
+	unsigned i, ucs = 0;
+
+	// Skip up to beginning of the meassage
+	for (i = 0; msg[i] != '$' && i < maxsize; i++) { }
+
+	if (i >= maxsize)
+	{
+		return -EPROTO;
+	}
+	for (i += 1; msg[i] != '*' && i < maxsize; i++)
+	{
+		ucs = ucs ^ msg[i];
+	}
+	if (i >= maxsize)
+	{
+		return -EPROTO;
+	}
+
+	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
+}
+
+static int RemoveTrailingZeroes(char *buffer, size_t maxsize)
+{
+	int i;
+
+	for (i = maxsize - 1; ; i--)
+	{
+		if (buffer[i] == '0')
+		{
+			buffer[i] = '\0';
+			maxsize--;
+		}
+		else if (buffer[i] == '.')
+		{
+			buffer[i] = '\0';
+			maxsize--;
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return maxsize;
 }
 
