@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+AM_CPPFLAGS = -I$(top_srcdir)/include
+
 bin_PROGRAMS = test
 test_SOURCES = entry.c
+test_LDADD = $(top_srcdir)/src/libnavi.a
 

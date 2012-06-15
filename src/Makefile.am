@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-bin_PROGRAMS = libnavi
-libnavi_SOURCES = generator.c parser.c generator.h parser.h iecmessage.h
+AM_CPPFLAGS = -I$(top_srcdir)/include
+
+lib_LIBRARIES = libnavi.a
+libnavi_a_SOURCES = generator.c parser.c
 

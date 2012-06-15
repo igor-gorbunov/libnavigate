@@ -15,20 +15,23 @@ AC_INIT([libnavigate], [0.1], [igor.genius@gmail.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE
 
-#LT_PREREQ([2.2.6])
-#LT_INIT
-
 AC_CONFIG_SRCDIR([src/parser.c])
-AC_CONFIG_HEADERS([config.h])
+#AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
+AC_PROG_RANLIB
+#AC_PROG_LIBTOOL
 
 ## Since we use gnulib: gl_EARLY must be called as soon as possible after
 ## the C compiler is checked.  The others could be later, but we just
 ## keep everything together.
 #gl_EARLY
 #gl_INIT
+
+#LT_PREREQ([2.2.6])
+#LT_INIT
+
 
 # Checks for libraries.
 
@@ -42,7 +45,8 @@ AC_HEADER_STDBOOL
 
 #AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_FILES([Makefile
-        src/Makefile])
+        src/Makefile
+		tests/Makefile])
 
 AC_OUTPUT
 
