@@ -9,7 +9,10 @@ int main()
 	struct gll_t gll;
 	struct gns_t gns;
 	struct rmc_t rmc;
+	struct vtg_t vtg;
 	int result, msglength;
+
+	msglength = 0;
 
 	zda.tid = _GL;
 	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DAY | ZDA_VALID_MONTH |
@@ -23,6 +26,17 @@ int main()
 	zda.year = 1982;
 	zda.lzoffset = -240;
 
+	result = IecComposeMessage(_ZDA, &zda, buffer, sizeof(buffer));
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
+
 	dtm.tid = _GP;
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_LATOFFSET |
 		DTM_VALID_LONOFFSET | DTM_VALID_ALTITUDEOFFSET |
@@ -34,6 +48,18 @@ int main()
 	dtm.lonofs.offsign = _West;
 	dtm.altoffset = 3.446;
 	dtm.rd = _WGS84;
+
+	result = IecComposeMessage(_DTM, &dtm, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
 
 	gll.tid = _SN;
 	gll.vfields = GLL_VALID_LATITUDE | GLL_VALID_LONGITUDE | GLL_VALID_UTC;
@@ -47,6 +73,18 @@ int main()
 	gll.utc.msec = 4;
 	gll.status = _DataValid;
 	gll.mi = _Autonomous;
+
+	result = IecComposeMessage(_GLL, &gll, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
 
 	gns.tid = _GL;
 	gns.vfields = GNS_VALID_UTC | GNS_VALID_LATITUDE | GNS_VALID_LONGITUDE |
@@ -69,42 +107,6 @@ int main()
 	gns.geoidalsep = 18.2;
 	gns.diffage = 4;
 	gns.id = 13;
-
-	msglength = 0;
-	result = IecComposeMessage(_ZDA, &zda, buffer, sizeof(buffer));
-	if (result >= 0)
-	{
-		msglength += result;
-	}
-	else
-	{
-		printf("result = %d\n", result);
-		result = 0;
-	}
-
-	result = IecComposeMessage(_DTM, &dtm, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
-	{
-		msglength += result;
-	}
-	else
-	{
-		printf("result = %d\n", result);
-		result = 0;
-	}
-
-	result = IecComposeMessage(_GLL, &gll, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
-	{
-		msglength += result;
-	}
-	else
-	{
-		printf("result = %d\n", result);
-		result = 0;
-	}
 
 	result = IecComposeMessage(_GNS, &gns, buffer + msglength,
 		sizeof(buffer) - msglength);
@@ -155,6 +157,25 @@ int main()
 		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
 
 	result = IecComposeMessage(_RMC, &rmc, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
+
+	vtg.tid = _VW;
+	vtg.vfields = VTG_VALID_COURSETRUE  | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
+	vtg.courseTrue = 0.223;
+	vtg.courseMagn = 22.203;
+	vtg.speed = 1.023;
+	vtg.mi = _Simulator;
+
+	result = IecComposeMessage(_VTG, &vtg, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{

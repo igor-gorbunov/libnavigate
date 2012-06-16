@@ -60,6 +60,11 @@ static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize)
 // $--RMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,xxxxxx,x.x,a,a*hh<cr><lf>
 static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize);
 
+// VTG - Course over ground and ground speed
+// The actual course and speed relative to the ground.
+// $--VTG,x.x,T,x.x,M,x.x,N,x.x,K,a*hh<cr><lf>
+static int IecCompose_VTG(const struct vtg_t *msg, char *buffer, size_t maxsize);
+
 //
 // ZDA - Time and date
 // UTC, day, month, year and local time zone.
@@ -139,7 +144,9 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _VHW:
 	case _VLW:
 	case _VPW:
+		break;
 	case _VTG:
+		return IecCompose_VTG((const struct vtg_t *)msg, buffer, maxsize);
 	case _WCV:
 	case _WNC:
 	case _WPL:
@@ -403,6 +410,50 @@ static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize)
 		"$%sRMC,%s,%s,%s,%s,%s,%s,%s,%s,%s%s%s,%s,%s,%s*%s\r\n", talkerid, utc,
 		status, latitude, latsign, longitude, lonsign, snots, ctrue, day, month,
 		year, magnetic, magsign, mi, "%s");
+	IecPrint_Checksum(iecmsg, result, cs);
+
+	return snprintf(buffer, maxsize, iecmsg, cs);
+}
+
+//
+// VTG
+static int IecCompose_VTG(const struct vtg_t *msg, char *buffer, size_t maxsize)
+{
+	int result;
+
+	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], ctrue[32], courseT[2],
+		cmagn[32], courseM[2], snots[32], speedN[4], skmph[32], speedK[2],
+		mi[2], cs[3];
+
+	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	result += IecPrint_Double(msg->courseTrue, ctrue, sizeof(ctrue),
+		msg->vfields & VTG_VALID_COURSETRUE);
+	result += snprintf(courseT, sizeof(courseT),
+		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
+	result += IecPrint_Double(msg->courseMagn, cmagn, sizeof(cmagn),
+		msg->vfields & VTG_VALID_COURSEMAGN);
+	result += snprintf(courseM, sizeof(courseM),
+		(msg->vfields & VTG_VALID_COURSEMAGN) ? "M" : "");
+	result += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
+		msg->vfields & VTG_VALID_SPEED);
+	result += snprintf(speedN, sizeof(speedN),
+		(msg->vfields & VTG_VALID_SPEED) ? "N" : "");
+	result += IecPrint_Double(msg->speed * MPS_TO_KMH, skmph, sizeof(skmph),
+		msg->vfields & VTG_VALID_SPEED);
+	result += snprintf(speedK, sizeof(speedK),
+		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");
+	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
+
+	result += 18;
+	if (result > IEC_MESSAGE_MAXSIZE)
+	{
+		printf("IecCompose_VTG : Message length exceeds maximum allowed.\n");
+		return -EMSGSIZE;
+	}
+
+	result = snprintf(iecmsg, sizeof(iecmsg),
+		"$%sVTG,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, ctrue, courseT,
+		cmagn, courseM, snots, speedN, skmph, speedK, mi, "%s");
 	IecPrint_Checksum(iecmsg, result, cs);
 
 	return snprintf(buffer, maxsize, iecmsg, cs);
