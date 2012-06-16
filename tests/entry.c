@@ -7,6 +7,7 @@ int main()
 	struct zda_t zda;
 	struct dtm_t dtm;
 	struct gll_t gll;
+	struct gns_t gns;
 	int result, msglength;
 
 	zda.tid = _GL;
@@ -46,6 +47,29 @@ int main()
 	gll.status = _DataValid;
 	gll.mi = _Autonomous;
 
+	gns.tid = _GL;
+	gns.vfields = GNS_VALID_UTC | GNS_VALID_LATITUDE | GNS_VALID_LONGITUDE |
+		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
+		GNS_VALID_HDOP  | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
+		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
+	gns.utc.hour = 20;
+	gns.utc.min = 0;
+	gns.utc.sec = 0;
+	gns.utc.msec = 0;
+	gns.latitude.offset = 60.;
+	gns.latitude.offsign = _North;
+	gns.longitude.offset = 30.;
+	gns.longitude.offsign = _East;
+	gns.mi[0] = _Autonomous;
+	gns.mi[1] = _Differential;
+	gns.totalsats = 4;
+	gns.hdop = 2.3;
+	gns.antaltitude = 2.003;
+	gns.geoidalsep = 18.2;
+	gns.diffage = 4;
+	gns.id = 13;
+
+
 	msglength = 0;
 	result = IecComposeMessage(_ZDA, &zda, buffer, sizeof(buffer));
 	if (result >= 0)
@@ -71,6 +95,18 @@ int main()
 	}
 
 	result = IecComposeMessage(_GLL, &gll, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
+
+	result = IecComposeMessage(_GNS, &gns, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{

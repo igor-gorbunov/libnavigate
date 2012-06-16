@@ -37,6 +37,11 @@ static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 // $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh<cr><lf>
 static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize);
 
+// GNS - GNSS fix data
+// Fix data for single or combined sattelite navigation systems (GNSS).
+// $--GNS,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
+static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize);
+
 //
 // ZDA - Time and date
 // UTC, day, month, year and local time zone.
@@ -75,6 +80,7 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _GLL:
 		return IecCompose_GLL((const struct gll_t *)msg, buffer, maxsize);
 	case _GNS:
+		return IecCompose_GNS((const struct gns_t *)msg, buffer, maxsize);
 	case _GRS:
 	case _GSA:
 	case _GST:
@@ -188,7 +194,7 @@ static int IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
 
 //
 // Prints array of mode indicators
-static int IecPrint_ModeIndicatorArray(enum naviModeIndicator_t mi[],
+static int IecPrint_ModeIndicatorArray(const enum naviModeIndicator_t mi[],
 	char *buffer, size_t maxsize, int notnull);
 
 //
@@ -269,6 +275,59 @@ static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize)
 
 	result = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s,%s,%s,%s*%s\r\n",
 		talkerid, latitude, latsign, longitude, lonsign, utc, status, mi, "%s");
+	IecPrint_Checksum(iecmsg, result, cs);
+
+	return snprintf(buffer, maxsize, iecmsg, cs);
+}
+
+//
+// GNS
+static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize)
+{
+	int result;
+
+	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], utc[32], latitude[32],
+		latsign[2], longitude[32], lonsign[2], mi[3], totalsats[3], hdop[32],
+		antalt[32], geoidsep[32], ddage[32], drsid[32], cs[3];
+
+	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	result += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+		msg->vfields & GNS_VALID_UTC);
+	result += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
+		msg->vfields & GNS_VALID_LATITUDE);
+	result += IecPrint_OffsetSign(msg->latitude.offsign, latsign, sizeof(latsign),
+		msg->vfields & GNS_VALID_LATITUDE);
+	result += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
+		msg->vfields & GNS_VALID_LONGITUDE);
+	result += IecPrint_OffsetSign(msg->longitude.offsign, lonsign, sizeof(lonsign),
+		msg->vfields & GNS_VALID_LONGITUDE);
+	result += IecPrint_ModeIndicatorArray(msg->mi, mi, sizeof(mi),
+		msg->vfields & GNS_VALID_MODEINDICATOR);
+	result += snprintf(totalsats, sizeof(totalsats),
+		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
+		msg->totalsats);
+	result += IecPrint_Double(msg->hdop, hdop, sizeof(hdop),
+		msg->vfields & GNS_VALID_HDOP);
+	result += IecPrint_Double(msg->antaltitude, antalt, sizeof(antalt),
+		msg->vfields & GNS_VALID_ANTENNAALTITUDE);
+	result += IecPrint_Double(msg->geoidalsep, geoidsep, sizeof(geoidsep),
+		msg->vfields & GNS_VALID_GEOIDALSEP);
+	result += IecPrint_Double(msg->diffage, ddage, sizeof(ddage),
+		msg->vfields & GNS_VALID_AGEOFDIFFDATA);
+	result += snprintf(drsid, sizeof(drsid),
+		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
+
+	result += 23;
+	if (result > IEC_MESSAGE_MAXSIZE)
+	{
+		printf("IecCompose_GNS : Message length exceeds maximum allowed.\n");
+		return -EMSGSIZE;
+	}
+
+	result = snprintf(iecmsg, sizeof(iecmsg),
+		"$%sGNS,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, utc,
+		latitude, latsign, longitude, lonsign, mi, totalsats, hdop, antalt,
+		geoidsep, ddage, drsid, "%s");
 	IecPrint_Checksum(iecmsg, result, cs);
 
 	return snprintf(buffer, maxsize, iecmsg, cs);
@@ -670,5 +729,55 @@ static int IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
 	}
 
 	return -EPROTOTYPE;
+}
+
+static int IecPrint_ModeIndicatorArray(const enum naviModeIndicator_t mi[],
+	char *buffer, size_t maxsize, int notnull)
+{
+	int result = 0;
+
+	(void)strncpy(buffer, "", maxsize);
+
+	if (notnull)
+	{
+		int i;
+		for (i = 0; i < 2; i++, result++)
+		{
+			switch (mi[i])
+			{
+			case _Autonomous:
+				(void)strncat(buffer, "A", maxsize);
+				break;
+			case _Differential:
+				(void)strncat(buffer, "D", maxsize);
+				break;
+			case _Estimated:
+				(void)strncat(buffer, "E", maxsize);
+				break;
+			case _ManualInput:
+				(void)strncat(buffer, "M", maxsize);
+				break;
+			case _Simulator:
+				(void)strncat(buffer, "S", maxsize);
+				break;
+			case _DataNotValid:
+				(void)strncat(buffer, "N", maxsize);
+				break;
+			case _Precise:
+				(void)strncat(buffer, "P", maxsize);
+				break;
+			case _RTKinematic:
+				(void)strncat(buffer, "R", maxsize);
+				break;
+			case _FloatRTK:
+				(void)strncat(buffer, "F", maxsize);
+				break;
+			default:
+				return -EPROTOTYPE;
+			}
+		}
+	}
+
+	return result;
 }
 
