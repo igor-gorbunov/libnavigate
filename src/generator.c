@@ -95,6 +95,7 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _DSE:
 	case _DSI:
 	case _DSR:
+		break;
 	case _DTM:
 		return IecCompose_DTM((const struct dtm_t *)msg, buffer, maxsize);
 	case _FSI:
@@ -632,9 +633,8 @@ static int IecPrint_Checksum(char *msg, size_t maxsize, char *cs)
 
 	unsigned i, ucs = 0;
 
-	// Skip up to beginning of the meassage
+	// Skip up to next character after '$'
 	for (i = 0; msg[i] != '$' && i < maxsize; i++) { }
-
 	if (i >= maxsize)
 	{
 		return -EPROTO;

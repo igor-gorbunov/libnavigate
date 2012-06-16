@@ -9,7 +9,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_PREREQ([2.63])
-AC_INIT([libnavigate], [0.1], [igor.genius@gmail.com])
+AC_INIT([libnavi], [0.1], [igor.genius@gmail.com])
 
 # Must come before AM_INIT_AUTOMAKE.
 AC_CONFIG_AUX_DIR([build-aux])
