@@ -23,6 +23,11 @@
 #include <iecmessage.h>
 #include <sys/types.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 //
 // Generator for IEC 61162-1 (2000-07) messages
 //
@@ -32,6 +37,10 @@
 //
 int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	char *buffer, size_t maxsize);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // IEC_GENERATOR_H
 

@@ -71,6 +71,8 @@ static int IecCompose_VTG(const struct vtg_t *msg, char *buffer, size_t maxsize)
 // $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<cr><lf>
 static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize);
 
+//
+// Generator for IEC 61162-1 (2000-07) messages
 int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	char *buffer, size_t maxsize)
 {

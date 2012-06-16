@@ -23,6 +23,11 @@
 #include <iecmessage.h>
 #include <sys/types.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 //
 // Parser of IEC 61162-1 (2000-07) messages
 //
@@ -33,6 +38,10 @@
 //
 int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	void *msg, enum naviSentence_t *msgtype);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // IEC_PARSER_H
 
