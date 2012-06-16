@@ -23,6 +23,14 @@
 #include <string.h>
 #include <math.h>
 
+//
+// Meters per second to knots (nautical mile per hour)
+#define MPS_TO_KNOTS		1.94384449
+
+//
+// Meters per second to km/h convertion coefficient
+#define MPS_TO_KMH			3.600
+
 // DTM - Datum reference
 // Local geodetic datum and datum offsets from a reference datum. This sentence
 // is used to define the datum to which a position location, and geographic
@@ -41,6 +49,16 @@ static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize)
 // Fix data for single or combined sattelite navigation systems (GNSS).
 // $--GNS,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
 static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize);
+
+// RMC - Recommended minimum specific GNSS data
+// Time, date, position, course and speed data provided by a GNSS navigation
+// receiver. This sentence is transmitted at intervals not exceeding 2 s and is
+// always accompanied by RMB when a destination waypoint is active. RMC and RMB
+// are the recommended minimum data to be provided by a GNSS receiver. All data
+// fields must be provided, null fields used only when data is temporarily
+// unavailable.
+// $--RMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,xxxxxx,x.x,a,a*hh<cr><lf>
+static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize);
 
 //
 // ZDA - Time and date
@@ -102,7 +120,9 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _OSD:
 	case _RMA:
 	case _RMB:
+		break;
 	case _RMC:
+		return IecCompose_RMC((const struct rmc_t *)msg, buffer, maxsize);
 	case _ROT:
 	case _RPM:
 	case _RSA:
@@ -328,6 +348,61 @@ static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize)
 		"$%sGNS,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, utc,
 		latitude, latsign, longitude, lonsign, mi, totalsats, hdop, antalt,
 		geoidsep, ddage, drsid, "%s");
+	IecPrint_Checksum(iecmsg, result, cs);
+
+	return snprintf(buffer, maxsize, iecmsg, cs);
+}
+
+//
+// RMC
+static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize)
+{
+	size_t result;
+
+	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], utc[32], status[2],
+		latitude[32], latsign[2], longitude[32], lonsign[2], snots[32],
+		ctrue[32], day[3], month[3], year[3], magnetic[32], magsign[2],
+		mi[2], cs[3];
+
+	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	result += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+		msg->vfields & RMC_VALID_UTC);
+	result += IecPrint_Status(msg->status, status, sizeof(status));
+	result += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
+		msg->vfields & RMC_VALID_LATITUDE);
+	result += IecPrint_OffsetSign(msg->latitude.offsign, latsign, sizeof(latsign),
+		msg->vfields & RMC_VALID_LATITUDE);
+	result += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
+		msg->vfields & RMC_VALID_LONGITUDE);
+	result += IecPrint_OffsetSign(msg->longitude.offsign, lonsign, sizeof(lonsign),
+		msg->vfields & RMC_VALID_LONGITUDE);
+	result += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
+		msg->vfields & RMC_VALID_SPEED);
+	result += IecPrint_Double(msg->courseTrue, ctrue, sizeof(ctrue),
+		msg->vfields & RMC_VALID_COURSETRUE);
+	result += snprintf(day, sizeof(day),
+		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->day);
+	result += snprintf(month, sizeof(month),
+		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->month);
+	result += snprintf(year, sizeof(year),
+		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->year % 100);
+	result += IecPrint_Double(msg->magnetic.offset, magnetic, sizeof(magnetic),
+		(msg->vfields & RMC_VALID_MAGNVARIATION));
+	result += IecPrint_OffsetSign(msg->magnetic.offsign, magsign, sizeof(magsign),
+		(msg->vfields & RMC_VALID_MAGNVARIATION));
+	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
+
+	result += 17;
+	if (result > IEC_MESSAGE_MAXSIZE)
+	{
+		printf("IecCompose_RMC : Message length exceeds maximum allowed.\n");
+		return -EMSGSIZE;
+	}
+
+	result = snprintf(iecmsg, sizeof(iecmsg),
+		"$%sRMC,%s,%s,%s,%s,%s,%s,%s,%s,%s%s%s,%s,%s,%s*%s\r\n", talkerid, utc,
+		status, latitude, latsign, longitude, lonsign, snots, ctrue, day, month,
+		year, magnetic, magsign, mi, "%s");
 	IecPrint_Checksum(iecmsg, result, cs);
 
 	return snprintf(buffer, maxsize, iecmsg, cs);
@@ -601,11 +676,11 @@ static int IecPrint_Double(double value, char *buffer, size_t maxsize, int notnu
 	{
 		int result;
 
-		value = value * 10000000.0;
+		value = value * 100000000.0;
 		value = round(value);
-		value = value / 10000000.0;
+		value = value / 100000000.0;
 
-		result = snprintf(buffer, maxsize, "%.7f", value);
+		result = snprintf(buffer, maxsize, "%.8f", value);
 		return RemoveTrailingZeroes(buffer, result);
 	}
 	else

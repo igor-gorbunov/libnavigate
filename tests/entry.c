@@ -8,6 +8,7 @@ int main()
 	struct dtm_t dtm;
 	struct gll_t gll;
 	struct gns_t gns;
+	struct rmc_t rmc;
 	int result, msglength;
 
 	zda.tid = _GL;
@@ -69,7 +70,6 @@ int main()
 	gns.diffage = 4;
 	gns.id = 13;
 
-
 	msglength = 0;
 	result = IecComposeMessage(_ZDA, &zda, buffer, sizeof(buffer));
 	if (result >= 0)
@@ -107,6 +107,54 @@ int main()
 	}
 
 	result = IecComposeMessage(_GNS, &gns, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
+
+	rmc.tid = _GL;
+	rmc.vfields = RMC_VALID_UTC | RMC_VALID_LATITUDE |
+		RMC_VALID_LONGITUDE | RMC_VALID_DATE;
+	rmc.utc.hour = 9;
+	rmc.utc.min = 19;
+	rmc.utc.sec = 39;
+	rmc.utc.msec = 980;
+	rmc.status = _DataInvalid;
+	rmc.latitude.offset = 74.64772882;
+	rmc.latitude.offsign = _South;
+	rmc.longitude.offset = 132.0000333;
+	rmc.longitude.offsign = _East;
+	rmc.speed = 1.03553;
+	rmc.courseTrue = 180.2112;
+	rmc.day = 18;
+	rmc.month = 3;
+	rmc.year = 2012;
+	rmc.magnetic.offset = 23.011;
+	rmc.magnetic.offsign = _East;
+	rmc.mi = _Estimated;
+
+	result = IecComposeMessage(_RMC, &rmc, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
+
+	rmc.vfields = RMC_VALID_UTC | RMC_VALID_SPEED | RMC_VALID_COURSETRUE |
+		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
+
+	result = IecComposeMessage(_RMC, &rmc, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
