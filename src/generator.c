@@ -32,6 +32,11 @@
 // $--DTM,ccc,a,x.x,a,x.x,a,x.x,ccc*hh<cr><lf>
 static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize);
 
+// GLL - Geographic position - latitude/longitude
+// Latitude and longitude of vessel position, time of position fix and status.
+// $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh<cr><lf>
+static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize);
+
 //
 // ZDA - Time and date
 // UTC, day, month, year and local time zone.
@@ -66,7 +71,9 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 	case _GBS:
 	case _GGA:
 	case _GLC:
+		break;
 	case _GLL:
+		return IecCompose_GLL((const struct gll_t *)msg, buffer, maxsize);
 	case _GNS:
 	case _GRS:
 	case _GSA:
@@ -188,6 +195,8 @@ static int IecPrint_ModeIndicatorArray(enum naviModeIndicator_t mi[],
 // Removes trailing zeroes of a floating point zeroes
 static int RemoveTrailingZeroes(char *buffer, size_t maxsize);
 
+//
+// DTM
 static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
@@ -229,6 +238,44 @@ static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 	return snprintf(buffer, maxsize, iecmsg, cs);
 }
 
+//
+// GLL
+static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize)
+{
+	int result;
+	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], latitude[32], latsign[2],
+		longitude[32], lonsign[2], utc[32], status[2], mi[2], cs[3];
+
+	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	result += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
+		msg->vfields & GLL_VALID_LATITUDE);
+	result += IecPrint_OffsetSign(msg->latitude.offsign, latsign, sizeof(latsign),
+		msg->vfields & GLL_VALID_LATITUDE);
+	result += IecPrint_Longitude(msg->longitude.offset, longitude,
+		sizeof(longitude), msg->vfields & GLL_VALID_LONGITUDE);
+	result += IecPrint_OffsetSign(msg->longitude.offsign, lonsign,
+		sizeof(lonsign), msg->vfields & GLL_VALID_LONGITUDE);
+	result += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+		msg->vfields & GLL_VALID_UTC);
+	result += IecPrint_Status(msg->status, status, sizeof(status));
+	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
+
+	result += 16;
+	if (result > IEC_MESSAGE_MAXSIZE)
+	{
+		printf("IecCompose_GLL : Message length exceeds maximum allowed.\n");
+		return -EMSGSIZE;
+	}
+
+	result = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s,%s,%s,%s*%s\r\n",
+		talkerid, latitude, latsign, longitude, lonsign, utc, status, mi, "%s");
+	IecPrint_Checksum(iecmsg, result, cs);
+
+	return snprintf(buffer, maxsize, iecmsg, cs);
+}
+
+//
+// ZDA
 static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
@@ -237,8 +284,8 @@ static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize)
 		month[3], year[5], lzhours[4], lzmins[3], cs[3];
 
 	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	result += IecPrint_Utc((const struct naviUtc_t *)&msg->utc, utc,
-		sizeof(utc), msg->vfields & ZDA_VALID_UTC);
+	result += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+		msg->vfields & ZDA_VALID_UTC);
 	result += snprintf(day, sizeof(day),
 		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->day);
 	result += snprintf(month, sizeof(month),
@@ -533,5 +580,95 @@ static int IecPrint_OffsetSign(enum naviOffsetSign_t sign, char *buffer,
 		(void)strncpy(buffer, "", maxsize);
 		return 0;
 	}
+}
+
+static int IecPrint_Latitude(double value, char *buffer,
+	size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result;
+		double degrees;
+
+		value = value * 100000000.;
+		value = round(value);
+		value = value / 100000000.;
+
+		value = modf(value, &degrees);
+		degrees = degrees * 100.;
+		value = value * 60.;
+		value = value + degrees;
+
+		result = snprintf(buffer, maxsize, "%013.8f", value);
+		return RemoveTrailingZeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+static int IecPrint_Longitude(double value, char *buffer,
+	size_t maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result;
+		double degrees;
+
+		value = value * 100000000.;
+		value = round(value);
+		value = value / 100000000.;
+
+		value = modf(value, &degrees);
+		degrees = degrees * 100.;
+		value = value * 60.;
+		value = value + degrees;
+
+		result = snprintf(buffer, maxsize, "%014.8f", value);
+		return RemoveTrailingZeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+static int IecPrint_Status(enum naviStatus_t status, char *buffer,
+	size_t maxsize)
+{
+	switch (status)
+	{
+	case _DataValid:
+		return snprintf(buffer, maxsize, "A");
+	case _DataInvalid:
+		return snprintf(buffer, maxsize, "V");
+	}
+
+	return -EPROTOTYPE;
+}
+
+static int IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
+	size_t maxsize)
+{
+	switch (mi)
+	{
+	case _Autonomous:
+		return snprintf(buffer, maxsize, "A");
+	case _Differential:
+		return snprintf(buffer, maxsize, "D");
+	case _Estimated:
+		return snprintf(buffer, maxsize, "E");
+	case _ManualInput:
+		return snprintf(buffer, maxsize, "M");
+	case _Simulator:
+		return snprintf(buffer, maxsize, "S");
+	case _DataNotValid:
+		return snprintf(buffer, maxsize, "N");
+	}
+
+	return -EPROTOTYPE;
 }
 

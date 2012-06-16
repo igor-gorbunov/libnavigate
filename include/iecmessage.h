@@ -214,8 +214,8 @@ enum naviOffsetSign_t
 
 enum naviStatus_t
 {
-	_Valid = 0,		// data valid
-	_Invalid = 1	// data invalid
+	_DataValid = 0,		// A = data valid
+	_DataInvalid = 1	// V = data invalid
 };
 
 enum naviModeIndicator_t
@@ -236,7 +236,7 @@ enum naviModeIndicator_t
 	_Simulator = 4,
 
 	// No fix. Satellite system not used in position fix, or fix not valid
-	_NotValid = 5,
+	_DataNotValid = 5,
 
 	//
 	// Additions to GNS message
@@ -353,13 +353,6 @@ enum naviLocalDatumSub_t
 //	{
 //	};
 
-#define DTM_VALID_LOCALDATUM		0x01
-#define DTM_VALID_LOCALDATUMSUB		0x02
-#define DTM_VALID_LATOFFSET			0x04
-#define DTM_VALID_LONOFFSET			0x08
-#define DTM_VALID_ALTITUDEOFFSET	0x10
-#define DTM_VALID_REFERENCEDATUM	0x20
-
 //
 // Datum reference
 struct dtm_t
@@ -373,6 +366,13 @@ struct dtm_t
 	double altoffset;				// altitude offset, m
 	enum naviDatum_t rd;			// reference datum
 };
+
+#define DTM_VALID_LOCALDATUM		0x01
+#define DTM_VALID_LOCALDATUMSUB		0x02
+#define DTM_VALID_LATOFFSET			0x04
+#define DTM_VALID_LONOFFSET			0x08
+#define DTM_VALID_ALTITUDEOFFSET	0x10
+#define DTM_VALID_REFERENCEDATUM	0x20
 
 //	// Frequency set information
 //	struct fsi_t
@@ -394,10 +394,6 @@ struct dtm_t
 //	{
 //	};
 
-#define GLL_VALID_LATITUDE		0x01
-#define GLL_VALID_LONGITUDE		0x02
-#define GLL_VALID_UTC			0x04
-
 //
 // Geographic position, latitude/longitude
 struct gll_t
@@ -409,18 +405,11 @@ struct gll_t
 	struct naviUtc_t utc;
 	enum naviStatus_t status;
 	enum naviModeIndicator_t mi;
-} gll_t;
+};
 
-#define GNS_VALID_UTC					0x001
-#define GNS_VALID_LATITUDE				0x002
-#define GNS_VALID_LONGITUDE				0x004
-#define GNS_VALID_MODEINDICATOR			0x008
-#define GNS_VALID_TOTALNMOFSATELLITES	0x010
-#define GNS_VALID_HDOP					0x020
-#define GNS_VALID_ANTENNAALTITUDE		0x040
-#define GNS_VALID_GEOIDALSEP			0x080
-#define GNS_VALID_AGEOFDIFFDATA			0x100
-#define GNS_VALID_DIFFREFSTATIONID		0x200
+#define GLL_VALID_LATITUDE		0x01
+#define GLL_VALID_LONGITUDE		0x02
+#define GLL_VALID_UTC			0x04
 
 //
 // GNSS fix data
@@ -439,6 +428,17 @@ struct gns_t
 	double diffage;			// Age of differential data
 	int id;					// Differential reference station ID
 };
+
+#define GNS_VALID_UTC					0x001
+#define GNS_VALID_LATITUDE				0x002
+#define GNS_VALID_LONGITUDE				0x004
+#define GNS_VALID_MODEINDICATOR			0x008
+#define GNS_VALID_TOTALNMOFSATELLITES	0x010
+#define GNS_VALID_HDOP					0x020
+#define GNS_VALID_ANTENNAALTITUDE		0x040
+#define GNS_VALID_GEOIDALSEP			0x080
+#define GNS_VALID_AGEOFDIFFDATA			0x100
+#define GNS_VALID_DIFFREFSTATIONID		0x200
 
 //	// GNSS range residuals
 //	struct grs_t
@@ -545,14 +545,6 @@ struct gns_t
 //	{
 //	};
 
-#define RMC_VALID_UTC				0x01
-#define RMC_VALID_LATITUDE			0x02
-#define RMC_VALID_LONGITUDE			0x04
-#define RMC_VALID_SPEED				0x08
-#define RMC_VALID_COURSETRUE		0x10
-#define RMC_VALID_DATE				0x20
-#define RMC_VALID_MAGNVARIATION		0x40
-
 //
 // Recommended minimum specific GNSS data
 struct rmc_t
@@ -569,6 +561,14 @@ struct rmc_t
 	struct naviOffset_t magnetic;	// Magnetic variation, degrees,E/W
 	enum naviModeIndicator_t mi;
 };
+
+#define RMC_VALID_UTC				0x01
+#define RMC_VALID_LATITUDE			0x02
+#define RMC_VALID_LONGITUDE			0x04
+#define RMC_VALID_SPEED				0x08
+#define RMC_VALID_COURSETRUE		0x10
+#define RMC_VALID_DATE				0x20
+#define RMC_VALID_MAGNVARIATION		0x40
 
 //	// Rate of turn
 //	struct rot_t
@@ -655,10 +655,6 @@ struct rmc_t
 //	{
 //	};
 
-#define VTG_VALID_COURSETRUE	0x01
-#define VTG_VALID_COURSEMAGN	0x02
-#define VTG_VALID_SPEED			0x04
-
 //
 // Cource over ground and ground speed
 struct vtg_t
@@ -670,6 +666,10 @@ struct vtg_t
 	double speed;			// Speed over ground, m/s
 	enum naviModeIndicator_t mi;
 };
+
+#define VTG_VALID_COURSETRUE	0x01
+#define VTG_VALID_COURSEMAGN	0x02
+#define VTG_VALID_SPEED			0x04
 
 //	// Waypoint closure velocity
 //	struct wcv_t
@@ -701,12 +701,6 @@ struct vtg_t
 //	{
 //	};
 
-#define ZDA_VALID_UTC			0x01
-#define ZDA_VALID_DAY			0x02
-#define ZDA_VALID_MONTH			0x04
-#define ZDA_VALID_YEAR			0x08
-#define ZDA_VALID_LOCALZONE		0x10
-
 //
 // Time and date
 struct zda_t
@@ -717,6 +711,12 @@ struct zda_t
 	int day, month, year;	// Day (01 to 31), Month (01 to 12), Year (UTC)
 	int lzoffset;			// Local zone offset in minutes
 };
+
+#define ZDA_VALID_UTC			0x01
+#define ZDA_VALID_DAY			0x02
+#define ZDA_VALID_MONTH			0x04
+#define ZDA_VALID_YEAR			0x08
+#define ZDA_VALID_LOCALZONE		0x10
 
 //	// Time and distance to variable point
 //	struct zdl_t

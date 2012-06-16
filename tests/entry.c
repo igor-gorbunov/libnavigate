@@ -6,6 +6,7 @@ int main()
 	char buffer[1024];
 	struct zda_t zda;
 	struct dtm_t dtm;
+	struct gll_t gll;
 	int result, msglength;
 
 	zda.tid = _GL;
@@ -32,6 +33,19 @@ int main()
 	dtm.altoffset = 3.446;
 	dtm.rd = _WGS84;
 
+	gll.tid = _SN;
+	gll.vfields = GLL_VALID_LATITUDE | GLL_VALID_LONGITUDE | GLL_VALID_UTC;
+	gll.latitude.offset = 0.02;
+	gll.latitude.offsign = _North;
+	gll.longitude.offset = 0.00000000999;
+	gll.longitude.offsign = _East;
+	gll.utc.hour = 4;
+	gll.utc.min = 34;
+	gll.utc.sec = 18;
+	gll.utc.msec = 4;
+	gll.status = _DataValid;
+	gll.mi = _Autonomous;
+
 	msglength = 0;
 	result = IecComposeMessage(_ZDA, &zda, buffer, sizeof(buffer));
 	if (result >= 0)
@@ -44,8 +58,20 @@ int main()
 		result = 0;
 	}
 
-	result = IecComposeMessage(_DTM, &dtm, buffer + result,
-		sizeof(buffer) - result);
+	result = IecComposeMessage(_DTM, &dtm, buffer + msglength,
+		sizeof(buffer) - msglength);
+	if (result >= 0)
+	{
+		msglength += result;
+	}
+	else
+	{
+		printf("result = %d\n", result);
+		result = 0;
+	}
+
+	result = IecComposeMessage(_GLL, &gll, buffer + msglength,
+		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
 		msglength += result;
@@ -58,5 +84,7 @@ int main()
 
 	printf("msglength = %d\n", msglength);
 	printf("message = %s\n", buffer);
+
+	return 0;
 }
 
