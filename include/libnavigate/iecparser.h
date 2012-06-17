@@ -31,13 +31,14 @@ extern "C"
 //
 // Parser of IEC 61162-1 (2000-07) messages
 //
-// Parses next IEC sentence up to <cr><lf>, given in *buffer, and
-// stores the result to *msg which has the maximum size of msgsize.
-// The type of parsed message is stored to *msgtype.
-// Returns the number of characters parsed, or -errno code in case of error
+// Parses the next IEC sentence up to <cr><lf> read from buffer.
+// Stores the result to msg which has the maximum size of msgsize.
+// The type of parsed message is stored to msgtype and the number of
+// parsed characters is put to nmread.
+// Returns the analysis status
 //
-int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
-	void *msg, enum naviSentence_t *msgtype);
+enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
+	void *msg, enum naviSentence_t *msgtype, size_t *nmread);
 
 #ifdef __cplusplus
 }

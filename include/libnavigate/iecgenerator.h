@@ -31,12 +31,13 @@ extern "C"
 //
 // Generator for IEC 61162-1 (2000-07) messages
 //
-// Generates IEC sentence, given in *msg and identified by msgtype, and
-// stores the result to buffer which has the maximum size of maxsize.
-// Returns the number of characters stored, or -errno code in case of error
+// Generates IEC sentence by its description given by type and msg.
+// Stores the result to buffer which has the maximum size of maxsize.
+// The number of stored characters is stored to nmwritten.
+// Returns the status of sentence compilation
 //
-int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
-	char *buffer, size_t maxsize);
+enum naviError_t IecComposeMessage(enum naviSentence_t type, void *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 #ifdef __cplusplus
 }

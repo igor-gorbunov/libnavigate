@@ -25,6 +25,10 @@
 
 int main()
 {
+	enum naviError_t result;
+	size_t msglength, nmwritten, nmread;
+	size_t remain;
+
 	char buffer[1024];
 	struct dtm_t dtm;
 	struct gll_t gll;
@@ -32,10 +36,11 @@ int main()
 	struct rmc_t rmc;
 	struct vtg_t vtg;
 	struct zda_t zda;
-	int result, msglength;
 
 	msglength = 0;
+	remain = sizeof(buffer);
 
+	// ZDA
 	zda.tid = naviTalkerId_GL;
 	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DAY | ZDA_VALID_MONTH |
 		ZDA_VALID_YEAR | ZDA_VALID_LOCALZONE;
@@ -48,17 +53,20 @@ int main()
 	zda.year = 1982;
 	zda.lzoffset = -240;
 
-	result = IecComposeMessage(naviSentence_ZDA, &zda, buffer, sizeof(buffer));
-	if (result >= 0)
+	nmwritten = 0;
+	result = IecComposeMessage(naviSentence_ZDA, &zda, buffer + msglength,
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of ZDA failed (%d)\n", result);
 	}
 
+	// DTM
 	dtm.tid = naviTalkerId_GP;
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_LATOFFSET |
 		DTM_VALID_LONOFFSET | DTM_VALID_ALTITUDEOFFSET |
@@ -72,17 +80,18 @@ int main()
 	dtm.rd = naviDatum_WGS84;
 
 	result = IecComposeMessage(naviSentence_DTM, &dtm, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of DTM failed (%d)\n", result);
 	}
 
+	// GLL
 	gll.tid = naviTalkerId_SN;
 	gll.vfields = GLL_VALID_LATITUDE | GLL_VALID_LONGITUDE | GLL_VALID_UTC;
 	gll.latitude.offset = 0.02;
@@ -97,17 +106,18 @@ int main()
 	gll.mi = naviModeIndicator_Autonomous;
 
 	result = IecComposeMessage(naviSentence_GLL, &gll, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of GLL failed (%d)\n", result);
 	}
 
+	// GNS
 	gns.tid = naviTalkerId_GL;
 	gns.vfields = GNS_VALID_UTC | GNS_VALID_LATITUDE | GNS_VALID_LONGITUDE |
 		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
@@ -131,17 +141,18 @@ int main()
 	gns.id = 13;
 
 	result = IecComposeMessage(naviSentence_GNS, &gns, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of GNS failed (%d)\n", result);
 	}
 
+	// RMC
 	rmc.tid = naviTalkerId_GL;
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_LATITUDE |
 		RMC_VALID_LONGITUDE | RMC_VALID_DATE;
@@ -162,34 +173,34 @@ int main()
 	rmc.magnetic.offset = 23.011;
 	rmc.magnetic.sign = naviOfsSign_East;
 	rmc.mi = naviModeIndicator_Estimated;
-
+	// Part 1
 	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of RMC failed (%d)\n", result);
 	}
-
+	// Part 2
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_SPEED | RMC_VALID_COURSETRUE |
 		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
-
 	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of RMC failed (%d)\n", result);
 	}
 
+	// VTG
 	vtg.tid = naviTalkerId_VW;
 	vtg.vfields = VTG_VALID_COURSETRUE  | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
 	vtg.courseTrue = 0.223;
@@ -198,19 +209,19 @@ int main()
 	vtg.mi = naviModeIndicator_Simulator;
 
 	result = IecComposeMessage(naviSentence_VTG, &vtg, buffer + msglength,
-		sizeof(buffer) - msglength);
-	if (result >= 0)
+		remain, &nmwritten);
+	if (result == naviError_OK)
 	{
-		msglength += result;
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	else
 	{
-		printf("result = %d\n", result);
-		result = 0;
+		printf("Composition of VTG failed (%d)\n", result);
 	}
 
-	printf("msglength = %d\n", msglength);
-	printf("message = %s\n", buffer);
+	printf("msglength = %zu\n", msglength);
+	printf("message = '%s'\n", buffer);
 
 	char parsedbuffer[1024];
 	int finished, parsed;
@@ -218,100 +229,105 @@ int main()
 
 	finished = 0;
 	parsed = 0;
+	nmread = 0;
 
 	do
 	{
 		while ((result = IecParseMessage(buffer + parsed, sizeof(buffer) - parsed,
-			sizeof(parsedbuffer), parsedbuffer, &msgtype)) > 0)
+			sizeof(parsedbuffer), parsedbuffer, &msgtype, &nmread)) == naviError_OK)
 		{
-			parsed += result;
+			parsed += nmread;
 
 			switch (msgtype)
 			{
 			case naviSentence_DTM:
 				{
-					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
+//					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
 					printf("Received DTM: \n");
 				}
 				break;
 			case naviSentence_GLL:
 				{
-					struct gll_t *gll = (struct gll_t *)parsedbuffer;
+//					struct gll_t *gll = (struct gll_t *)parsedbuffer;
 					printf("Received GLL: \n");
 				}
 				break;
 			case naviSentence_GNS:
 				{
-					struct gns_t *gns = (struct gns_t *)parsedbuffer;
+//					struct gns_t *gns = (struct gns_t *)parsedbuffer;
 					printf("Received GNS: \n");
 				}
 				break;
 			case naviSentence_RMC:
 				{
-					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
+//					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
 					printf("Received RMC: \n");
 				}
 				break;
 			case naviSentence_VTG:
 				{
-					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
+//					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
 					printf("Received VTG: \n");
 				}
 				break;
 			case naviSentence_ZDA:
 				{
-					struct zda_t *zda = (struct zda_t *)parsedbuffer;
+//					struct zda_t *zda = (struct zda_t *)parsedbuffer;
 					printf("Received ZDA: \n");
 				}
+				break;
+			default:
 				break;
 			}
 		}
-		if (result == -EPROTO)
+		if (result == naviError_CrcEror)
 		{
 			printf("CRC error\n");
-			parsed += 1;	// advance one character to parse next message
+			parsed += nmread;	// advance to parse next message
 		}
-		else if (result == -ENOSYS)
+		else if (result == naviError_MsgNotSupported)
 		{
-			parsed += 1;	// advance one character to parse next message
+			parsed += nmread;	// advance to parse next message
 
 			switch (msgtype)
 			{
 			case naviSentence_DTM:
 				{
-					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
+//					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
 					printf("Received DTM: \n");
 				}
 				break;
 			case naviSentence_GLL:
 				{
-					struct gll_t *gll = (struct gll_t *)parsedbuffer;
+//					struct gll_t *gll = (struct gll_t *)parsedbuffer;
 					printf("Received GLL: \n");
 				}
 				break;
 			case naviSentence_GNS:
 				{
-					struct gns_t *gns = (struct gns_t *)parsedbuffer;
+//					struct gns_t *gns = (struct gns_t *)parsedbuffer;
 					printf("Received GNS: \n");
 				}
 				break;
 			case naviSentence_RMC:
 				{
-					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
+//					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
 					printf("Received RMC: \n");
 				}
 				break;
 			case naviSentence_VTG:
 				{
-					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
+//					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
 					printf("Received VTG: \n");
 				}
 				break;
 			case naviSentence_ZDA:
 				{
-					struct zda_t *zda = (struct zda_t *)parsedbuffer;
+//					struct zda_t *zda = (struct zda_t *)parsedbuffer;
 					printf("Received ZDA: \n");
 				}
+				break;
+			default:
 				break;
 			}
 		}

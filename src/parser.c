@@ -25,50 +25,50 @@
 
 //
 // Determines the talker id and sentence formatter
-static int IecScan_AdressField(char *buffer, size_t maxsize,
+static size_t IecScan_AdressField(char *buffer, size_t maxsize,
 	enum naviTalkerId_t *tid, enum naviSentence_t *msgtype);
 
 //
 // Checks that the message is not broken
 // Returns 0, if the checksum is correct, -EPROTO otherwise
-static int IecScan_CheckSum(char *buffer, size_t maxsize);
+static size_t IecScan_CheckSum(char *buffer, size_t maxsize);
 
 //
 // Looks up Talker ID
-static int IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid);
+static size_t IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid);
 
 //
 // Looks up sentence formatter
-static int IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype);
+static size_t IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype);
 
 //
 // Parses DTM message
-static int IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize);
+static size_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses GLL message
-static int IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize);
+static size_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses GNS message
-static int IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize);
+static size_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses RMC message
-static int IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize);
+static size_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses VTG message
-static int IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize);
+static size_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses ZDA message
-static int IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize);
+static size_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parser of IEC 61162-1 (2000-07) messages
-int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
-	void *msg, enum naviSentence_t *msgtype)
+enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
+	void *msg, enum naviSentence_t *msgtype, size_t *nmread)
 {
 	int som;	// start of message index
 	int eom;	// end of message index
@@ -244,13 +244,15 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_ZFO:
 	case naviSentence_ZTG:
 		break;
+	default:
+		break;
 	}
 
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // Talker identifier and sentence formatter
-static int IecScan_AdressField(char *buffer, size_t maxsize,
+static size_t IecScan_AdressField(char *buffer, size_t maxsize,
 	enum naviTalkerId_t *tid, enum naviSentence_t *msgtype)
 {
 	int result;
@@ -290,43 +292,43 @@ static int IecScan_AdressField(char *buffer, size_t maxsize,
 }
 
 // DTM
-static int IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
+static size_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
 {
 	return -ENOSYS;
 }
 
 // GLL
-static int IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize)
+static size_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize)
 {
 	return -ENOSYS;
 }
 
 // GNS
-static int IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize)
+static size_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize)
 {
 	return -ENOSYS;
 }
 
 // RMC
-static int IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize)
+static size_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize)
 {
 	return -ENOSYS;
 }
 
 // VTG
-static int IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize)
+static size_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize)
 {
 	return -ENOSYS;
 }
 
 // ZDA
-static int IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize)
+static size_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize)
 {
 	return -ENOSYS;
 }
 
 // Scan checksum
-static int IecScan_CheckSum(char *buffer, size_t maxsize)
+static size_t IecScan_CheckSum(char *buffer, size_t maxsize)
 {
 	int r;
 	unsigned i;
@@ -359,7 +361,7 @@ static int IecScan_CheckSum(char *buffer, size_t maxsize)
 }
 
 // Looks up Talker ID
-static int IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid)
+static size_t IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid)
 {
 	if (strncmp("AG", stid, 2) == 0)
 	{
@@ -578,7 +580,7 @@ static int IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid)
 }
 
 // Looks up sentence formatter
-static int IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype)
+static size_t IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype)
 {
 	if (strncmp("AAM", sfmt, 3) == 0)
 	{

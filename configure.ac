@@ -39,7 +39,7 @@ AC_PROG_RANLIB
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
-AC_HEADER_STDBOOL
+#AC_HEADER_STDBOOL
 
 # Checks for library functions.
 

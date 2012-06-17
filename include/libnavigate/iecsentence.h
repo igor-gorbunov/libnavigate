@@ -39,7 +39,12 @@ extern "C"
 //
 enum naviError_t
 {
-	naviError_OK = 0	// no error
+	naviError_Undefined = -1,			// undefined error
+	naviError_OK = 0,					// no error
+	naviError_MsgExceedsMaxSize = 1,	// message too long
+	naviError_CrcEror = 2,				// crc error
+	naviError_NotEnoughBuffer = 3,		// not enough space in output buffer
+	naviError_MsgNotSupported = 4		// message type not supported
 };
 
 //
