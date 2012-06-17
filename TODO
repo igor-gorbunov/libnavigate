@@ -1,0 +1,12 @@
+libnavi --- TODO
+
+Todo:
+
+    * hash table for convertion between Talker ID and its text representation
+    * hash table for convertion between sentence formatter and its text
+      representation
+    * generator and parser must return error status and number of
+      proceeded characters stored to additional argument
+
+end of file TODO
+

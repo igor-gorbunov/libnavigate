@@ -17,8 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iecgenerator.h>
+#include <libnavi/iecgenerator.h>
+#include <libnavi/iecparser.h>
+
 #include <stdio.h>
+#include <errno.h>
 
 int main()
 {
@@ -208,6 +211,116 @@ int main()
 
 	printf("msglength = %d\n", msglength);
 	printf("message = %s\n", buffer);
+
+	char parsedbuffer[1024];
+	int finished, parsed;
+	enum naviSentence_t msgtype;
+
+	finished = 0;
+	parsed = 0;
+
+	do
+	{
+		while ((result = IecParseMessage(buffer + parsed, sizeof(buffer) - parsed,
+			sizeof(parsedbuffer), parsedbuffer, &msgtype)) > 0)
+		{
+			parsed += result;
+
+			switch (msgtype)
+			{
+			case _DTM:
+				{
+					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
+					printf("Received DTM: \n");
+				}
+				break;
+			case _GLL:
+				{
+					struct gll_t *gll = (struct gll_t *)parsedbuffer;
+					printf("Received GLL: \n");
+				}
+				break;
+			case _GNS:
+				{
+					struct gns_t *gns = (struct gns_t *)parsedbuffer;
+					printf("Received GNS: \n");
+				}
+				break;
+			case _RMC:
+				{
+					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
+					printf("Received RMC: \n");
+				}
+				break;
+			case _VTG:
+				{
+					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
+					printf("Received VTG: \n");
+				}
+				break;
+			case _ZDA:
+				{
+					struct zda_t *zda = (struct zda_t *)parsedbuffer;
+					printf("Received ZDA: \n");
+				}
+				break;
+			}
+		}
+		if (result == -EPROTO)
+		{
+			printf("CRC error\n");
+			parsed += 1;	// advance one character to parse next message
+		}
+		else if (result == -ENOSYS)
+		{
+			parsed += 1;	// advance one character to parse next message
+
+			switch (msgtype)
+			{
+			case _DTM:
+				{
+					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
+					printf("Received DTM: \n");
+				}
+				break;
+			case _GLL:
+				{
+					struct gll_t *gll = (struct gll_t *)parsedbuffer;
+					printf("Received GLL: \n");
+				}
+				break;
+			case _GNS:
+				{
+					struct gns_t *gns = (struct gns_t *)parsedbuffer;
+					printf("Received GNS: \n");
+				}
+				break;
+			case _RMC:
+				{
+					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
+					printf("Received RMC: \n");
+				}
+				break;
+			case _VTG:
+				{
+					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
+					printf("Received VTG: \n");
+				}
+				break;
+			case _ZDA:
+				{
+					struct zda_t *zda = (struct zda_t *)parsedbuffer;
+					printf("Received ZDA: \n");
+				}
+				break;
+			}
+		}
+		else
+		{
+			printf("Parsing result = %d\n", result);
+			finished = 1;
+		}
+	} while (!finished);
 
 	return 0;
 }
