@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavi/iecgenerator.h>
-#include <libnavi/iecparser.h>
+#include <libnavigate/iecgenerator.h>
+#include <libnavigate/iecparser.h>
 
 #include <stdio.h>
 #include <errno.h>

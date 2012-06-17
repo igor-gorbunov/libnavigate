@@ -86,10 +86,10 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 LIBRARIES = $(lib_LIBRARIES)
 AR = ar
 ARFLAGS = cru
-libnavi_a_AR = $(AR) $(ARFLAGS)
-libnavi_a_LIBADD =
-am_libnavi_a_OBJECTS = generator.$(OBJEXT) parser.$(OBJEXT)
-libnavi_a_OBJECTS = $(am_libnavi_a_OBJECTS)
+libnavigate_a_AR = $(AR) $(ARFLAGS)
+libnavigate_a_LIBADD =
+am_libnavigate_a_OBJECTS = generator.$(OBJEXT) parser.$(OBJEXT)
+libnavigate_a_OBJECTS = $(am_libnavigate_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
@@ -98,8 +98,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libnavi_a_SOURCES)
-DIST_SOURCES = $(libnavi_a_SOURCES)
+SOURCES = $(libnavigate_a_SOURCES)
+DIST_SOURCES = $(libnavigate_a_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -191,8 +191,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I$(top_srcdir)/include
-lib_LIBRARIES = libnavi.a
-libnavi_a_SOURCES = generator.c parser.c
+lib_LIBRARIES = libnavigate.a
+libnavigate_a_SOURCES = generator.c parser.c
 all: all-am
 
 .SUFFIXES:
@@ -259,10 +259,10 @@ uninstall-libLIBRARIES:
 
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
-libnavi.a: $(libnavi_a_OBJECTS) $(libnavi_a_DEPENDENCIES) 
-	-rm -f libnavi.a
-	$(libnavi_a_AR) libnavi.a $(libnavi_a_OBJECTS) $(libnavi_a_LIBADD)
-	$(RANLIB) libnavi.a
+libnavigate.a: $(libnavigate_a_OBJECTS) $(libnavigate_a_DEPENDENCIES) 
+	-rm -f libnavigate.a
+	$(libnavigate_a_AR) libnavigate.a $(libnavigate_a_OBJECTS) $(libnavigate_a_LIBADD)
+	$(RANLIB) libnavigate.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

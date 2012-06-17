@@ -20,6 +20,6 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-lib_LIBRARIES = libnavi.a
-libnavi_a_SOURCES = generator.c parser.c
+lib_LIBRARIES = libnavigate.a
+libnavigate_a_SOURCES = generator.c parser.c
 

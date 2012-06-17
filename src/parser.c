@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavi/iecparser.h>
+#include <libnavigate/iecparser.h>
 
 #include <errno.h>
 #include <stdlib.h>
