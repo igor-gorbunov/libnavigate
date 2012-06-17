@@ -20,7 +20,7 @@
 #ifndef IEC_PARSER_H
 #define IEC_PARSER_H
 
-#include <libnavigate/iecmessage.h>
+#include <libnavigate/iecsentence.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus

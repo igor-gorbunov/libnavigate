@@ -79,90 +79,90 @@ int IecComposeMessage(enum naviSentence_t msgtype, void *msg,
 {
 	switch (msgtype)
 	{
-	case _AAM:
-	case _ACK:
-	case _ALM:
-	case _ALR:
-	case _APB:
-	case _BEC:
-	case _BOD:
-	case _BWC:
-	case _BWR:
-	case _BWW:
-	case _DBT:
-	case _DCN:
-	case _DPT:
-	case _DSC:
-	case _DSE:
-	case _DSI:
-	case _DSR:
+	case naviSentence_AAM:
+	case naviSentence_ACK:
+	case naviSentence_ALM:
+	case naviSentence_ALR:
+	case naviSentence_APB:
+	case naviSentence_BEC:
+	case naviSentence_BOD:
+	case naviSentence_BWC:
+	case naviSentence_BWR:
+	case naviSentence_BWW:
+	case naviSentence_DBT:
+	case naviSentence_DCN:
+	case naviSentence_DPT:
+	case naviSentence_DSC:
+	case naviSentence_DSE:
+	case naviSentence_DSI:
+	case naviSentence_DSR:
 		break;
-	case _DTM:
+	case naviSentence_DTM:
 		return IecCompose_DTM((const struct dtm_t *)msg, buffer, maxsize);
-	case _FSI:
-	case _GBS:
-	case _GGA:
-	case _GLC:
+	case naviSentence_FSI:
+	case naviSentence_GBS:
+	case naviSentence_GGA:
+	case naviSentence_GLC:
 		break;
-	case _GLL:
+	case naviSentence_GLL:
 		return IecCompose_GLL((const struct gll_t *)msg, buffer, maxsize);
-	case _GNS:
+	case naviSentence_GNS:
 		return IecCompose_GNS((const struct gns_t *)msg, buffer, maxsize);
-	case _GRS:
-	case _GSA:
-	case _GST:
-	case _GSV:
-	case _HDG:
-	case _HDT:
-	case _HMR:
-	case _HMS:
-	case _HSC:
-	case _HTC:
-	case _HTD:
-	case _LCD:
-	case _MLA:
-	case _MSK:
-	case _MSS:
-	case _MTW:
-	case _MWD:
-	case _MWV:
-	case _OSD:
-	case _RMA:
-	case _RMB:
+	case naviSentence_GRS:
+	case naviSentence_GSA:
+	case naviSentence_GST:
+	case naviSentence_GSV:
+	case naviSentence_HDG:
+	case naviSentence_HDT:
+	case naviSentence_HMR:
+	case naviSentence_HMS:
+	case naviSentence_HSC:
+	case naviSentence_HTC:
+	case naviSentence_HTD:
+	case naviSentence_LCD:
+	case naviSentence_MLA:
+	case naviSentence_MSK:
+	case naviSentence_MSS:
+	case naviSentence_MTW:
+	case naviSentence_MWD:
+	case naviSentence_MWV:
+	case naviSentence_OSD:
+	case naviSentence_RMA:
+	case naviSentence_RMB:
 		break;
-	case _RMC:
+	case naviSentence_RMC:
 		return IecCompose_RMC((const struct rmc_t *)msg, buffer, maxsize);
-	case _ROT:
-	case _RPM:
-	case _RSA:
-	case _RSD:
-	case _RTE:
-	case _SFI:
-	case _STN:
-	case _TLB:
-	case _TLL:
-	case _TTM:
-	case _TXT:
-	case _VBW:
-	case _VDR:
-	case _VHW:
-	case _VLW:
-	case _VPW:
+	case naviSentence_ROT:
+	case naviSentence_RPM:
+	case naviSentence_RSA:
+	case naviSentence_RSD:
+	case naviSentence_RTE:
+	case naviSentence_SFI:
+	case naviSentence_STN:
+	case naviSentence_TLB:
+	case naviSentence_TLL:
+	case naviSentence_TTM:
+	case naviSentence_TXT:
+	case naviSentence_VBW:
+	case naviSentence_VDR:
+	case naviSentence_VHW:
+	case naviSentence_VLW:
+	case naviSentence_VPW:
 		break;
-	case _VTG:
+	case naviSentence_VTG:
 		return IecCompose_VTG((const struct vtg_t *)msg, buffer, maxsize);
-	case _WCV:
-	case _WNC:
-	case _WPL:
-	case _XDR:
-	case _XTE:
-	case _XTR:
+	case naviSentence_WCV:
+	case naviSentence_WNC:
+	case naviSentence_WPL:
+	case naviSentence_XDR:
+	case naviSentence_XTE:
+	case naviSentence_XTR:
 		break;
-	case _ZDA:
+	case naviSentence_ZDA:
 		return IecCompose_ZDA((const struct zda_t *)msg, buffer, maxsize);
-	case _ZDL:
-	case _ZFO:
-	case _ZTG:
+	case naviSentence_ZDL:
+	case naviSentence_ZFO:
+	case naviSentence_ZTG:
 		break;
 	}
 
@@ -238,7 +238,7 @@ static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
 
-	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], locdatum[4],
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], locdatum[4],
 		locdatumsub[2], latofs[32], latsign[2], lonofs[32], lonsign[2],
 		altofs[32], refdatum[4], cs[3];
 
@@ -261,7 +261,7 @@ static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 		msg->vfields & DTM_VALID_REFERENCEDATUM);
 
 	result += 17;
-	if (result > IEC_MESSAGE_MAXSIZE)
+	if (result > NAVI_SENTENCE_MAXSIZE)
 	{
 		printf("IecCompose_DTM : Message length exceeds maximum allowed.\n");
 		return -EMSGSIZE;
@@ -280,7 +280,7 @@ static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
-	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], latitude[32], latsign[2],
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], latitude[32], latsign[2],
 		longitude[32], lonsign[2], utc[32], status[2], mi[2], cs[3];
 
 	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
@@ -298,7 +298,7 @@ static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize)
 	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
 
 	result += 16;
-	if (result > IEC_MESSAGE_MAXSIZE)
+	if (result > NAVI_SENTENCE_MAXSIZE)
 	{
 		printf("IecCompose_GLL : Message length exceeds maximum allowed.\n");
 		return -EMSGSIZE;
@@ -317,7 +317,7 @@ static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
 
-	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], utc[32], latitude[32],
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], latitude[32],
 		latsign[2], longitude[32], lonsign[2], mi[3], totalsats[3], hdop[32],
 		antalt[32], geoidsep[32], ddage[32], drsid[32], cs[3];
 
@@ -349,7 +349,7 @@ static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize)
 		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
 
 	result += 23;
-	if (result > IEC_MESSAGE_MAXSIZE)
+	if (result > NAVI_SENTENCE_MAXSIZE)
 	{
 		printf("IecCompose_GNS : Message length exceeds maximum allowed.\n");
 		return -EMSGSIZE;
@@ -370,7 +370,7 @@ static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize)
 {
 	size_t result;
 
-	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], utc[32], status[2],
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], status[2],
 		latitude[32], latsign[2], longitude[32], lonsign[2], snots[32],
 		ctrue[32], day[3], month[3], year[3], magnetic[32], magsign[2],
 		mi[2], cs[3];
@@ -404,7 +404,7 @@ static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize)
 	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
 
 	result += 17;
-	if (result > IEC_MESSAGE_MAXSIZE)
+	if (result > NAVI_SENTENCE_MAXSIZE)
 	{
 		printf("IecCompose_RMC : Message length exceeds maximum allowed.\n");
 		return -EMSGSIZE;
@@ -425,7 +425,7 @@ static int IecCompose_VTG(const struct vtg_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
 
-	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], ctrue[32], courseT[2],
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], ctrue[32], courseT[2],
 		cmagn[32], courseM[2], snots[32], speedN[4], skmph[32], speedK[2],
 		mi[2], cs[3];
 
@@ -449,7 +449,7 @@ static int IecCompose_VTG(const struct vtg_t *msg, char *buffer, size_t maxsize)
 	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
 
 	result += 18;
-	if (result > IEC_MESSAGE_MAXSIZE)
+	if (result > NAVI_SENTENCE_MAXSIZE)
 	{
 		printf("IecCompose_VTG : Message length exceeds maximum allowed.\n");
 		return -EMSGSIZE;
@@ -469,7 +469,7 @@ static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize)
 {
 	int result;
 
-	char iecmsg[IEC_MESSAGE_MAXSIZE + 1], talkerid[3], utc[32], day[3],
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], day[3],
 		month[3], year[5], lzhours[4], lzmins[3], cs[3];
 
 	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
@@ -502,7 +502,7 @@ static int IecCompose_ZDA(const struct zda_t *msg, char *buffer, size_t maxsize)
 	}
 
 	result += 15;
-	if (result > IEC_MESSAGE_MAXSIZE)
+	if (result > NAVI_SENTENCE_MAXSIZE)
 	{
 		printf("IecCompose_ZDA : Message length exceeds maximum allowed.\n");
 		return -EMSGSIZE;

@@ -1,5 +1,5 @@
 /*
- * iecmessage.h - supported IEC message definitions
+ * iecsentence.h - supported IEC message definitions
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IEC_MESSAGE_H
-#define IEC_MESSAGE_H
+#ifndef IEC_SENTENCE_H
+#define IEC_SENTENCE_H
 
 #ifdef __cplusplus
 extern "C"
@@ -32,86 +32,96 @@ extern "C"
 // The maximum number of characters in a sentence shall be 82,
 // consisting of a maximum of 79 characters between the starting
 // delimeter '$' and the terminating delimeter <cr><lf>.
-#define IEC_MESSAGE_MAXSIZE		82
+#define NAVI_SENTENCE_MAXSIZE		82
+
+//
+// Possible errors while generation/parsing
+//
+enum naviError_t
+{
+	naviError_OK = 0	// no error
+};
 
 //
 // Approved sentence formatters
 //
 enum naviSentence_t
 {
-	_AAM = 0,	// waypoint arrival alarm
-	_ACK = 1,	// acknowledgement alarm
-	_ALM = 2,	// GPS almanac data
-	_ALR = 3,	// set alarm state
-	_APB = 4,	// heading/track controller (Autopilot) sentence B
-	_BEC = 5,	// bearing and distance to waypoint, dead reckoning
-	_BOD = 6,	// bearing, origin to destination
-	_BWC = 7,	// bearing and distance to waypoint
-	_BWR = 8,	// bearing and distance to waypoint, rhumb line
-	_BWW = 9,	// bearing, waypoint to waypoint
-	_DBT = 10,	// depth below transducer
-	_DCN = 11,	// DECCA position
-	_DPT = 12,	// depth
-	_DSC = 13,	// digital selective calling information
-	_DSE = 14,	// expanded digital selective calling
-	_DSI = 15,	// DSC transponder initialize
-	_DSR = 16,	// DSC transponder response
-	_DTM = 17,	// datum reference
-	_FSI = 18,	// frequency set information
-	_GBS = 19,	// GNSS satellite fault detection
-	_GGA = 20,	// global positioning system fix data
-	_GLC = 21,	// geographic position, LORAN-C
-	_GLL = 22,	// geographic position, latitude/longitude
-	_GNS = 23,	// GNSS fix data
-	_GRS = 24,	// GNSS range residuals
-	_GSA = 25,	// GNSS DOP and active satellites
-	_GST = 26,	// GNSS pseudorange error statistics
-	_GSV = 27,	// GNSS satellites in view
-	_HDG = 28,	// heading, deviation and variation
-	_HDT = 29,	// heading, true
-	_HMR = 30,	// heading monitor - receive
-	_HMS = 31,	// heading monitor - set
-	_HSC = 32,	// heading steering command
-	_HTC = 33,	// heading/track control command
-	_HTD = 34,	// heading/track control data
-	_LCD = 35,	// LORAN-C signal data
-	_MLA = 36,	// Glonass almanac data
-	_MSK = 37,	// MSK receiver interface
-	_MSS = 38,	// MSK receiver signal status
-	_MTW = 39,	// water temperature
-	_MWD = 40,	// wind direction and speed
-	_MWV = 41,	// wind speed and angle
-	_OSD = 42,	// own ship data
-	_RMA = 43,	// recommended minimum specific LORAN-C data
-	_RMB = 44,	// recommended minimum navigation information
-	_RMC = 45,	// recommended minimum specific GNSS data
-	_ROT = 46,	// rate of turn
-	_RPM = 47,	// revolutions
-	_RSA = 48,	// rudder sensor angle
-	_RSD = 49,	// radar system data
-	_RTE = 50,	// routes
-	_SFI = 51,	// scanning frequency information
-	_STN = 52,	// multiple data ID
-	_TLB = 53,	// target label
-	_TLL = 54,	// target latitude and longitude
-	_TTM = 55,	// tracked target message
-	_TXT = 56,	// text transmission
-	_VBW = 57,	// dual ground/water speed
-	_VDR = 58,	// set and drift
-	_VHW = 59,	// water speed and heading
-	_VLW = 60,	// distance travelled through the water
-	_VPW = 61,	// speed, measured parallel to wind
-	_VTG = 62,	// course over ground and ground speed
-	_WCV = 63,	// waypoint closure velocity
-	_WNC = 64,	// distance, waypoint to waypoint
-	_WPL = 65,	// waypoint location
-	_XDR = 66,	// transducer measurements
-	_XTE = 67,	// cross-track error, measured
-	_XTR = 68,	// cross-track error, dead reckoning
-	_ZDA = 69,	// time and date
-	_ZDL = 70,	// time and distance to variable point
-	_ZFO = 71,	// UTC and time from origin waypoint
-	_ZTG = 72	// UTC and time to destination waypoint
+	naviSentence_Undefined = -1,	// unefined or unsupported sentence
+
+	naviSentence_AAM = 0,	// waypoint arrival alarm
+	naviSentence_ACK = 1,	// acknowledgement alarm
+	naviSentence_ALM = 2,	// GPS almanac data
+	naviSentence_ALR = 3,	// set alarm state
+	naviSentence_APB = 4,	// heading/track controller (Autopilot) sentence B
+	naviSentence_BEC = 5,	// bearing and distance to waypoint, dead reckoning
+	naviSentence_BOD = 6,	// bearing, origin to destination
+	naviSentence_BWC = 7,	// bearing and distance to waypoint
+	naviSentence_BWR = 8,	// bearing and distance to waypoint, rhumb line
+	naviSentence_BWW = 9,	// bearing, waypoint to waypoint
+	naviSentence_DBT = 10,	// depth below transducer
+	naviSentence_DCN = 11,	// DECCA position
+	naviSentence_DPT = 12,	// depth
+	naviSentence_DSC = 13,	// digital selective calling information
+	naviSentence_DSE = 14,	// expanded digital selective calling
+	naviSentence_DSI = 15,	// DSC transponder initialize
+	naviSentence_DSR = 16,	// DSC transponder response
+	naviSentence_DTM = 17,	// datum reference
+	naviSentence_FSI = 18,	// frequency set information
+	naviSentence_GBS = 19,	// GNSS satellite fault detection
+	naviSentence_GGA = 20,	// global positioning system fix data
+	naviSentence_GLC = 21,	// geographic position, LORAN-C
+	naviSentence_GLL = 22,	// geographic position, latitude/longitude
+	naviSentence_GNS = 23,	// GNSS fix data
+	naviSentence_GRS = 24,	// GNSS range residuals
+	naviSentence_GSA = 25,	// GNSS DOP and active satellites
+	naviSentence_GST = 26,	// GNSS pseudorange error statistics
+	naviSentence_GSV = 27,	// GNSS satellites in view
+	naviSentence_HDG = 28,	// heading, deviation and variation
+	naviSentence_HDT = 29,	// heading, true
+	naviSentence_HMR = 30,	// heading monitor - receive
+	naviSentence_HMS = 31,	// heading monitor - set
+	naviSentence_HSC = 32,	// heading steering command
+	naviSentence_HTC = 33,	// heading/track control command
+	naviSentence_HTD = 34,	// heading/track control data
+	naviSentence_LCD = 35,	// LORAN-C signal data
+	naviSentence_MLA = 36,	// Glonass almanac data
+	naviSentence_MSK = 37,	// MSK receiver interface
+	naviSentence_MSS = 38,	// MSK receiver signal status
+	naviSentence_MTW = 39,	// water temperature
+	naviSentence_MWD = 40,	// wind direction and speed
+	naviSentence_MWV = 41,	// wind speed and angle
+	naviSentence_OSD = 42,	// own ship data
+	naviSentence_RMA = 43,	// recommended minimum specific LORAN-C data
+	naviSentence_RMB = 44,	// recommended minimum navigation information
+	naviSentence_RMC = 45,	// recommended minimum specific GNSS data
+	naviSentence_ROT = 46,	// rate of turn
+	naviSentence_RPM = 47,	// revolutions
+	naviSentence_RSA = 48,	// rudder sensor angle
+	naviSentence_RSD = 49,	// radar system data
+	naviSentence_RTE = 50,	// routes
+	naviSentence_SFI = 51,	// scanning frequency information
+	naviSentence_STN = 52,	// multiple data ID
+	naviSentence_TLB = 53,	// target label
+	naviSentence_TLL = 54,	// target latitude and longitude
+	naviSentence_TTM = 55,	// tracked target message
+	naviSentence_TXT = 56,	// text transmission
+	naviSentence_VBW = 57,	// dual ground/water speed
+	naviSentence_VDR = 58,	// set and drift
+	naviSentence_VHW = 59,	// water speed and heading
+	naviSentence_VLW = 60,	// distance travelled through the water
+	naviSentence_VPW = 61,	// speed, measured parallel to wind
+	naviSentence_VTG = 62,	// course over ground and ground speed
+	naviSentence_WCV = 63,	// waypoint closure velocity
+	naviSentence_WNC = 64,	// distance, waypoint to waypoint
+	naviSentence_WPL = 65,	// waypoint location
+	naviSentence_XDR = 66,	// transducer measurements
+	naviSentence_XTE = 67,	// cross-track error, measured
+	naviSentence_XTR = 68,	// cross-track error, dead reckoning
+	naviSentence_ZDA = 69,	// time and date
+	naviSentence_ZDL = 70,	// time and distance to variable point
+	naviSentence_ZFO = 71,	// UTC and time from origin waypoint
+	naviSentence_ZTG = 72	// UTC and time to destination waypoint
 };
 
 //
@@ -119,6 +129,8 @@ enum naviSentence_t
 //
 enum naviTalkerId_t
 {
+	naviTalkerId_Undefined = -1,	// unefined or unsupported talker id
+
 	// Heading/track controller (autopilot)
 	_AG = 0,	// general
 	_AP = 1,	// magnetic
@@ -737,5 +749,5 @@ struct zda_t
 }
 #endif // __cplusplus
 
-#endif // IEC_MESSAGE_H
+#endif // IEC_SENTENCE_H
 

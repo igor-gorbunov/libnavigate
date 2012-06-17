@@ -26,12 +26,12 @@
 int main()
 {
 	char buffer[1024];
-	struct zda_t zda;
 	struct dtm_t dtm;
 	struct gll_t gll;
 	struct gns_t gns;
 	struct rmc_t rmc;
 	struct vtg_t vtg;
+	struct zda_t zda;
 	int result, msglength;
 
 	msglength = 0;
@@ -48,7 +48,7 @@ int main()
 	zda.year = 1982;
 	zda.lzoffset = -240;
 
-	result = IecComposeMessage(_ZDA, &zda, buffer, sizeof(buffer));
+	result = IecComposeMessage(naviSentence_ZDA, &zda, buffer, sizeof(buffer));
 	if (result >= 0)
 	{
 		msglength += result;
@@ -71,7 +71,7 @@ int main()
 	dtm.altoffset = 3.446;
 	dtm.rd = _WGS84;
 
-	result = IecComposeMessage(_DTM, &dtm, buffer + msglength,
+	result = IecComposeMessage(naviSentence_DTM, &dtm, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
@@ -96,7 +96,7 @@ int main()
 	gll.status = _DataValid;
 	gll.mi = _Autonomous;
 
-	result = IecComposeMessage(_GLL, &gll, buffer + msglength,
+	result = IecComposeMessage(naviSentence_GLL, &gll, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
@@ -130,7 +130,7 @@ int main()
 	gns.diffage = 4;
 	gns.id = 13;
 
-	result = IecComposeMessage(_GNS, &gns, buffer + msglength,
+	result = IecComposeMessage(naviSentence_GNS, &gns, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
@@ -163,7 +163,7 @@ int main()
 	rmc.magnetic.offsign = _East;
 	rmc.mi = _Estimated;
 
-	result = IecComposeMessage(_RMC, &rmc, buffer + msglength,
+	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
@@ -178,7 +178,7 @@ int main()
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_SPEED | RMC_VALID_COURSETRUE |
 		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
 
-	result = IecComposeMessage(_RMC, &rmc, buffer + msglength,
+	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
@@ -197,7 +197,7 @@ int main()
 	vtg.speed = 1.023;
 	vtg.mi = _Simulator;
 
-	result = IecComposeMessage(_VTG, &vtg, buffer + msglength,
+	result = IecComposeMessage(naviSentence_VTG, &vtg, buffer + msglength,
 		sizeof(buffer) - msglength);
 	if (result >= 0)
 	{
@@ -228,37 +228,37 @@ int main()
 
 			switch (msgtype)
 			{
-			case _DTM:
+			case naviSentence_DTM:
 				{
 					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
 					printf("Received DTM: \n");
 				}
 				break;
-			case _GLL:
+			case naviSentence_GLL:
 				{
 					struct gll_t *gll = (struct gll_t *)parsedbuffer;
 					printf("Received GLL: \n");
 				}
 				break;
-			case _GNS:
+			case naviSentence_GNS:
 				{
 					struct gns_t *gns = (struct gns_t *)parsedbuffer;
 					printf("Received GNS: \n");
 				}
 				break;
-			case _RMC:
+			case naviSentence_RMC:
 				{
 					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
 					printf("Received RMC: \n");
 				}
 				break;
-			case _VTG:
+			case naviSentence_VTG:
 				{
 					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
 					printf("Received VTG: \n");
 				}
 				break;
-			case _ZDA:
+			case naviSentence_ZDA:
 				{
 					struct zda_t *zda = (struct zda_t *)parsedbuffer;
 					printf("Received ZDA: \n");
@@ -277,37 +277,37 @@ int main()
 
 			switch (msgtype)
 			{
-			case _DTM:
+			case naviSentence_DTM:
 				{
 					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
 					printf("Received DTM: \n");
 				}
 				break;
-			case _GLL:
+			case naviSentence_GLL:
 				{
 					struct gll_t *gll = (struct gll_t *)parsedbuffer;
 					printf("Received GLL: \n");
 				}
 				break;
-			case _GNS:
+			case naviSentence_GNS:
 				{
 					struct gns_t *gns = (struct gns_t *)parsedbuffer;
 					printf("Received GNS: \n");
 				}
 				break;
-			case _RMC:
+			case naviSentence_RMC:
 				{
 					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
 					printf("Received RMC: \n");
 				}
 				break;
-			case _VTG:
+			case naviSentence_VTG:
 				{
 					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
 					printf("Received VTG: \n");
 				}
 				break;
-			case _ZDA:
+			case naviSentence_ZDA:
 				{
 					struct zda_t *zda = (struct zda_t *)parsedbuffer;
 					printf("Received ZDA: \n");

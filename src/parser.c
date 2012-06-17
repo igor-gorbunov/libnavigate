@@ -123,25 +123,25 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	//
 	switch (*msgtype)
 	{
-	case _AAM:
-	case _ACK:
-	case _ALM:
-	case _ALR:
-	case _APB:
-	case _BEC:
-	case _BOD:
-	case _BWC:
-	case _BWR:
-	case _BWW:
-	case _DBT:
-	case _DCN:
-	case _DPT:
-	case _DSC:
-	case _DSE:
-	case _DSI:
-	case _DSR:
+	case naviSentence_AAM:
+	case naviSentence_ACK:
+	case naviSentence_ALM:
+	case naviSentence_ALR:
+	case naviSentence_APB:
+	case naviSentence_BEC:
+	case naviSentence_BOD:
+	case naviSentence_BWC:
+	case naviSentence_BWR:
+	case naviSentence_BWW:
+	case naviSentence_DBT:
+	case naviSentence_DCN:
+	case naviSentence_DPT:
+	case naviSentence_DSC:
+	case naviSentence_DSE:
+	case naviSentence_DSI:
+	case naviSentence_DSR:
 		break;
-	case _DTM:
+	case naviSentence_DTM:
 		if (maxsize < sizeof(struct dtm_t))
 		{
 			return -EMSGSIZE;
@@ -149,12 +149,12 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 		((struct dtm_t *)msg)->tid = tid;
 		return IecParse_DTM((struct dtm_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
-	case _FSI:
-	case _GBS:
-	case _GGA:
-	case _GLC:
+	case naviSentence_FSI:
+	case naviSentence_GBS:
+	case naviSentence_GGA:
+	case naviSentence_GLC:
 		break;
-	case _GLL:
+	case naviSentence_GLL:
 		if (maxsize < sizeof(struct gll_t))
 		{
 			return -EMSGSIZE;
@@ -162,7 +162,7 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 		((struct gll_t *)msg)->tid = tid;
 		return IecParse_GLL((struct gll_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
-	case _GNS:
+	case naviSentence_GNS:
 		if (maxsize < sizeof(struct gns_t))
 		{
 			return -EMSGSIZE;
@@ -170,29 +170,29 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 		((struct gns_t *)msg)->tid = tid;
 		return IecParse_GNS((struct gns_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
-	case _GRS:
-	case _GSA:
-	case _GST:
-	case _GSV:
-	case _HDG:
-	case _HDT:
-	case _HMR:
-	case _HMS:
-	case _HSC:
-	case _HTC:
-	case _HTD:
-	case _LCD:
-	case _MLA:
-	case _MSK:
-	case _MSS:
-	case _MTW:
-	case _MWD:
-	case _MWV:
-	case _OSD:
-	case _RMA:
-	case _RMB:
+	case naviSentence_GRS:
+	case naviSentence_GSA:
+	case naviSentence_GST:
+	case naviSentence_GSV:
+	case naviSentence_HDG:
+	case naviSentence_HDT:
+	case naviSentence_HMR:
+	case naviSentence_HMS:
+	case naviSentence_HSC:
+	case naviSentence_HTC:
+	case naviSentence_HTD:
+	case naviSentence_LCD:
+	case naviSentence_MLA:
+	case naviSentence_MSK:
+	case naviSentence_MSS:
+	case naviSentence_MTW:
+	case naviSentence_MWD:
+	case naviSentence_MWV:
+	case naviSentence_OSD:
+	case naviSentence_RMA:
+	case naviSentence_RMB:
 		break;
-	case _RMC:
+	case naviSentence_RMC:
 		if (maxsize < sizeof(struct rmc_t))
 		{
 			return -EMSGSIZE;
@@ -200,24 +200,24 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 		((struct rmc_t *)msg)->tid = tid;
 		return IecParse_RMC((struct rmc_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
-	case _ROT:
-	case _RPM:
-	case _RSA:
-	case _RSD:
-	case _RTE:
-	case _SFI:
-	case _STN:
-	case _TLB:
-	case _TLL:
-	case _TTM:
-	case _TXT:
-	case _VBW:
-	case _VDR:
-	case _VHW:
-	case _VLW:
-	case _VPW:
+	case naviSentence_ROT:
+	case naviSentence_RPM:
+	case naviSentence_RSA:
+	case naviSentence_RSD:
+	case naviSentence_RTE:
+	case naviSentence_SFI:
+	case naviSentence_STN:
+	case naviSentence_TLB:
+	case naviSentence_TLL:
+	case naviSentence_TTM:
+	case naviSentence_TXT:
+	case naviSentence_VBW:
+	case naviSentence_VDR:
+	case naviSentence_VHW:
+	case naviSentence_VLW:
+	case naviSentence_VPW:
 		break;
-	case _VTG:
+	case naviSentence_VTG:
 		if (maxsize < sizeof(struct vtg_t))
 		{
 			return -EMSGSIZE;
@@ -225,14 +225,14 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 		((struct vtg_t *)msg)->tid = tid;
 		return IecParse_VTG((struct vtg_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
-	case _WCV:
-	case _WNC:
-	case _WPL:
-	case _XDR:
-	case _XTE:
-	case _XTR:
+	case naviSentence_WCV:
+	case naviSentence_WNC:
+	case naviSentence_WPL:
+	case naviSentence_XDR:
+	case naviSentence_XTE:
+	case naviSentence_XTR:
 		break;
-	case _ZDA:
+	case naviSentence_ZDA:
 		if (maxsize < sizeof(struct zda_t))
 		{
 			return -EMSGSIZE;
@@ -240,9 +240,9 @@ int IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 		((struct zda_t *)msg)->tid = tid;
 		return IecParse_ZDA((struct zda_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
-	case _ZDL:
-	case _ZFO:
-	case _ZTG:
+	case naviSentence_ZDL:
+	case naviSentence_ZFO:
+	case naviSentence_ZTG:
 		break;
 	}
 
@@ -582,367 +582,367 @@ static int IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype)
 {
 	if (strncmp("AAM", sfmt, 3) == 0)
 	{
-		*msgtype = _AAM;
+		*msgtype = naviSentence_AAM;
 		return 0;
 	}
 	else if (strncmp("ACK", sfmt, 3) == 0)
 	{
-		*msgtype = _ACK;
+		*msgtype = naviSentence_ACK;
 		return 0;
 	}
 	else if (strncmp("ALM", sfmt, 3) == 0)
 	{
-		*msgtype = _ALM;
+		*msgtype = naviSentence_ALM;
 		return 0;
 	}
 	else if (strncmp("ALR", sfmt, 3) == 0)
 	{
-		*msgtype = _ALR;
+		*msgtype = naviSentence_ALR;
 		return 0;
 	}
 	else if (strncmp("APB", sfmt, 3) == 0)
 	{
-		*msgtype = _APB;
+		*msgtype = naviSentence_APB;
 		return 0;
 	}
 	else if (strncmp("BEC", sfmt, 3) == 0)
 	{
-		*msgtype = _BEC;
+		*msgtype = naviSentence_BEC;
 		return 0;
 	}
 	else if (strncmp("BOD", sfmt, 3) == 0)
 	{
-		*msgtype = _BOD;
+		*msgtype = naviSentence_BOD;
 		return 0;
 	}
 	else if (strncmp("BWC", sfmt, 3) == 0)
 	{
-		*msgtype = _BWC;
+		*msgtype = naviSentence_BWC;
 		return 0;
 	}
 	else if (strncmp("BWR", sfmt, 3) == 0)
 	{
-		*msgtype = _BWR;
+		*msgtype = naviSentence_BWR;
 		return 0;
 	}
 	else if (strncmp("BWW", sfmt, 3) == 0)
 	{
-		*msgtype = _BWW;
+		*msgtype = naviSentence_BWW;
 		return 0;
 	}
 	else if (strncmp("DBT", sfmt, 3) == 0)
 	{
-		*msgtype = _DBT;
+		*msgtype = naviSentence_DBT;
 		return 0;
 	}
 	else if (strncmp("DCN", sfmt, 3) == 0)
 	{
-		*msgtype = _DCN;
+		*msgtype = naviSentence_DCN;
 		return 0;
 	}
 	else if (strncmp("DPT", sfmt, 3) == 0)
 	{
-		*msgtype = _DPT;
+		*msgtype = naviSentence_DPT;
 		return 0;
 	}
 	else if (strncmp("DSC", sfmt, 3) == 0)
 	{
-		*msgtype = _DSC;
+		*msgtype = naviSentence_DSC;
 		return 0;
 	}
 	else if (strncmp("DSE", sfmt, 3) == 0)
 	{
-		*msgtype = _DSE;
+		*msgtype = naviSentence_DSE;
 		return 0;
 	}
 	else if (strncmp("DSI", sfmt, 3) == 0)
 	{
-		*msgtype = _DSI;
+		*msgtype = naviSentence_DSI;
 		return 0;
 	}
 	else if (strncmp("DSR", sfmt, 3) == 0)
 	{
-		*msgtype = _DSR;
+		*msgtype = naviSentence_DSR;
 		return 0;
 	}
 	else if (strncmp("DTM", sfmt, 3) == 0)
 	{
-		*msgtype = _DTM;
+		*msgtype = naviSentence_DTM;
 		return 0;
 	}
 	else if (strncmp("FSI", sfmt, 3) == 0)
 	{
-		*msgtype = _FSI;
+		*msgtype = naviSentence_FSI;
 		return 0;
 	}
 	else if (strncmp("GBS", sfmt, 3) == 0)
 	{
-		*msgtype = _GBS;
+		*msgtype = naviSentence_GBS;
 		return 0;
 	}
 	else if (strncmp("GGA", sfmt, 3) == 0)
 	{
-		*msgtype = _GGA;
+		*msgtype = naviSentence_GGA;
 		return 0;
 	}
 	else if (strncmp("GLC", sfmt, 3) == 0)
 	{
-		*msgtype = _GLC;
+		*msgtype = naviSentence_GLC;
 		return 0;
 	}
 	else if (strncmp("GLC", sfmt, 3) == 0)
 	{
-		*msgtype = _GLC;
+		*msgtype = naviSentence_GLC;
 		return 0;
 	}
 	else if (strncmp("GNS", sfmt, 3) == 0)
 	{
-		*msgtype = _GNS;
+		*msgtype = naviSentence_GNS;
 		return 0;
 	}
 	else if (strncmp("GRS", sfmt, 3) == 0)
 	{
-		*msgtype = _GRS;
+		*msgtype = naviSentence_GRS;
 		return 0;
 	}
 	else if (strncmp("GSA", sfmt, 3) == 0)
 	{
-		*msgtype = _GSA;
+		*msgtype = naviSentence_GSA;
 		return 0;
 	}
 	else if (strncmp("GST", sfmt, 3) == 0)
 	{
-		*msgtype = _GST;
+		*msgtype = naviSentence_GST;
 		return 0;
 	}
 	else if (strncmp("GSV", sfmt, 3) == 0)
 	{
-		*msgtype = _GSV;
+		*msgtype = naviSentence_GSV;
 		return 0;
 	}
 	else if (strncmp("HDG", sfmt, 3) == 0)
 	{
-		*msgtype = _HDG;
+		*msgtype = naviSentence_HDG;
 		return 0;
 	}
 	else if (strncmp("HDT", sfmt, 3) == 0)
 	{
-		*msgtype = _HDT;
+		*msgtype = naviSentence_HDT;
 		return 0;
 	}
 	else if (strncmp("HMR", sfmt, 3) == 0)
 	{
-		*msgtype = _HMR;
+		*msgtype = naviSentence_HMR;
 		return 0;
 	}
 	else if (strncmp("HMS", sfmt, 3) == 0)
 	{
-		*msgtype = _HMS;
+		*msgtype = naviSentence_HMS;
 		return 0;
 	}
 	else if (strncmp("HSC", sfmt, 3) == 0)
 	{
-		*msgtype = _HSC;
+		*msgtype = naviSentence_HSC;
 		return 0;
 	}
 	else if (strncmp("HTC", sfmt, 3) == 0)
 	{
-		*msgtype = _HTC;
+		*msgtype = naviSentence_HTC;
 		return 0;
 	}
 	else if (strncmp("HTD", sfmt, 3) == 0)
 	{
-		*msgtype = _HTD;
+		*msgtype = naviSentence_HTD;
 		return 0;
 	}
 	else if (strncmp("LCD", sfmt, 3) == 0)
 	{
-		*msgtype = _LCD;
+		*msgtype = naviSentence_LCD;
 		return 0;
 	}
 	else if (strncmp("MLA", sfmt, 3) == 0)
 	{
-		*msgtype = _MLA;
+		*msgtype = naviSentence_MLA;
 		return 0;
 	}
 	else if (strncmp("MSK", sfmt, 3) == 0)
 	{
-		*msgtype = _MSK;
+		*msgtype = naviSentence_MSK;
 		return 0;
 	}
 	else if (strncmp("MSS", sfmt, 3) == 0)
 	{
-		*msgtype = _MSS;
+		*msgtype = naviSentence_MSS;
 		return 0;
 	}
 	else if (strncmp("MTW", sfmt, 3) == 0)
 	{
-		*msgtype = _MTW;
+		*msgtype = naviSentence_MTW;
 		return 0;
 	}
 	else if (strncmp("MWD", sfmt, 3) == 0)
 	{
-		*msgtype = _MWD;
+		*msgtype = naviSentence_MWD;
 		return 0;
 	}
 	else if (strncmp("MWV", sfmt, 3) == 0)
 	{
-		*msgtype = _MWV;
+		*msgtype = naviSentence_MWV;
 		return 0;
 	}
 	else if (strncmp("OSD", sfmt, 3) == 0)
 	{
-		*msgtype = _OSD;
+		*msgtype = naviSentence_OSD;
 		return 0;
 	}
 	else if (strncmp("RMA", sfmt, 3) == 0)
 	{
-		*msgtype = _RMA;
+		*msgtype = naviSentence_RMA;
 		return 0;
 	}
 	else if (strncmp("RMB", sfmt, 3) == 0)
 	{
-		*msgtype = _RMB;
+		*msgtype = naviSentence_RMB;
 		return 0;
 	}
 	else if (strncmp("RMC", sfmt, 3) == 0)
 	{
-		*msgtype = _RMC;
+		*msgtype = naviSentence_RMC;
 		return 0;
 	}
 	else if (strncmp("ROT", sfmt, 3) == 0)
 	{
-		*msgtype = _ROT;
+		*msgtype = naviSentence_ROT;
 		return 0;
 	}
 	else if (strncmp("RPM", sfmt, 3) == 0)
 	{
-		*msgtype = _RPM;
+		*msgtype = naviSentence_RPM;
 		return 0;
 	}
 	else if (strncmp("RSA", sfmt, 3) == 0)
 	{
-		*msgtype = _RSA;
+		*msgtype = naviSentence_RSA;
 		return 0;
 	}
 	else if (strncmp("RSD", sfmt, 3) == 0)
 	{
-		*msgtype = _RSD;
+		*msgtype = naviSentence_RSD;
 		return 0;
 	}
 	else if (strncmp("RTE", sfmt, 3) == 0)
 	{
-		*msgtype = _RTE;
+		*msgtype = naviSentence_RTE;
 		return 0;
 	}
 	else if (strncmp("SFI", sfmt, 3) == 0)
 	{
-		*msgtype = _SFI;
+		*msgtype = naviSentence_SFI;
 		return 0;
 	}
 	else if (strncmp("STN", sfmt, 3) == 0)
 	{
-		*msgtype = _STN;
+		*msgtype = naviSentence_STN;
 		return 0;
 	}
 	else if (strncmp("TLB", sfmt, 3) == 0)
 	{
-		*msgtype = _TLB;
+		*msgtype = naviSentence_TLB;
 		return 0;
 	}
 	else if (strncmp("TLL", sfmt, 3) == 0)
 	{
-		*msgtype = _TLL;
+		*msgtype = naviSentence_TLL;
 		return 0;
 	}
 	else if (strncmp("TTM", sfmt, 3) == 0)
 	{
-		*msgtype = _TTM;
+		*msgtype = naviSentence_TTM;
 		return 0;
 	}
 	else if (strncmp("TXT", sfmt, 3) == 0)
 	{
-		*msgtype = _TXT;
+		*msgtype = naviSentence_TXT;
 		return 0;
 	}
 	else if (strncmp("VBW", sfmt, 3) == 0)
 	{
-		*msgtype = _VBW;
+		*msgtype = naviSentence_VBW;
 		return 0;
 	}
 	else if (strncmp("VDR", sfmt, 3) == 0)
 	{
-		*msgtype = _VDR;
+		*msgtype = naviSentence_VDR;
 		return 0;
 	}
 	else if (strncmp("VHW", sfmt, 3) == 0)
 	{
-		*msgtype = _VHW;
+		*msgtype = naviSentence_VHW;
 		return 0;
 	}
 	else if (strncmp("VLW", sfmt, 3) == 0)
 	{
-		*msgtype = _VLW;
+		*msgtype = naviSentence_VLW;
 		return 0;
 	}
 	else if (strncmp("VPW", sfmt, 3) == 0)
 	{
-		*msgtype = _VPW;
+		*msgtype = naviSentence_VPW;
 		return 0;
 	}
 	else if (strncmp("VTG", sfmt, 3) == 0)
 	{
-		*msgtype = _VTG;
+		*msgtype = naviSentence_VTG;
 		return 0;
 	}
 	else if (strncmp("WCV", sfmt, 3) == 0)
 	{
-		*msgtype = _WCV;
+		*msgtype = naviSentence_WCV;
 		return 0;
 	}
 	else if (strncmp("WNC", sfmt, 3) == 0)
 	{
-		*msgtype = _WNC;
+		*msgtype = naviSentence_WNC;
 		return 0;
 	}
 	else if (strncmp("WPL", sfmt, 3) == 0)
 	{
-		*msgtype = _WPL;
+		*msgtype = naviSentence_WPL;
 		return 0;
 	}
 	else if (strncmp("XDR", sfmt, 3) == 0)
 	{
-		*msgtype = _XDR;
+		*msgtype = naviSentence_XDR;
 		return 0;
 	}
 	else if (strncmp("XTE", sfmt, 3) == 0)
 	{
-		*msgtype = _XTE;
+		*msgtype = naviSentence_XTE;
 		return 0;
 	}
 	else if (strncmp("XTR", sfmt, 3) == 0)
 	{
-		*msgtype = _XTR;
+		*msgtype = naviSentence_XTR;
 		return 0;
 	}
 	else if (strncmp("ZDA", sfmt, 3) == 0)
 	{
-		*msgtype = _ZDA;
+		*msgtype = naviSentence_ZDA;
 		return 0;
 	}
 	else if (strncmp("ZDL", sfmt, 3) == 0)
 	{
-		*msgtype = _ZDL;
+		*msgtype = naviSentence_ZDL;
 		return 0;
 	}
 	else if (strncmp("ZFO", sfmt, 3) == 0)
 	{
-		*msgtype = _ZFO;
+		*msgtype = naviSentence_ZFO;
 		return 0;
 	}
 	else if (strncmp("ZTG", sfmt, 3) == 0)
 	{
-		*msgtype = _ZTG;
+		*msgtype = naviSentence_ZTG;
 		return 0;
 	}
 	else
