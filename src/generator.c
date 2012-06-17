@@ -191,7 +191,7 @@ static int IecPrint_Double(double value, char *buffer,
 
 //
 // Prints offset sign
-static int IecPrint_OffsetSign(enum naviOffsetSign_t sign, char *buffer,
+static int IecPrint_OffsetSign(enum naviOfsSign_t sign, char *buffer,
 	size_t maxsize, int notnull);
 
 //
@@ -249,11 +249,11 @@ static int IecCompose_DTM(const struct dtm_t *msg, char *buffer, size_t maxsize)
 		sizeof(locdatumsub), msg->vfields & DTM_VALID_LOCALDATUMSUB);
 	result += IecPrint_Double(msg->latofs.offset, latofs, sizeof(latofs),
 		msg->vfields & DTM_VALID_LATOFFSET);
-	result += IecPrint_OffsetSign(msg->latofs.offsign, latsign, sizeof(latsign),
+	result += IecPrint_OffsetSign(msg->latofs.sign, latsign, sizeof(latsign),
 		msg->vfields & DTM_VALID_LATOFFSET);
 	result += IecPrint_Double(msg->lonofs.offset, lonofs, sizeof(lonofs),
 		msg->vfields & DTM_VALID_LONOFFSET);
-	result += IecPrint_OffsetSign(msg->lonofs.offsign, lonsign, sizeof(lonsign),
+	result += IecPrint_OffsetSign(msg->lonofs.sign, lonsign, sizeof(lonsign),
 		msg->vfields & DTM_VALID_LONOFFSET);
 	result += IecPrint_Double(msg->altoffset, altofs, sizeof(altofs),
 		msg->vfields & DTM_VALID_ALTITUDEOFFSET);
@@ -286,11 +286,11 @@ static int IecCompose_GLL(const struct gll_t *msg, char *buffer, size_t maxsize)
 	result = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
 	result += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
 		msg->vfields & GLL_VALID_LATITUDE);
-	result += IecPrint_OffsetSign(msg->latitude.offsign, latsign, sizeof(latsign),
+	result += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
 		msg->vfields & GLL_VALID_LATITUDE);
 	result += IecPrint_Longitude(msg->longitude.offset, longitude,
 		sizeof(longitude), msg->vfields & GLL_VALID_LONGITUDE);
-	result += IecPrint_OffsetSign(msg->longitude.offsign, lonsign,
+	result += IecPrint_OffsetSign(msg->longitude.sign, lonsign,
 		sizeof(lonsign), msg->vfields & GLL_VALID_LONGITUDE);
 	result += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GLL_VALID_UTC);
@@ -326,11 +326,11 @@ static int IecCompose_GNS(const struct gns_t *msg, char *buffer, size_t maxsize)
 		msg->vfields & GNS_VALID_UTC);
 	result += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
 		msg->vfields & GNS_VALID_LATITUDE);
-	result += IecPrint_OffsetSign(msg->latitude.offsign, latsign, sizeof(latsign),
+	result += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
 		msg->vfields & GNS_VALID_LATITUDE);
 	result += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
 		msg->vfields & GNS_VALID_LONGITUDE);
-	result += IecPrint_OffsetSign(msg->longitude.offsign, lonsign, sizeof(lonsign),
+	result += IecPrint_OffsetSign(msg->longitude.sign, lonsign, sizeof(lonsign),
 		msg->vfields & GNS_VALID_LONGITUDE);
 	result += IecPrint_ModeIndicatorArray(msg->mi, mi, sizeof(mi),
 		msg->vfields & GNS_VALID_MODEINDICATOR);
@@ -381,11 +381,11 @@ static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize)
 	result += IecPrint_Status(msg->status, status, sizeof(status));
 	result += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
 		msg->vfields & RMC_VALID_LATITUDE);
-	result += IecPrint_OffsetSign(msg->latitude.offsign, latsign, sizeof(latsign),
+	result += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
 		msg->vfields & RMC_VALID_LATITUDE);
 	result += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
 		msg->vfields & RMC_VALID_LONGITUDE);
-	result += IecPrint_OffsetSign(msg->longitude.offsign, lonsign, sizeof(lonsign),
+	result += IecPrint_OffsetSign(msg->longitude.sign, lonsign, sizeof(lonsign),
 		msg->vfields & RMC_VALID_LONGITUDE);
 	result += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
 		msg->vfields & RMC_VALID_SPEED);
@@ -399,7 +399,7 @@ static int IecCompose_RMC(const struct rmc_t *msg, char *buffer, size_t maxsize)
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->year % 100);
 	result += IecPrint_Double(msg->magnetic.offset, magnetic, sizeof(magnetic),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	result += IecPrint_OffsetSign(msg->magnetic.offsign, magsign, sizeof(magsign),
+	result += IecPrint_OffsetSign(msg->magnetic.sign, magsign, sizeof(magsign),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
 	result += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
 
@@ -685,15 +685,15 @@ static int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
 	{
 		switch (datum)
 		{
-		case _WGS84:
+		case naviDatum_WGS84:
 			return snprintf(buffer, maxsize, "W84");
-		case _WGS72:
+		case naviDatum_WGS72:
 			return snprintf(buffer, maxsize, "W72");
-		case _SGS85:
+		case naviDatum_SGS85:
 			return snprintf(buffer, maxsize, "S85");
-		case _PE90:
+		case naviDatum_PE90:
 			return snprintf(buffer, maxsize, "P90");
-		case _UserDefined:
+		case naviDatum_UserDefined:
 			return snprintf(buffer, maxsize, "999");
 		}
 
@@ -744,20 +744,20 @@ static int IecPrint_Double(double value, char *buffer, size_t maxsize, int notnu
 	}
 }
 
-static int IecPrint_OffsetSign(enum naviOffsetSign_t sign, char *buffer,
+static int IecPrint_OffsetSign(enum naviOfsSign_t sign, char *buffer,
 	size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
 		switch (sign)
 		{
-		case _North:
+		case naviOfsSign_North:
 			return snprintf(buffer, maxsize, "N");
-		case _South:
+		case naviOfsSign_South:
 			return snprintf(buffer, maxsize, "S");
-		case _East:
+		case naviOfsSign_East:
 			return snprintf(buffer, maxsize, "E");
-		case _West:
+		case naviOfsSign_West:
 			return snprintf(buffer, maxsize, "W");
 		}
 
@@ -829,9 +829,9 @@ static int IecPrint_Status(enum naviStatus_t status, char *buffer,
 {
 	switch (status)
 	{
-	case _DataValid:
+	case naviStatus_DataValid:
 		return snprintf(buffer, maxsize, "A");
-	case _DataInvalid:
+	case naviStatus_DataInvalid:
 		return snprintf(buffer, maxsize, "V");
 	}
 
@@ -843,17 +843,17 @@ static int IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
 {
 	switch (mi)
 	{
-	case _Autonomous:
+	case naviModeIndicator_Autonomous:
 		return snprintf(buffer, maxsize, "A");
-	case _Differential:
+	case naviModeIndicator_Differential:
 		return snprintf(buffer, maxsize, "D");
-	case _Estimated:
+	case naviModeIndicator_Estimated:
 		return snprintf(buffer, maxsize, "E");
-	case _ManualInput:
+	case naviModeIndicator_ManualInput:
 		return snprintf(buffer, maxsize, "M");
-	case _Simulator:
+	case naviModeIndicator_Simulator:
 		return snprintf(buffer, maxsize, "S");
-	case _DataNotValid:
+	case naviModeIndicator_DataNotValid:
 		return snprintf(buffer, maxsize, "N");
 	}
 
@@ -874,31 +874,31 @@ static int IecPrint_ModeIndicatorArray(const enum naviModeIndicator_t mi[],
 		{
 			switch (mi[i])
 			{
-			case _Autonomous:
+			case naviModeIndicator_Autonomous:
 				(void)strncat(buffer, "A", maxsize);
 				break;
-			case _Differential:
+			case naviModeIndicator_Differential:
 				(void)strncat(buffer, "D", maxsize);
 				break;
-			case _Estimated:
+			case naviModeIndicator_Estimated:
 				(void)strncat(buffer, "E", maxsize);
 				break;
-			case _ManualInput:
+			case naviModeIndicator_ManualInput:
 				(void)strncat(buffer, "M", maxsize);
 				break;
-			case _Simulator:
+			case naviModeIndicator_Simulator:
 				(void)strncat(buffer, "S", maxsize);
 				break;
-			case _DataNotValid:
+			case naviModeIndicator_DataNotValid:
 				(void)strncat(buffer, "N", maxsize);
 				break;
-			case _Precise:
+			case naviModeIndicator_Precise:
 				(void)strncat(buffer, "P", maxsize);
 				break;
-			case _RTKinematic:
+			case naviModeIndicator_RTKinematic:
 				(void)strncat(buffer, "R", maxsize);
 				break;
-			case _FloatRTK:
+			case naviModeIndicator_FloatRTK:
 				(void)strncat(buffer, "F", maxsize);
 				break;
 			default:

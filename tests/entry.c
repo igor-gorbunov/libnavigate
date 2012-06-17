@@ -63,13 +63,13 @@ int main()
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_LATOFFSET |
 		DTM_VALID_LONOFFSET | DTM_VALID_ALTITUDEOFFSET |
 		DTM_VALID_REFERENCEDATUM;
-	dtm.ld = _UserDefined;
+	dtm.ld = naviDatum_UserDefined;
 	dtm.latofs.offset = 2.4366;
-	dtm.latofs.offsign = _North;
+	dtm.latofs.sign = naviOfsSign_North;
 	dtm.lonofs.offset = 3.81825;
-	dtm.lonofs.offsign = _West;
+	dtm.lonofs.sign = naviOfsSign_West;
 	dtm.altoffset = 3.446;
-	dtm.rd = _WGS84;
+	dtm.rd = naviDatum_WGS84;
 
 	result = IecComposeMessage(naviSentence_DTM, &dtm, buffer + msglength,
 		sizeof(buffer) - msglength);
@@ -86,15 +86,15 @@ int main()
 	gll.tid = naviTalkerId_SN;
 	gll.vfields = GLL_VALID_LATITUDE | GLL_VALID_LONGITUDE | GLL_VALID_UTC;
 	gll.latitude.offset = 0.02;
-	gll.latitude.offsign = _North;
+	gll.latitude.sign = naviOfsSign_North;
 	gll.longitude.offset = 0.00000000999;
-	gll.longitude.offsign = _East;
+	gll.longitude.sign = naviOfsSign_East;
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18;
 	gll.utc.msec = 4;
-	gll.status = _DataValid;
-	gll.mi = _Autonomous;
+	gll.status = naviStatus_DataValid;
+	gll.mi = naviModeIndicator_Autonomous;
 
 	result = IecComposeMessage(naviSentence_GLL, &gll, buffer + msglength,
 		sizeof(buffer) - msglength);
@@ -118,11 +118,11 @@ int main()
 	gns.utc.sec = 0;
 	gns.utc.msec = 0;
 	gns.latitude.offset = 60.;
-	gns.latitude.offsign = _North;
+	gns.latitude.sign = naviOfsSign_North;
 	gns.longitude.offset = 30.;
-	gns.longitude.offsign = _East;
-	gns.mi[0] = _Autonomous;
-	gns.mi[1] = _Differential;
+	gns.longitude.sign = naviOfsSign_East;
+	gns.mi[0] = naviModeIndicator_Autonomous;
+	gns.mi[1] = naviModeIndicator_Differential;
 	gns.totalsats = 4;
 	gns.hdop = 2.3;
 	gns.antaltitude = 2.003;
@@ -149,19 +149,19 @@ int main()
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39;
 	rmc.utc.msec = 980;
-	rmc.status = _DataInvalid;
+	rmc.status = naviStatus_DataInvalid;
 	rmc.latitude.offset = 74.64772882;
-	rmc.latitude.offsign = _South;
+	rmc.latitude.sign = naviOfsSign_South;
 	rmc.longitude.offset = 132.0000333;
-	rmc.longitude.offsign = _East;
+	rmc.longitude.sign = naviOfsSign_East;
 	rmc.speed = 1.03553;
 	rmc.courseTrue = 180.2112;
 	rmc.day = 18;
 	rmc.month = 3;
 	rmc.year = 2012;
 	rmc.magnetic.offset = 23.011;
-	rmc.magnetic.offsign = _East;
-	rmc.mi = _Estimated;
+	rmc.magnetic.sign = naviOfsSign_East;
+	rmc.mi = naviModeIndicator_Estimated;
 
 	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
 		sizeof(buffer) - msglength);
@@ -195,7 +195,7 @@ int main()
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;
 	vtg.speed = 1.023;
-	vtg.mi = _Simulator;
+	vtg.mi = naviModeIndicator_Simulator;
 
 	result = IecComposeMessage(naviSentence_VTG, &vtg, buffer + msglength,
 		sizeof(buffer) - msglength);

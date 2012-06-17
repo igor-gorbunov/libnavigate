@@ -209,75 +209,102 @@ enum naviTalkerId_t
 //
 enum naviDatum_t
 {
-	_WGS84 = 0,
-	_WGS72 = 1,
-	_SGS85 = 2,
-	_PE90 = 3,
-	_UserDefined = 4
+	naviDatum_Undefined = -1,	// unefined or unsupported datum
+
+	naviDatum_WGS84 = 0,
+	naviDatum_WGS72 = 1,
+	naviDatum_SGS85 = 2,
+	naviDatum_PE90 = 3,
+	naviDatum_UserDefined = 4
 };
 
-enum naviOffsetSign_t
+//
+// Local datum subdivision (from IHO Publication S-60, App. B and C)
+//
+enum naviLocalDatumSub_t
 {
-	_North = 0, // North
-	_South = 1,	// South
-	_East = 2,	// East
-	_West = 3	// West
+	naviLocalDatumSub_Undefined = -1	// unefined or unsupported local datum
 };
 
+//
+// Status of PVT solution
+//
 enum naviStatus_t
 {
-	_DataValid = 0,		// A = data valid
-	_DataInvalid = 1	// V = data invalid
+	naviStatus_Undefined = -1,	// unefined or unsupported offset status
+
+	naviStatus_DataValid = 0,	// A = data valid
+	naviStatus_DataInvalid = 1	// V = data invalid
 };
 
+//
+// Positioning system Mode Indicator
+//
 enum naviModeIndicator_t
 {
+	// Unefined or unsupported Mode Indicator
+	naviModeIndicator_Undefined = -1,
+
 	// Satellite system used in non-differential mode in position fix
-	_Autonomous = 0,
+	naviModeIndicator_Autonomous = 0,
 
 	// Satellite sysytem used in differential mode in position fix
-	_Differential = 1,
+	naviModeIndicator_Differential = 1,
 
 	// Estimated (dead reckoning) mode
-	_Estimated = 2,
+	naviModeIndicator_Estimated = 2,
 
 	// Manual input mode
-	_ManualInput = 3,
+	naviModeIndicator_ManualInput = 3,
 
 	// Simulator mode
-	_Simulator = 4,
+	naviModeIndicator_Simulator = 4,
 
 	// No fix. Satellite system not used in position fix, or fix not valid
-	_DataNotValid = 5,
+	naviModeIndicator_DataNotValid = 5,
 
 	//
 	// Additions to GNS message
 
 	// Satellite system used in precision mode
-	_Precise = 6,
+	naviModeIndicator_Precise = 6,
 
 	// Satellite system used in Real Time Kinematic mode with fixed integers
-	_RTKinematic = 7,
+	naviModeIndicator_RTKinematic = 7,
 
 	// Satellite system used in Real Time Kinematic mode with
 	// floating integers
-	_FloatRTK = 8
+	naviModeIndicator_FloatRTK = 8
 };
 
+//
+// Holds UTC time
+//
 struct naviUtc_t
 {
 	int hour, min, sec, msec;
 };
 
-struct naviOffset_t
+//
+// Offset sign
+//
+enum naviOfsSign_t
 {
-	double offset;					// degrees or minutes
-	enum naviOffsetSign_t offsign;	// N/S or E/W
+	naviOfsSign_Undefined = -1,	// unefined or unsupported offset sign
+
+	naviOfsSign_North = 0,	// North
+	naviOfsSign_South = 1,	// South
+	naviOfsSign_East = 2,	// East
+	naviOfsSign_West = 3	// West
 };
 
-enum naviLocalDatumSub_t
+//
+// Holds positioning or offset data
+//
+struct naviOffset_t
 {
-	_ToBeDefined
+	double offset;				// degrees or minutes
+	enum naviOfsSign_t sign;	// N/S or E/W
 };
 
 //	// Waypoint arrival alarm
