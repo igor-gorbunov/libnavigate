@@ -132,12 +132,12 @@ enum naviTalkerId_t
 	naviTalkerId_Undefined = -1,	// unefined or unsupported talker id
 
 	// Heading/track controller (autopilot)
-	_AG = 0,	// general
-	_AP = 1,	// magnetic
+	naviTalkerId_AG = 0,	// general
+	naviTalkerId_AP = 1,	// magnetic
 	// Automatic identification system
-	_AI = 2,
+	naviTalkerId_AI = 2,
 	// Communications:
-	_CD = 3,	// digital selective calling (DSC)
+	naviTalkerId_CD = 3,	// digital selective calling (DSC)
 	_CR = 4,	// data receiver
 	_CS = 5,	// satellite
 	_CT = 6,	// radio-telephone (MF/HF)
