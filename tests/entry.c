@@ -36,7 +36,7 @@ int main()
 
 	msglength = 0;
 
-	zda.tid = _GL;
+	zda.tid = naviTalkerId_GL;
 	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DAY | ZDA_VALID_MONTH |
 		ZDA_VALID_YEAR | ZDA_VALID_LOCALZONE;
 	zda.utc.hour = 8;
@@ -59,7 +59,7 @@ int main()
 		result = 0;
 	}
 
-	dtm.tid = _GP;
+	dtm.tid = naviTalkerId_GP;
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_LATOFFSET |
 		DTM_VALID_LONOFFSET | DTM_VALID_ALTITUDEOFFSET |
 		DTM_VALID_REFERENCEDATUM;
@@ -83,7 +83,7 @@ int main()
 		result = 0;
 	}
 
-	gll.tid = _SN;
+	gll.tid = naviTalkerId_SN;
 	gll.vfields = GLL_VALID_LATITUDE | GLL_VALID_LONGITUDE | GLL_VALID_UTC;
 	gll.latitude.offset = 0.02;
 	gll.latitude.offsign = _North;
@@ -108,7 +108,7 @@ int main()
 		result = 0;
 	}
 
-	gns.tid = _GL;
+	gns.tid = naviTalkerId_GL;
 	gns.vfields = GNS_VALID_UTC | GNS_VALID_LATITUDE | GNS_VALID_LONGITUDE |
 		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
 		GNS_VALID_HDOP  | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
@@ -142,7 +142,7 @@ int main()
 		result = 0;
 	}
 
-	rmc.tid = _GL;
+	rmc.tid = naviTalkerId_GL;
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_LATITUDE |
 		RMC_VALID_LONGITUDE | RMC_VALID_DATE;
 	rmc.utc.hour = 9;
@@ -190,7 +190,7 @@ int main()
 		result = 0;
 	}
 
-	vtg.tid = _VW;
+	vtg.tid = naviTalkerId_VW;
 	vtg.vfields = VTG_VALID_COURSETRUE  | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;

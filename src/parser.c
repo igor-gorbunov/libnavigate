@@ -363,212 +363,212 @@ static int IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid)
 {
 	if (strncmp("AG", stid, 2) == 0)
 	{
-		*tid = _AG;
+		*tid = naviTalkerId_AG;
 		return 0;
 	}
 	else if (strncmp("AP", stid, 2) == 0)
 	{
-		*tid = _AP;
+		*tid = naviTalkerId_AP;
 		return 0;
 	}
 	else if (strncmp("AI", stid, 2) == 0)
 	{
-		*tid = _AI;
+		*tid = naviTalkerId_AI;
 		return 0;
 	}
 	else if (strncmp("CD", stid, 2) == 0)
 	{
-		*tid = _CD;
+		*tid = naviTalkerId_CD;
 		return 0;
 	}
 	else if (strncmp("CR", stid, 2) == 0)
 	{
-		*tid = _CR;
+		*tid = naviTalkerId_CR;
 		return 0;
 	}
 	else if (strncmp("CS", stid, 2) == 0)
 	{
-		*tid = _CS;
+		*tid = naviTalkerId_CS;
 		return 0;
 	}
 	else if (strncmp("CT", stid, 2) == 0)
 	{
-		*tid = _CT;
+		*tid = naviTalkerId_CT;
 		return 0;
 	}
 	else if (strncmp("CV", stid, 2) == 0)
 	{
-		*tid = _CV;
+		*tid = naviTalkerId_CV;
 		return 0;
 	}
 	else if (strncmp("CX", stid, 2) == 0)
 	{
-		*tid = _CX;
+		*tid = naviTalkerId_CX;
 		return 0;
 	}
 	else if (strncmp("DE", stid, 2) == 0)
 	{
-		*tid = _DE;
+		*tid = naviTalkerId_DE;
 		return 0;
 	}
 	else if (strncmp("DF", stid, 2) == 0)
 	{
-		*tid = _DF;
+		*tid = naviTalkerId_DF;
 		return 0;
 	}
 	else if (strncmp("EC", stid, 2) == 0)
 	{
-		*tid = _EC;
+		*tid = naviTalkerId_EC;
 		return 0;
 	}
 	else if (strncmp("EI", stid, 2) == 0)
 	{
-		*tid = _EI;
+		*tid = naviTalkerId_EI;
 		return 0;
 	}
 	else if (strncmp("EP", stid, 2) == 0)
 	{
-		*tid = _EP;
+		*tid = naviTalkerId_EP;
 		return 0;
 	}
 	else if (strncmp("ER", stid, 2) == 0)
 	{
-		*tid = _ER;
+		*tid = naviTalkerId_ER;
 		return 0;
 	}
 	else if (strncmp("GA", stid, 2) == 0)
 	{
-		*tid = _GA;
+		*tid = naviTalkerId_GA;
 		return 0;
 	}
 	else if (strncmp("GP", stid, 2) == 0)
 	{
-		*tid = _GP;
+		*tid = naviTalkerId_GP;
 		return 0;
 	}
 	else if (strncmp("GL", stid, 2) == 0)
 	{
-		*tid = _GL;
+		*tid = naviTalkerId_GL;
 		return 0;
 	}
 	else if (strncmp("GN", stid, 2) == 0)
 	{
-		*tid = _GN;
+		*tid = naviTalkerId_GN;
 		return 0;
 	}
 	else if (strncmp("GW", stid, 2) == 0)
 	{
-		*tid = _GW;
+		*tid = naviTalkerId_GW;
 		return 0;
 	}
 	else if (strncmp("HC", stid, 2) == 0)
 	{
-		*tid = _HC;
+		*tid = naviTalkerId_HC;
 		return 0;
 	}
 	else if (strncmp("HE", stid, 2) == 0)
 	{
-		*tid = _HE;
+		*tid = naviTalkerId_HE;
 		return 0;
 	}
 	else if (strncmp("HN", stid, 2) == 0)
 	{
-		*tid = _HN;
+		*tid = naviTalkerId_HN;
 		return 0;
 	}
 	else if (strncmp("II", stid, 2) == 0)
 	{
-		*tid = _II;
+		*tid = naviTalkerId_II;
 		return 0;
 	}
 	else if (strncmp("IN", stid, 2) == 0)
 	{
-		*tid = _IN;
+		*tid = naviTalkerId_IN;
 		return 0;
 	}
 	else if (strncmp("LC", stid, 2) == 0)
 	{
-		*tid = _LC;
+		*tid = naviTalkerId_LC;
 		return 0;
 	}
 	else if (strncmp("P", stid, 1) == 0)
 	{
-		*tid = _P;
+		*tid = naviTalkerId_P;
 		return 0;
 	}
 	else if (strncmp("RA", stid, 2) == 0)
 	{
-		*tid = _RA;
+		*tid = naviTalkerId_RA;
 		return 0;
 	}
 	else if (strncmp("SD", stid, 2) == 0)
 	{
-		*tid = _SD;
+		*tid = naviTalkerId_SD;
 		return 0;
 	}
 	else if (strncmp("SN", stid, 2) == 0)
 	{
-		*tid = _SN;
+		*tid = naviTalkerId_SN;
 		return 0;
 	}
 	else if (strncmp("SS", stid, 2) == 0)
 	{
-		*tid = _SS;
+		*tid = naviTalkerId_SS;
 		return 0;
 	}
 	else if (strncmp("TI", stid, 2) == 0)
 	{
-		*tid = _TI;
+		*tid = naviTalkerId_TI;
 		return 0;
 	}
 	else if (strncmp("VD", stid, 2) == 0)
 	{
-		*tid = _VD;
+		*tid = naviTalkerId_VD;
 		return 0;
 	}
 	else if (strncmp("VM", stid, 2) == 0)
 	{
-		*tid = _VM;
+		*tid = naviTalkerId_VM;
 		return 0;
 	}
 	else if (strncmp("VW", stid, 2) == 0)
 	{
-		*tid = _VW;
+		*tid = naviTalkerId_VW;
 		return 0;
 	}
 	else if (strncmp("VR", stid, 2) == 0)
 	{
-		*tid = _VR;
+		*tid = naviTalkerId_VR;
 		return 0;
 	}
 	else if (strncmp("YX", stid, 2) == 0)
 	{
-		*tid = _YX;
+		*tid = naviTalkerId_YX;
 		return 0;
 	}
 	else if (strncmp("ZA", stid, 2) == 0)
 	{
-		*tid = _ZA;
+		*tid = naviTalkerId_ZA;
 		return 0;
 	}
 	else if (strncmp("ZC", stid, 2) == 0)
 	{
-		*tid = _ZC;
+		*tid = naviTalkerId_ZC;
 		return 0;
 	}
 	else if (strncmp("ZQ", stid, 2) == 0)
 	{
-		*tid = _ZQ;
+		*tid = naviTalkerId_ZQ;
 		return 0;
 	}
 	else if (strncmp("ZV", stid, 2) == 0)
 	{
-		*tid = _ZV;
+		*tid = naviTalkerId_ZV;
 		return 0;
 	}
 	else if (strncmp("WI", stid, 2) == 0)
 	{
-		*tid = _WI;
+		*tid = naviTalkerId_WI;
 		return 0;
 	}
 	else

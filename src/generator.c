@@ -520,89 +520,89 @@ static int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
 {
 	switch (tid)
 	{
-	case _AG:
+	case naviTalkerId_AG:
 		return snprintf(buffer, maxsize, "AG");
-	case _AP:
+	case naviTalkerId_AP:
 		return snprintf(buffer, maxsize, "AP");
-	case _AI:
+	case naviTalkerId_AI:
 		return snprintf(buffer, maxsize, "AI");
-	case _CD:
+	case naviTalkerId_CD:
 		return snprintf(buffer, maxsize, "CD");
-	case _CR:
+	case naviTalkerId_CR:
 		return snprintf(buffer, maxsize, "CR");
-	case _CS:
+	case naviTalkerId_CS:
 		return snprintf(buffer, maxsize, "CS");
-	case _CT:
+	case naviTalkerId_CT:
 		return snprintf(buffer, maxsize, "CT");
-	case _CV:
+	case naviTalkerId_CV:
 		return snprintf(buffer, maxsize, "CV");
-	case _CX:
+	case naviTalkerId_CX:
 		return snprintf(buffer, maxsize, "CX");
-	case _DE:
+	case naviTalkerId_DE:
 		return snprintf(buffer, maxsize, "DE");
-	case _DF:
+	case naviTalkerId_DF:
 		return snprintf(buffer, maxsize, "DF");
-	case _EC:
+	case naviTalkerId_EC:
 		return snprintf(buffer, maxsize, "EC");
-	case _EI:
+	case naviTalkerId_EI:
 		return snprintf(buffer, maxsize, "EI");
-	case _EP:
+	case naviTalkerId_EP:
 		return snprintf(buffer, maxsize, "EP");
-	case _ER:
+	case naviTalkerId_ER:
 		return snprintf(buffer, maxsize, "ER");
-	case _GA:
+	case naviTalkerId_GA:
 		return snprintf(buffer, maxsize, "GA");
-	case _GP:
+	case naviTalkerId_GP:
 		return snprintf(buffer, maxsize, "GP");
-	case _GL:
+	case naviTalkerId_GL:
 		return snprintf(buffer, maxsize, "GL");
-	case _GN:
+	case naviTalkerId_GN:
 		return snprintf(buffer, maxsize, "GN");
-	case _GW:
+	case naviTalkerId_GW:
 		return snprintf(buffer, maxsize, "GW");
-	case _HC:
+	case naviTalkerId_HC:
 		return snprintf(buffer, maxsize, "HC");
-	case _HE:
+	case naviTalkerId_HE:
 		return snprintf(buffer, maxsize, "HE");
-	case _HN:
+	case naviTalkerId_HN:
 		return snprintf(buffer, maxsize, "HN");
-	case _II:
+	case naviTalkerId_II:
 		return snprintf(buffer, maxsize, "II");
-	case _IN:
+	case naviTalkerId_IN:
 		return snprintf(buffer, maxsize, "IN");
-	case _LC:
+	case naviTalkerId_LC:
 		return snprintf(buffer, maxsize, "LC");
-	case _P:
+	case naviTalkerId_P:
 		return snprintf(buffer, maxsize, "P");
-	case _RA:
+	case naviTalkerId_RA:
 		return snprintf(buffer, maxsize, "RA");
-	case _SD:
+	case naviTalkerId_SD:
 		return snprintf(buffer, maxsize, "SD");
-	case _SN:
+	case naviTalkerId_SN:
 		return snprintf(buffer, maxsize, "SN");
-	case _SS:
+	case naviTalkerId_SS:
 		return snprintf(buffer, maxsize, "SS");
-	case _TI:
+	case naviTalkerId_TI:
 		return snprintf(buffer, maxsize, "TI");
-	case _VD:
+	case naviTalkerId_VD:
 		return snprintf(buffer, maxsize, "VD");
-	case _VM:
+	case naviTalkerId_VM:
 		return snprintf(buffer, maxsize, "VM");
-	case _VW:
+	case naviTalkerId_VW:
 		return snprintf(buffer, maxsize, "VW");
-	case _VR:
+	case naviTalkerId_VR:
 		return snprintf(buffer, maxsize, "VR");
-	case _YX:
+	case naviTalkerId_YX:
 		return snprintf(buffer, maxsize, "YX");
-	case _ZA:
+	case naviTalkerId_ZA:
 		return snprintf(buffer, maxsize, "ZA");
-	case _ZC:
+	case naviTalkerId_ZC:
 		return snprintf(buffer, maxsize, "ZC");
-	case _ZQ:
+	case naviTalkerId_ZQ:
 		return snprintf(buffer, maxsize, "ZQ");
-	case _ZV:
+	case naviTalkerId_ZV:
 		return snprintf(buffer, maxsize, "ZV");
-	case _WI:
+	case naviTalkerId_WI:
 		return snprintf(buffer, maxsize, "WI");
 	}
 

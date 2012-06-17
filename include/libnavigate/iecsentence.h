@@ -138,70 +138,70 @@ enum naviTalkerId_t
 	naviTalkerId_AI = 2,
 	// Communications:
 	naviTalkerId_CD = 3,	// digital selective calling (DSC)
-	_CR = 4,	// data receiver
-	_CS = 5,	// satellite
-	_CT = 6,	// radio-telephone (MF/HF)
-	_CV = 7,	// radio-telephone (VHF)
-	_CX = 8,	// scanning receiver
+	naviTalkerId_CR = 4,	// data receiver
+	naviTalkerId_CS = 5,	// satellite
+	naviTalkerId_CT = 6,	// radio-telephone (MF/HF)
+	naviTalkerId_CV = 7,	// radio-telephone (VHF)
+	naviTalkerId_CX = 8,	// scanning receiver
 	// DECCA navigator
-	_DE = 9,
+	naviTalkerId_DE = 9,
 	// Direction finder
-	_DF = 10,
+	naviTalkerId_DF = 10,
 	// Electronic chart systems (ECS)
-	_EC = 11,
+	naviTalkerId_EC = 11,
 	// Electronic chart display and information system (ECDIS)
-	_EI = 12,
+	naviTalkerId_EI = 12,
 	// Emergency position indicating radio beacon (EPIRB)
-	_EP = 13,
+	naviTalkerId_EP = 13,
 	// Engine room monitoring systems
-	_ER = 14,
+	naviTalkerId_ER = 14,
 	// Galileo receiver
-	_GA = 15,
+	naviTalkerId_GA = 15,
 	// Global positioning system (GPS)
-	_GP = 16,
+	naviTalkerId_GP = 16,
 	// GLONASS receiver
-	_GL = 17,
+	naviTalkerId_GL = 17,
 	// Global navigation satellite system (GNSS)
-	_GN = 18,
+	naviTalkerId_GN = 18,
 	// SBAS receiver
-	_GW = 19,
+	naviTalkerId_GW = 19,
 	// Heading sensors:
-	_HC = 20,	// compass, magnetic
-	_HE = 21,	// gyro, north seeking
-	_HN = 22,	// gyro, non-north seeking
+	naviTalkerId_HC = 20,	// compass, magnetic
+	naviTalkerId_HE = 21,	// gyro, north seeking
+	naviTalkerId_HN = 22,	// gyro, non-north seeking
 	// Integrated instrumentation
-	_II = 23,
+	naviTalkerId_II = 23,
 	// Integrated navigation
-	_IN = 24,
+	naviTalkerId_IN = 24,
 	// LORAN: LORAN-C
-	_LC = 25,
+	naviTalkerId_LC = 25,
 	// Proprietary code
-	_P = 26,
+	naviTalkerId_P = 26,
 	// Radar and/or radar plotting
-	_RA = 27,
+	naviTalkerId_RA = 27,
 	// Sounder, depth
-	_SD = 28,
+	naviTalkerId_SD = 28,
 	// Electronic positioning system, other/general
-	_SN = 29,
+	naviTalkerId_SN = 29,
 	// Sounder, scanning
-	_SS = 30,
+	naviTalkerId_SS = 30,
 	// Turn rate indicator
-	_TI = 31,
+	naviTalkerId_TI = 31,
 	// Velocity sensors:
-	_VD = 32,	// Doppler, other/general
-	_VM = 33,	// speed log, water, magnetic
-	_VW = 34,	// speed log, water, mechanical
+	naviTalkerId_VD = 32,	// Doppler, other/general
+	naviTalkerId_VM = 33,	// speed log, water, magnetic
+	naviTalkerId_VW = 34,	// speed log, water, mechanical
 	// Voyage data recorder
-	_VR = 35,
+	naviTalkerId_VR = 35,
 	// Transducer
-	_YX = 36,
+	naviTalkerId_YX = 36,
 	// Timekeepers, time/date
-	_ZA = 37,	// atomic clock
-	_ZC = 38,	// chronometer
-	_ZQ = 39,	// quartz
-	_ZV = 40,	// radio update
+	naviTalkerId_ZA = 37,	// atomic clock
+	naviTalkerId_ZC = 38,	// chronometer
+	naviTalkerId_ZQ = 39,	// quartz
+	naviTalkerId_ZV = 40,	// radio update
 	// Weather instruments
-	_WI = 41
+	naviTalkerId_WI = 41
 };
 
 //
