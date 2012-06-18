@@ -7,6 +7,7 @@ Todo:
       representation
     * generator and parser must return error status and number of
       proceeded characters stored to additional argument
+    * switch temporarily to EN_US locale while parsing doubles with strtod
 
 end of file TODO
 
