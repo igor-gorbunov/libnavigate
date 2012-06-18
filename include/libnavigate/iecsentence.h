@@ -44,7 +44,8 @@ enum naviError_t
 	naviError_MsgExceedsMaxSize = 1,	// message too long
 	naviError_CrcEror = 2,				// crc error
 	naviError_NotEnoughBuffer = 3,		// not enough space in output buffer
-	naviError_MsgNotSupported = 4		// message type not supported
+	naviError_MsgNotSupported = 4,		// message type not supported
+	naviError_NoValidMessage = 5		// no valid message in buffer
 };
 
 //

@@ -35,35 +35,35 @@ static size_t IecScan_CheckSum(char *buffer, size_t maxsize);
 
 //
 // Looks up Talker ID
-static size_t IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid);
+static enum naviTalkerId_t IecLookupTalkerId(char *buffer, size_t *nmread);
 
 //
 // Looks up sentence formatter
-static size_t IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype);
+static enum naviSentence_t IecLookupSentenceFormatter(char *buffer, size_t *nmread);
 
 //
 // Parses DTM message
-static size_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize);
+static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses GLL message
-static size_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize);
+static enum naviError_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses GNS message
-static size_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize);
+static enum naviError_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses RMC message
-static size_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize);
+static enum naviError_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses VTG message
-static size_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize);
+static enum naviError_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parses ZDA message
-static size_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize);
+static enum naviError_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize);
 
 //
 // Parser of IEC 61162-1 (2000-07) messages
@@ -81,7 +81,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	for (som = 0; buffer[som] != '$' && som < maxsize; som++) { }
 	if (som >= maxsize)
 	{	// No valid message
-		return -EBADMSG;
+		return naviError_NoValidMessage;
 	}
 
 	// Skip up to end of the message
@@ -94,17 +94,20 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	}
 	if (eom >= maxsize)
 	{	// No valid message
-		return -EBADMSG;
+		return naviError_NoValidMessage;
 	}
 
-	int r;
+	// At least read a message
+	*nmread = eom;
+
+	size_t result;
 
 	//
 	// Check that the message is not broken
 	//
-	if ((r = IecScan_CheckSum(buffer + som, maxsize - (som + eom))) < 0)
+	if ((result = IecScan_CheckSum(buffer + som, maxsize - (som + eom))) < 0)
 	{
-		return r;
+		return naviError_CrcEror;
 	}
 
 	//
@@ -112,10 +115,10 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	//
 	enum naviTalkerId_t tid;
 
-	if ((r = IecScan_AdressField(buffer + som + 1, maxsize - (som + eom + 1),
-		&tid, msgtype)) < 0)
+	if (IecScan_AdressField(buffer + som + 1, maxsize - (som + eom + 1),
+			&tid, msgtype) < 0)
 	{
-		return r;
+		return naviError_Undefined;
 	}
 
 	//
@@ -144,7 +147,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_DTM:
 		if (maxsize < sizeof(struct dtm_t))
 		{
-			return -EMSGSIZE;
+			return naviError_NotEnoughBuffer;
 		}
 		((struct dtm_t *)msg)->tid = tid;
 		return IecParse_DTM((struct dtm_t *)msg, buffer + som + 6,
@@ -157,7 +160,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_GLL:
 		if (maxsize < sizeof(struct gll_t))
 		{
-			return -EMSGSIZE;
+			return naviError_NotEnoughBuffer;
 		}
 		((struct gll_t *)msg)->tid = tid;
 		return IecParse_GLL((struct gll_t *)msg, buffer + som + 6,
@@ -165,7 +168,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_GNS:
 		if (maxsize < sizeof(struct gns_t))
 		{
-			return -EMSGSIZE;
+			return naviError_NotEnoughBuffer;
 		}
 		((struct gns_t *)msg)->tid = tid;
 		return IecParse_GNS((struct gns_t *)msg, buffer + som + 6,
@@ -195,7 +198,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_RMC:
 		if (maxsize < sizeof(struct rmc_t))
 		{
-			return -EMSGSIZE;
+			return naviError_NotEnoughBuffer;
 		}
 		((struct rmc_t *)msg)->tid = tid;
 		return IecParse_RMC((struct rmc_t *)msg, buffer + som + 6,
@@ -220,7 +223,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_VTG:
 		if (maxsize < sizeof(struct vtg_t))
 		{
-			return -EMSGSIZE;
+			return naviError_NotEnoughBuffer;
 		}
 		((struct vtg_t *)msg)->tid = tid;
 		return IecParse_VTG((struct vtg_t *)msg, buffer + som + 6,
@@ -235,7 +238,7 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 	case naviSentence_ZDA:
 		if (maxsize < sizeof(struct zda_t))
 		{
-			return -EMSGSIZE;
+			return naviError_NotEnoughBuffer;
 		}
 		((struct zda_t *)msg)->tid = tid;
 		return IecParse_ZDA((struct zda_t *)msg, buffer + som + 6,
@@ -255,76 +258,50 @@ enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
 static size_t IecScan_AdressField(char *buffer, size_t maxsize,
 	enum naviTalkerId_t *tid, enum naviSentence_t *msgtype)
 {
-	int result;
-	char stid[3], sfmt[4];
+	size_t result, nmread;
 
-	if (maxsize < 5)
-	{
-		return -EMSGSIZE;
-	}
-
-	stid[0] = buffer[0];
-
-	if (stid[0] == 'P')
-	{
-		stid[1] = '\0';
-
-		sfmt[0] = buffer[1];
-		sfmt[1] = buffer[2];
-		sfmt[2] = buffer[3];
-		sfmt[3] = '0';
-	}
-	else
-	{
-		stid[1] = buffer[1];
-		stid[2] = '\0';
-
-		sfmt[0] = buffer[2];
-		sfmt[1] = buffer[3];
-		sfmt[2] = buffer[4];
-		sfmt[3] = '\0';
-	}
-
-	(void)IecLookupTalkerId(stid, tid);
-	result = IecLookupSentenceFormatter(sfmt, msgtype);
+	*tid = IecLookupTalkerId(buffer, &nmread);
+	result = nmread;
+	*msgtype = IecLookupSentenceFormatter(buffer + result, &nmread);
+	result += nmread;
 
 	return result;
 }
 
 // DTM
-static size_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
+static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
 {
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // GLL
-static size_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize)
+static enum naviError_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize)
 {
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // GNS
-static size_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize)
+static enum naviError_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize)
 {
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // RMC
-static size_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize)
+static enum naviError_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize)
 {
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // VTG
-static size_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize)
+static enum naviError_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize)
 {
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // ZDA
-static size_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize)
+static enum naviError_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize)
 {
-	return -ENOSYS;
+	return naviError_MsgNotSupported;
 }
 
 // Scan checksum
@@ -361,595 +338,485 @@ static size_t IecScan_CheckSum(char *buffer, size_t maxsize)
 }
 
 // Looks up Talker ID
-static size_t IecLookupTalkerId(char *stid, enum naviTalkerId_t *tid)
+static enum naviTalkerId_t IecLookupTalkerId(char *buffer, size_t *nmread)
 {
-	if (strncmp("AG", stid, 2) == 0)
+	*nmread = 2;
+
+	if (strncmp("AG", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_AG;
-		return 0;
+		return naviTalkerId_AG;
 	}
-	else if (strncmp("AP", stid, 2) == 0)
+	else if (strncmp("AP", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_AP;
-		return 0;
+		return naviTalkerId_AP;
 	}
-	else if (strncmp("AI", stid, 2) == 0)
+	else if (strncmp("AI", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_AI;
-		return 0;
+		return naviTalkerId_AI;
 	}
-	else if (strncmp("CD", stid, 2) == 0)
+	else if (strncmp("CD", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_CD;
-		return 0;
+		return naviTalkerId_CD;
 	}
-	else if (strncmp("CR", stid, 2) == 0)
+	else if (strncmp("CR", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_CR;
-		return 0;
+		return naviTalkerId_CR;
 	}
-	else if (strncmp("CS", stid, 2) == 0)
+	else if (strncmp("CS", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_CS;
-		return 0;
+		return naviTalkerId_CS;
 	}
-	else if (strncmp("CT", stid, 2) == 0)
+	else if (strncmp("CT", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_CT;
-		return 0;
+		return naviTalkerId_CT;
 	}
-	else if (strncmp("CV", stid, 2) == 0)
+	else if (strncmp("CV", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_CV;
-		return 0;
+		return naviTalkerId_CV;
 	}
-	else if (strncmp("CX", stid, 2) == 0)
+	else if (strncmp("CX", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_CX;
-		return 0;
+		return naviTalkerId_CX;
 	}
-	else if (strncmp("DE", stid, 2) == 0)
+	else if (strncmp("DE", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_DE;
-		return 0;
+		return naviTalkerId_DE;
 	}
-	else if (strncmp("DF", stid, 2) == 0)
+	else if (strncmp("DF", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_DF;
-		return 0;
+		return naviTalkerId_DF;
 	}
-	else if (strncmp("EC", stid, 2) == 0)
+	else if (strncmp("EC", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_EC;
-		return 0;
+		return naviTalkerId_EC;
 	}
-	else if (strncmp("EI", stid, 2) == 0)
+	else if (strncmp("EI", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_EI;
-		return 0;
+		return naviTalkerId_EI;
 	}
-	else if (strncmp("EP", stid, 2) == 0)
+	else if (strncmp("EP", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_EP;
-		return 0;
+		return naviTalkerId_EP;
 	}
-	else if (strncmp("ER", stid, 2) == 0)
+	else if (strncmp("ER", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_ER;
-		return 0;
+		return naviTalkerId_ER;
 	}
-	else if (strncmp("GA", stid, 2) == 0)
+	else if (strncmp("GA", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_GA;
-		return 0;
+		return naviTalkerId_GA;
 	}
-	else if (strncmp("GP", stid, 2) == 0)
+	else if (strncmp("GP", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_GP;
-		return 0;
+		return naviTalkerId_GP;
 	}
-	else if (strncmp("GL", stid, 2) == 0)
+	else if (strncmp("GL", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_GL;
-		return 0;
+		return naviTalkerId_GL;
 	}
-	else if (strncmp("GN", stid, 2) == 0)
+	else if (strncmp("GN", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_GN;
-		return 0;
+		return naviTalkerId_GN;
 	}
-	else if (strncmp("GW", stid, 2) == 0)
+	else if (strncmp("GW", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_GW;
-		return 0;
+		return naviTalkerId_GW;
 	}
-	else if (strncmp("HC", stid, 2) == 0)
+	else if (strncmp("HC", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_HC;
-		return 0;
+		return naviTalkerId_HC;
 	}
-	else if (strncmp("HE", stid, 2) == 0)
+	else if (strncmp("HE", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_HE;
-		return 0;
+		return naviTalkerId_HE;
 	}
-	else if (strncmp("HN", stid, 2) == 0)
+	else if (strncmp("HN", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_HN;
-		return 0;
+		return naviTalkerId_HN;
 	}
-	else if (strncmp("II", stid, 2) == 0)
+	else if (strncmp("II", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_II;
-		return 0;
+		return naviTalkerId_II;
 	}
-	else if (strncmp("IN", stid, 2) == 0)
+	else if (strncmp("IN", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_IN;
-		return 0;
+		return naviTalkerId_IN;
 	}
-	else if (strncmp("LC", stid, 2) == 0)
+	else if (strncmp("LC", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_LC;
-		return 0;
+		return naviTalkerId_LC;
 	}
-	else if (strncmp("P", stid, 1) == 0)
+	else if (strncmp("P", buffer, 1) == 0)
 	{
-		*tid = naviTalkerId_P;
-		return 0;
+		*nmread = 1;
+		return naviTalkerId_P;
 	}
-	else if (strncmp("RA", stid, 2) == 0)
+	else if (strncmp("RA", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_RA;
-		return 0;
+		return naviTalkerId_RA;
 	}
-	else if (strncmp("SD", stid, 2) == 0)
+	else if (strncmp("SD", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_SD;
-		return 0;
+		return naviTalkerId_SD;
 	}
-	else if (strncmp("SN", stid, 2) == 0)
+	else if (strncmp("SN", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_SN;
-		return 0;
+		return naviTalkerId_SN;
 	}
-	else if (strncmp("SS", stid, 2) == 0)
+	else if (strncmp("SS", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_SS;
-		return 0;
+		return naviTalkerId_SS;
 	}
-	else if (strncmp("TI", stid, 2) == 0)
+	else if (strncmp("TI", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_TI;
-		return 0;
+		return naviTalkerId_TI;
 	}
-	else if (strncmp("VD", stid, 2) == 0)
+	else if (strncmp("VD", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_VD;
-		return 0;
+		return naviTalkerId_VD;
 	}
-	else if (strncmp("VM", stid, 2) == 0)
+	else if (strncmp("VM", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_VM;
-		return 0;
+		return naviTalkerId_VM;
 	}
-	else if (strncmp("VW", stid, 2) == 0)
+	else if (strncmp("VW", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_VW;
-		return 0;
+		return naviTalkerId_VW;
 	}
-	else if (strncmp("VR", stid, 2) == 0)
+	else if (strncmp("VR", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_VR;
-		return 0;
+		return naviTalkerId_VR;
 	}
-	else if (strncmp("YX", stid, 2) == 0)
+	else if (strncmp("YX", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_YX;
-		return 0;
+		return naviTalkerId_YX;
 	}
-	else if (strncmp("ZA", stid, 2) == 0)
+	else if (strncmp("ZA", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_ZA;
-		return 0;
+		return naviTalkerId_ZA;
 	}
-	else if (strncmp("ZC", stid, 2) == 0)
+	else if (strncmp("ZC", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_ZC;
-		return 0;
+		return naviTalkerId_ZC;
 	}
-	else if (strncmp("ZQ", stid, 2) == 0)
+	else if (strncmp("ZQ", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_ZQ;
-		return 0;
+		return naviTalkerId_ZQ;
 	}
-	else if (strncmp("ZV", stid, 2) == 0)
+	else if (strncmp("ZV", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_ZV;
-		return 0;
+		return naviTalkerId_ZV;
 	}
-	else if (strncmp("WI", stid, 2) == 0)
+	else if (strncmp("WI", buffer, 2) == 0)
 	{
-		*tid = naviTalkerId_WI;
-		return 0;
+		return naviTalkerId_WI;
 	}
 	else
 	{
-		return -1;
+		return naviTalkerId_Undefined;
 	}
 }
 
 // Looks up sentence formatter
-static size_t IecLookupSentenceFormatter(char *sfmt, enum naviSentence_t *msgtype)
+static enum naviSentence_t IecLookupSentenceFormatter(char *buffer, size_t *nmread)
 {
-	if (strncmp("AAM", sfmt, 3) == 0)
+	*nmread = 3;
+
+	if (strncmp("AAM", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_AAM;
-		return 0;
+		return naviSentence_AAM;
 	}
-	else if (strncmp("ACK", sfmt, 3) == 0)
+	else if (strncmp("ACK", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ACK;
-		return 0;
+		return naviSentence_ACK;
 	}
-	else if (strncmp("ALM", sfmt, 3) == 0)
+	else if (strncmp("ALM", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ALM;
-		return 0;
+		return naviSentence_ALM;
 	}
-	else if (strncmp("ALR", sfmt, 3) == 0)
+	else if (strncmp("ALR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ALR;
-		return 0;
+		return naviSentence_ALR;
 	}
-	else if (strncmp("APB", sfmt, 3) == 0)
+	else if (strncmp("APB", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_APB;
-		return 0;
+		return naviSentence_APB;
 	}
-	else if (strncmp("BEC", sfmt, 3) == 0)
+	else if (strncmp("BEC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_BEC;
-		return 0;
+		return naviSentence_BEC;
 	}
-	else if (strncmp("BOD", sfmt, 3) == 0)
+	else if (strncmp("BOD", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_BOD;
-		return 0;
+		return naviSentence_BOD;
 	}
-	else if (strncmp("BWC", sfmt, 3) == 0)
+	else if (strncmp("BWC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_BWC;
-		return 0;
+		return naviSentence_BWC;
 	}
-	else if (strncmp("BWR", sfmt, 3) == 0)
+	else if (strncmp("BWR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_BWR;
-		return 0;
+		return naviSentence_BWR;
 	}
-	else if (strncmp("BWW", sfmt, 3) == 0)
+	else if (strncmp("BWW", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_BWW;
-		return 0;
+		return naviSentence_BWW;
 	}
-	else if (strncmp("DBT", sfmt, 3) == 0)
+	else if (strncmp("DBT", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DBT;
-		return 0;
+		return naviSentence_DBT;
 	}
-	else if (strncmp("DCN", sfmt, 3) == 0)
+	else if (strncmp("DCN", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DCN;
-		return 0;
+		return naviSentence_DCN;
 	}
-	else if (strncmp("DPT", sfmt, 3) == 0)
+	else if (strncmp("DPT", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DPT;
-		return 0;
+		return naviSentence_DPT;
 	}
-	else if (strncmp("DSC", sfmt, 3) == 0)
+	else if (strncmp("DSC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DSC;
-		return 0;
+		return naviSentence_DSC;
 	}
-	else if (strncmp("DSE", sfmt, 3) == 0)
+	else if (strncmp("DSE", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DSE;
-		return 0;
+		return naviSentence_DSE;
 	}
-	else if (strncmp("DSI", sfmt, 3) == 0)
+	else if (strncmp("DSI", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DSI;
-		return 0;
+		return naviSentence_DSI;
 	}
-	else if (strncmp("DSR", sfmt, 3) == 0)
+	else if (strncmp("DSR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DSR;
-		return 0;
+		return naviSentence_DSR;
 	}
-	else if (strncmp("DTM", sfmt, 3) == 0)
+	else if (strncmp("DTM", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_DTM;
-		return 0;
+		return naviSentence_DTM;
 	}
-	else if (strncmp("FSI", sfmt, 3) == 0)
+	else if (strncmp("FSI", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_FSI;
-		return 0;
+		return naviSentence_FSI;
 	}
-	else if (strncmp("GBS", sfmt, 3) == 0)
+	else if (strncmp("GBS", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GBS;
-		return 0;
+		return naviSentence_GBS;
 	}
-	else if (strncmp("GGA", sfmt, 3) == 0)
+	else if (strncmp("GGA", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GGA;
-		return 0;
+		return naviSentence_GGA;
 	}
-	else if (strncmp("GLC", sfmt, 3) == 0)
+	else if (strncmp("GLC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GLC;
-		return 0;
+		return naviSentence_GLC;
 	}
-	else if (strncmp("GLC", sfmt, 3) == 0)
+	else if (strncmp("GLC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GLC;
-		return 0;
+		return naviSentence_GLC;
 	}
-	else if (strncmp("GNS", sfmt, 3) == 0)
+	else if (strncmp("GNS", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GNS;
-		return 0;
+		return naviSentence_GNS;
 	}
-	else if (strncmp("GRS", sfmt, 3) == 0)
+	else if (strncmp("GRS", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GRS;
-		return 0;
+		return naviSentence_GRS;
 	}
-	else if (strncmp("GSA", sfmt, 3) == 0)
+	else if (strncmp("GSA", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GSA;
-		return 0;
+		return naviSentence_GSA;
 	}
-	else if (strncmp("GST", sfmt, 3) == 0)
+	else if (strncmp("GST", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GST;
-		return 0;
+		return naviSentence_GST;
 	}
-	else if (strncmp("GSV", sfmt, 3) == 0)
+	else if (strncmp("GSV", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_GSV;
-		return 0;
+		return naviSentence_GSV;
 	}
-	else if (strncmp("HDG", sfmt, 3) == 0)
+	else if (strncmp("HDG", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HDG;
-		return 0;
+		return naviSentence_HDG;
 	}
-	else if (strncmp("HDT", sfmt, 3) == 0)
+	else if (strncmp("HDT", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HDT;
-		return 0;
+		return naviSentence_HDT;
 	}
-	else if (strncmp("HMR", sfmt, 3) == 0)
+	else if (strncmp("HMR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HMR;
-		return 0;
+		return naviSentence_HMR;
 	}
-	else if (strncmp("HMS", sfmt, 3) == 0)
+	else if (strncmp("HMS", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HMS;
-		return 0;
+		return naviSentence_HMS;
 	}
-	else if (strncmp("HSC", sfmt, 3) == 0)
+	else if (strncmp("HSC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HSC;
-		return 0;
+		return naviSentence_HSC;
 	}
-	else if (strncmp("HTC", sfmt, 3) == 0)
+	else if (strncmp("HTC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HTC;
-		return 0;
+		return naviSentence_HTC;
 	}
-	else if (strncmp("HTD", sfmt, 3) == 0)
+	else if (strncmp("HTD", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_HTD;
-		return 0;
+		return naviSentence_HTD;
 	}
-	else if (strncmp("LCD", sfmt, 3) == 0)
+	else if (strncmp("LCD", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_LCD;
-		return 0;
+		return naviSentence_LCD;
 	}
-	else if (strncmp("MLA", sfmt, 3) == 0)
+	else if (strncmp("MLA", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_MLA;
-		return 0;
+		return naviSentence_MLA;
 	}
-	else if (strncmp("MSK", sfmt, 3) == 0)
+	else if (strncmp("MSK", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_MSK;
-		return 0;
+		return naviSentence_MSK;
 	}
-	else if (strncmp("MSS", sfmt, 3) == 0)
+	else if (strncmp("MSS", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_MSS;
-		return 0;
+		return naviSentence_MSS;
 	}
-	else if (strncmp("MTW", sfmt, 3) == 0)
+	else if (strncmp("MTW", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_MTW;
-		return 0;
+		return naviSentence_MTW;
 	}
-	else if (strncmp("MWD", sfmt, 3) == 0)
+	else if (strncmp("MWD", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_MWD;
-		return 0;
+		return naviSentence_MWD;
 	}
-	else if (strncmp("MWV", sfmt, 3) == 0)
+	else if (strncmp("MWV", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_MWV;
-		return 0;
+		return naviSentence_MWV;
 	}
-	else if (strncmp("OSD", sfmt, 3) == 0)
+	else if (strncmp("OSD", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_OSD;
-		return 0;
+		return naviSentence_OSD;
 	}
-	else if (strncmp("RMA", sfmt, 3) == 0)
+	else if (strncmp("RMA", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RMA;
-		return 0;
+		return naviSentence_RMA;
 	}
-	else if (strncmp("RMB", sfmt, 3) == 0)
+	else if (strncmp("RMB", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RMB;
-		return 0;
+		return naviSentence_RMB;
 	}
-	else if (strncmp("RMC", sfmt, 3) == 0)
+	else if (strncmp("RMC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RMC;
-		return 0;
+		return naviSentence_RMC;
 	}
-	else if (strncmp("ROT", sfmt, 3) == 0)
+	else if (strncmp("ROT", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ROT;
-		return 0;
+		return naviSentence_ROT;
 	}
-	else if (strncmp("RPM", sfmt, 3) == 0)
+	else if (strncmp("RPM", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RPM;
-		return 0;
+		return naviSentence_RPM;
 	}
-	else if (strncmp("RSA", sfmt, 3) == 0)
+	else if (strncmp("RSA", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RSA;
-		return 0;
+		return naviSentence_RSA;
 	}
-	else if (strncmp("RSD", sfmt, 3) == 0)
+	else if (strncmp("RSD", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RSD;
-		return 0;
+		return naviSentence_RSD;
 	}
-	else if (strncmp("RTE", sfmt, 3) == 0)
+	else if (strncmp("RTE", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_RTE;
-		return 0;
+		return naviSentence_RTE;
 	}
-	else if (strncmp("SFI", sfmt, 3) == 0)
+	else if (strncmp("SFI", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_SFI;
-		return 0;
+		return naviSentence_SFI;
 	}
-	else if (strncmp("STN", sfmt, 3) == 0)
+	else if (strncmp("STN", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_STN;
-		return 0;
+		return naviSentence_STN;
 	}
-	else if (strncmp("TLB", sfmt, 3) == 0)
+	else if (strncmp("TLB", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_TLB;
-		return 0;
+		return naviSentence_TLB;
 	}
-	else if (strncmp("TLL", sfmt, 3) == 0)
+	else if (strncmp("TLL", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_TLL;
-		return 0;
+		return naviSentence_TLL;
 	}
-	else if (strncmp("TTM", sfmt, 3) == 0)
+	else if (strncmp("TTM", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_TTM;
-		return 0;
+		return naviSentence_TTM;
 	}
-	else if (strncmp("TXT", sfmt, 3) == 0)
+	else if (strncmp("TXT", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_TXT;
-		return 0;
+		return naviSentence_TXT;
 	}
-	else if (strncmp("VBW", sfmt, 3) == 0)
+	else if (strncmp("VBW", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_VBW;
-		return 0;
+		return naviSentence_VBW;
 	}
-	else if (strncmp("VDR", sfmt, 3) == 0)
+	else if (strncmp("VDR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_VDR;
-		return 0;
+		return naviSentence_VDR;
 	}
-	else if (strncmp("VHW", sfmt, 3) == 0)
+	else if (strncmp("VHW", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_VHW;
-		return 0;
+		return naviSentence_VHW;
 	}
-	else if (strncmp("VLW", sfmt, 3) == 0)
+	else if (strncmp("VLW", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_VLW;
-		return 0;
+		return naviSentence_VLW;
 	}
-	else if (strncmp("VPW", sfmt, 3) == 0)
+	else if (strncmp("VPW", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_VPW;
-		return 0;
+		return naviSentence_VPW;
 	}
-	else if (strncmp("VTG", sfmt, 3) == 0)
+	else if (strncmp("VTG", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_VTG;
-		return 0;
+		return naviSentence_VTG;
 	}
-	else if (strncmp("WCV", sfmt, 3) == 0)
+	else if (strncmp("WCV", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_WCV;
-		return 0;
+		return naviSentence_WCV;
 	}
-	else if (strncmp("WNC", sfmt, 3) == 0)
+	else if (strncmp("WNC", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_WNC;
-		return 0;
+		return naviSentence_WNC;
 	}
-	else if (strncmp("WPL", sfmt, 3) == 0)
+	else if (strncmp("WPL", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_WPL;
-		return 0;
+		return naviSentence_WPL;
 	}
-	else if (strncmp("XDR", sfmt, 3) == 0)
+	else if (strncmp("XDR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_XDR;
-		return 0;
+		return naviSentence_XDR;
 	}
-	else if (strncmp("XTE", sfmt, 3) == 0)
+	else if (strncmp("XTE", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_XTE;
-		return 0;
+		return naviSentence_XTE;
 	}
-	else if (strncmp("XTR", sfmt, 3) == 0)
+	else if (strncmp("XTR", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_XTR;
-		return 0;
+		return naviSentence_XTR;
 	}
-	else if (strncmp("ZDA", sfmt, 3) == 0)
+	else if (strncmp("ZDA", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ZDA;
-		return 0;
+		return naviSentence_ZDA;
 	}
-	else if (strncmp("ZDL", sfmt, 3) == 0)
+	else if (strncmp("ZDL", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ZDL;
-		return 0;
+		return naviSentence_ZDL;
 	}
-	else if (strncmp("ZFO", sfmt, 3) == 0)
+	else if (strncmp("ZFO", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ZFO;
-		return 0;
+		return naviSentence_ZFO;
 	}
-	else if (strncmp("ZTG", sfmt, 3) == 0)
+	else if (strncmp("ZTG", buffer, 3) == 0)
 	{
-		*msgtype = naviSentence_ZTG;
-		return 0;
+		return naviSentence_ZTG;
 	}
 	else
 	{
-		return -1;
+		return naviSentence_Undefined;
 	}
 }
 

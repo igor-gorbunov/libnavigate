@@ -331,6 +331,11 @@ int main()
 				break;
 			}
 		}
+		else if (result == naviError_NoValidMessage)
+		{
+			printf("Buffer emptied (%d)\n", result);
+			finished = 1;
+		}
 		else
 		{
 			printf("Parsing result = %d\n", result);
