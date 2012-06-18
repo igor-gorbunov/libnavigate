@@ -242,8 +242,35 @@ int main()
 			{
 			case naviSentence_DTM:
 				{
-//					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
-					printf("Received DTM: \n");
+					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
+					printf("Received DTM: talker id = %d\n", dtm->tid);
+
+					if (dtm->vfields & DTM_VALID_LOCALDATUM)
+					{
+						printf("\tlocal datum = %d\n", dtm->ld);
+					}
+					if (dtm->vfields & DTM_VALID_LOCALDATUMSUB)
+					{
+						printf("\tlocal datum subdivision = %d\n", dtm->lds);
+					}
+					if (dtm->vfields & DTM_VALID_LATOFFSET)
+					{
+						printf("\tlatitude offset = %.8f (%d)\n",
+							dtm->latofs.offset, dtm->latofs.sign);
+					}
+					if (dtm->vfields & DTM_VALID_LONOFFSET)
+					{
+						printf("\tlongitude offset = %.8f (%d)\n",
+							dtm->lonofs.offset, dtm->lonofs.sign);
+					}
+					if (dtm->vfields & DTM_VALID_ALTITUDEOFFSET)
+					{
+						printf("\taltitude offset = %.8f\n", dtm->altoffset);
+					}
+					if (dtm->vfields & DTM_VALID_REFERENCEDATUM)
+					{
+						printf("\treference datum = %d\n", dtm->rd);
+					}
 				}
 				break;
 			case naviSentence_GLL:
@@ -293,38 +320,32 @@ int main()
 			{
 			case naviSentence_DTM:
 				{
-//					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
-					printf("Received DTM: \n");
+					printf("Could not parse DTM\n");
 				}
 				break;
 			case naviSentence_GLL:
 				{
-//					struct gll_t *gll = (struct gll_t *)parsedbuffer;
-					printf("Received GLL: \n");
+					printf("Could not parse GLL\n");
 				}
 				break;
 			case naviSentence_GNS:
 				{
-//					struct gns_t *gns = (struct gns_t *)parsedbuffer;
-					printf("Received GNS: \n");
+					printf("Could not parse GNS\n");
 				}
 				break;
 			case naviSentence_RMC:
 				{
-//					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
-					printf("Received RMC: \n");
+					printf("Could not parse RMC\n");
 				}
 				break;
 			case naviSentence_VTG:
 				{
-//					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
-					printf("Received VTG: \n");
+					printf("Could not parse VTG\n");
 				}
 				break;
 			case naviSentence_ZDA:
 				{
-//					struct zda_t *zda = (struct zda_t *)parsedbuffer;
-					printf("Received ZDA: \n");
+					printf("Could not parse ZDA\n");
 				}
 				break;
 			default:

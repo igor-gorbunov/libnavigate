@@ -22,6 +22,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <errno.h>
 
 //
 // Determines the talker id and sentence formatter
@@ -268,10 +270,192 @@ static size_t IecScan_AdressField(char *buffer, size_t maxsize,
 	return result;
 }
 
+//
+// Parses datum field
+static enum naviError_t IecParse_Datum(char *buffer, enum naviDatum_t *datum,
+	size_t *nmread);
+
+//
+// Parses datum subdivision code field
+static enum naviError_t IecParse_DatumSub(char *buffer,
+	enum naviLocalDatumSub_t *datumsub, size_t *nmread);
+
+//
+// Parses floating point value
+static enum naviError_t IecParse_Double(char *buffer, double *value, size_t *nmread);
+
+//
+// Parses latitude/longitude/offset sign
+static enum naviError_t IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *sign,
+	size_t *nmread);
+
 // DTM
 static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
 {
-	return naviError_MsgNotSupported;
+	enum naviError_t result;
+	size_t index = 1, nmread;
+
+	msg->vfields = 0;
+
+	result = IecParse_Datum(buffer + index, &msg->ld, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= DTM_VALID_LOCALDATUM;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_DatumSub(buffer + index, &msg->lds, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= DTM_VALID_LOCALDATUMSUB;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->latofs.offset, &nmread);
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	switch (result)
+	{
+	case naviError_OK:
+		// next field must not be null too
+		result = IecParse_OffsetSign(buffer + index, &msg->latofs.sign, &nmread);
+		if (result == naviError_OK)
+		{
+			msg->vfields |= DTM_VALID_LATOFFSET;
+		}
+		else
+		{
+			return naviError_InvalidMessage;
+		}
+		break;
+	case naviError_NullField:
+		// next field must be null too
+		result = IecParse_OffsetSign(buffer + index, &msg->latofs.sign, &nmread);
+		if (result != naviError_NullField)
+		{
+			return naviError_InvalidMessage;
+		}
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->lonofs.offset, &nmread);
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	switch (result)
+	{
+	case naviError_OK:
+		// next field must not be null too
+		result = IecParse_OffsetSign(buffer + index, &msg->lonofs.sign, &nmread);
+		if (result == naviError_OK)
+		{
+			msg->vfields |= DTM_VALID_LONOFFSET;
+		}
+		else
+		{
+			return naviError_InvalidMessage;
+		}
+		break;
+	case naviError_NullField:
+		// next field must be null too
+		result = IecParse_OffsetSign(buffer + index, &msg->latofs.sign, &nmread);
+		if (result != naviError_NullField)
+		{
+			return naviError_InvalidMessage;
+		}
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->altoffset, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= DTM_VALID_ALTITUDEOFFSET;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Datum(buffer + index, &msg->rd, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= DTM_VALID_REFERENCEDATUM;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != '*')
+	{
+		return naviError_InvalidMessage;
+	}
+
+	return naviError_OK;
 }
 
 // GLL
@@ -817,6 +1001,124 @@ static enum naviSentence_t IecLookupSentenceFormatter(char *buffer, size_t *nmre
 	else
 	{
 		return naviSentence_Undefined;
+	}
+}
+
+// Looks up datum code
+static enum naviError_t IecParse_Datum(char *buffer, enum naviDatum_t *datum,
+	size_t *nmread)
+{
+	*nmread = 3;
+
+	if (strncmp("W84", buffer, 3) == 0)
+	{
+		*datum = naviDatum_WGS84;
+		return naviError_OK;
+	}
+	else if (strncmp("W72", buffer, 3) == 0)
+	{
+		*datum = naviDatum_WGS72;
+		return naviError_OK;
+	}
+	else if (strncmp("S85", buffer, 3) == 0)
+	{
+		*datum = naviDatum_SGS85;
+		return naviError_OK;
+	}
+	else if (strncmp("P90", buffer, 3) == 0)
+	{
+		*datum = naviDatum_PE90;
+		return naviError_OK;
+	}
+	else if (strncmp("999", buffer, 3) == 0)
+	{
+		*datum = naviDatum_UserDefined;
+		return naviError_OK;
+	}
+	else if ((strncmp(",", buffer, 1) == 0) || (strncmp("*", buffer, 1) == 0))
+	{
+		*nmread = 0;
+		*datum = naviDatum_Undefined;
+		return naviError_NullField;
+	}
+	else
+	{
+		*nmread = 0;
+		return naviError_MsgNotSupported;
+	}
+}
+
+// Looks up datum subdivision code
+static enum naviError_t IecParse_DatumSub(char *buffer,
+	enum naviLocalDatumSub_t *datumsub, size_t *nmread)
+{
+	if (strncmp(",", buffer, 1) == 0)
+	{
+		*nmread = 0;
+		*datumsub = naviLocalDatumSub_Undefined;
+		return naviError_NullField;
+	}
+	else
+	{
+		*nmread = 0;
+		return naviError_MsgNotSupported;
+	}
+}
+
+//
+// Parses floating point value
+static enum naviError_t IecParse_Double(char *buffer, double *value, size_t *nmread)
+{
+	char *endptr = NULL;
+
+	errno = 0;
+	*value = strtod(buffer, &endptr);
+	*nmread = endptr - buffer;
+	if (errno != 0)
+	{
+		return naviError_MsgNotSupported;
+	}
+	else if (*nmread == 0)
+	{
+		return naviError_NullField;
+	}
+	else
+	{
+		return naviError_OK;
+	}
+}
+
+//
+// Parses latitude/longitude/offset sign
+static enum naviError_t IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *sign,
+	size_t *nmread)
+{
+	*nmread = 1;
+
+	if (strncmp("N", buffer, 1) == 0)
+	{
+		*sign = naviOfsSign_North;
+		return naviError_OK;
+	}
+	else if (strncmp("S", buffer, 1) == 0)
+	{
+		*sign = naviOfsSign_South;
+		return naviError_OK;
+	}
+	else if (strncmp("E", buffer, 1) == 0)
+	{
+		*sign = naviOfsSign_East;
+		return naviError_OK;
+	}
+	else if (strncmp("W", buffer, 1) == 0)
+	{
+		*sign = naviOfsSign_West;
+		return naviError_OK;
+	}
+	else
+	{
+		*nmread = 0;
+		return naviError_NullField;
 	}
 }
 

@@ -45,7 +45,9 @@ enum naviError_t
 	naviError_CrcEror = 2,				// crc error
 	naviError_NotEnoughBuffer = 3,		// not enough space in output buffer
 	naviError_MsgNotSupported = 4,		// message type not supported
-	naviError_NoValidMessage = 5		// no valid message in buffer
+	naviError_NoValidMessage = 5,		// no valid message in buffer
+	naviError_NullField = 6,			// null field in a message
+	naviError_InvalidMessage = 7		// message does not conform to protocol
 };
 
 //
