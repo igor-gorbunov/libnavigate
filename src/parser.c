@@ -289,6 +289,32 @@ static enum naviError_t IecParse_Double(char *buffer, double *value, size_t *nmr
 static enum naviError_t IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *sign,
 	size_t *nmread);
 
+//
+// Parses latitude
+static enum naviError_t IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
+	size_t *nmread);
+
+//
+// Parses longitude sign
+static enum naviError_t IecParse_Longitude(char *buffer, struct naviOffset_t *longitude,
+	size_t *nmread);
+
+//
+// Parses time
+static enum naviError_t IecParse_Time(char *buffer, struct naviUtc_t *utc,
+	size_t *nmread);
+
+//
+// Parses status
+static enum naviError_t IecParse_Status(char *buffer, enum naviStatus_t *status,
+	size_t *nmread);
+
+//
+// Parses mode indicator
+static enum naviError_t IecParse_ModeIndicator(char *buffer, enum naviModeIndicator_t *mi,
+	size_t *nmread);
+
+
 // DTM
 static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
 {
@@ -461,7 +487,101 @@ static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t max
 // GLL
 static enum naviError_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t maxsize)
 {
-	return naviError_MsgNotSupported;
+	enum naviError_t result;
+	size_t index = 1, nmread;
+
+	msg->vfields = 0;
+
+	printf("(1) buffer: '%s'\n", buffer + index);
+
+	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GLL_VALID_LATITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Longitude(buffer + index, &msg->latitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GLL_VALID_LONGITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GLL_VALID_UTC;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Status(buffer + index, &msg->status, &nmread);
+	if (result != naviError_OK)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
+	if (result != naviError_OK)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != '*')
+	{
+		return naviError_InvalidMessage;
+	}
+
+	return naviError_OK;
 }
 
 // GNS
@@ -794,9 +914,9 @@ static enum naviSentence_t IecLookupSentenceFormatter(char *buffer, size_t *nmre
 	{
 		return naviSentence_GLC;
 	}
-	else if (strncmp("GLC", buffer, 3) == 0)
+	else if (strncmp("GLL", buffer, 3) == 0)
 	{
-		return naviSentence_GLC;
+		return naviSentence_GLL;
 	}
 	else if (strncmp("GNS", buffer, 3) == 0)
 	{
@@ -1065,7 +1185,6 @@ static enum naviError_t IecParse_DatumSub(char *buffer,
 	}
 }
 
-//
 // Parses floating point value
 static enum naviError_t IecParse_Double(char *buffer, double *value, size_t *nmread)
 {
@@ -1088,7 +1207,6 @@ static enum naviError_t IecParse_Double(char *buffer, double *value, size_t *nmr
 	}
 }
 
-//
 // Parses latitude/longitude/offset sign
 static enum naviError_t IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *sign,
 	size_t *nmread)
@@ -1118,6 +1236,95 @@ static enum naviError_t IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *si
 	else
 	{
 		*nmread = 0;
+		return naviError_NullField;
+	}
+}
+
+// Parses latitude
+static enum naviError_t IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
+	size_t *nmread)
+{
+	return naviError_OK;
+}
+
+// Parses longitude sign
+static enum naviError_t IecParse_Longitude(char *buffer, struct naviOffset_t *longitude,
+	size_t *nmread)
+{
+	return naviError_OK;
+}
+
+// Parses time
+static enum naviError_t IecParse_Time(char *buffer, struct naviUtc_t *utc,
+	size_t *nmread)
+{
+	return naviError_OK;
+}
+
+// Parses status
+static enum naviError_t IecParse_Status(char *buffer, enum naviStatus_t *status,
+	size_t *nmread)
+{
+	*nmread = 1;
+
+	if (strncmp("A", buffer, 1) == 0)
+	{
+		*status = naviStatus_DataValid;
+		return naviError_OK;
+	}
+	else if (strncmp("V", buffer, 1) == 0)
+	{
+		*status = naviStatus_DataInvalid;
+		return naviError_OK;
+	}
+	else
+	{
+		*nmread = 0;
+		*status = naviStatus_Undefined;
+		return naviError_NullField;
+	}
+}
+
+// Parses mode indicator
+static enum naviError_t IecParse_ModeIndicator(char *buffer, enum naviModeIndicator_t *mi,
+	size_t *nmread)
+{
+	*nmread = 1;
+
+	if (strncmp("A", buffer, 1) == 0)
+	{
+		*mi = naviModeIndicator_Autonomous;
+		return naviError_OK;
+	}
+	else if (strncmp("D", buffer, 1) == 0)
+	{
+		*mi = naviModeIndicator_Differential;
+		return naviError_OK;
+	}
+	else if (strncmp("E", buffer, 1) == 0)
+	{
+		*mi = naviModeIndicator_Estimated;
+		return naviError_OK;
+	}
+	else if (strncmp("M", buffer, 1) == 0)
+	{
+		*mi = naviModeIndicator_ManualInput;
+		return naviError_OK;
+	}
+	else if (strncmp("S", buffer, 1) == 0)
+	{
+		*mi = naviModeIndicator_Simulator;
+		return naviError_OK;
+	}
+	else if (strncmp("N", buffer, 1) == 0)
+	{
+		*mi = naviModeIndicator_DataNotValid;
+		return naviError_OK;
+	}
+	else
+	{
+		*nmread = 0;
+		*mi = naviModeIndicator_Undefined;
 		return naviError_NullField;
 	}
 }
