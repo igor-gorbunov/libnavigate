@@ -1248,7 +1248,11 @@ static enum naviError_t IecParse_Latitude(char *buffer, struct naviOffset_t *lat
 	char degrees[4];
 	double deg, min;
 
-	// enum naviError_t result = IecParse_CheckField();
+	// TODO Implement a method for checking sentence field
+	// enum naviError_t IecParse_CheckField(char *buffer, enum naviFieldType_t type,
+	//     size_t *nmread);
+	// if ((result = IecParse_CheckField(buffer, type, &nmread)) != naviError_OK)
+	//     return result;
 
 	if ((buffer[idx] == ',') && ((buffer[idx + 1] == ',') ||
 		(buffer[idx + 1] == '*')))
