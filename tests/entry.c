@@ -275,8 +275,27 @@ int main()
 				break;
 			case naviSentence_GLL:
 				{
-//					struct gll_t *gll = (struct gll_t *)parsedbuffer;
-					printf("Received GLL: \n");
+					struct gll_t *gll = (struct gll_t *)parsedbuffer;
+					printf("Received GLL: talker id = %d\n", gll->tid);
+
+					if (gll->vfields & GLL_VALID_LATITUDE)
+					{
+						printf("\tlatitude = %.12f (%d)\n", gll->latitude.offset,
+							gll->latitude.sign);
+					}
+					if (gll->vfields & GLL_VALID_LONGITUDE)
+					{
+						printf("\tlongitude = %.12f (%d)\n", gll->longitude.offset,
+							gll->longitude.sign);
+					}
+					if (gll->vfields & GLL_VALID_UTC)
+					{
+						printf("\tutc = %d %d %d %d\n", gll->utc.hour,
+							gll->utc.min, gll->utc.sec, gll->utc.msec);
+					}
+
+					printf("\tstatus = %d\n", gll->status);
+					printf("\tmode indicator = %d\n", gll->mi);
 				}
 				break;
 			case naviSentence_GNS:

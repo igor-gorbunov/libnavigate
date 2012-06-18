@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include <ctype.h>
 
 //
 // Determines the talker id and sentence formatter
@@ -492,8 +493,6 @@ static enum naviError_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t max
 
 	msg->vfields = 0;
 
-	printf("(1) buffer: '%s'\n", buffer + index);
-
 	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
 	switch (result)
 	{
@@ -514,7 +513,7 @@ static enum naviError_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t max
 	}
 	index += 1;
 
-	result = IecParse_Longitude(buffer + index, &msg->latitude, &nmread);
+	result = IecParse_Longitude(buffer + index, &msg->longitude, &nmread);
 	switch (result)
 	{
 	case naviError_OK:
@@ -1244,21 +1243,203 @@ static enum naviError_t IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *si
 static enum naviError_t IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
 	size_t *nmread)
 {
-	return naviError_OK;
+	size_t idx = 0;
+	char *endptr = NULL;
+	char degrees[4];
+	double deg, min;
+
+	// enum naviError_t result = IecParse_CheckField();
+
+	if ((buffer[idx] == ',') && ((buffer[idx + 1] == ',') ||
+		(buffer[idx + 1] == '*')))
+	{
+		*nmread = 1;
+		return naviError_NullField;
+	}
+	else if ((buffer[idx] == ',') && !((buffer[idx + 1] == ',') ||
+		(buffer[idx + 1] == '*')))
+	{
+		*nmread = 1;
+		return naviError_InvalidMessage;
+	}
+
+	degrees[0] = buffer[0];
+	degrees[1] = buffer[1];
+	degrees[2] = '\0';
+
+	idx = 2;
+
+	errno = 0;
+	deg = strtod(degrees, &endptr);
+	*nmread = endptr - degrees;
+	if (errno != 0)
+	{
+		return naviError_InvalidMessage;
+	}
+	else if (*nmread < idx)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	errno = 0;
+	min = strtod(buffer + idx, &endptr);
+	*nmread = endptr - buffer;
+	if (errno != 0)
+	{
+		return naviError_InvalidMessage;
+	}
+	else
+	{
+		latitude->offset = deg + min / 60.;
+
+		enum naviError_t result = IecParse_OffsetSign(buffer + *nmread + 1,
+			&latitude->sign, &idx);
+		if (result != naviError_OK)
+		{
+			return result;
+		}
+
+		*nmread += idx + 1;
+
+		return naviError_OK;
+	}
 }
 
 // Parses longitude sign
 static enum naviError_t IecParse_Longitude(char *buffer, struct naviOffset_t *longitude,
 	size_t *nmread)
 {
-	return naviError_OK;
+	size_t idx = 0;
+	char *endptr = NULL;
+	char degrees[4];
+	double deg, min;
+
+	if ((buffer[idx] == ',') && ((buffer[idx + 1] == ',') ||
+		(buffer[idx + 1] == '*')))
+	{
+		*nmread = 1;
+		return naviError_NullField;
+	}
+	else if ((buffer[idx] == ',') && !((buffer[idx + 1] == ',') ||
+		(buffer[idx + 1] == '*')))
+	{
+		*nmread = 1;
+		return naviError_InvalidMessage;
+	}
+
+	degrees[0] = buffer[0];
+	degrees[1] = buffer[1];
+	degrees[2] = buffer[2];
+	degrees[3] = '\0';
+
+	idx = 3;
+
+	errno = 0;
+	deg = strtod(degrees, &endptr);
+	*nmread = endptr - degrees;
+	if (errno != 0)
+	{
+		return naviError_InvalidMessage;
+	}
+	else if (*nmread < idx)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	errno = 0;
+	min = strtod(buffer + idx, &endptr);
+	*nmread = endptr - buffer;
+	if (errno != 0)
+	{
+		return naviError_InvalidMessage;
+	}
+	else
+	{
+		longitude->offset = deg + min / 60.;
+
+		enum naviError_t result = IecParse_OffsetSign(buffer + *nmread + 1,
+			&longitude->sign, &idx);
+		if (result != naviError_OK)
+		{
+			return result;
+		}
+
+		*nmread += idx + 1;
+
+		return naviError_OK;
+	}
 }
 
 // Parses time
 static enum naviError_t IecParse_Time(char *buffer, struct naviUtc_t *utc,
 	size_t *nmread)
 {
-	return naviError_OK;
+	size_t idx;
+
+	utc->msec = 0;
+
+	for (idx = 0; ; idx++)
+	{
+		if (isdigit(buffer[idx]))
+		{
+			if (idx == 0)
+			{
+				utc->hour = buffer[idx] - '0';
+			}
+			else if (idx == 1)
+			{
+				utc->hour = utc->hour * 10 + (buffer[idx] - '0');
+			}
+			else if (idx == 2)
+			{
+				utc->min = buffer[idx] - '0';
+			}
+			else if (idx == 3)
+			{
+				utc->min = utc->min * 10 + (buffer[idx] - '0');
+			}
+			else if (idx == 4)
+			{
+				utc->sec = buffer[idx] - '0';
+			}
+			else if (idx == 5)
+			{
+				utc->sec = utc->sec * 10 + (buffer[idx] - '0');
+			}
+			else
+			{
+				utc->msec = utc->msec * 10 + (buffer[idx] - '0');
+			}
+		}
+		else if (buffer[idx] == '.')
+		{
+			continue;
+		}
+		else if ((buffer[idx] == ',') || (buffer[idx] == '*'))
+		{
+			break;
+		}
+		else
+		{
+			*nmread = idx;
+			return naviError_InvalidMessage;
+		}
+	}
+
+	*nmread = idx;
+
+	if (idx == 0)
+	{
+		return naviError_NullField;
+	}
+	else if (idx < 6)
+	{
+		return naviError_InvalidMessage;
+	}
+	else
+	{
+		return naviError_OK;
+	}
 }
 
 // Parses status
