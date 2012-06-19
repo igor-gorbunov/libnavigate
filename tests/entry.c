@@ -389,8 +389,22 @@ int main()
 				break;
 			case naviSentence_VTG:
 				{
-//					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
-					printf("Received VTG: \n");
+					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
+					printf("Received VTG: talker id = %d\n", vtg->tid);
+
+					if (vtg->vfields & VTG_VALID_COURSETRUE)
+					{
+						printf("\tcource, true = %.12f\n", vtg->courseTrue);
+					}
+					if (vtg->vfields & VTG_VALID_COURSEMAGN)
+					{
+						printf("\tcourse, magnetic = %.12f\n", vtg->courseMagn);
+					}
+					if (vtg->vfields & VTG_VALID_SPEED)
+					{
+						printf("\tspeed = %.12f\n", vtg->speed);
+					}
+					printf("\tmode indicator = %d\n", vtg->mi);
 				}
 				break;
 			case naviSentence_ZDA:

@@ -1005,7 +1005,153 @@ static enum naviError_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t max
 // VTG
 static enum naviError_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t maxsize)
 {
-	return naviError_MsgNotSupported;
+	enum naviError_t result;
+	size_t index = 1, nmread;
+	double speedknots, speedkmph;
+
+	msg->vfields = 0;
+
+	result = IecParse_Double(buffer + index, &msg->courseTrue, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= VTG_VALID_COURSETRUE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	if (buffer[index] == 'T')
+	{
+		index += 1;
+	}
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->courseMagn, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= VTG_VALID_COURSEMAGN;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	if (buffer[index] == 'M')
+	{
+		index += 1;
+	}
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &speedknots, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		break;
+	case naviError_NullField:
+		speedknots = -1.0;
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	if (buffer[index] == 'N')
+	{
+		index += 1;
+	}
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &speedkmph, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		break;
+	case naviError_NullField:
+		speedkmph = -1.0;
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	if (buffer[index] == 'K')
+	{
+		index += 1;
+	}
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	if (speedkmph > -1.0)
+	{
+		msg->speed = speedkmph * KMH_TO_MPS;
+		msg->vfields |= VTG_VALID_SPEED;
+	}
+	else if (speedknots > -1.0)
+	{
+		msg->speed = speedknots * KNOTS_TO_MPS;
+		msg->vfields |= VTG_VALID_SPEED;
+	}
+
+	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
+	if (result != naviError_OK)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != '*')
+	{
+		return naviError_InvalidMessage;
+	}
+
+	return naviError_OK;
 }
 
 // ZDA
