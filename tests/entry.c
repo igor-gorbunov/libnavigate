@@ -300,8 +300,49 @@ int main()
 				break;
 			case naviSentence_GNS:
 				{
-//					struct gns_t *gns = (struct gns_t *)parsedbuffer;
-					printf("Received GNS: \n");
+					struct gns_t *gns = (struct gns_t *)parsedbuffer;
+					printf("Received GNS: talker id = %d\n", gns->tid);
+
+					if (gns->vfields & GNS_VALID_UTC)
+					{
+						printf("\tutc = %d %d %d %d\n", gns->utc.hour,
+							gns->utc.min, gns->utc.sec, gns->utc.msec);
+					}
+					if (gns->vfields & GNS_VALID_LATITUDE)
+					{
+						printf("\tlatitude = %.12f (%d)\n", gns->latitude.offset,
+							gns->latitude.sign);
+					}
+					if (gns->vfields & GNS_VALID_LONGITUDE)
+					{
+						printf("\tlongitude = %.12f (%d)\n", gns->longitude.offset,
+							gns->longitude.sign);
+					}
+					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
+					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
+					{
+						printf("\tsatellites = %d\n", gns->totalsats);
+					}
+					if (gns->vfields & GNS_VALID_HDOP)
+					{
+						printf("\thdop = %.12f\n", gns->hdop);
+					}
+					if (gns->vfields & GNS_VALID_ANTENNAALTITUDE)
+					{
+						printf("\tantenna altitude = %.12f\n", gns->antaltitude);
+					}
+					if (gns->vfields & GNS_VALID_GEOIDALSEP)
+					{
+						printf("\tgeoidal separation = %.12f\n", gns->geoidalsep);
+					}
+					if (gns->vfields & GNS_VALID_AGEOFDIFFDATA)
+					{
+						printf("\tage of dd = %.12f\n", gns->diffage);
+					}
+					if (gns->vfields & GNS_VALID_DIFFREFSTATIONID)
+					{
+						printf("\tid = %d\n", gns->id);
+					}
 				}
 				break;
 			case naviSentence_RMC:

@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <ctype.h>
+#include <math.h>
 
 //
 // Determines the talker id and sentence formatter
@@ -315,6 +316,14 @@ static enum naviError_t IecParse_Status(char *buffer, enum naviStatus_t *status,
 static enum naviError_t IecParse_ModeIndicator(char *buffer, enum naviModeIndicator_t *mi,
 	size_t *nmread);
 
+//
+// Parses mode indicator array
+static enum naviError_t IecParse_ModeIndicatorArray(char *buffer,
+	enum naviModeIndicator_t mi[], size_t *nmread);
+
+//
+// Parses integer value
+static enum naviError_t IecParse_Integer(char *buffer, int *value, size_t *nmread);
 
 // DTM
 static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
@@ -586,7 +595,199 @@ static enum naviError_t IecParse_GLL(struct gll_t *msg, char *buffer, size_t max
 // GNS
 static enum naviError_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t maxsize)
 {
-	return naviError_MsgNotSupported;
+	enum naviError_t result;
+	size_t index = 1, nmread;
+
+	msg->vfields = 0;
+
+	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_UTC;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_LATITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Longitude(buffer + index, &msg->longitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_LONGITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_ModeIndicatorArray(buffer + index, msg->mi, &nmread);
+	if (result != naviError_OK)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Integer(buffer + index, &msg->totalsats, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_TOTALNMOFSATELLITES;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->hdop, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_HDOP;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->antaltitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_ANTENNAALTITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->geoidalsep, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_GEOIDALSEP;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->diffage, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_AGEOFDIFFDATA;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Integer(buffer + index, &msg->id, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= GNS_VALID_DIFFREFSTATIONID;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != '*')
+	{
+		return naviError_InvalidMessage;
+	}
+
+	return naviError_OK;
 }
 
 // RMC
@@ -1511,6 +1712,88 @@ static enum naviError_t IecParse_ModeIndicator(char *buffer, enum naviModeIndica
 		*nmread = 0;
 		*mi = naviModeIndicator_Undefined;
 		return naviError_NullField;
+	}
+}
+
+// Parses mode indicator array
+static enum naviError_t IecParse_ModeIndicatorArray(char *buffer,
+	enum naviModeIndicator_t mi[], size_t *nmread)
+{
+	size_t idx = 0;
+
+	while (buffer[idx] != ',')
+	{
+		if (idx < 2)
+		{
+			if (strncmp("A", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_Autonomous;
+			}
+			else if (strncmp("D", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_Differential;
+			}
+			else if (strncmp("E", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_Estimated;
+			}
+			else if (strncmp("M", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_ManualInput;
+			}
+			else if (strncmp("S", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_Simulator;
+			}
+			else if (strncmp("N", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_DataNotValid;
+			}
+			else if (strncmp("P", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_Precise;
+			}
+			else if (strncmp("R", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_RTKinematic;
+			}
+			else if (strncmp("F", buffer + idx, 1) == 0)
+			{
+				mi[idx] = naviModeIndicator_FloatRTK;
+			}
+			else
+			{
+				mi[idx] = naviModeIndicator_Undefined;
+			}
+		}
+		idx += 1;
+	}
+
+	*nmread = idx;
+	return idx == 0 ? naviError_InvalidMessage : naviError_OK;
+}
+
+// Parses integer value
+static enum naviError_t IecParse_Integer(char *buffer, int *value, size_t *nmread)
+{
+	char *endptr = NULL;
+	double tmp;
+
+	errno = 0;
+	tmp = strtod(buffer, &endptr);
+	*value = (int)round(tmp);
+	*nmread = endptr - buffer;
+	if (errno != 0)
+	{
+		return naviError_MsgNotSupported;
+	}
+	else if (*nmread == 0)
+	{
+		return naviError_NullField;
+	}
+	else
+	{
+		return naviError_OK;
 	}
 }
 
