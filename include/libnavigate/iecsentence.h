@@ -294,6 +294,14 @@ struct naviUtc_t
 };
 
 //
+// Holds UTC date
+//
+struct naviDate_t
+{
+	int day, month, year;
+};
+
+//
 // Offset sign
 //
 enum naviOfsSign_t

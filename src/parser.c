@@ -28,6 +28,14 @@
 #include <math.h>
 
 //
+// Knots (nautical mile per hour) to meters per second
+#define KNOTS_TO_MPS		0.514444445
+
+//
+// km/h to meters per second convertion coefficient
+#define KMH_TO_MPS			0.277777777777777778
+
+//
 // Determines the talker id and sentence formatter
 static size_t IecScan_AdressField(char *buffer, size_t maxsize,
 	enum naviTalkerId_t *tid, enum naviSentence_t *msgtype);
@@ -324,6 +332,11 @@ static enum naviError_t IecParse_ModeIndicatorArray(char *buffer,
 //
 // Parses integer value
 static enum naviError_t IecParse_Integer(char *buffer, int *value, size_t *nmread);
+
+//
+// Parses date (ddmmyy or ddmmyyyy)
+static enum naviError_t IecParse_Date(char *buffer, struct naviDate_t *date,
+	size_t *nmread);
 
 // DTM
 static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
@@ -793,7 +806,200 @@ static enum naviError_t IecParse_GNS(struct gns_t *msg, char *buffer, size_t max
 // RMC
 static enum naviError_t IecParse_RMC(struct rmc_t *msg, char *buffer, size_t maxsize)
 {
-	return naviError_MsgNotSupported;
+	enum naviError_t result;
+	size_t index = 1, nmread;
+	struct naviDate_t date;
+
+	msg->vfields = 0;
+
+	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= RMC_VALID_UTC;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Status(buffer + index, &msg->status, &nmread);
+	if (result != naviError_OK)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= RMC_VALID_LATITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Longitude(buffer + index, &msg->longitude, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= RMC_VALID_LONGITUDE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->speed, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= RMC_VALID_SPEED;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->courseTrue, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= RMC_VALID_COURSETRUE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Date(buffer + index, &date, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->day = date.day;
+		msg->month = date.month;
+		msg->year = date.year;
+		msg->vfields |= RMC_VALID_DATE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Double(buffer + index, &msg->magnetic.offset, &nmread);
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+	switch (result)
+	{
+	case naviError_OK:
+		// next field must not be null too
+		result = IecParse_OffsetSign(buffer + index, &msg->magnetic.sign, &nmread);
+		if (result == naviError_OK)
+		{
+			msg->vfields |= RMC_VALID_MAGNVARIATION;
+		}
+		else
+		{
+			return naviError_InvalidMessage;
+		}
+		break;
+	case naviError_NullField:
+		// next field must be null too
+		result = IecParse_OffsetSign(buffer + index, &msg->magnetic.sign, &nmread);
+		if (result != naviError_NullField)
+		{
+			return naviError_InvalidMessage;
+		}
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
+	if (result != naviError_OK)
+	{
+		return naviError_InvalidMessage;
+	}
+
+	index += nmread;
+
+	if (buffer[index] != '*')
+	{
+		return naviError_InvalidMessage;
+	}
+
+	return naviError_OK;
 }
 
 // VTG
@@ -1790,6 +1996,80 @@ static enum naviError_t IecParse_Integer(char *buffer, int *value, size_t *nmrea
 	else if (*nmread == 0)
 	{
 		return naviError_NullField;
+	}
+	else
+	{
+		return naviError_OK;
+	}
+}
+
+// Parses date
+static enum naviError_t IecParse_Date(char *buffer, struct naviDate_t *date,
+	size_t *nmread)
+{
+	size_t idx;
+
+	for (idx = 0; ; idx++)
+	{
+		if (isdigit(buffer[idx]))
+		{
+			if (idx == 0)
+			{
+				date->day = buffer[idx] - '0';
+			}
+			else if (idx == 1)
+			{
+				date->day = date->day * 10 + (buffer[idx] - '0');
+			}
+			else if (idx == 2)
+			{
+				date->month = buffer[idx] - '0';
+			}
+			else if (idx == 3)
+			{
+				date->month = date->month * 10 + (buffer[idx] - '0');
+			}
+			else if (idx == 4)
+			{
+				date->year = buffer[idx] - '0';
+			}
+			else if (idx == 5)
+			{
+				date->year = date->year * 10 + (buffer[idx] - '0');
+			}
+			else if (idx == 6)
+			{
+				date->year = date->year * 10 + (buffer[idx] - '0');
+			}
+			else
+			{
+				date->year = date->year * 10 + (buffer[idx] - '0');
+			}
+		}
+		else if (buffer[idx] == '.')
+		{
+			continue;
+		}
+		else if ((buffer[idx] == ',') || (buffer[idx] == '*'))
+		{
+			break;
+		}
+		else
+		{
+			*nmread = idx;
+			return naviError_InvalidMessage;
+		}
+	}
+
+	*nmread = idx;
+
+	if (idx == 0)
+	{
+		return naviError_NullField;
+	}
+	else if (idx < 6)
+	{
+		return naviError_InvalidMessage;
 	}
 	else
 	{

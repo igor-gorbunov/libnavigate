@@ -347,8 +347,44 @@ int main()
 				break;
 			case naviSentence_RMC:
 				{
-//					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
-					printf("Received RMC: \n");
+					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
+					printf("Received RMC: talker id = %d\n", rmc->tid);
+
+					if (rmc->vfields & RMC_VALID_UTC)
+					{
+						printf("\tutc = %d %d %d %d\n", rmc->utc.hour,
+							rmc->utc.min, rmc->utc.sec, rmc->utc.msec);
+					}
+					printf("\tstatus = %d\n", rmc->status);
+					if (rmc->vfields & RMC_VALID_LATITUDE)
+					{
+						printf("\tlatitude = %.12f (%d)\n", rmc->latitude.offset,
+							rmc->latitude.sign);
+					}
+					if (rmc->vfields & RMC_VALID_LONGITUDE)
+					{
+						printf("\tlongitude = %.12f (%d)\n", rmc->longitude.offset,
+							rmc->longitude.sign);
+					}
+					if (rmc->vfields & RMC_VALID_SPEED)
+					{
+						printf("\tspeed = %.12f\n", rmc->speed);
+					}
+					if (rmc->vfields & RMC_VALID_COURSETRUE)
+					{
+						printf("\tcourse, true = %.12f\n", rmc->courseTrue);
+					}
+					if (rmc->vfields & RMC_VALID_DATE)
+					{
+						printf("\tdate = %d %d %d\n", rmc->day,
+							rmc->month, rmc->year);
+					}
+					if (rmc->vfields & RMC_VALID_MAGNVARIATION)
+					{
+						printf("\tmagnetic variation = %.12f (%d)\n",
+							rmc->magnetic.offset, rmc->magnetic.sign);
+					}
+					printf("\tmode indicator = %d\n", rmc->mi);
 				}
 				break;
 			case naviSentence_VTG:
