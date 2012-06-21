@@ -409,8 +409,30 @@ int main()
 				break;
 			case naviSentence_ZDA:
 				{
-//					struct zda_t *zda = (struct zda_t *)parsedbuffer;
-					printf("Received ZDA: \n");
+					struct zda_t *zda = (struct zda_t *)parsedbuffer;
+					printf("Received ZDA: talker id = %d\n", zda->tid);
+
+					if (zda->vfields & ZDA_VALID_UTC)
+					{
+						printf("\tutc = %d %d %d %d\n", zda->utc.hour,
+							zda->utc.min, zda->utc.sec, zda->utc.msec);
+					}
+					if (zda->vfields & ZDA_VALID_DAY)
+					{
+						printf("\tday = %d\n", zda->day);
+					}
+					if (zda->vfields & ZDA_VALID_MONTH)
+					{
+						printf("\tmonth = %d\n", zda->month);
+					}
+					if (zda->vfields & ZDA_VALID_YEAR)
+					{
+						printf("\tyear = %d\n", zda->year);
+					}
+					if (zda->vfields & ZDA_VALID_LOCALZONE)
+					{
+						printf("\tlocal zone offset = %d\n", zda->lzoffset);
+					}
 				}
 				break;
 			default:

@@ -338,6 +338,11 @@ static enum naviError_t IecParse_Integer(char *buffer, int *value, size_t *nmrea
 static enum naviError_t IecParse_Date(char *buffer, struct naviDate_t *date,
 	size_t *nmread);
 
+//
+// Parses local zone (sxx,xx)
+static enum naviError_t IecParse_LocalZone(char *buffer, int *offset,
+	size_t *nmread);
+
 // DTM
 static enum naviError_t IecParse_DTM(struct dtm_t *msg, char *buffer, size_t maxsize)
 {
@@ -1157,7 +1162,100 @@ static enum naviError_t IecParse_VTG(struct vtg_t *msg, char *buffer, size_t max
 // ZDA
 static enum naviError_t IecParse_ZDA(struct zda_t *msg, char *buffer, size_t maxsize)
 {
-	return naviError_MsgNotSupported;
+	enum naviError_t result;
+	size_t index = 1, nmread;
+
+	msg->vfields = 0;
+
+	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= ZDA_VALID_UTC;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Integer(buffer + index, &msg->day, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= ZDA_VALID_DAY;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Integer(buffer + index, &msg->month, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= ZDA_VALID_MONTH;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_Integer(buffer + index, &msg->year, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= ZDA_VALID_YEAR;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	index += nmread;
+	if (buffer[index] != ',')
+	{
+		return naviError_InvalidMessage;
+	}
+	index += 1;
+
+	result = IecParse_LocalZone(buffer + index, &msg->lzoffset, &nmread);
+	switch (result)
+	{
+	case naviError_OK:
+		msg->vfields |= ZDA_VALID_LOCALZONE;
+		break;
+	case naviError_NullField:
+		break;
+	default:
+		return result;
+	}
+
+	return naviError_OK;
 }
 
 // Scan checksum
@@ -2221,5 +2319,102 @@ static enum naviError_t IecParse_Date(char *buffer, struct naviDate_t *date,
 	{
 		return naviError_OK;
 	}
+}
+
+//
+// Finite-state machine for parsing local time zone int the form of:
+// {[+|-]dd,dd*|,*}
+#define PARSE_LOCALZONE_INITIAL		0
+#define PARSE_LOCALZONE_SIGN		1
+#define PARSE_LOCALZONE_HOURS		2
+#define PARSE_LOCALZONE_MINUTES		3
+#define PARSE_LOCALZONE_FINAL		4
+
+// Parses local zone (sxx,xx)
+static enum naviError_t IecParse_LocalZone(char *buffer, int *offset,
+	size_t *nmread)
+{
+	size_t idx = 0;
+	int state = PARSE_LOCALZONE_INITIAL, sign = 1, hours = 0, minutes = 0;
+
+	do
+	{
+		switch (buffer[idx])
+		{
+		case '+':
+			switch (state)
+			{
+			case PARSE_LOCALZONE_INITIAL:
+				state = PARSE_LOCALZONE_SIGN;
+				sign = 1;
+				break;
+			default:
+				return naviError_InvalidMessage;
+			}
+			break;
+		case '-':
+			switch (state)
+			{
+			case PARSE_LOCALZONE_INITIAL:
+				state = PARSE_LOCALZONE_SIGN;
+				sign = -1;
+				break;
+			default:
+				return naviError_InvalidMessage;
+			}
+			break;
+		case ',':
+			switch (state)
+			{
+			case PARSE_LOCALZONE_INITIAL:
+			case PARSE_LOCALZONE_HOURS:
+				state = PARSE_LOCALZONE_MINUTES;
+				break;
+			case PARSE_LOCALZONE_MINUTES:
+				state = PARSE_LOCALZONE_FINAL;
+				break;
+			default:
+				return naviError_InvalidMessage;
+			}
+			break;
+		case '*':
+			switch (state)
+			{
+			case PARSE_LOCALZONE_MINUTES:
+				state = PARSE_LOCALZONE_FINAL;
+				break;
+			default:
+				return naviError_InvalidMessage;
+			}
+			break;
+		case '0': case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
+			switch (state)
+			{
+			case PARSE_LOCALZONE_INITIAL:
+			case PARSE_LOCALZONE_SIGN:
+				state = PARSE_LOCALZONE_HOURS;
+			// Fall through
+			case PARSE_LOCALZONE_HOURS:
+				hours = hours * 10 + (buffer[idx] - '0');
+				break;
+			case PARSE_LOCALZONE_MINUTES:
+				minutes = minutes * 10 + (buffer[idx] - '0');
+				break;
+			default:
+				return naviError_InvalidMessage;
+			}
+			break;
+		default:
+			return naviError_InvalidMessage;
+		}
+
+		idx++;
+	} while (state != PARSE_LOCALZONE_FINAL);
+
+	*offset = sign * (hours * 60 + minutes);
+
+	*nmread = idx;
+	return naviError_OK;
 }
 
