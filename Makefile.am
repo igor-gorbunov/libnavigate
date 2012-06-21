@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-## Find gnulib headers.
-#ACLOCAL_AMFLAGS = -I gnulib/m4
+# Find gnulib headers.
+ACLOCAL_AMFLAGS = -I m4
 
 ## Additional files to distribute.
 #EXTRA_DIST = ChangeLog.O gnulib/m4/gnulib-cache.m4

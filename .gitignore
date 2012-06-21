@@ -19,7 +19,10 @@ autom4te.cache
 config.log
 config.status
 src/.deps
+src/.libs
 tests/.deps
+tests/.libs/
 tests/test
 Makefile
+libtool
 

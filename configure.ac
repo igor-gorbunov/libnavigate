@@ -20,8 +20,10 @@ AC_CONFIG_SRCDIR([src/parser.c])
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_RANLIB
-#AC_PROG_LIBTOOL
+AC_PROG_LIBTOOL
+
+LT_PREREQ([2.2.6])
+LT_INIT
 
 ## Since we use gnulib: gl_EARLY must be called as soon as possible after
 ## the C compiler is checked.  The others could be later, but we just
@@ -29,9 +31,7 @@ AC_PROG_RANLIB
 #gl_EARLY
 #gl_INIT
 
-#LT_PREREQ([2.2.6])
-#LT_INIT
-
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for libraries.
 
@@ -39,7 +39,6 @@ AC_PROG_RANLIB
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
-#AC_HEADER_STDBOOL
 
 # Checks for library functions.
 

@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = $(DEPS_CFLAGS) -I$(top_srcdir)/include
 
-lib_LIBRARIES = libnavigate.a
-libnavigate_a_SOURCES = generator.c parser.c
+lib_LTLIBRARIES = libnavigate.la
+libnavigate_la_SOURCES = generator.c parser.c
+libnavigate_la_LIBADD = $(DEPS_LIBS) -lm
 
