@@ -20,7 +20,7 @@
 #ifndef IEC_GENERATOR_H
 #define IEC_GENERATOR_H
 
-#include <libnavigate/iecsentence.h>
+#include <libnavigate/sentence.h>
 #include <sys/types.h>
 
 #ifdef __cplusplus
