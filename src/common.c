@@ -246,20 +246,19 @@ int IecPrint_Double(double value, char *buffer, int maxsize, int notnull)
 	}
 }
 
-int IecPrint_OffsetSign(enum naviOfsSign_t sign, char *buffer,
-	int maxsize, int notnull)
+int IecPrint_OffsetSign(int sign, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
 	{
 		switch (sign)
 		{
-		case naviOfsSign_North:
+		case navi_North:
 			return snprintf(buffer, maxsize, "N");
-		case naviOfsSign_South:
+		case navi_South:
 			return snprintf(buffer, maxsize, "S");
-		case naviOfsSign_East:
+		case navi_East:
 			return snprintf(buffer, maxsize, "E");
-		case naviOfsSign_West:
+		case navi_West:
 			return snprintf(buffer, maxsize, "W");
 		default:
 			break;
@@ -1026,22 +1025,22 @@ int IecParse_OffsetSign(char *buffer, int *sign, int *nmread)
 
 	if (strncmp("N", buffer, 1) == 0)
 	{
-		*sign = naviOfsSign_North;
+		*sign = navi_North;
 		return navi_Ok;
 	}
 	else if (strncmp("S", buffer, 1) == 0)
 	{
-		*sign = naviOfsSign_South;
+		*sign = navi_South;
 		return navi_Ok;
 	}
 	else if (strncmp("E", buffer, 1) == 0)
 	{
-		*sign = naviOfsSign_East;
+		*sign = navi_East;
 		return navi_Ok;
 	}
 	else if (strncmp("W", buffer, 1) == 0)
 	{
-		*sign = naviOfsSign_West;
+		*sign = navi_West;
 		return navi_Ok;
 	}
 	else
@@ -1052,7 +1051,7 @@ int IecParse_OffsetSign(char *buffer, int *sign, int *nmread)
 }
 
 // Parses latitude
-int IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
+int IecParse_Latitude(char *buffer, struct navi_offset_t *latitude,
 	int *nmread)
 {
 	int idx = 0;
@@ -1123,7 +1122,7 @@ int IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
 }
 
 // Parses longitude sign
-int IecParse_Longitude(char *buffer, struct naviOffset_t *longitude,
+int IecParse_Longitude(char *buffer, struct navi_offset_t *longitude,
 	int *nmread)
 {
 	int idx = 0;
@@ -1577,4 +1576,150 @@ int IecParse_LocalZone(char *buffer, int *offset,
 	*nmread = idx;
 	return navi_Ok;
 }
+
+/**
+ * Parses offset field in the form of x.x,a
+ *
+ * @param pointer to the first byte of field
+ * @param out pointer to structure where the result is stored
+ * @param pointer to variable where the number of read bytes is stored
+ * @return 0 on success, or navi_Error if it's null or an error occured. Call
+ * navierr_get_last() to check the error
+ */
+#define PARSE_OFFSET_INIT		0
+#define PARSE_OFFSET_INTEGRAL	1
+#define PARSE_OFFSET_FRACTION	2
+#define PARSE_OFFSET_SIGN		3
+#define PARSE_OFFSET_FINI		4
+
+int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
+		int *nmread)
+{
+	double t;
+	int i, j, state, c, s, error = 0;
+
+	assert(buffer != NULL);
+	assert(offset != NULL);
+	assert(nmread != NULL);
+
+	t = 0.;
+	state = PARSE_OFFSET_INIT;
+
+	for (i = 0, j = -1; ; i++)
+	{
+		c = buffer[i];
+
+		switch (state)
+		{
+		case PARSE_OFFSET_INIT:
+			if (isdigit(c))
+			{
+				state = PARSE_OFFSET_INTEGRAL;
+				t = t * 10. + (c - '0');
+			}
+			else if (c == '.')
+			{
+				state = PARSE_OFFSET_FRACTION;
+			}
+			else if (c == ',')
+			{	// null field
+				state = PARSE_OFFSET_FINI;
+				error = navi_NullField;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_OFFSET_INTEGRAL:
+			if (isdigit(c))
+			{
+				t = t * 10. + (c - '0');
+			}
+			else if (c == '.')
+			{
+				state = PARSE_OFFSET_FRACTION;
+			}
+			else if (c == ',')
+			{
+				state = PARSE_OFFSET_SIGN;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_OFFSET_FRACTION:
+			if (isdigit(c))
+			{
+				t = t * 10. + pow((c - '0'), j--);
+			}
+			else if (c == ',')
+			{
+				state = PARSE_OFFSET_SIGN;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_OFFSET_SIGN:
+			if (c == 'N')
+			{
+				s = navi_North;
+			}
+			else if (c == 'S')
+			{
+				s = navi_South;
+			}
+			else if (c == 'E')
+			{
+				s = navi_East;
+			}
+			else if (c == 'W')
+			{
+				s = navi_West;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			state = PARSE_OFFSET_FINI;
+			break;
+		case PARSE_OFFSET_FINI:
+			if (c == ',' || c == '*')
+			{
+				goto _Exit;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		}
+	}
+
+_Exit:
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+}
+
+#undef PARSE_OFFSET_INIT
+#undef PARSE_OFFSET_INTEGRAL
+#undef PARSE_OFFSET_FRACTION
+#undef PARSE_OFFSET_SIGN
+#undef PARSE_OFFSET_FINI
 

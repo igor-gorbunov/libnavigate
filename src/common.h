@@ -112,18 +112,17 @@ int IecParse_OffsetSign(char *buffer, int *sign, int *nmread);
 
 //
 // Parses latitude
-int IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
+int IecParse_Latitude(char *buffer, struct navi_offset_t *latitude,
 	int *nmread);
 
 //
 // Parses longitude sign
-int IecParse_Longitude(char *buffer, struct naviOffset_t *longitude,
+int IecParse_Longitude(char *buffer, struct navi_offset_t *longitude,
 	int *nmread);
 
 //
 // Parses time
-int IecParse_Time(char *buffer, struct naviUtc_t *utc,
-	int *nmread);
+int IecParse_Time(char *buffer, struct naviUtc_t *utc, int *nmread);
 
 //
 // Parses status
@@ -148,6 +147,18 @@ int IecParse_Date(char *buffer, struct naviDate_t *date, int *nmread);
 //
 // Parses local zone (sxx,xx)
 int IecParse_LocalZone(char *buffer, int *offset, int *nmread);
+
+/**
+ * Parses offset field in the form of x.x,a. The field must end with ',' or '*'
+ *
+ * @param pointer to the first byte of field
+ * @param out pointer to structure where the result is stored
+ * @param pointer to variable where the number of read bytes is stored
+ * @return 0 on success, or navi_Error if it's null or an error occured. Call
+ * navierr_get_last() to check the error
+ */
+int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
+		int *nmread);
 
 NAVI_END_DECL
 

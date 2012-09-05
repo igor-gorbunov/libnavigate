@@ -283,25 +283,34 @@ struct naviDate_t
 };
 
 //
-// Offset sign
+// Offset sign (N/S, E/W)
 //
-enum naviOfsSign_t
+enum
 {
-	naviOfsSign_Undefined = -1,	// unefined or unsupported offset sign
-
-	naviOfsSign_North = 0,	// North
-	naviOfsSign_South = 1,	// South
-	naviOfsSign_East = 2,	// East
-	naviOfsSign_West = 3	// West
+	navi_North,		// N
+	navi_South,		// S
+	navi_East,		// E
+	navi_West		// W
 };
 
 //
-// Holds positioning or offset data
+// Holds offset data
 //
-struct naviOffset_t
+struct navi_offset_t
 {
-	double offset;		// degrees or minutes
-	int sign;			// N/S or E/W
+	double offset;	// minutes
+	int sign;		// N/S or E/W
+};
+
+//
+// Holds position data
+//
+struct navi_position_t
+{
+	double latitude;	// degrees
+	int latsign;		// N/S
+	double longitude;	// degrees
+	int lonsign;		// E/W
 };
 
 //	// Waypoint arrival alarm
@@ -397,8 +406,8 @@ struct dtm_t
 	unsigned vfields;		// valid fields, bitwise or of DTM_VALID_xxx
 	int ld;			// local datum
 	int lds;		// local datum subdivision code
-	struct naviOffset_t latofs;		// latitude offset, min,N/S
-	struct naviOffset_t lonofs;		// longitude offset, min,E/W
+	struct navi_offset_t latofs;		// latitude offset, min,N/S
+	struct navi_offset_t lonofs;		// longitude offset, min,E/W
 	double altoffset;				// altitude offset, m
 	int rd;			// reference datum
 };
@@ -436,8 +445,8 @@ struct gll_t
 {
 	enum naviTalkerId_t tid;
 	unsigned vfields;		// valid fields, bitwise or of GLL_VALID_xxx
-	struct naviOffset_t latitude;	// latitude, degrees,N/S
-	struct naviOffset_t longitude;	// longitude, degrees,E/W
+	struct navi_offset_t latitude;	// latitude, degrees,N/S
+	struct navi_offset_t longitude;	// longitude, degrees,E/W
 	struct naviUtc_t utc;
 	int status;		// status
 	int mi;			// mode indicator
@@ -454,8 +463,8 @@ struct gns_t
 	enum naviTalkerId_t tid;
 	unsigned vfields;		// valid fields, bitwise or of GNS_VALID_xxx
 	struct naviUtc_t utc;
-	struct naviOffset_t latitude;	// latitude, degrees,N/S
-	struct naviOffset_t longitude;	// longitude, degrees,E/W
+	struct navi_offset_t latitude;	// latitude, degrees,N/S
+	struct navi_offset_t longitude;	// longitude, degrees,E/W
 	int mi[2];			// GPS, GLONASS
 	int totalsats;			// Total number of satellites in use, 00-99
 	double hdop;			// Horizontal Dilution of Precision
@@ -589,12 +598,12 @@ struct rmc_t
 	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
 	struct naviUtc_t utc;
 	int status;		// status
-	struct naviOffset_t latitude;	// latitude, degrees,N/S
-	struct naviOffset_t longitude;	// longitude, degrees,E/W
+	struct navi_offset_t latitude;	// latitude, degrees,N/S
+	struct navi_offset_t longitude;	// longitude, degrees,E/W
 	double speed;			// Speed over ground, knots
 	double courseTrue;		// Course over ground, degrees true
 	int day, month, year;	// Day (01 to 31), Month (01 to 12), Year (UTC)
-	struct naviOffset_t magnetic;	// Magnetic variation, degrees,E/W
+	struct navi_offset_t magnetic;	// Magnetic variation, degrees,E/W
 	int mi;			// mode indicator
 };
 

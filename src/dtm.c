@@ -38,8 +38,8 @@ int navi_msg_create_dtm(const struct dtm_t *msg, char *buffer,
 	msglength += 17;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)
 	{
-		//result = naviError_MsgExceedsMaxSize;
-		return navi_Error;
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return -1;
 	}
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg),
@@ -48,135 +48,77 @@ int navi_msg_create_dtm(const struct dtm_t *msg, char *buffer,
 	IecPrint_Checksum(iecmsg, msglength, cs);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return navi_Ok;
+	return 0;
 }
 
 int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 {
 	int result;
-	size_t index = 1, nmread;
+	int index = 1, nmread;
 
 	msg->vfields = 0;
 
-	result = IecParse_Datum(buffer + index, &msg->ld, &nmread);
-	switch (result)
+	if (IecParse_Datum(buffer + index, &msg->ld, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= DTM_VALID_LOCALDATUM;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
 
 	index += nmread;
 
 	if (buffer[index] != ',')
 	{
-		return navi_InvalidMessage;
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 	index += 1;
 
-	result = IecParse_DatumSub(buffer + index, &msg->lds, &nmread);
-	switch (result)
+	if (IecParse_DatumSub(buffer + index, &msg->lds, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= DTM_VALID_LOCALDATUMSUB;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
 
 	index += nmread;
 
 	if (buffer[index] != ',')
 	{
-		return navi_InvalidMessage;
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->latofs.offset, &nmread);
-	index += nmread;
-	if (buffer[index] != ',')
+	if (navi_msg_parse_offset(buffer + index, &msg->latofs, &nmread) != 0)
 	{
-		return navi_InvalidMessage;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
 	}
-	index += 1;
-	switch (result)
+	else
 	{
-	case navi_Ok:
-		// next field must not be null too
-		result = IecParse_OffsetSign(buffer + index, &msg->latofs.sign, &nmread);
-		if (result == navi_Ok)
-		{
-			msg->vfields |= DTM_VALID_LATOFFSET;
-		}
-		else
-		{
-			return navi_InvalidMessage;
-		}
-		break;
-	case navi_NullField:
-		// next field must be null too
-		result = IecParse_OffsetSign(buffer + index, &msg->latofs.sign, &nmread);
-		if (result != navi_NullField)
-		{
-			return navi_InvalidMessage;
-		}
-		break;
-	default:
-		return result;
+		msg->vfields |= DTM_VALID_LATOFFSET;
 	}
 
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->lonofs.offset, &nmread);
-	index += nmread;
-	if (buffer[index] != ',')
+	if (navi_msg_parse_offset(buffer + index, &msg->lonofs, &nmread) != 0)
 	{
-		return navi_InvalidMessage;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
 	}
-	index += 1;
-	switch (result)
+	else
 	{
-	case navi_Ok:
-		// next field must not be null too
-		result = IecParse_OffsetSign(buffer + index, &msg->lonofs.sign, &nmread);
-		if (result == navi_Ok)
-		{
-			msg->vfields |= DTM_VALID_LONOFFSET;
-		}
-		else
-		{
-			return navi_InvalidMessage;
-		}
-		break;
-	case navi_NullField:
-		// next field must be null too
-		result = IecParse_OffsetSign(buffer + index, &msg->latofs.sign, &nmread);
-		if (result != navi_NullField)
-		{
-			return navi_InvalidMessage;
-		}
-		break;
-	default:
-		return result;
+		msg->vfields |= DTM_VALID_LONOFFSET;
 	}
 
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Double(buffer + index, &msg->altoffset, &nmread);
 	switch (result)
@@ -193,7 +135,8 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 	index += nmread;
 	if (buffer[index] != ',')
 	{
-		return navi_InvalidMessage;
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 	index += 1;
 
@@ -213,9 +156,10 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 
 	if (buffer[index] != '*')
 	{
-		return navi_InvalidMessage;
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 
-	return navi_Ok;
+	return 0;
 }
 

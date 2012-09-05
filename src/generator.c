@@ -32,8 +32,6 @@
 #include "vtg.h"
 #include "zda.h"
 
-//
-// Generator for IEC 61162-1 (2000-07) messages
 int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	switch (type)
@@ -127,6 +125,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		break;
 	}
 
-	return navi_MsgNotSupported;
+	navierr_set_last(navi_MsgNotSupported);
+	return -1;
 }
 

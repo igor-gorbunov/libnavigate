@@ -31,7 +31,8 @@ NAVI_BEGIN_DECL
 // Generates IEC sentence by its description given by type and msg.
 // Stores the result to buffer which has the maximum size of maxsize.
 // The number of stored characters is stored to nmwritten.
-// Returns the status of sentence compilation
+// Returns 0 if succeeded, -1 otherwise
+// Call navierr_get_last() to get the error description
 //
 NAVI_EXTERN(int) navi_msg_create(int type, void *msg, char *buffer,
 		int maxsize, int *nmwritten);

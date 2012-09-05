@@ -19,10 +19,15 @@
 
 #include <libnavigate/errors.h>
 
-navi_error_t g_navi_error = { navi_Undefined, 0 };
+navi_error_t g_navi_error = { navi_Undefined };
 
 const navi_error_t *navierr_get_last(void)
 {
 	return &g_navi_error;
+}
+
+void navierr_set_last(int errclass)
+{
+	g_navi_error.errclass = errclass;
 }
 

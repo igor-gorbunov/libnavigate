@@ -32,7 +32,6 @@ enum
 typedef struct
 {
 	int errclass;
-	char *message;
 } navi_error_t;
 
 /**
@@ -40,6 +39,8 @@ typedef struct
  * that occurred for this thread.
  */
 NAVI_EXTERN(const navi_error_t *) navierr_get_last(void);
+
+NAVI_EXTERN(void) navierr_set_last(int errclass);
 
 NAVI_END_DECL
 
