@@ -1,8 +1,9 @@
-#ifndef _NAVIGATE_H_
-#define _NAVIGATE_H_
+#ifndef INCLUDE_navi_navigate_h
+#define INCLUDE_navi_navigate_h
 
+#include <libnavigate/errors.h>
 #include <libnavigate/generator.h>
 #include <libnavigate/parser.h>
 
-#endif // _NAVIGATE_H_
+#endif // INCLUDE_navi_navigate_h
 

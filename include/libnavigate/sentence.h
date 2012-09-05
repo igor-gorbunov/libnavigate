@@ -1,5 +1,5 @@
 /*
- * iecsentence.h - supported IEC message definitions
+ * sentence.h - supported IEC message definitions
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,13 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IEC_SENTENCE_H
-#define IEC_SENTENCE_H
+#ifndef INCLUDE_navi_sentence_h
+#define INCLUDE_navi_sentence_h
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
+#include "generic.h"
+
+NAVI_BEGIN_DECL
 
 //
 // Supported IEC 61162-1 (2000-07) messages
@@ -35,101 +34,83 @@ extern "C"
 #define NAVI_SENTENCE_MAXSIZE		82
 
 //
-// Possible errors while generation/parsing
-//
-enum naviError_t
-{
-	naviError_Undefined = -1,			// undefined error
-	naviError_OK = 0,					// no error
-	naviError_MsgExceedsMaxSize = 1,	// message too long
-	naviError_CrcEror = 2,				// crc error
-	naviError_NotEnoughBuffer = 3,		// not enough space in output buffer
-	naviError_MsgNotSupported = 4,		// message type not supported
-	naviError_NoValidMessage = 5,		// no valid message in buffer
-	naviError_NullField = 6,			// null field in a message
-	naviError_InvalidMessage = 7		// message does not conform to protocol
-};
-
-//
 // Approved sentence formatters
 //
-enum naviSentence_t
+enum
 {
-	naviSentence_Undefined = -1,	// unefined or unsupported sentence
-
-	naviSentence_AAM = 0,	// waypoint arrival alarm
-	naviSentence_ACK = 1,	// acknowledgement alarm
-	naviSentence_ALM = 2,	// GPS almanac data
-	naviSentence_ALR = 3,	// set alarm state
-	naviSentence_APB = 4,	// heading/track controller (Autopilot) sentence B
-	naviSentence_BEC = 5,	// bearing and distance to waypoint, dead reckoning
-	naviSentence_BOD = 6,	// bearing, origin to destination
-	naviSentence_BWC = 7,	// bearing and distance to waypoint
-	naviSentence_BWR = 8,	// bearing and distance to waypoint, rhumb line
-	naviSentence_BWW = 9,	// bearing, waypoint to waypoint
-	naviSentence_DBT = 10,	// depth below transducer
-	naviSentence_DCN = 11,	// DECCA position
-	naviSentence_DPT = 12,	// depth
-	naviSentence_DSC = 13,	// digital selective calling information
-	naviSentence_DSE = 14,	// expanded digital selective calling
-	naviSentence_DSI = 15,	// DSC transponder initialize
-	naviSentence_DSR = 16,	// DSC transponder response
-	naviSentence_DTM = 17,	// datum reference
-	naviSentence_FSI = 18,	// frequency set information
-	naviSentence_GBS = 19,	// GNSS satellite fault detection
-	naviSentence_GGA = 20,	// global positioning system fix data
-	naviSentence_GLC = 21,	// geographic position, LORAN-C
-	naviSentence_GLL = 22,	// geographic position, latitude/longitude
-	naviSentence_GNS = 23,	// GNSS fix data
-	naviSentence_GRS = 24,	// GNSS range residuals
-	naviSentence_GSA = 25,	// GNSS DOP and active satellites
-	naviSentence_GST = 26,	// GNSS pseudorange error statistics
-	naviSentence_GSV = 27,	// GNSS satellites in view
-	naviSentence_HDG = 28,	// heading, deviation and variation
-	naviSentence_HDT = 29,	// heading, true
-	naviSentence_HMR = 30,	// heading monitor - receive
-	naviSentence_HMS = 31,	// heading monitor - set
-	naviSentence_HSC = 32,	// heading steering command
-	naviSentence_HTC = 33,	// heading/track control command
-	naviSentence_HTD = 34,	// heading/track control data
-	naviSentence_LCD = 35,	// LORAN-C signal data
-	naviSentence_MLA = 36,	// Glonass almanac data
-	naviSentence_MSK = 37,	// MSK receiver interface
-	naviSentence_MSS = 38,	// MSK receiver signal status
-	naviSentence_MTW = 39,	// water temperature
-	naviSentence_MWD = 40,	// wind direction and speed
-	naviSentence_MWV = 41,	// wind speed and angle
-	naviSentence_OSD = 42,	// own ship data
-	naviSentence_RMA = 43,	// recommended minimum specific LORAN-C data
-	naviSentence_RMB = 44,	// recommended minimum navigation information
-	naviSentence_RMC = 45,	// recommended minimum specific GNSS data
-	naviSentence_ROT = 46,	// rate of turn
-	naviSentence_RPM = 47,	// revolutions
-	naviSentence_RSA = 48,	// rudder sensor angle
-	naviSentence_RSD = 49,	// radar system data
-	naviSentence_RTE = 50,	// routes
-	naviSentence_SFI = 51,	// scanning frequency information
-	naviSentence_STN = 52,	// multiple data ID
-	naviSentence_TLB = 53,	// target label
-	naviSentence_TLL = 54,	// target latitude and longitude
-	naviSentence_TTM = 55,	// tracked target message
-	naviSentence_TXT = 56,	// text transmission
-	naviSentence_VBW = 57,	// dual ground/water speed
-	naviSentence_VDR = 58,	// set and drift
-	naviSentence_VHW = 59,	// water speed and heading
-	naviSentence_VLW = 60,	// distance travelled through the water
-	naviSentence_VPW = 61,	// speed, measured parallel to wind
-	naviSentence_VTG = 62,	// course over ground and ground speed
-	naviSentence_WCV = 63,	// waypoint closure velocity
-	naviSentence_WNC = 64,	// distance, waypoint to waypoint
-	naviSentence_WPL = 65,	// waypoint location
-	naviSentence_XDR = 66,	// transducer measurements
-	naviSentence_XTE = 67,	// cross-track error, measured
-	naviSentence_XTR = 68,	// cross-track error, dead reckoning
-	naviSentence_ZDA = 69,	// time and date
-	naviSentence_ZDL = 70,	// time and distance to variable point
-	naviSentence_ZFO = 71,	// UTC and time from origin waypoint
-	naviSentence_ZTG = 72	// UTC and time to destination waypoint
+	navi_AAM = 0,	// waypoint arrival alarm
+	navi_ACK = 1,	// acknowledgement alarm
+	navi_ALM = 2,	// GPS almanac data
+	navi_ALR = 3,	// set alarm state
+	navi_APB = 4,	// heading/track controller (Autopilot) sentence B
+	navi_BEC = 5,	// bearing and distance to waypoint, dead reckoning
+	navi_BOD = 6,	// bearing, origin to destination
+	navi_BWC = 7,	// bearing and distance to waypoint
+	navi_BWR = 8,	// bearing and distance to waypoint, rhumb line
+	navi_BWW = 9,	// bearing, waypoint to waypoint
+	navi_DBT = 10,	// depth below transducer
+	navi_DCN = 11,	// DECCA position
+	navi_DPT = 12,	// depth
+	navi_DSC = 13,	// digital selective calling information
+	navi_DSE = 14,	// expanded digital selective calling
+	navi_DSI = 15,	// DSC transponder initialize
+	navi_DSR = 16,	// DSC transponder response
+	navi_DTM = 17,	// datum reference
+	navi_FSI = 18,	// frequency set information
+	navi_GBS = 19,	// GNSS satellite fault detection
+	navi_GGA = 20,	// global positioning system fix data
+	navi_GLC = 21,	// geographic position, LORAN-C
+	navi_GLL = 22,	// geographic position, latitude/longitude
+	navi_GNS = 23,	// GNSS fix data
+	navi_GRS = 24,	// GNSS range residuals
+	navi_GSA = 25,	// GNSS DOP and active satellites
+	navi_GST = 26,	// GNSS pseudorange error statistics
+	navi_GSV = 27,	// GNSS satellites in view
+	navi_HDG = 28,	// heading, deviation and variation
+	navi_HDT = 29,	// heading, true
+	navi_HMR = 30,	// heading monitor - receive
+	navi_HMS = 31,	// heading monitor - set
+	navi_HSC = 32,	// heading steering command
+	navi_HTC = 33,	// heading/track control command
+	navi_HTD = 34,	// heading/track control data
+	navi_LCD = 35,	// LORAN-C signal data
+	navi_MLA = 36,	// Glonass almanac data
+	navi_MSK = 37,	// MSK receiver interface
+	navi_MSS = 38,	// MSK receiver signal status
+	navi_MTW = 39,	// water temperature
+	navi_MWD = 40,	// wind direction and speed
+	navi_MWV = 41,	// wind speed and angle
+	navi_OSD = 42,	// own ship data
+	navi_RMA = 43,	// recommended minimum specific LORAN-C data
+	navi_RMB = 44,	// recommended minimum navigation information
+	navi_RMC = 45,	// recommended minimum specific GNSS data
+	navi_ROT = 46,	// rate of turn
+	navi_RPM = 47,	// revolutions
+	navi_RSA = 48,	// rudder sensor angle
+	navi_RSD = 49,	// radar system data
+	navi_RTE = 50,	// routes
+	navi_SFI = 51,	// scanning frequency information
+	navi_STN = 52,	// multiple data ID
+	navi_TLB = 53,	// target label
+	navi_TLL = 54,	// target latitude and longitude
+	navi_TTM = 55,	// tracked target message
+	navi_TXT = 56,	// text transmission
+	navi_VBW = 57,	// dual ground/water speed
+	navi_VDR = 58,	// set and drift
+	navi_VHW = 59,	// water speed and heading
+	navi_VLW = 60,	// distance travelled through the water
+	navi_VPW = 61,	// speed, measured parallel to wind
+	navi_VTG = 62,	// course over ground and ground speed
+	navi_WCV = 63,	// waypoint closure velocity
+	navi_WNC = 64,	// distance, waypoint to waypoint
+	navi_WPL = 65,	// waypoint location
+	navi_XDR = 66,	// transducer measurements
+	navi_XTE = 67,	// cross-track error, measured
+	navi_XTR = 68,	// cross-track error, dead reckoning
+	navi_ZDA = 69,	// time and date
+	navi_ZDL = 70,	// time and distance to variable point
+	navi_ZFO = 71,	// UTC and time from origin waypoint
+	navi_ZTG = 72	// UTC and time to destination waypoint
 };
 
 //
@@ -788,9 +769,7 @@ struct zda_t
 //	{
 //	};
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+NAVI_END_DECL
 
-#endif // IEC_SENTENCE_H
+#endif // INCLUDE_navi_sentence_h
 

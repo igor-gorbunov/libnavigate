@@ -1,5 +1,5 @@
 /*
- * iecparser.h - interface to IEC message parser
+ * parser.h - interface to IEC message parser
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,16 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IEC_PARSER_H
-#define IEC_PARSER_H
+#ifndef INCLUDE_navi_parser_h
+#define INCLUDE_navi_parser_h
 
-#include <libnavigate/sentence.h>
-#include <sys/types.h>
+#include "generic.h"
+#include "sentence.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
+NAVI_BEGIN_DECL
 
 //
 // Parser of IEC 61162-1 (2000-07) messages
@@ -37,12 +34,10 @@ extern "C"
 // parsed characters is put to nmread.
 // Returns the analysis status
 //
-enum naviError_t IecParseMessage(char *buffer, size_t maxsize, size_t msgsize,
-	void *msg, enum naviSentence_t *msgtype, size_t *nmread);
+NAVI_EXTERN(int) navi_msg_parse(char *buffer, int maxsize, int msgsize,
+		void *msg, int *msgtype, int *nmread);
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+NAVI_END_DECL
 
-#endif // IEC_PARSER_H
+#endif // INCLUDE_navi_parser_h
 
