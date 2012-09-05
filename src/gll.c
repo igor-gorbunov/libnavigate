@@ -1,7 +1,12 @@
-#include "vtg.h"
+#include "gll.h"
+#include "common.h"
 
 #include <libnavigate/errors.h>
 #include <stdio.h>
+
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
 
 int IecCompose_GLL(const struct gll_t *msg, char *buffer,
 	int maxsize, int *nmwritten)

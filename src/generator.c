@@ -25,6 +25,13 @@
 #include <string.h>
 #include <math.h>
 
+#include "dtm.h"
+#include "gll.h"
+#include "gns.h"
+#include "rmc.h"
+#include "vtg.h"
+#include "zda.h"
+
 //
 // Generator for IEC 61162-1 (2000-07) messages
 int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
@@ -50,7 +57,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_DSR:
 		break;
 	case navi_DTM:
-		return IecCompose_DTM((const struct dtm_t *)msg, buffer, maxsize, nmwritten);
+		return navi_msg_create_dtm((const struct dtm_t *)msg, buffer, maxsize, nmwritten);
 	case navi_FSI:
 	case navi_GBS:
 	case navi_GGA:

@@ -2,13 +2,19 @@
 #include <libnavigate/errors.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <ctype.h>
 
-/*#include <stdlib.h>*/
-/*#include <ctype.h>*/
+#ifdef _MSC_VER
 
+#define snprintf	_snprintf
+
+#define EPROTO 100
+
+#endif // MSVC_VER
 
 int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
 	int maxsize)
@@ -124,12 +130,13 @@ int IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
 
 int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 {
+	int i;
+	unsigned ucs = 0;
+
 	if ((msg == NULL) || (maxsize <= 0) || (cs == NULL))
 	{
 		return -EINVAL;
 	}
-
-	unsigned i, ucs = 0;
 
 	// Skip up to next character after '$'
 	for (i = 0; msg[i] != '$' && i < maxsize; i++) { }
@@ -229,10 +236,6 @@ int IecPrint_Double(double value, char *buffer, int maxsize, int notnull)
 	{
 		int result;
 
-		value = value * 100000000.0;
-		value = round(value);
-		value = value / 100000000.0;
-
 		result = snprintf(buffer, maxsize, "%.8f", value);
 		return RemoveTrailingZeroes(buffer, result);
 	}
@@ -279,10 +282,6 @@ int IecPrint_Latitude(double value, char *buffer,
 		int result;
 		double degrees;
 
-		value = value * 100000000.;
-		value = round(value);
-		value = value / 100000000.;
-
 		value = modf(value, &degrees);
 		degrees = degrees * 100.;
 		value = value * 60.;
@@ -305,10 +304,6 @@ int IecPrint_Longitude(double value, char *buffer,
 	{
 		int result;
 		double degrees;
-
-		value = value * 100000000.;
-		value = round(value);
-		value = value / 100000000.;
 
 		value = modf(value, &degrees);
 		degrees = degrees * 100.;
@@ -431,8 +426,7 @@ int IecScan_AdressField(char *buffer, int maxsize, int *tid, int *msgtype)
 // Scan checksum
 int IecScan_CheckSum(char *buffer, int maxsize)
 {
-	int r;
-	unsigned i;
+	int r, i;
 	unsigned long cs, ucs = 0;
 
 	r = -EPROTO;	// suppose the CRC error
@@ -945,8 +939,7 @@ int IecLookupSentenceFormatter(char *buffer, int *nmread)
 }
 
 // Looks up datum code
-int IecParse_Datum(char *buffer, enum naviDatum_t *datum,
-	int *nmread)
+int IecParse_Datum(char *buffer, int *datum, int *nmread)
 {
 	*nmread = 3;
 
@@ -989,8 +982,7 @@ int IecParse_Datum(char *buffer, enum naviDatum_t *datum,
 }
 
 // Looks up datum subdivision code
-int IecParse_DatumSub(char *buffer,
-	enum naviLocalDatumSub_t *datumsub, int *nmread)
+int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread)
 {
 	if (strncmp(",", buffer, 1) == 0)
 	{
@@ -1028,8 +1020,7 @@ int IecParse_Double(char *buffer, double *value, int *nmread)
 }
 
 // Parses latitude/longitude/offset sign
-int IecParse_OffsetSign(char *buffer, enum naviOfsSign_t *sign,
-	int *nmread)
+int IecParse_OffsetSign(char *buffer, int *sign, int *nmread)
 {
 	*nmread = 1;
 
@@ -1115,10 +1106,11 @@ int IecParse_Latitude(char *buffer, struct naviOffset_t *latitude,
 	}
 	else
 	{
+		int result;
+
 		latitude->offset = deg + min / 60.;
 
-		int result = IecParse_OffsetSign(buffer + *nmread + 1,
-			&latitude->sign, &idx);
+		result = IecParse_OffsetSign(buffer + *nmread + 1, &latitude->sign, &idx);
 		if (result != navi_Ok)
 		{
 			return result;
@@ -1180,10 +1172,11 @@ int IecParse_Longitude(char *buffer, struct naviOffset_t *longitude,
 	}
 	else
 	{
+		int result;
+
 		longitude->offset = deg + min / 60.;
 
-		int result = IecParse_OffsetSign(buffer + *nmread + 1,
-			&longitude->sign, &idx);
+		result = IecParse_OffsetSign(buffer + *nmread + 1, &longitude->sign, &idx);
 		if (result != navi_Ok)
 		{
 			return result;
@@ -1268,8 +1261,7 @@ int IecParse_Time(char *buffer, struct naviUtc_t *utc,
 }
 
 // Parses status
-int IecParse_Status(char *buffer, enum naviStatus_t *status,
-	int *nmread)
+int IecParse_Status(char *buffer, int *status, int *nmread)
 {
 	*nmread = 1;
 
@@ -1292,8 +1284,7 @@ int IecParse_Status(char *buffer, enum naviStatus_t *status,
 }
 
 // Parses mode indicator
-int IecParse_ModeIndicator(char *buffer, enum naviModeIndicator_t *mi,
-	int *nmread)
+int IecParse_ModeIndicator(char *buffer, int *mi, int *nmread)
 {
 	*nmread = 1;
 
@@ -1336,8 +1327,7 @@ int IecParse_ModeIndicator(char *buffer, enum naviModeIndicator_t *mi,
 }
 
 // Parses mode indicator array
-int IecParse_ModeIndicatorArray(char *buffer,
-	enum naviModeIndicator_t mi[], int *nmread)
+int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
 {
 	int idx = 0;
 
@@ -1401,7 +1391,7 @@ int IecParse_Integer(char *buffer, int *value, int *nmread)
 
 	errno = 0;
 	tmp = strtod(buffer, &endptr);
-	*value = (int)round(tmp);
+	*value = (int)tmp;
 	*nmread = endptr - buffer;
 	if (errno != 0)
 	{

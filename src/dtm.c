@@ -1,7 +1,12 @@
 #include "dtm.h"
+#include "common.h"
 
 #include <libnavigate/errors.h>
 #include <stdio.h>
+
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
 
 int navi_msg_create_dtm(const struct dtm_t *msg, char *buffer,
 		int maxsize, int *nmwritten)

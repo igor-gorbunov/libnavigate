@@ -4,6 +4,10 @@
 #include <libnavigate/errors.h>
 #include <stdio.h>
 
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
+
 int IecCompose_VTG(const struct vtg_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {

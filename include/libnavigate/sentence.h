@@ -300,8 +300,8 @@ enum naviOfsSign_t
 //
 struct naviOffset_t
 {
-	double offset;				// degrees or minutes
-	enum naviOfsSign_t sign;	// N/S or E/W
+	double offset;		// degrees or minutes
+	int sign;			// N/S or E/W
 };
 
 //	// Waypoint arrival alarm
@@ -395,12 +395,12 @@ struct dtm_t
 {
 	enum naviTalkerId_t tid;
 	unsigned vfields;		// valid fields, bitwise or of DTM_VALID_xxx
-	enum naviDatum_t ld;			// local datum
-	enum naviLocalDatumSub_t lds;	// local datum subdivision code
+	int ld;			// local datum
+	int lds;		// local datum subdivision code
 	struct naviOffset_t latofs;		// latitude offset, min,N/S
 	struct naviOffset_t lonofs;		// longitude offset, min,E/W
 	double altoffset;				// altitude offset, m
-	enum naviDatum_t rd;			// reference datum
+	int rd;			// reference datum
 };
 
 #define DTM_VALID_LOCALDATUM		0x01
@@ -439,8 +439,8 @@ struct gll_t
 	struct naviOffset_t latitude;	// latitude, degrees,N/S
 	struct naviOffset_t longitude;	// longitude, degrees,E/W
 	struct naviUtc_t utc;
-	enum naviStatus_t status;
-	enum naviModeIndicator_t mi;
+	int status;		// status
+	int mi;			// mode indicator
 };
 
 #define GLL_VALID_LATITUDE		0x01
@@ -456,7 +456,7 @@ struct gns_t
 	struct naviUtc_t utc;
 	struct naviOffset_t latitude;	// latitude, degrees,N/S
 	struct naviOffset_t longitude;	// longitude, degrees,E/W
-	enum naviModeIndicator_t mi[2];	// GPS, GLONASS
+	int mi[2];			// GPS, GLONASS
 	int totalsats;			// Total number of satellites in use, 00-99
 	double hdop;			// Horizontal Dilution of Precision
 	double antaltitude;		// Antenna altitude, m, re:mean-sea-level (geoid)
@@ -588,14 +588,14 @@ struct rmc_t
 	enum naviTalkerId_t tid;
 	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
 	struct naviUtc_t utc;
-	enum naviStatus_t status;
+	int status;		// status
 	struct naviOffset_t latitude;	// latitude, degrees,N/S
 	struct naviOffset_t longitude;	// longitude, degrees,E/W
 	double speed;			// Speed over ground, knots
 	double courseTrue;		// Course over ground, degrees true
 	int day, month, year;	// Day (01 to 31), Month (01 to 12), Year (UTC)
 	struct naviOffset_t magnetic;	// Magnetic variation, degrees,E/W
-	enum naviModeIndicator_t mi;
+	int mi;			// mode indicator
 };
 
 #define RMC_VALID_UTC				0x01
@@ -700,7 +700,7 @@ struct vtg_t
 	double courseTrue;		// Course over ground, degrees true
 	double courseMagn;		// Course over ground, degrees magnetic
 	double speed;			// Speed over ground, m/s
-	enum naviModeIndicator_t mi;
+	int mi;					// Mode indicator
 };
 
 #define VTG_VALID_COURSETRUE	0x01

@@ -20,11 +20,22 @@
 #include <libnavigate/parser.h>
 #include <libnavigate/errors.h>
 
+#include "common.h"
+#include "dtm.h"
+#include "gll.h"
+#include "gns.h"
+#include "rmc.h"
+#include "vtg.h"
+#include "zda.h"
+
 //
 // Parser of IEC 61162-1 (2000-07) messages
 int navi_msg_parse(char *buffer, int maxsize, int msgsize,
 	void *msg, int *msgtype, int *nmread)
 {
+	int result;
+	int tid;	// talker id
+
 	int som;	// start of message index
 	int eom;	// end of message index
 
@@ -55,8 +66,6 @@ int navi_msg_parse(char *buffer, int maxsize, int msgsize,
 	// At least read a message
 	*nmread = eom;
 
-	int result;
-
 	//
 	// Check that the message is not broken
 	//
@@ -68,8 +77,6 @@ int navi_msg_parse(char *buffer, int maxsize, int msgsize,
 	//
 	// Determine the talker ID and message type
 	//
-	enum naviTalkerId_t tid;
-
 	if (IecScan_AdressField(buffer + som + 1, maxsize - (som + eom + 1),
 			&tid, msgtype) < 0)
 	{

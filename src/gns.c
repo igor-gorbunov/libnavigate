@@ -1,7 +1,12 @@
 #include "gns.h"
+#include "common.h"
 
 #include <libnavigate/errors.h>
 #include <stdio.h>
+
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
 
 int IecCompose_GNS(const struct gns_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
