@@ -1552,7 +1552,7 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		fraction = fraction * 60.;
 		fraction = fraction + degrees;
 
-		nmwritten = snprintf(buffer + nmwritten, maxsize, "%04f", fraction);
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
 		nmwritten = RemoveTrailingZeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
@@ -1565,12 +1565,12 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		nmwritten += 1;
 
 		// extract and print longitude
-		fraction = modf(fix->latitude, &degrees);
+		fraction = modf(fix->longitude, &degrees);
 		degrees = degrees * 100.;
 		fraction = fraction * 60.;
 		fraction = fraction + degrees;
 
-		nmwritten = snprintf(buffer + nmwritten, maxsize, "%05f", fraction);
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
 		nmwritten = RemoveTrailingZeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
