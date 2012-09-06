@@ -222,7 +222,7 @@ int main()
 		printf("Composition of VTG failed (%d)\n", result);
 	}
 
-	printf("msglength = %zu\n", msglength);
+	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
 	finished = 0;

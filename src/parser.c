@@ -236,7 +236,7 @@ int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
 		int *nmread)
 {
 	double t;
-	int i, j, state, c, s, error = 0;
+	int i = 0, j = -1, state, c, s, error = 0;
 
 	assert(buffer != NULL);
 	assert(offset != NULL);
@@ -245,9 +245,9 @@ int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
 	t = 0.;
 	state = PARSE_OFFSET_INIT;
 
-	for (i = 0, j = -1; ; i++)
+	for ( ; ; )
 	{
-		c = buffer[i];
+		c = buffer[i++];
 
 		switch (state)
 		{
@@ -294,7 +294,7 @@ int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
 		case PARSE_OFFSET_FRACTION:
 			if (isdigit(c))
 			{
-				t = t + pow((c - '0'), j--);
+				t = t + pow(10., j--) * (c - '0');
 			}
 			else if (c == ',')
 			{
@@ -346,6 +346,11 @@ _Exit:
 		navierr_set_last(error);
 		return navi_Error;
 	}
+	else
+	{
+		offset->offset = t;
+		offset->sign = s;
+	}
 
 	return navi_Ok;
 }
@@ -373,7 +378,7 @@ _Exit:
 int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 	int *nmread)
 {
-	int state, i, j, k, c, error = 0;
+	int state, i = 0, j, k, c, error = 0;
 	double deg, min;
 
 	assert(buffer != NULL);
@@ -383,9 +388,9 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 	state = PARSE_POSITION_INIT;
 	deg = min = 0.;
 
-	for (i = 0; ; i++)
+	for ( ; ; )
 	{
-		c = buffer[i];
+		c = buffer[i++];
 
 		switch (state)
 		{
@@ -398,7 +403,7 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 			else if (isdigit(c))
 			{	// proceed latitude
 				state = PARSE_POSITION_LAT_INTEGRAL;
-				i--;	// one character back
+				deg = c - '0';
 			}
 			else
 			{
@@ -407,19 +412,15 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 			}
 			break;
 		case PARSE_POSITION_LAT_INTEGRAL:
-			// parse two digits of degrees
-			for (k = 0; k < 2; k++, i++)
+			// parse second digit of degrees
+			if (isdigit(c))
 			{
-				c = buffer[i];
-				if (isdigit(c))
-				{
-					deg = deg * 10. + (c - '0');
-				}
-				else
-				{
-					error = navi_InvalidMessage;
-					goto _Exit;
-				}
+				deg = deg * 10. + (c - '0');
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
 			}
 			// parse two integral digits of minutes
 			for (k = 0; k < 2; k++, i++)
@@ -436,7 +437,7 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 				}
 			}
 			// check if there is fractional part of latitude minutes
-			c = buffer[i];
+			c = buffer[i++];
 			if (c == '.')
 			{	// yes, there is
 				state = PARSE_POSITION_LAT_FRACTION;
@@ -456,7 +457,7 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 		case PARSE_POSITION_LAT_FRACTION:
 			if (isdigit(c))
 			{
-				min = min + pow((c - '0'), j--);
+				min = min + pow(10., j--) * (c - '0');
 			}
 			else if (c == ',')
 			{
@@ -484,10 +485,11 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 				goto _Exit;
 			}
 			// check if this is the only character
-			c = buffer[++i];
+			c = buffer[i++];
 			if (c == ',')
 			{
 				state = PARSE_POSITION_LON_INTEGRAL;
+				min = 0.;
 			}
 			else
 			{
@@ -497,7 +499,8 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 			break;
 		case PARSE_POSITION_LON_INTEGRAL:
 			// parse three digits of degrees
-			for (k = 0; k < 3; k++, i++)
+			deg = c - '0';
+			for (k = 0; k < 2; k++, i++)
 			{
 				c = buffer[i];
 				if (isdigit(c))
@@ -525,7 +528,7 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 				}
 			}
 			// check if there is fractional part of longitude minutes
-			c = buffer[i];
+			c = buffer[i++];
 			if (c == '.')
 			{	// yes, there is
 				state = PARSE_POSITION_LON_FRACTION;
@@ -545,7 +548,7 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 		case PARSE_POSITION_LON_FRACTION:
 			if (isdigit(c))
 			{
-				min = min + pow((c - '0'), j--);
+				min = min + pow(10., j--) * (c - '0');
 			}
 			else if (c == ',')
 			{
@@ -572,20 +575,10 @@ int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
 				error = navi_InvalidMessage;
 				goto _Exit;
 			}
-			// check if this is the only character
-			c = buffer[++i];
-			if (c == ',')
-			{
-				state = PARSE_POSITION_FINI;
-			}
-			else
-			{
-				error = navi_InvalidMessage;
-				goto _Exit;
-			}
+			state = PARSE_POSITION_FINI;
 			break;
 		case PARSE_POSITION_NULLFIELD:
-			if (j < 3)
+			if (j < 2)
 			{
 				if (c == ',')
 				{

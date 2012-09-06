@@ -108,13 +108,6 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 	}
 	index += nmread;
 
-	if (buffer[index] != ',')
-	{
-		navierr_set_last(navi_InvalidMessage);
-		return -1;
-	}
-	index += 1;
-
 	if (navi_msg_parse_offset(buffer + index, &msg->lonofs, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
@@ -125,13 +118,6 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 		msg->vfields |= DTM_VALID_LONOFFSET;
 	}
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		navierr_set_last(navi_InvalidMessage);
-		return -1;
-	}
-	index += 1;
 
 	result = IecParse_Double(buffer + index, &msg->altoffset, &nmread);
 	switch (result)
