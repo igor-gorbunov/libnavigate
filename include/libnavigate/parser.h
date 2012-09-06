@@ -34,7 +34,7 @@ NAVI_BEGIN_DECL
 // parsed characters is put to nmread.
 // Returns the analysis status
 //
-NAVI_EXTERN(int) navi_msg_parse(char *buffer, int maxsize, int msgsize,
+NAVI_EXTERN(int) navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		void *msg, int *msgtype, int *nmread);
 
 //

@@ -14,3 +14,10 @@ ELSE()
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 ENDIF()
 
+TARGET_LINK_LIBRARIES(navigate m)
+
+#IF(BUILD_TESTS)
+	ADD_EXECUTABLE(test tests/main.c)
+	TARGET_LINK_LIBRARIES(test navigate)
+#ENDIF()
+

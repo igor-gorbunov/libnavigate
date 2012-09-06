@@ -17,17 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/iecgenerator.h>
-#include <libnavigate/iecparser.h>
+#include <navigate.h>
 
 #include <stdio.h>
 #include <errno.h>
 
 int main()
 {
-	enum naviError_t result;
-	size_t msglength, nmwritten, nmread;
-	size_t remain;
+	int result;
+	int msglength, nmwritten, nmread;
+	int remain;
 
 	char buffer[1024];
 	struct dtm_t dtm;
@@ -54,9 +53,9 @@ int main()
 	zda.lzoffset = -240;
 
 	nmwritten = 0;
-	result = IecComposeMessage(naviSentence_ZDA, &zda, buffer + msglength,
+	result = navi_create_msg(navi_ZDA, &zda, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -73,15 +72,15 @@ int main()
 		DTM_VALID_REFERENCEDATUM;
 	dtm.ld = naviDatum_UserDefined;
 	dtm.latofs.offset = 2.4366;
-	dtm.latofs.sign = naviOfsSign_North;
+	dtm.latofs.sign = navi_North;
 	dtm.lonofs.offset = 3.81825;
-	dtm.lonofs.sign = naviOfsSign_West;
+	dtm.lonofs.sign = navi_West;
 	dtm.altoffset = 3.446;
 	dtm.rd = naviDatum_WGS84;
 
-	result = IecComposeMessage(naviSentence_DTM, &dtm, buffer + msglength,
+	result = navi_create_msg(navi_DTM, &dtm, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -93,11 +92,11 @@ int main()
 
 	// GLL
 	gll.tid = naviTalkerId_SN;
-	gll.vfields = GLL_VALID_LATITUDE | GLL_VALID_LONGITUDE | GLL_VALID_UTC;
-	gll.latitude.offset = 0.02;
-	gll.latitude.sign = naviOfsSign_North;
-	gll.longitude.offset = 0.00000000999;
-	gll.longitude.sign = naviOfsSign_East;
+	gll.vfields = GLL_VALID_POSITION_FIX | GLL_VALID_UTC;
+	gll.fix.latitude = 0.02;
+	gll.fix.latsign = navi_North;
+	gll.fix.longitude = 0.00000000999;
+	gll.fix.lonsign = navi_East;
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18;
@@ -105,9 +104,9 @@ int main()
 	gll.status = naviStatus_DataValid;
 	gll.mi = naviModeIndicator_Autonomous;
 
-	result = IecComposeMessage(naviSentence_GLL, &gll, buffer + msglength,
+	result = navi_create_msg(navi_GLL, &gll, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -119,7 +118,7 @@ int main()
 
 	// GNS
 	gns.tid = naviTalkerId_GL;
-	gns.vfields = GNS_VALID_UTC | GNS_VALID_LATITUDE | GNS_VALID_LONGITUDE |
+	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX |
 		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
 		GNS_VALID_HDOP  | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
@@ -127,10 +126,10 @@ int main()
 	gns.utc.min = 0;
 	gns.utc.sec = 0;
 	gns.utc.msec = 0;
-	gns.latitude.offset = 60.;
-	gns.latitude.sign = naviOfsSign_North;
-	gns.longitude.offset = 30.;
-	gns.longitude.sign = naviOfsSign_East;
+	gns.fix.latitude = 60.;
+	gns.fix.latsign = navi_North;
+	gns.fix.longitude = 30.;
+	gns.fix.lonsign = navi_East;
 	gns.mi[0] = naviModeIndicator_Autonomous;
 	gns.mi[1] = naviModeIndicator_Differential;
 	gns.totalsats = 4;
@@ -140,9 +139,9 @@ int main()
 	gns.diffage = 4;
 	gns.id = 13;
 
-	result = IecComposeMessage(naviSentence_GNS, &gns, buffer + msglength,
+	result = navi_create_msg(navi_GNS, &gns, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -154,29 +153,28 @@ int main()
 
 	// RMC
 	rmc.tid = naviTalkerId_GL;
-	rmc.vfields = RMC_VALID_UTC | RMC_VALID_LATITUDE |
-		RMC_VALID_LONGITUDE | RMC_VALID_DATE;
+	rmc.vfields = RMC_VALID_UTC | RMC_VALID_POSITION_FIX | RMC_VALID_DATE;
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39;
 	rmc.utc.msec = 980;
 	rmc.status = naviStatus_DataInvalid;
-	rmc.latitude.offset = 74.64772882;
-	rmc.latitude.sign = naviOfsSign_South;
-	rmc.longitude.offset = 132.0000333;
-	rmc.longitude.sign = naviOfsSign_East;
+	rmc.fix.latitude = 74.64772882;
+	rmc.fix.latsign = navi_South;
+	rmc.fix.longitude = 132.0000333;
+	rmc.fix.lonsign = navi_East;
 	rmc.speed = 1.03553;
 	rmc.courseTrue = 180.2112;
 	rmc.day = 18;
 	rmc.month = 3;
 	rmc.year = 2012;
 	rmc.magnetic.offset = 23.011;
-	rmc.magnetic.sign = naviOfsSign_East;
+	rmc.magnetic.sign = navi_East;
 	rmc.mi = naviModeIndicator_Estimated;
 	// Part 1
-	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
+	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -188,9 +186,9 @@ int main()
 	// Part 2
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_SPEED | RMC_VALID_COURSETRUE |
 		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
-	result = IecComposeMessage(naviSentence_RMC, &rmc, buffer + msglength,
+	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -202,15 +200,15 @@ int main()
 
 	// VTG
 	vtg.tid = naviTalkerId_VW;
-	vtg.vfields = VTG_VALID_COURSETRUE  | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
+	vtg.vfields = VTG_VALID_COURSETRUE | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;
 	vtg.speed = 1.023;
 	vtg.mi = naviModeIndicator_Simulator;
 
-	result = IecComposeMessage(naviSentence_VTG, &vtg, buffer + msglength,
+	result = navi_create_msg(navi_VTG, &vtg, buffer + msglength,
 		remain, &nmwritten);
-	if (result == naviError_OK)
+	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
 		remain -= nmwritten;
@@ -225,7 +223,7 @@ int main()
 
 	char parsedbuffer[1024];
 	int finished, parsed;
-	enum naviSentence_t msgtype;
+	int msgtype;
 
 	finished = 0;
 	parsed = 0;
@@ -233,14 +231,14 @@ int main()
 
 	do
 	{
-		while ((result = IecParseMessage(buffer + parsed, sizeof(buffer) - parsed,
-			sizeof(parsedbuffer), parsedbuffer, &msgtype, &nmread)) == naviError_OK)
+		while ((result = navi_parse_msg(buffer + parsed, sizeof(buffer) - parsed,
+			sizeof(parsedbuffer), parsedbuffer, &msgtype, &nmread)) == navi_Ok)
 		{
 			parsed += nmread;
 
 			switch (msgtype)
 			{
-			case naviSentence_DTM:
+			case navi_DTM:
 				{
 					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
 					printf("Received DTM: talker id = %d\n", dtm->tid);
@@ -273,20 +271,20 @@ int main()
 					}
 				}
 				break;
-			case naviSentence_GLL:
+			case navi_GLL:
 				{
 					struct gll_t *gll = (struct gll_t *)parsedbuffer;
 					printf("Received GLL: talker id = %d\n", gll->tid);
 
-					if (gll->vfields & GLL_VALID_LATITUDE)
+					if (gll->vfields & GLL_VALID_POSITION_FIX)
 					{
-						printf("\tlatitude = %.12f (%d)\n", gll->latitude.offset,
-							gll->latitude.sign);
+						printf("\tlatitude = %.12f (%d)\n", gll->fix.latitude,
+							gll->fix.latsign);
 					}
-					if (gll->vfields & GLL_VALID_LONGITUDE)
+					if (gll->vfields & GLL_VALID_POSITION_FIX)
 					{
-						printf("\tlongitude = %.12f (%d)\n", gll->longitude.offset,
-							gll->longitude.sign);
+						printf("\tlongitude = %.12f (%d)\n", gll->fix.longitude,
+							gll->fix.lonsign);
 					}
 					if (gll->vfields & GLL_VALID_UTC)
 					{
@@ -298,7 +296,7 @@ int main()
 					printf("\tmode indicator = %d\n", gll->mi);
 				}
 				break;
-			case naviSentence_GNS:
+			case navi_GNS:
 				{
 					struct gns_t *gns = (struct gns_t *)parsedbuffer;
 					printf("Received GNS: talker id = %d\n", gns->tid);
@@ -308,15 +306,15 @@ int main()
 						printf("\tutc = %d %d %d %d\n", gns->utc.hour,
 							gns->utc.min, gns->utc.sec, gns->utc.msec);
 					}
-					if (gns->vfields & GNS_VALID_LATITUDE)
+					if (gns->vfields & GNS_VALID_POSITION_FIX)
 					{
-						printf("\tlatitude = %.12f (%d)\n", gns->latitude.offset,
-							gns->latitude.sign);
+						printf("\tlatitude = %.12f (%d)\n", gns->fix.latitude,
+							gns->fix.latsign);
 					}
-					if (gns->vfields & GNS_VALID_LONGITUDE)
+					if (gns->vfields & GNS_VALID_POSITION_FIX)
 					{
-						printf("\tlongitude = %.12f (%d)\n", gns->longitude.offset,
-							gns->longitude.sign);
+						printf("\tlongitude = %.12f (%d)\n", gns->fix.longitude,
+							gns->fix.lonsign);
 					}
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
 					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
@@ -345,7 +343,7 @@ int main()
 					}
 				}
 				break;
-			case naviSentence_RMC:
+			case navi_RMC:
 				{
 					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
 					printf("Received RMC: talker id = %d\n", rmc->tid);
@@ -356,15 +354,15 @@ int main()
 							rmc->utc.min, rmc->utc.sec, rmc->utc.msec);
 					}
 					printf("\tstatus = %d\n", rmc->status);
-					if (rmc->vfields & RMC_VALID_LATITUDE)
+					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 					{
-						printf("\tlatitude = %.12f (%d)\n", rmc->latitude.offset,
-							rmc->latitude.sign);
+						printf("\tlatitude = %.12f (%d)\n", rmc->fix.latitude,
+							rmc->fix.latsign);
 					}
-					if (rmc->vfields & RMC_VALID_LONGITUDE)
+					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 					{
-						printf("\tlongitude = %.12f (%d)\n", rmc->longitude.offset,
-							rmc->longitude.sign);
+						printf("\tlongitude = %.12f (%d)\n", rmc->fix.longitude,
+							rmc->fix.lonsign);
 					}
 					if (rmc->vfields & RMC_VALID_SPEED)
 					{
@@ -387,7 +385,7 @@ int main()
 					printf("\tmode indicator = %d\n", rmc->mi);
 				}
 				break;
-			case naviSentence_VTG:
+			case navi_VTG:
 				{
 					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
 					printf("Received VTG: talker id = %d\n", vtg->tid);
@@ -407,7 +405,7 @@ int main()
 					printf("\tmode indicator = %d\n", vtg->mi);
 				}
 				break;
-			case naviSentence_ZDA:
+			case navi_ZDA:
 				{
 					struct zda_t *zda = (struct zda_t *)parsedbuffer;
 					printf("Received ZDA: talker id = %d\n", zda->tid);
@@ -439,43 +437,43 @@ int main()
 				break;
 			}
 		}
-		if (result == naviError_CrcEror)
+		if (result == navi_CrcEror)
 		{
 			printf("CRC error\n");
 			parsed += nmread;	// advance to parse next message
 		}
-		else if (result == naviError_MsgNotSupported)
+		else if (result == navi_MsgNotSupported)
 		{
 			parsed += nmread;	// advance to parse next message
 
 			switch (msgtype)
 			{
-			case naviSentence_DTM:
+			case navi_DTM:
 				{
 					printf("Could not parse DTM\n");
 				}
 				break;
-			case naviSentence_GLL:
+			case navi_GLL:
 				{
 					printf("Could not parse GLL\n");
 				}
 				break;
-			case naviSentence_GNS:
+			case navi_GNS:
 				{
 					printf("Could not parse GNS\n");
 				}
 				break;
-			case naviSentence_RMC:
+			case navi_RMC:
 				{
 					printf("Could not parse RMC\n");
 				}
 				break;
-			case naviSentence_VTG:
+			case navi_VTG:
 				{
 					printf("Could not parse VTG\n");
 				}
 				break;
-			case naviSentence_ZDA:
+			case navi_ZDA:
 				{
 					printf("Could not parse ZDA\n");
 				}
@@ -484,7 +482,7 @@ int main()
 				break;
 			}
 		}
-		else if (result == naviError_NoValidMessage)
+		else if (result == navi_NoValidMessage)
 		{
 			printf("Buffer emptied (%d)\n", result);
 			finished = 1;

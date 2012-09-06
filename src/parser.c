@@ -34,9 +34,9 @@
 #include "zda.h"
 
 //
-// navi_msg_parse
+// navi_parse_msg
 //
-int navi_msg_parse(char *buffer, int maxsize, int msgsize,
+int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	void *msg, int *msgtype, int *nmread)
 {
 	int result;
