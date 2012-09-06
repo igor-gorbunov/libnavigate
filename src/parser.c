@@ -20,6 +20,10 @@
 #include <libnavigate/parser.h>
 #include <libnavigate/errors.h>
 
+#include <math.h>
+#include <ctype.h>
+#include <stddef.h>
+
 #include "common.h"
 #include "dtm.h"
 #include "gll.h"
@@ -29,7 +33,8 @@
 #include "zda.h"
 
 //
-// Parser of IEC 61162-1 (2000-07) messages
+// navi_msg_parse
+//
 int navi_msg_parse(char *buffer, int maxsize, int msgsize,
 	void *msg, int *msgtype, int *nmread)
 {
@@ -215,4 +220,140 @@ int navi_msg_parse(char *buffer, int maxsize, int msgsize,
 
 	return navi_MsgNotSupported;
 }
+
+//
+// navi_msg_parse_offset
+//
+
+#define PARSE_OFFSET_INIT		0
+#define PARSE_OFFSET_INTEGRAL	1
+#define PARSE_OFFSET_FRACTION	2
+#define PARSE_OFFSET_SIGN		3
+#define PARSE_OFFSET_FINI		4
+
+int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
+		int *nmread)
+{
+	double t;
+	int i, j, state, c, s, error = 0;
+
+	assert(buffer != NULL);
+	assert(offset != NULL);
+	assert(nmread != NULL);
+
+	t = 0.;
+	state = PARSE_OFFSET_INIT;
+
+	for (i = 0, j = -1; ; i++)
+	{
+		c = buffer[i];
+
+		switch (state)
+		{
+		case PARSE_OFFSET_INIT:
+			if (isdigit(c))
+			{
+				state = PARSE_OFFSET_INTEGRAL;
+				t = t * 10. + (c - '0');
+			}
+			else if (c == '.')
+			{
+				state = PARSE_OFFSET_FRACTION;
+			}
+			else if (c == ',')
+			{	// null field
+				state = PARSE_OFFSET_FINI;
+				error = navi_NullField;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_OFFSET_INTEGRAL:
+			if (isdigit(c))
+			{
+				t = t * 10. + (c - '0');
+			}
+			else if (c == '.')
+			{
+				state = PARSE_OFFSET_FRACTION;
+			}
+			else if (c == ',')
+			{
+				state = PARSE_OFFSET_SIGN;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_OFFSET_FRACTION:
+			if (isdigit(c))
+			{
+				t = t * 10. + pow((c - '0'), j--);
+			}
+			else if (c == ',')
+			{
+				state = PARSE_OFFSET_SIGN;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_OFFSET_SIGN:
+			if (c == 'N')
+			{
+				s = navi_North;
+			}
+			else if (c == 'S')
+			{
+				s = navi_South;
+			}
+			else if (c == 'E')
+			{
+				s = navi_East;
+			}
+			else if (c == 'W')
+			{
+				s = navi_West;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			state = PARSE_OFFSET_FINI;
+			break;
+		case PARSE_OFFSET_FINI:
+			if (c != ',' && c != '*')
+			{
+				error = navi_InvalidMessage;
+			}
+			goto _Exit;
+		}
+	}
+
+_Exit:
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+}
+
+#undef PARSE_OFFSET_INIT
+#undef PARSE_OFFSET_INTEGRAL
+#undef PARSE_OFFSET_FRACTION
+#undef PARSE_OFFSET_SIGN
+#undef PARSE_OFFSET_FINI
 

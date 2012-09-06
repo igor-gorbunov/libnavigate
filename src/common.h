@@ -148,18 +148,6 @@ int IecParse_Date(char *buffer, struct naviDate_t *date, int *nmread);
 // Parses local zone (sxx,xx)
 int IecParse_LocalZone(char *buffer, int *offset, int *nmread);
 
-/**
- * Parses offset field in the form of x.x,a. The field must end with ',' or '*'
- *
- * @param pointer to the first byte of field
- * @param out pointer to structure where the result is stored
- * @param pointer to variable where the number of read bytes is stored
- * @return 0 on success, or navi_Error if it's null or an error occured. Call
- * navierr_get_last() to check the error
- */
-int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
-		int *nmread);
-
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_common_h

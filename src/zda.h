@@ -12,8 +12,8 @@
 
 NAVI_BEGIN_DECL
 
-int IecCompose_ZDA(const struct zda_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+int navi_msg_create_zda(const struct zda_t *msg, char *buffer,
+		int maxsize, int *nmwritten);
 
 int IecParse_ZDA(struct zda_t *msg, char *buffer, int maxsize);
 

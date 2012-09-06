@@ -8,7 +8,7 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
-int IecCompose_VTG(const struct vtg_t *msg, char *buffer,
+int navi_msg_create_vtg(const struct vtg_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;
@@ -39,7 +39,8 @@ int IecCompose_VTG(const struct vtg_t *msg, char *buffer,
 	msglength += 18;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)
 	{
-		return navi_MsgExceedsMaxSize;
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
 	}
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg),

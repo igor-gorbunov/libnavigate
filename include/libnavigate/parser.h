@@ -37,6 +37,19 @@ NAVI_BEGIN_DECL
 NAVI_EXTERN(int) navi_msg_parse(char *buffer, int maxsize, int msgsize,
 		void *msg, int *msgtype, int *nmread);
 
+//
+// Parses offset field in the form of `x.x,a | ,`.
+// The field must end with ',' or '*'
+//
+// @param pointer to the first byte of field
+// @param out pointer to structure where the result is stored
+// @param pointer to variable where the number of read bytes is stored
+// @return 0 on success, or navi_Error if it's null or an error occured. Call
+// navierr_get_last() to check the error
+//
+NAVI_EXTERN(int) navi_msg_parse_offset(char *buffer,
+		struct navi_offset_t *offset, int *nmread);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h

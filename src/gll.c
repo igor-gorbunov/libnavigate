@@ -8,7 +8,7 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
-int IecCompose_GLL(const struct gll_t *msg, char *buffer,
+int navi_msg_create_gll(const struct gll_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;
@@ -33,7 +33,8 @@ int IecCompose_GLL(const struct gll_t *msg, char *buffer,
 	msglength += 16;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)
 	{
-		return navi_MsgExceedsMaxSize;
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
 	}
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s,%s,%s,%s*%s\r\n",

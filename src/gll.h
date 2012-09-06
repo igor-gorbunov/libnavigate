@@ -12,8 +12,8 @@
 
 NAVI_BEGIN_DECL
 
-int IecCompose_GLL(const struct gll_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+int navi_msg_create_gll(const struct gll_t *msg, char *buffer,
+		int maxsize, int *nmwritten);
 
 int IecParse_GLL(struct gll_t *msg, char *buffer, int maxsize);
 

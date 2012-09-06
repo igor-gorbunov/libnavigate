@@ -9,7 +9,7 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
-int IecCompose_ZDA(const struct zda_t *msg, char *buffer,
+int navi_msg_create_zda(const struct zda_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;
@@ -49,7 +49,8 @@ int IecCompose_ZDA(const struct zda_t *msg, char *buffer,
 	msglength += 15;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)
 	{
-		return navi_MsgExceedsMaxSize;
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
 	}
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sZDA,%s,%s,%s,%s,%s,%s*%s\r\n",

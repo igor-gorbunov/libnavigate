@@ -12,8 +12,8 @@
 
 NAVI_BEGIN_DECL
 
-int IecCompose_VTG(const struct vtg_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+int navi_msg_create_vtg(const struct vtg_t *msg, char *buffer,
+		int maxsize, int *nmwritten);
 
 int IecParse_VTG(struct vtg_t *msg, char *buffer, int maxsize);
 

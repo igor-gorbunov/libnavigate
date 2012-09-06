@@ -62,9 +62,9 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_GLC:
 		break;
 	case navi_GLL:
-		return IecCompose_GLL((const struct gll_t *)msg, buffer, maxsize, nmwritten);
+		return navi_msg_create_gll((const struct gll_t *)msg, buffer, maxsize, nmwritten);
 	case navi_GNS:
-		return IecCompose_GNS((const struct gns_t *)msg, buffer, maxsize, nmwritten);
+		return navi_msg_create_gns((const struct gns_t *)msg, buffer, maxsize, nmwritten);
 	case navi_GRS:
 	case navi_GSA:
 	case navi_GST:
@@ -88,7 +88,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_RMB:
 		break;
 	case navi_RMC:
-		return IecCompose_RMC((const struct rmc_t *)msg, buffer, maxsize, nmwritten);
+		return navi_msg_create_rmc((const struct rmc_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ROT:
 	case navi_RPM:
 	case navi_RSA:
@@ -107,7 +107,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_VPW:
 		break;
 	case navi_VTG:
-		return IecCompose_VTG((const struct vtg_t *)msg, buffer, maxsize, nmwritten);
+		return navi_msg_create_vtg((const struct vtg_t *)msg, buffer, maxsize, nmwritten);
 	case navi_WCV:
 	case navi_WNC:
 	case navi_WPL:
@@ -116,7 +116,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_XTR:
 		break;
 	case navi_ZDA:
-		return IecCompose_ZDA((const struct zda_t *)msg, buffer, maxsize, nmwritten);
+		return navi_msg_create_zda((const struct zda_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ZDL:
 	case navi_ZFO:
 	case navi_ZTG:

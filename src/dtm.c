@@ -105,7 +105,6 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 	{
 		msg->vfields |= DTM_VALID_LATOFFSET;
 	}
-
 	index += nmread;
 
 	if (navi_msg_parse_offset(buffer + index, &msg->lonofs, &nmread) != 0)
@@ -117,7 +116,6 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 	{
 		msg->vfields |= DTM_VALID_LONOFFSET;
 	}
-
 	index += nmread;
 
 	result = IecParse_Double(buffer + index, &msg->altoffset, &nmread);
