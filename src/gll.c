@@ -9,7 +9,7 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
-int navi_msg_create_gll(const struct gll_t *msg, char *buffer,
+int navi_create_gll(const struct gll_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;

@@ -32,7 +32,7 @@
 #include "vtg.h"
 #include "zda.h"
 
-int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
+int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	switch (type)
 	{
@@ -55,16 +55,16 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_DSR:
 		break;
 	case navi_DTM:
-		return navi_msg_create_dtm((const struct dtm_t *)msg, buffer, maxsize, nmwritten);
+		return navi_create_dtm((const struct dtm_t *)msg, buffer, maxsize, nmwritten);
 	case navi_FSI:
 	case navi_GBS:
 	case navi_GGA:
 	case navi_GLC:
 		break;
 	case navi_GLL:
-		return navi_msg_create_gll((const struct gll_t *)msg, buffer, maxsize, nmwritten);
+		return navi_create_gll((const struct gll_t *)msg, buffer, maxsize, nmwritten);
 	case navi_GNS:
-		return navi_msg_create_gns((const struct gns_t *)msg, buffer, maxsize, nmwritten);
+		return navi_create_gns((const struct gns_t *)msg, buffer, maxsize, nmwritten);
 	case navi_GRS:
 	case navi_GSA:
 	case navi_GST:
@@ -88,7 +88,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_RMB:
 		break;
 	case navi_RMC:
-		return navi_msg_create_rmc((const struct rmc_t *)msg, buffer, maxsize, nmwritten);
+		return navi_create_rmc((const struct rmc_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ROT:
 	case navi_RPM:
 	case navi_RSA:
@@ -107,7 +107,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_VPW:
 		break;
 	case navi_VTG:
-		return navi_msg_create_vtg((const struct vtg_t *)msg, buffer, maxsize, nmwritten);
+		return navi_create_vtg((const struct vtg_t *)msg, buffer, maxsize, nmwritten);
 	case navi_WCV:
 	case navi_WNC:
 	case navi_WPL:
@@ -116,7 +116,7 @@ int navi_msg_create(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_XTR:
 		break;
 	case navi_ZDA:
-		return navi_msg_create_zda((const struct zda_t *)msg, buffer, maxsize, nmwritten);
+		return navi_create_zda((const struct zda_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ZDL:
 	case navi_ZFO:
 	case navi_ZTG:

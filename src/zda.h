@@ -12,7 +12,7 @@
 
 NAVI_BEGIN_DECL
 
-int navi_msg_create_zda(const struct zda_t *msg, char *buffer,
+int navi_create_zda(const struct zda_t *msg, char *buffer,
 		int maxsize, int *nmwritten);
 
 int IecParse_ZDA(struct zda_t *msg, char *buffer, int maxsize);
