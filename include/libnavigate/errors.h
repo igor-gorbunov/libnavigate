@@ -45,4 +45,3 @@ NAVI_EXTERN(void) navierr_set_last(int errclass);
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_errors_h
-

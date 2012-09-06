@@ -36,6 +36,10 @@ int main()
 	struct vtg_t vtg;
 	struct zda_t zda;
 
+	char parsedbuffer[1024];
+	int finished, parsed;
+	int msgtype;
+
 	msglength = 0;
 	remain = sizeof(buffer);
 
@@ -220,10 +224,6 @@ int main()
 
 	printf("msglength = %zu\n", msglength);
 	printf("message = '%s'\n", buffer);
-
-	char parsedbuffer[1024];
-	int finished, parsed;
-	int msgtype;
 
 	finished = 0;
 	parsed = 0;

@@ -70,7 +70,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	}
 
 	// At least read a message
-	*nmread = eom;
+	*nmread = eom + 1;
 
 	//
 	// Check that the message is not broken

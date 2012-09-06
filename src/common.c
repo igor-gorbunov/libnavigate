@@ -943,12 +943,16 @@ int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread)
 	{
 		*nmread = 0;
 		*datumsub = naviLocalDatumSub_Undefined;
-		return navi_NullField;
+
+		navierr_set_last(navi_NullField);
+		return navi_Error;
 	}
 	else
 	{
 		*nmread = 0;
-		return navi_MsgNotSupported;
+
+		navierr_set_last(navi_MsgNotSupported);
+		return navi_Error;
 	}
 }
 
