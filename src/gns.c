@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include <libnavigate/errors.h>
+#include <libnavigate/parser.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
@@ -13,33 +14,29 @@ int navi_msg_create_gns(const struct gns_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], latitude[32],
-		latsign[2], longitude[32], lonsign[2], mi[3], totalsats[3], hdop[32],
-		antalt[32], geoidsep[32], ddage[32], drsid[32], cs[3];
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], fix[64],
+		mi[3], totalsats[3], hdop[32], antalt[32], geoidsep[32], ddage[32],
+		drsid[32], cs[3];
 
 	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
-	msglength += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
-		msg->vfields & GNS_VALID_LATITUDE);
-	msglength += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
-		msg->vfields & GNS_VALID_LATITUDE);
-	msglength += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
-		msg->vfields & GNS_VALID_LONGITUDE);
-	msglength += IecPrint_OffsetSign(msg->longitude.sign, lonsign, sizeof(lonsign),
-		msg->vfields & GNS_VALID_LONGITUDE);
+
+	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
+		msg->vfields & GNS_VALID_POSITION_FIX);
+
 	msglength += IecPrint_ModeIndicatorArray(msg->mi, mi, sizeof(mi),
 		msg->vfields & GNS_VALID_MODEINDICATOR);
 	msglength += snprintf(totalsats, sizeof(totalsats),
 		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
 		msg->totalsats);
-	msglength += IecPrint_Double(msg->hdop, hdop, sizeof(hdop),
+	msglength += navi_msg_create_double(msg->hdop, hdop, sizeof(hdop),
 		msg->vfields & GNS_VALID_HDOP);
-	msglength += IecPrint_Double(msg->antaltitude, antalt, sizeof(antalt),
+	msglength += navi_msg_create_double(msg->antaltitude, antalt, sizeof(antalt),
 		msg->vfields & GNS_VALID_ANTENNAALTITUDE);
-	msglength += IecPrint_Double(msg->geoidalsep, geoidsep, sizeof(geoidsep),
+	msglength += navi_msg_create_double(msg->geoidalsep, geoidsep, sizeof(geoidsep),
 		msg->vfields & GNS_VALID_GEOIDALSEP);
-	msglength += IecPrint_Double(msg->diffage, ddage, sizeof(ddage),
+	msglength += navi_msg_create_double(msg->diffage, ddage, sizeof(ddage),
 		msg->vfields & GNS_VALID_AGEOFDIFFDATA);
 	msglength += snprintf(drsid, sizeof(drsid),
 		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
@@ -52,9 +49,8 @@ int navi_msg_create_gns(const struct gns_t *msg, char *buffer,
 	}
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sGNS,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, utc,
-		latitude, latsign, longitude, lonsign, mi, totalsats, hdop, antalt,
-		geoidsep, ddage, drsid, "%s");
+		"$%sGNS,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, utc, fix, mi,
+		totalsats, hdop, antalt, geoidsep, ddage, drsid, "%s");
 	IecPrint_Checksum(iecmsg, msglength, cs);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
@@ -88,45 +84,17 @@ int IecParse_GNS(struct gns_t *msg, char *buffer, int maxsize)
 	}
 	index += 1;
 
-	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
-	switch (result)
+	if (navi_msg_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
-	case navi_Ok:
-		msg->vfields |= GNS_VALID_LATITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->vfields |= GLL_VALID_POSITION_FIX;
 	}
 
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
-
-	result = IecParse_Longitude(buffer + index, &msg->longitude, &nmread);
-	switch (result)
-	{
-	case navi_Ok:
-		msg->vfields |= GNS_VALID_LONGITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
-	}
-
-	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_ModeIndicatorArray(buffer + index, msg->mi, &nmread);
 	if (result != navi_Ok)

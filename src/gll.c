@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include <libnavigate/errors.h>
+#include <libnavigate/parser.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
@@ -13,18 +14,14 @@ int navi_msg_create_gll(const struct gll_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], latitude[32], latsign[2],
-		longitude[32], lonsign[2], utc[32], status[2], mi[2], cs[3];
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], fix[64],
+		utc[32], status[2], mi[2], cs[3];
 
 	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
-		msg->vfields & GLL_VALID_LATITUDE);
-	msglength += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
-		msg->vfields & GLL_VALID_LATITUDE);
-	msglength += IecPrint_Longitude(msg->longitude.offset, longitude,
-		sizeof(longitude), msg->vfields & GLL_VALID_LONGITUDE);
-	msglength += IecPrint_OffsetSign(msg->longitude.sign, lonsign,
-		sizeof(lonsign), msg->vfields & GLL_VALID_LONGITUDE);
+
+	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
+		msg->vfields & GLL_VALID_POSITION_FIX);
+
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GLL_VALID_UTC);
 	msglength += IecPrint_Status(msg->status, status, sizeof(status));
@@ -37,60 +34,32 @@ int navi_msg_create_gll(const struct gll_t *msg, char *buffer,
 		return navi_Error;
 	}
 
-	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s,%s,%s,%s*%s\r\n",
-		talkerid, latitude, latsign, longitude, lonsign, utc, status, mi, "%s");
+	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s*%s\r\n",
+		talkerid, fix, utc, status, mi, "%s");
 	IecPrint_Checksum(iecmsg, msglength, cs);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
 	return navi_Ok;
 }
 
-int IecParse_GLL(struct gll_t *msg, char *buffer, int maxsize)
+int navi_msg_parse_gll(struct gll_t *msg, char *buffer, int maxsize)
 {
 	int result;
 	int index = 1, nmread;
 
 	msg->vfields = 0;
 
-	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
-	switch (result)
+	if (navi_msg_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
-	case navi_Ok:
-		msg->vfields |= GLL_VALID_LATITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->vfields |= GLL_VALID_POSITION_FIX;
 	}
 
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
-
-	result = IecParse_Longitude(buffer + index, &msg->longitude, &nmread);
-	switch (result)
-	{
-	case navi_Ok:
-		msg->vfields |= GLL_VALID_LONGITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
-	}
-
-	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
 	switch (result)

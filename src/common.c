@@ -230,51 +230,7 @@ int IecPrint_DatumSubdivision(enum naviLocalDatumSub_t lds,
 	}
 }
 
-int IecPrint_Double(double value, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		int result;
-
-		result = snprintf(buffer, maxsize, "%.8f", value);
-		return RemoveTrailingZeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-int IecPrint_OffsetSign(int sign, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (sign)
-		{
-		case navi_North:
-			return snprintf(buffer, maxsize, "N");
-		case navi_South:
-			return snprintf(buffer, maxsize, "S");
-		case navi_East:
-			return snprintf(buffer, maxsize, "E");
-		case navi_West:
-			return snprintf(buffer, maxsize, "W");
-		default:
-			break;
-		}
-
-		return 0;
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-int IecPrint_Latitude(double value, char *buffer,
-	int maxsize, int notnull)
+int IecPrint_Latitude(double value, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -1575,5 +1531,102 @@ int IecParse_LocalZone(char *buffer, int *offset,
 
 	*nmread = idx;
 	return navi_Ok;
+}
+
+//
+// Prints position fix `llll.ll,a,yyyyy.yy,a`, or null fields
+// Returns the number of printed characters
+int navi_msg_create_position_fix(const struct navi_position_t *fix,
+	char *buffer, int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int nmwritten;
+		double degrees, fraction;
+
+		nmwritten = 0;
+
+		// extract and print latitude
+		fraction = modf(fix->latitude, &degrees);
+		degrees = degrees * 100.;
+		fraction = fraction * 60.;
+		fraction = fraction + degrees;
+
+		nmwritten = snprintf(buffer + nmwritten, maxsize, "%04f", fraction);
+		nmwritten = RemoveTrailingZeroes(buffer, nmwritten);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		nmwritten += navi_msg_create_sign(fix->latsign, buffer + nmwritten,
+			maxsize, notnull);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		// extract and print longitude
+		fraction = modf(fix->latitude, &degrees);
+		degrees = degrees * 100.;
+		fraction = fraction * 60.;
+		fraction = fraction + degrees;
+
+		nmwritten = snprintf(buffer + nmwritten, maxsize, "%05f", fraction);
+		nmwritten = RemoveTrailingZeroes(buffer, nmwritten);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		nmwritten += navi_msg_create_sign(fix->lonsign, buffer + nmwritten,
+			maxsize, notnull);
+
+		return nmwritten;
+	}
+	else
+	{
+		(void)strncpy(buffer, ",,,", maxsize);
+		return 3;
+	}
+}
+
+int navi_msg_create_double(double value, char *buffer, int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result;
+
+		result = snprintf(buffer, maxsize, "%f", value);
+		return RemoveTrailingZeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+int navi_msg_create_sign(int sign, char *buffer, int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		switch (sign)
+		{
+		case navi_North:
+			return snprintf(buffer, maxsize, "N");
+		case navi_South:
+			return snprintf(buffer, maxsize, "S");
+		case navi_East:
+			return snprintf(buffer, maxsize, "E");
+		case navi_West:
+			return snprintf(buffer, maxsize, "W");
+		default:
+			break;
+		}
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+	}
+
+	return 0;
 }
 

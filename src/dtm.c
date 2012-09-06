@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include <libnavigate/errors.h>
+#include <libnavigate/parser.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
@@ -22,15 +23,15 @@ int navi_msg_create_dtm(const struct dtm_t *msg, char *buffer,
 		msg->vfields & DTM_VALID_LOCALDATUM);
 	msglength += IecPrint_DatumSubdivision(msg->lds, locdatumsub,
 		sizeof(locdatumsub), msg->vfields & DTM_VALID_LOCALDATUMSUB);
-	msglength += IecPrint_Double(msg->latofs.offset, latofs, sizeof(latofs),
+	msglength += navi_msg_create_double(msg->latofs.offset, latofs, sizeof(latofs),
 		msg->vfields & DTM_VALID_LATOFFSET);
-	msglength += IecPrint_OffsetSign(msg->latofs.sign, latsign, sizeof(latsign),
+	msglength += navi_msg_create_sign(msg->latofs.sign, latsign, sizeof(latsign),
 		msg->vfields & DTM_VALID_LATOFFSET);
-	msglength += IecPrint_Double(msg->lonofs.offset, lonofs, sizeof(lonofs),
+	msglength += navi_msg_create_double(msg->lonofs.offset, lonofs, sizeof(lonofs),
 		msg->vfields & DTM_VALID_LONOFFSET);
-	msglength += IecPrint_OffsetSign(msg->lonofs.sign, lonsign, sizeof(lonsign),
+	msglength += navi_msg_create_sign(msg->lonofs.sign, lonsign, sizeof(lonsign),
 		msg->vfields & DTM_VALID_LONOFFSET);
-	msglength += IecPrint_Double(msg->altoffset, altofs, sizeof(altofs),
+	msglength += navi_msg_create_double(msg->altoffset, altofs, sizeof(altofs),
 		msg->vfields & DTM_VALID_ALTITUDEOFFSET);
 	msglength += IecPrint_Datum(msg->rd, refdatum, sizeof(refdatum),
 		msg->vfields & DTM_VALID_REFERENCEDATUM);

@@ -36,24 +36,24 @@ int IecPrint_Datum(int datum, char *buffer, int maxsize, int notnull);
 int IecPrint_DatumSubdivision(int lds, char *buffer, int maxsize, int notnull);
 
 //
-// Prints a floating point value
-int IecPrint_Double(double value, char *buffer, int maxsize, int notnull);
-
-//
-// Prints offset sign
-int IecPrint_OffsetSign(int sign, char *buffer, int maxsize, int notnull);
-
-//
 // Prints checksum of the generated message
 int IecPrint_Checksum(char *msg, int maxsize, char *cs);
 
 //
-// Prints latitude (llll.ll)
-int IecPrint_Latitude(double value, char *buffer, int maxsize, int notnull);
+// Prints offset or position fix sign
+// Returns the number of printed characters
+int navi_msg_create_sign(int sign, char *buffer, int maxsize, int notnull);
 
 //
-// Prints longitude (yyyyy.yy)
-int IecPrint_Longitude(double value, char *buffer, int maxsize, int notnull);
+// Prints a floating point value
+// Returns the number of printed characters
+int navi_msg_create_double(double value, char *buffer, int maxsize, int notnull);
+
+//
+// Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
+// Returns the number of printed characters
+int navi_msg_create_position_fix(const struct navi_position_t *fix,
+		char *buffer, int maxsize, int notnull);
 
 //
 // Prints UTC

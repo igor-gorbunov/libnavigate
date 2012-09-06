@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include <libnavigate/errors.h>
+#include <libnavigate/parser.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
@@ -14,25 +15,20 @@ int navi_msg_create_rmc(const struct rmc_t *msg, char *buffer,
 	int msglength;
 
 	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], status[2],
-		latitude[32], latsign[2], longitude[32], lonsign[2], snots[32],
-		ctrue[32], day[3], month[3], year[3], magnetic[32], magsign[2],
-		mi[2], cs[3];
+		fix[64], snots[32], ctrue[32], day[3], month[3], year[3], magnetic[32],
+		magsign[2], mi[2], cs[3];
 
 	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & RMC_VALID_UTC);
 	msglength += IecPrint_Status(msg->status, status, sizeof(status));
-	msglength += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
-		msg->vfields & RMC_VALID_LATITUDE);
-	msglength += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
-		msg->vfields & RMC_VALID_LATITUDE);
-	msglength += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
-		msg->vfields & RMC_VALID_LONGITUDE);
-	msglength += IecPrint_OffsetSign(msg->longitude.sign, lonsign, sizeof(lonsign),
-		msg->vfields & RMC_VALID_LONGITUDE);
-	msglength += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
+
+	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
+		msg->vfields & RMC_VALID_POSITION_FIX);
+
+	msglength += navi_msg_create_double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
 		msg->vfields & RMC_VALID_SPEED);
-	msglength += IecPrint_Double(msg->courseTrue, ctrue, sizeof(ctrue),
+	msglength += navi_msg_create_double(msg->courseTrue, ctrue, sizeof(ctrue),
 		msg->vfields & RMC_VALID_COURSETRUE);
 	msglength += snprintf(day, sizeof(day),
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->day);
@@ -40,9 +36,9 @@ int navi_msg_create_rmc(const struct rmc_t *msg, char *buffer,
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->month);
 	msglength += snprintf(year, sizeof(year),
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->year % 100);
-	msglength += IecPrint_Double(msg->magnetic.offset, magnetic, sizeof(magnetic),
+	msglength += navi_msg_create_double(msg->magnetic.offset, magnetic, sizeof(magnetic),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	msglength += IecPrint_OffsetSign(msg->magnetic.sign, magsign, sizeof(magsign),
+	msglength += navi_msg_create_sign(msg->magnetic.sign, magsign, sizeof(magsign),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
 	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
 
@@ -54,9 +50,8 @@ int navi_msg_create_rmc(const struct rmc_t *msg, char *buffer,
 	}
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sRMC,%s,%s,%s,%s,%s,%s,%s,%s,%s%s%s,%s,%s,%s*%s\r\n", talkerid, utc,
-		status, latitude, latsign, longitude, lonsign, snots, ctrue, day, month,
-		year, magnetic, magsign, mi, "%s");
+		"$%sRMC,%s,%s,%s,%s,%s,%s%s%s,%s,%s,%s*%s\r\n", talkerid, utc, status,
+		fix, snots, ctrue, day, month, year, magnetic, magsign, mi, "%s");
 	IecPrint_Checksum(iecmsg, msglength, cs);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
@@ -105,45 +100,17 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer, int maxsize)
 	}
 	index += 1;
 
-	result = IecParse_Latitude(buffer + index, &msg->latitude, &nmread);
-	switch (result)
+	if (navi_msg_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
-	case navi_Ok:
-		msg->vfields |= RMC_VALID_LATITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->vfields |= RMC_VALID_POSITION_FIX;
 	}
 
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
-
-	result = IecParse_Longitude(buffer + index, &msg->longitude, &nmread);
-	switch (result)
-	{
-	case navi_Ok:
-		msg->vfields |= RMC_VALID_LONGITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
-	}
-
-	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Double(buffer + index, &msg->speed, &nmread);
 	switch (result)

@@ -38,7 +38,7 @@ NAVI_EXTERN(int) navi_msg_parse(char *buffer, int maxsize, int msgsize,
 		void *msg, int *msgtype, int *nmread);
 
 //
-// Parses offset field in the form of `x.x,a | ,`.
+// Parses offset field in the form of 'x.x,a | ,'.
 // The field must end with ',' or '*'
 //
 // @param pointer to the first byte of field
@@ -49,6 +49,14 @@ NAVI_EXTERN(int) navi_msg_parse(char *buffer, int maxsize, int msgsize,
 //
 NAVI_EXTERN(int) navi_msg_parse_offset(char *buffer,
 		struct navi_offset_t *offset, int *nmread);
+
+//
+// Parses position fix in the form of 'llll.ll,a,yyyyy.yy,a | ,,,'.
+// The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+NAVI_EXTERN(int) navi_msg_parse_position_fix(char *buffer,
+		struct navi_position_t *fix, int *nmread);
 
 NAVI_END_DECL
 

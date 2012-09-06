@@ -23,6 +23,7 @@
 #include <math.h>
 #include <ctype.h>
 #include <stddef.h>
+#include <assert.h>
 
 #include "common.h"
 #include "dtm.h"
@@ -130,7 +131,7 @@ int navi_msg_parse(char *buffer, int maxsize, int msgsize,
 			return navi_NotEnoughBuffer;
 		}
 		((struct gll_t *)msg)->tid = tid;
-		return IecParse_GLL((struct gll_t *)msg, buffer + som + 6,
+		return navi_msg_parse_gll((struct gll_t *)msg, buffer + som + 6,
 			maxsize - (som + eom + 11));
 	case navi_GNS:
 		if (maxsize < sizeof(struct gns_t))
@@ -293,7 +294,7 @@ int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
 		case PARSE_OFFSET_FRACTION:
 			if (isdigit(c))
 			{
-				t = t * 10. + pow((c - '0'), j--);
+				t = t + pow((c - '0'), j--);
 			}
 			else if (c == ',')
 			{
@@ -331,9 +332,7 @@ int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
 			break;
 		case PARSE_OFFSET_FINI:
 			if (c != ',' && c != '*')
-			{
 				error = navi_InvalidMessage;
-			}
 			goto _Exit;
 		}
 	}
@@ -356,4 +355,281 @@ _Exit:
 #undef PARSE_OFFSET_FRACTION
 #undef PARSE_OFFSET_SIGN
 #undef PARSE_OFFSET_FINI
+
+//
+// navi_msg_parse_position_fix
+//
+
+#define PARSE_POSITION_INIT				0
+#define PARSE_POSITION_LAT_INTEGRAL		1
+#define PARSE_POSITION_LAT_FRACTION		2
+#define PARSE_POSITION_LAT_SIGN			3
+#define PARSE_POSITION_LON_INTEGRAL		4
+#define PARSE_POSITION_LON_FRACTION		5
+#define PARSE_POSITION_LON_SIGN			6
+#define PARSE_POSITION_NULLFIELD		7
+#define PARSE_POSITION_FINI				8
+
+int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
+	int *nmread)
+{
+	int state, i, j, k, c, error = 0;
+	double deg, min;
+
+	assert(buffer != NULL);
+	assert(fix != NULL);
+	assert(nmread != NULL);
+
+	state = PARSE_POSITION_INIT;
+	deg = min = 0.;
+
+	for (i = 0; ; i++)
+	{
+		c = buffer[i];
+
+		switch (state)
+		{
+		case PARSE_POSITION_INIT:
+			if (c == ',')
+			{	// check for null field
+				state = PARSE_POSITION_NULLFIELD;
+				j = 1;
+			}
+			else if (isdigit(c))
+			{	// proceed latitude
+				state = PARSE_POSITION_LAT_INTEGRAL;
+				i--;	// one character back
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_LAT_INTEGRAL:
+			// parse two digits of degrees
+			for (k = 0; k < 2; k++, i++)
+			{
+				c = buffer[i];
+				if (isdigit(c))
+				{
+					deg = deg * 10. + (c - '0');
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			// parse two integral digits of minutes
+			for (k = 0; k < 2; k++, i++)
+			{
+				c = buffer[i];
+				if (isdigit(c))
+				{
+					min = min * 10. + (c - '0');
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			// check if there is fractional part of latitude minutes
+			c = buffer[i];
+			if (c == '.')
+			{	// yes, there is
+				state = PARSE_POSITION_LAT_FRACTION;
+				j = -1;
+			}
+			else if (c == ',')
+			{	// no, proceed to the latitude sign
+				state = PARSE_POSITION_LAT_SIGN;
+				fix->latitude = deg + min / 60.;
+			}
+			else
+			{	// invalid character
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_LAT_FRACTION:
+			if (isdigit(c))
+			{
+				min = min + pow((c - '0'), j--);
+			}
+			else if (c == ',')
+			{
+				state = PARSE_POSITION_LAT_SIGN;
+				fix->latitude = deg + min / 60.;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_LAT_SIGN:
+			if (c == 'N')
+			{
+				fix->latsign = navi_North;
+			}
+			else if (c == 'S')
+			{
+				fix->latsign = navi_South;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			// check if this is the only character
+			c = buffer[++i];
+			if (c == ',')
+			{
+				state = PARSE_POSITION_LON_INTEGRAL;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_LON_INTEGRAL:
+			// parse three digits of degrees
+			for (k = 0; k < 3; k++, i++)
+			{
+				c = buffer[i];
+				if (isdigit(c))
+				{
+					deg = deg * 10. + (c - '0');
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			// parse two integral digits of minutes
+			for (k = 0; k < 2; k++, i++)
+			{
+				c = buffer[i];
+				if (isdigit(c))
+				{
+					min = min * 10. + (c - '0');
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			// check if there is fractional part of longitude minutes
+			c = buffer[i];
+			if (c == '.')
+			{	// yes, there is
+				state = PARSE_POSITION_LON_FRACTION;
+				j = -1;
+			}
+			else if (c == ',')
+			{	// no, proceed to the longitude sign
+				state = PARSE_POSITION_LON_SIGN;
+				fix->longitude = deg + min / 60.;
+			}
+			else
+			{	// invalid character
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_LON_FRACTION:
+			if (isdigit(c))
+			{
+				min = min + pow((c - '0'), j--);
+			}
+			else if (c == ',')
+			{
+				state = PARSE_POSITION_LON_SIGN;
+				fix->longitude = deg + min / 60.;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_LON_SIGN:
+			if (c == 'E')
+			{
+				fix->lonsign = navi_East;
+			}
+			else if (c == 'W')
+			{
+				fix->lonsign = navi_West;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			// check if this is the only character
+			c = buffer[++i];
+			if (c == ',')
+			{
+				state = PARSE_POSITION_FINI;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_POSITION_NULLFIELD:
+			if (j < 3)
+			{
+				if (c == ',')
+				{
+					j++;
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			else
+			{	// indeed null field
+				state = PARSE_POSITION_FINI;
+				error = navi_NullField;
+			}
+			break;
+		case PARSE_POSITION_FINI:
+			if (c != ',' && c != '*')
+				error = navi_InvalidMessage;
+			goto _Exit;
+		}
+	}
+
+_Exit:
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+}
+
+#undef PARSE_POSITION_INIT
+#undef PARSE_POSITION_LAT_INTEGRAL
+#undef PARSE_POSITION_LAT_FRACTION
+#undef PARSE_POSITION_LAT_SIGN
+#undef PARSE_POSITION_LON_INTEGRAL
+#undef PARSE_POSITION_LON_FRACTION
+#undef PARSE_POSITION_LON_SIGN
+#undef PARSE_POSITION_NULLFIELD
+#undef PARSE_POSITION_FINI
 

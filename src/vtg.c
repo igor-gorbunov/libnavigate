@@ -18,19 +18,19 @@ int navi_msg_create_vtg(const struct vtg_t *msg, char *buffer,
 		mi[2], cs[3];
 
 	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Double(msg->courseTrue, ctrue, sizeof(ctrue),
+	msglength += navi_msg_create_double(msg->courseTrue, ctrue, sizeof(ctrue),
 		msg->vfields & VTG_VALID_COURSETRUE);
 	msglength += snprintf(courseT, sizeof(courseT),
 		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
-	msglength += IecPrint_Double(msg->courseMagn, cmagn, sizeof(cmagn),
+	msglength += navi_msg_create_double(msg->courseMagn, cmagn, sizeof(cmagn),
 		msg->vfields & VTG_VALID_COURSEMAGN);
 	msglength += snprintf(courseM, sizeof(courseM),
 		(msg->vfields & VTG_VALID_COURSEMAGN) ? "M" : "");
-	msglength += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
+	msglength += navi_msg_create_double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
 		msg->vfields & VTG_VALID_SPEED);
 	msglength += snprintf(speedN, sizeof(speedN),
 		(msg->vfields & VTG_VALID_SPEED) ? "N" : "");
-	msglength += IecPrint_Double(msg->speed * MPS_TO_KMH, skmph, sizeof(skmph),
+	msglength += navi_msg_create_double(msg->speed * MPS_TO_KMH, skmph, sizeof(skmph),
 		msg->vfields & VTG_VALID_SPEED);
 	msglength += snprintf(speedK, sizeof(speedK),
 		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");
