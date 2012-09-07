@@ -39,7 +39,23 @@ NAVI_EXTERN(int) navi_create_msg(int type, void *msg, char *buffer,
 
 //
 // Returns the string representation of talker identifier
-NAVI_EXTERN(const char *) navi_talkerid_to_string(int tid);
+NAVI_EXTERN(const char *) navi_talkerid_str(int tid);
+
+//
+// Returns the string representation of geodetic datum
+NAVI_EXTERN(const char *) navi_datum_str(int datum, int notnull);
+
+//
+// Returns the offset or position fix sign
+NAVI_EXTERN(const char *) navi_fixsign_str(int fixsign, int notnull);
+
+//
+// Returns the status
+NAVI_EXTERN(const char *) navi_status_str(int status);
+
+//
+// Returns the mode indicator
+NAVI_EXTERN(const char *) navi_modeindicator_str(int mi);
 
 NAVI_END_DECL
 

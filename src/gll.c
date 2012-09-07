@@ -16,19 +16,20 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid;
+	const char *talkerid, *status, *mi;
 	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], fix[64],
-		utc[32], status[2], mi[2], cs[3];
+		utc[32], cs[3];
 
-	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 
 	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GLL_VALID_POSITION_FIX);
 
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GLL_VALID_UTC);
-	msglength += IecPrint_Status(msg->status, status, sizeof(status));
-	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
+
+	msglength += strlen(status = navi_status_str(msg->status));
+	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
 	msglength += 16;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)

@@ -14,11 +14,11 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid;
+	const char *talkerid, *mi;
 	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], ctrue[32], courseT[2], cmagn[32],
-		courseM[2], snots[32], speedN[4], skmph[32], speedK[2], mi[2], cs[3];
+		courseM[2], snots[32], speedN[4], skmph[32], speedK[2], cs[3];
 
-	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 
 	msglength += navi_msg_create_double(msg->courseTrue, ctrue, sizeof(ctrue),
 		msg->vfields & VTG_VALID_COURSETRUE);
@@ -36,7 +36,8 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 		msg->vfields & VTG_VALID_SPEED);
 	msglength += snprintf(speedK, sizeof(speedK),
 		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");
-	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
+
+	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
 	msglength += 18;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)

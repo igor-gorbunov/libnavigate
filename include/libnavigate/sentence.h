@@ -196,11 +196,11 @@ enum
 //
 enum
 {
-	naviDatum_WGS84 = 0,
-	naviDatum_WGS72 = 1,
-	naviDatum_SGS85 = 2,
-	naviDatum_PE90 = 3,
-	naviDatum_UserDefined = 4
+	navi_WGS84 = 0,
+	navi_WGS72 = 1,
+	navi_SGS85 = 2,
+	navi_PE90 = 3,
+	navi_UserDefined = 4
 };
 
 //
@@ -208,7 +208,7 @@ enum
 //
 enum
 {
-	naviLocalDatumSub_Undefined = -1	// unefined or unsupported local datum
+	navi_Null = -1	// unefined or unsupported local datum
 };
 
 //

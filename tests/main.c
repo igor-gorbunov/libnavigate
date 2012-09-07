@@ -75,13 +75,13 @@ int main(void)
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_LATOFFSET |
 		DTM_VALID_LONOFFSET | DTM_VALID_ALTITUDEOFFSET |
 		DTM_VALID_REFERENCEDATUM;
-	dtm.ld = naviDatum_UserDefined;
+	dtm.ld = navi_UserDefined;
 	dtm.latofs.offset = 2.4366;
 	dtm.latofs.sign = navi_North;
 	dtm.lonofs.offset = 3.81825;
 	dtm.lonofs.sign = navi_West;
 	dtm.altoffset = 3.446;
-	dtm.rd = naviDatum_WGS84;
+	dtm.rd = navi_WGS84;
 
 	result = navi_create_msg(navi_DTM, &dtm, buffer + msglength,
 		remain, &nmwritten);
@@ -124,7 +124,7 @@ int main(void)
 	gns.tid = navi_GL;
 	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX |
 		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
-		GNS_VALID_HDOP  | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
+		GNS_VALID_HDOP | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
 	gns.utc.hour = 20;
 	gns.utc.min = 0;
@@ -240,7 +240,7 @@ int main(void)
 				{
 					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
 					printf("Received DTM:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_to_string(dtm->tid), dtm->tid);
+						navi_talkerid_str(dtm->tid), dtm->tid);
 
 					if (dtm->vfields & DTM_VALID_LOCALDATUM)
 					{
@@ -252,13 +252,13 @@ int main(void)
 					}
 					if (dtm->vfields & DTM_VALID_LATOFFSET)
 					{
-						printf("\tlatitude offset = %.8f (%d)\n",
-							dtm->latofs.offset, dtm->latofs.sign);
+						printf("\tlatitude offset = %.8f %s (%d)\n", dtm->latofs.offset,
+							navi_fixsign_str(dtm->latofs.sign, 1), dtm->latofs.sign);
 					}
 					if (dtm->vfields & DTM_VALID_LONOFFSET)
 					{
-						printf("\tlongitude offset = %.8f (%d)\n",
-							dtm->lonofs.offset, dtm->lonofs.sign);
+						printf("\tlongitude offset = %.8f %s (%d)\n", dtm->lonofs.offset,
+							navi_fixsign_str(dtm->lonofs.sign, 1), dtm->lonofs.sign);
 					}
 					if (dtm->vfields & DTM_VALID_ALTITUDEOFFSET)
 					{
@@ -274,17 +274,17 @@ int main(void)
 				{
 					struct gll_t *gll = (struct gll_t *)parsedbuffer;
 					printf("Received GLL:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_to_string(gll->tid), gll->tid);
+						navi_talkerid_str(gll->tid), gll->tid);
 
 					if (gll->vfields & GLL_VALID_POSITION_FIX)
 					{
-						printf("\tlatitude = %.12f (%d)\n", gll->fix.latitude,
-							gll->fix.latsign);
+						printf("\tlatitude = %.12f %s (%d)\n", gll->fix.latitude,
+							navi_fixsign_str(gll->fix.latsign, 1), gll->fix.latsign);
 					}
 					if (gll->vfields & GLL_VALID_POSITION_FIX)
 					{
-						printf("\tlongitude = %.12f (%d)\n", gll->fix.longitude,
-							gll->fix.lonsign);
+						printf("\tlongitude = %.12f %s (%d)\n", gll->fix.longitude,
+							navi_fixsign_str(gll->fix.lonsign, 1), gll->fix.lonsign);
 					}
 					if (gll->vfields & GLL_VALID_UTC)
 					{
@@ -300,7 +300,7 @@ int main(void)
 				{
 					struct gns_t *gns = (struct gns_t *)parsedbuffer;
 					printf("Received GNS:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_to_string(gns->tid), gns->tid);
+						navi_talkerid_str(gns->tid), gns->tid);
 
 					if (gns->vfields & GNS_VALID_UTC)
 					{
@@ -309,13 +309,13 @@ int main(void)
 					}
 					if (gns->vfields & GNS_VALID_POSITION_FIX)
 					{
-						printf("\tlatitude = %.12f (%d)\n", gns->fix.latitude,
-							gns->fix.latsign);
+						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude,
+							navi_fixsign_str(gns->fix.latsign, 1), gns->fix.latsign);
 					}
 					if (gns->vfields & GNS_VALID_POSITION_FIX)
 					{
-						printf("\tlongitude = %.12f (%d)\n", gns->fix.longitude,
-							gns->fix.lonsign);
+						printf("\tlongitude = %.12f %s (%d)\n", gns->fix.longitude,
+							navi_fixsign_str(gns->fix.lonsign, 1), gns->fix.lonsign);
 					}
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
 					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
@@ -348,7 +348,7 @@ int main(void)
 				{
 					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
 					printf("Received RMC:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_to_string(rmc->tid), rmc->tid);
+						navi_talkerid_str(rmc->tid), rmc->tid);
 
 					if (rmc->vfields & RMC_VALID_UTC)
 					{
@@ -358,13 +358,13 @@ int main(void)
 					printf("\tstatus = %d\n", rmc->status);
 					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 					{
-						printf("\tlatitude = %.12f (%d)\n", rmc->fix.latitude,
-							rmc->fix.latsign);
+						printf("\tlatitude = %.12f %s (%d)\n", rmc->fix.latitude,
+							navi_fixsign_str(rmc->fix.latsign, 1), rmc->fix.latsign);
 					}
 					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 					{
-						printf("\tlongitude = %.12f (%d)\n", rmc->fix.longitude,
-							rmc->fix.lonsign);
+						printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude,
+							navi_fixsign_str(rmc->fix.lonsign, 1), rmc->fix.lonsign);
 					}
 					if (rmc->vfields & RMC_VALID_SPEED)
 					{
@@ -391,7 +391,7 @@ int main(void)
 				{
 					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
 					printf("Received VTG:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_to_string(vtg->tid), vtg->tid);
+						navi_talkerid_str(vtg->tid), vtg->tid);
 
 					if (vtg->vfields & VTG_VALID_COURSETRUE)
 					{
@@ -412,7 +412,7 @@ int main(void)
 				{
 					struct zda_t *zda = (struct zda_t *)parsedbuffer;
 					printf("Received ZDA:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_to_string(zda->tid), zda->tid);
+						navi_talkerid_str(zda->tid), zda->tid);
 
 					if (zda->vfields & ZDA_VALID_UTC)
 					{

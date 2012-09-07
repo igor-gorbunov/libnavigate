@@ -14,16 +14,16 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid;
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], status[2], fix[64],
-		snots[32], ctrue[32], day[3], month[3], year[3], magnetic[32],
-		magsign[2], mi[2], cs[3];
+	const char *talkerid, *status, *magsign, *mi;
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], fix[64], snots[32],
+		ctrue[32], day[3], month[3], year[3], magnetic[32], cs[3];
 
-	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & RMC_VALID_UTC);
-	msglength += IecPrint_Status(msg->status, status, sizeof(status));
+
+	msglength += strlen(status = navi_status_str(msg->status));
 
 	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & RMC_VALID_POSITION_FIX);
@@ -40,9 +40,10 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->year % 100);
 	msglength += navi_msg_create_double(msg->magnetic.offset, magnetic, sizeof(magnetic),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	msglength += navi_msg_create_sign(msg->magnetic.sign, magsign, sizeof(magsign),
-		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
+
+	msglength += strlen(magsign = navi_fixsign_str(msg->magnetic.sign,
+		msg->vfields & RMC_VALID_MAGNVARIATION));
+	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
 	msglength += 17;
 	if (msglength > NAVI_SENTENCE_MAXSIZE)

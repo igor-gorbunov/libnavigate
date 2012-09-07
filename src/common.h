@@ -29,21 +29,12 @@ NAVI_BEGIN_DECL
 int remove_trailing_zeroes(char *buffer, int length);
 
 //
-// Prints datum
-int IecPrint_Datum(int datum, char *buffer, int maxsize, int notnull);
-
-//
 // Prints local datum subdivision
 int IecPrint_DatumSubdivision(int lds, char *buffer, int maxsize, int notnull);
 
 //
 // Prints checksum of the generated message
 int IecPrint_Checksum(char *msg, int maxsize, char *cs);
-
-//
-// Prints offset or position fix sign
-// Returns the number of printed characters
-int navi_msg_create_sign(int sign, char *buffer, int maxsize, int notnull);
 
 //
 // Prints a floating point value
@@ -60,14 +51,6 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 // Prints UTC
 int IecPrint_Utc(const struct navi_utc_t *utc, char *buffer,
 	int maxsize, int notnull);
-
-//
-// Prints message status
-int IecPrint_Status(int status, char *buffer, int maxsize);
-
-//
-// Prints mode indicator
-int IecPrint_ModeIndicator(int mi, char *buffer, int maxsize);
 
 //
 // Prints array of mode indicators

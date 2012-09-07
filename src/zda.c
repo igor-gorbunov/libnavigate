@@ -20,7 +20,7 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], day[3],
 		month[3], year[5], lzhours[4], lzmins[3], cs[3];
 
-	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & ZDA_VALID_UTC);

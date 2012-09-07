@@ -19,7 +19,7 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 		totalsats[3], hdop[32], antalt[32], geoidsep[32], ddage[32],
 		drsid[32], cs[3];
 
-	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
@@ -84,7 +84,7 @@ int IecParse_GNS(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->vfields |= GLL_VALID_POSITION_FIX;
+		msg->vfields |= GNS_VALID_POSITION_FIX;
 	}
 
 	index += nmread;

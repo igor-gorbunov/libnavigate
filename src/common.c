@@ -1,4 +1,5 @@
 #include "common.h"
+#include <libnavigate/generator.h>
 #include <libnavigate/errors.h>
 
 #include <stdio.h>
@@ -11,7 +12,7 @@
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
-#define EPROTO 100
+#define EPROTO 134
 #endif // MSVC_VER
 
 //
@@ -219,35 +220,6 @@ int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
 }
 
-int IecPrint_Datum(int datum, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (datum)
-		{
-		case naviDatum_WGS84:
-			return snprintf(buffer, maxsize, "W84");
-		case naviDatum_WGS72:
-			return snprintf(buffer, maxsize, "W72");
-		case naviDatum_SGS85:
-			return snprintf(buffer, maxsize, "S85");
-		case naviDatum_PE90:
-			return snprintf(buffer, maxsize, "P90");
-		case naviDatum_UserDefined:
-			return snprintf(buffer, maxsize, "999");
-		default:
-			break;
-		}
-
-		return 0;
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
 int IecPrint_DatumSubdivision(int lds, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
@@ -308,44 +280,6 @@ int IecPrint_Longitude(double value, char *buffer,
 		(void)strncpy(buffer, "", maxsize);
 		return 0;
 	}
-}
-
-int IecPrint_Status(int status, char *buffer, int maxsize)
-{
-	switch (status)
-	{
-	case navi_DataValid:
-		return snprintf(buffer, maxsize, "A");
-	case navi_DataInvalid:
-		return snprintf(buffer, maxsize, "V");
-	default:
-		break;
-	}
-
-	return 0;
-}
-
-int IecPrint_ModeIndicator(int mi, char *buffer, int maxsize)
-{
-	switch (mi)
-	{
-	case navi_Autonomous:
-		return snprintf(buffer, maxsize, "A");
-	case navi_Differential:
-		return snprintf(buffer, maxsize, "D");
-	case navi_Estimated:
-		return snprintf(buffer, maxsize, "E");
-	case navi_ManualInput:
-		return snprintf(buffer, maxsize, "M");
-	case navi_Simulator:
-		return snprintf(buffer, maxsize, "S");
-	case navi_DataNotValid:
-		return snprintf(buffer, maxsize, "N");
-	default:
-		break;
-	}
-
-	return 0;
 }
 
 int IecPrint_ModeIndicatorArray(const int mi[], char *buffer, int maxsize,
@@ -849,27 +783,27 @@ int IecParse_Datum(char *buffer, int *datum, int *nmread)
 
 	if (strncmp("W84", buffer, 3) == 0)
 	{
-		*datum = naviDatum_WGS84;
+		*datum = navi_WGS84;
 		return navi_Ok;
 	}
 	else if (strncmp("W72", buffer, 3) == 0)
 	{
-		*datum = naviDatum_WGS72;
+		*datum = navi_WGS72;
 		return navi_Ok;
 	}
 	else if (strncmp("S85", buffer, 3) == 0)
 	{
-		*datum = naviDatum_SGS85;
+		*datum = navi_SGS85;
 		return navi_Ok;
 	}
 	else if (strncmp("P90", buffer, 3) == 0)
 	{
-		*datum = naviDatum_PE90;
+		*datum = navi_PE90;
 		return navi_Ok;
 	}
 	else if (strncmp("999", buffer, 3) == 0)
 	{
-		*datum = naviDatum_UserDefined;
+		*datum = navi_UserDefined;
 		return navi_Ok;
 	}
 	else if ((strncmp(",", buffer, 1) == 0) || (strncmp("*", buffer, 1) == 0))
@@ -891,7 +825,7 @@ int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread)
 	if (strncmp(",", buffer, 1) == 0)
 	{
 		*nmread = 0;
-		*datumsub = naviLocalDatumSub_Undefined;
+		*datumsub = navi_Null;
 
 		navierr_set_last(navi_NullField);
 		return navi_Error;
@@ -1190,6 +1124,8 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		int nmwritten;
 		double degrees, fraction;
 
+		const char *s;
+
 		nmwritten = 0;
 
 		// extract and print latitude
@@ -1204,8 +1140,8 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
-		nmwritten += navi_msg_create_sign(fix->latsign, buffer + nmwritten,
-			maxsize, notnull);
+		nmwritten += strlen(s = navi_fixsign_str(fix->latsign, notnull));
+		(void)strncat(buffer, s, maxsize);
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
@@ -1222,8 +1158,8 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
-		nmwritten += navi_msg_create_sign(fix->lonsign, buffer + nmwritten,
-			maxsize, notnull);
+		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
+		(void)strncat(buffer, s, maxsize);
 
 		return nmwritten;
 	}

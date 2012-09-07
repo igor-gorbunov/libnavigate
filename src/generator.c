@@ -146,52 +146,179 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 //	navi_create_talkerid
 //
 
-const char *navi_talkerid_to_string(int tid)
+const char *navi_talkerid_str(int tid)
 {
 	switch (tid)
 	{
-	case navi_AG: return "AG";
-	case navi_AP: return "AP";
-	case navi_AI: return "AI";
-	case navi_CD: return "CD";
-	case navi_CR: return "CR";
-	case navi_CS: return "CS";
-	case navi_CT: return "CT";
-	case navi_CV: return "CV";
-	case navi_CX: return "CX";
-	case navi_DE: return "DE";
-	case navi_DF: return "DF";
-	case navi_EC: return "EC";
-	case navi_EI: return "EI";
-	case navi_EP: return "EP";
-	case navi_ER: return "ER";
-	case navi_GA: return "GA";
-	case navi_GP: return "GP";
-	case navi_GL: return "GL";
-	case navi_GN: return "GN";
-	case navi_GW: return "GW";
-	case navi_HC: return "HC";
-	case navi_HE: return "HE";
-	case navi_HN: return "HN";
-	case navi_II: return "II";
-	case navi_IN: return "IN";
-	case navi_LC: return "LC";
-	case navi_P:  return "P";
-	case navi_RA: return "RA";
-	case navi_SD: return "SD";
-	case navi_SN: return "SN";
-	case navi_SS: return "SS";
-	case navi_TI: return "TI";
-	case navi_VD: return "VD";
-	case navi_VM: return "VM";
-	case navi_VW: return "VW";
-	case navi_VR: return "VR";
-	case navi_YX: return "YX";
-	case navi_ZA: return "ZA";
-	case navi_ZC: return "ZC";
-	case navi_ZQ: return "ZQ";
-	case navi_ZV: return "ZV";
-	case navi_WI: return "WI";
-	default: return NULL;
+	case navi_AG:
+		return "AG";
+	case navi_AP:
+		return "AP";
+	case navi_AI:
+		return "AI";
+	case navi_CD:
+		return "CD";
+	case navi_CR:
+		return "CR";
+	case navi_CS:
+		return "CS";
+	case navi_CT:
+		return "CT";
+	case navi_CV:
+		return "CV";
+	case navi_CX:
+		return "CX";
+	case navi_DE:
+		return "DE";
+	case navi_DF:
+		return "DF";
+	case navi_EC:
+		return "EC";
+	case navi_EI:
+		return "EI";
+	case navi_EP:
+		return "EP";
+	case navi_ER:
+		return "ER";
+	case navi_GA:
+		return "GA";
+	case navi_GP:
+		return "GP";
+	case navi_GL:
+		return "GL";
+	case navi_GN:
+		return "GN";
+	case navi_GW:
+		return "GW";
+	case navi_HC:
+		return "HC";
+	case navi_HE:
+		return "HE";
+	case navi_HN:
+		return "HN";
+	case navi_II:
+		return "II";
+	case navi_IN:
+		return "IN";
+	case navi_LC:
+		return "LC";
+	case navi_P:
+		return "P";
+	case navi_RA:
+		return "RA";
+	case navi_SD:
+		return "SD";
+	case navi_SN:
+		return "SN";
+	case navi_SS:
+		return "SS";
+	case navi_TI:
+		return "TI";
+	case navi_VD:
+		return "VD";
+	case navi_VM:
+		return "VM";
+	case navi_VW:
+		return "VW";
+	case navi_VR:
+		return "VR";
+	case navi_YX:
+		return "YX";
+	case navi_ZA:
+		return "ZA";
+	case navi_ZC:
+		return "ZC";
+	case navi_ZQ:
+		return "ZQ";
+	case navi_ZV:
+		return "ZV";
+	case navi_WI:
+		return "WI";
+	default:
+		return NULL;
+	}
+}
+
+//
+// navi_datum_to_string
+//
+
+const char *navi_datum_str(int datum, int notnull)
+{
+	if (!notnull)
+		datum = navi_Null;
+
+	switch (datum)
+	{
+	case navi_WGS84:
+		return "W84";
+	case navi_WGS72:
+		return "W72";
+	case navi_SGS85:
+		return "S85";
+	case navi_PE90:
+		return "P90";
+	case navi_UserDefined:
+		return "999";
+	case navi_Null:
+		return "";
+	default:
+		return NULL;
+	}
+}
+
+const char *navi_fixsign_str(int fixsign, int notnull)
+{
+	if (!notnull)
+		fixsign = navi_Null;
+
+	switch (fixsign)
+	{
+	case navi_North:
+		return "N";
+	case navi_South:
+		return "S";
+	case navi_East:
+		return "E";
+	case navi_West:
+		return "W";
+	case navi_Null:
+		return "";
+	default:
+		return NULL;
+	}
+}
+
+const char *navi_status_str(int status)
+{
+	switch (status)
+	{
+	case navi_DataValid:
+		return "A";
+	case navi_DataInvalid:
+		return "V";
+	default:
+		return NULL;
+	}
+}
+
+const char *navi_modeindicator_str(int mi)
+{
+	switch (mi)
+	{
+	case navi_Autonomous:
+		return "A";
+	case navi_Differential:
+		return "D";
+	case navi_Estimated:
+		return "E";
+	case navi_ManualInput:
+		return "M";
+	case navi_Simulator:
+		return "S";
+	case navi_DataNotValid:
+		return "N";
+	default:
+		return NULL;
 	}
 }
