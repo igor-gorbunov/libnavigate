@@ -1185,29 +1185,3 @@ int navi_msg_create_double(double value, char *buffer, int maxsize, int notnull)
 		return 0;
 	}
 }
-
-int navi_msg_create_sign(int sign, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (sign)
-		{
-		case navi_North:
-			return snprintf(buffer, maxsize, "N");
-		case navi_South:
-			return snprintf(buffer, maxsize, "S");
-		case navi_East:
-			return snprintf(buffer, maxsize, "E");
-		case navi_West:
-			return snprintf(buffer, maxsize, "W");
-		default:
-			break;
-		}
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-	}
-
-	return 0;
-}
