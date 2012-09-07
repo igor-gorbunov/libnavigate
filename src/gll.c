@@ -1,9 +1,9 @@
 #include "gll.h"
 #include "common.h"
 
-#include <libnavigate/errors.h>
-#include <libnavigate/parser.h>
+#include <navigate.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
@@ -16,10 +16,11 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], fix[64],
+	const char *talkerid;
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], fix[64],
 		utc[32], status[2], mi[2], cs[3];
 
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
 
 	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GLL_VALID_POSITION_FIX);

@@ -116,90 +116,86 @@ enum
 //
 // Talker Identifier Mnemonics
 //
-enum naviTalkerId_t
+enum
 {
-	naviTalkerId_Undefined = -1,	// unefined or unsupported talker id
-
 	// Heading/track controller (autopilot)
-	naviTalkerId_AG = 0,	// general
-	naviTalkerId_AP = 1,	// magnetic
+	navi_AG = 0,	// general
+	navi_AP = 1,	// magnetic
 	// Automatic identification system
-	naviTalkerId_AI = 2,
+	navi_AI = 2,
 	// Communications:
-	naviTalkerId_CD = 3,	// digital selective calling (DSC)
-	naviTalkerId_CR = 4,	// data receiver
-	naviTalkerId_CS = 5,	// satellite
-	naviTalkerId_CT = 6,	// radio-telephone (MF/HF)
-	naviTalkerId_CV = 7,	// radio-telephone (VHF)
-	naviTalkerId_CX = 8,	// scanning receiver
+	navi_CD = 3,	// digital selective calling (DSC)
+	navi_CR = 4,	// data receiver
+	navi_CS = 5,	// satellite
+	navi_CT = 6,	// radio-telephone (MF/HF)
+	navi_CV = 7,	// radio-telephone (VHF)
+	navi_CX = 8,	// scanning receiver
 	// DECCA navigator
-	naviTalkerId_DE = 9,
+	navi_DE = 9,
 	// Direction finder
-	naviTalkerId_DF = 10,
+	navi_DF = 10,
 	// Electronic chart systems (ECS)
-	naviTalkerId_EC = 11,
+	navi_EC = 11,
 	// Electronic chart display and information system (ECDIS)
-	naviTalkerId_EI = 12,
+	navi_EI = 12,
 	// Emergency position indicating radio beacon (EPIRB)
-	naviTalkerId_EP = 13,
+	navi_EP = 13,
 	// Engine room monitoring systems
-	naviTalkerId_ER = 14,
+	navi_ER = 14,
 	// Galileo receiver
-	naviTalkerId_GA = 15,
+	navi_GA = 15,
 	// Global positioning system (GPS)
-	naviTalkerId_GP = 16,
+	navi_GP = 16,
 	// GLONASS receiver
-	naviTalkerId_GL = 17,
+	navi_GL = 17,
 	// Global navigation satellite system (GNSS)
-	naviTalkerId_GN = 18,
+	navi_GN = 18,
 	// SBAS receiver
-	naviTalkerId_GW = 19,
+	navi_GW = 19,
 	// Heading sensors:
-	naviTalkerId_HC = 20,	// compass, magnetic
-	naviTalkerId_HE = 21,	// gyro, north seeking
-	naviTalkerId_HN = 22,	// gyro, non-north seeking
+	navi_HC = 20,	// compass, magnetic
+	navi_HE = 21,	// gyro, north seeking
+	navi_HN = 22,	// gyro, non-north seeking
 	// Integrated instrumentation
-	naviTalkerId_II = 23,
+	navi_II = 23,
 	// Integrated navigation
-	naviTalkerId_IN = 24,
+	navi_IN = 24,
 	// LORAN: LORAN-C
-	naviTalkerId_LC = 25,
+	navi_LC = 25,
 	// Proprietary code
-	naviTalkerId_P = 26,
+	navi_P = 26,
 	// Radar and/or radar plotting
-	naviTalkerId_RA = 27,
+	navi_RA = 27,
 	// Sounder, depth
-	naviTalkerId_SD = 28,
+	navi_SD = 28,
 	// Electronic positioning system, other/general
-	naviTalkerId_SN = 29,
+	navi_SN = 29,
 	// Sounder, scanning
-	naviTalkerId_SS = 30,
+	navi_SS = 30,
 	// Turn rate indicator
-	naviTalkerId_TI = 31,
+	navi_TI = 31,
 	// Velocity sensors:
-	naviTalkerId_VD = 32,	// Doppler, other/general
-	naviTalkerId_VM = 33,	// speed log, water, magnetic
-	naviTalkerId_VW = 34,	// speed log, water, mechanical
+	navi_VD = 32,	// Doppler, other/general
+	navi_VM = 33,	// speed log, water, magnetic
+	navi_VW = 34,	// speed log, water, mechanical
 	// Voyage data recorder
-	naviTalkerId_VR = 35,
+	navi_VR = 35,
 	// Transducer
-	naviTalkerId_YX = 36,
+	navi_YX = 36,
 	// Timekeepers, time/date
-	naviTalkerId_ZA = 37,	// atomic clock
-	naviTalkerId_ZC = 38,	// chronometer
-	naviTalkerId_ZQ = 39,	// quartz
-	naviTalkerId_ZV = 40,	// radio update
+	navi_ZA = 37,	// atomic clock
+	navi_ZC = 38,	// chronometer
+	navi_ZQ = 39,	// quartz
+	navi_ZV = 40,	// radio update
 	// Weather instruments
-	naviTalkerId_WI = 41
+	navi_WI = 41
 };
 
 //
 // Local/reference datums
 //
-enum naviDatum_t
+enum
 {
-	naviDatum_Undefined = -1,	// unefined or unsupported datum
-
 	naviDatum_WGS84 = 0,
 	naviDatum_WGS72 = 1,
 	naviDatum_SGS85 = 2,
@@ -210,7 +206,7 @@ enum naviDatum_t
 //
 // Local datum subdivision (from IHO Publication S-60, App. B and C)
 //
-enum naviLocalDatumSub_t
+enum
 {
 	naviLocalDatumSub_Undefined = -1	// unefined or unsupported local datum
 };
@@ -278,7 +274,7 @@ NAVI_ALIGNED(struct, navi_utc_t)
 //
 // Holds UTC date
 //
-struct naviDate_t
+NAVI_ALIGNED(struct, naviDate_t)
 {
 	int day, month, year;
 };
@@ -442,7 +438,7 @@ NAVI_ALIGNED(struct, dtm_t)
 
 //
 // Geographic position, latitude/longitude
-struct gll_t
+NAVI_ALIGNED(struct, gll_t)
 {
 	int tid;
 	unsigned vfields;			// valid fields, bitwise or of GLL_VALID_xxx
@@ -457,7 +453,7 @@ struct gll_t
 
 //
 // GNSS fix data
-struct gns_t
+NAVI_ALIGNED(struct, gns_t)
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of GNS_VALID_xxx
@@ -589,7 +585,7 @@ struct gns_t
 
 //
 // Recommended minimum specific GNSS data
-struct rmc_t
+NAVI_ALIGNED(struct, rmc_t)
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
@@ -697,7 +693,7 @@ struct rmc_t
 
 //
 // Cource over ground and ground speed
-struct vtg_t
+NAVI_ALIGNED(struct, vtg_t)
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of ValidFields_t
@@ -743,7 +739,7 @@ struct vtg_t
 
 //
 // Time and date
-struct zda_t
+NAVI_ALIGNED(struct, zda_t)
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of ValidFields_t

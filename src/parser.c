@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/parser.h>
-#include <libnavigate/errors.h>
+#include <navigate.h>
 
 #include <math.h>
 #include <ctype.h>

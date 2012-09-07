@@ -1,9 +1,9 @@
 #include "dtm.h"
 #include "common.h"
 
-#include <libnavigate/errors.h>
-#include <libnavigate/parser.h>
+#include <navigate.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
@@ -14,11 +14,13 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], locdatum[4],
+	const char *talkerid;
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], locdatum[4],
 		locdatumsub[2], latofs[32], latsign[2], lonofs[32], lonsign[2],
 		altofs[32], refdatum[4], cs[3];
 
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+
 	msglength += IecPrint_Datum(msg->ld, locdatum, sizeof(locdatum),
 		msg->vfields & DTM_VALID_LOCALDATUM);
 	msglength += IecPrint_DatumSubdivision(msg->lds, locdatumsub,

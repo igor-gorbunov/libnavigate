@@ -174,103 +174,7 @@ int remove_trailing_zeroes(char *buffer, int length)
 }
 
 
-////////////////////////
-int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
-	int maxsize)
-{
-	switch (tid)
-	{
-	case naviTalkerId_AG:
-		return snprintf(buffer, maxsize, "AG");
-	case naviTalkerId_AP:
-		return snprintf(buffer, maxsize, "AP");
-	case naviTalkerId_AI:
-		return snprintf(buffer, maxsize, "AI");
-	case naviTalkerId_CD:
-		return snprintf(buffer, maxsize, "CD");
-	case naviTalkerId_CR:
-		return snprintf(buffer, maxsize, "CR");
-	case naviTalkerId_CS:
-		return snprintf(buffer, maxsize, "CS");
-	case naviTalkerId_CT:
-		return snprintf(buffer, maxsize, "CT");
-	case naviTalkerId_CV:
-		return snprintf(buffer, maxsize, "CV");
-	case naviTalkerId_CX:
-		return snprintf(buffer, maxsize, "CX");
-	case naviTalkerId_DE:
-		return snprintf(buffer, maxsize, "DE");
-	case naviTalkerId_DF:
-		return snprintf(buffer, maxsize, "DF");
-	case naviTalkerId_EC:
-		return snprintf(buffer, maxsize, "EC");
-	case naviTalkerId_EI:
-		return snprintf(buffer, maxsize, "EI");
-	case naviTalkerId_EP:
-		return snprintf(buffer, maxsize, "EP");
-	case naviTalkerId_ER:
-		return snprintf(buffer, maxsize, "ER");
-	case naviTalkerId_GA:
-		return snprintf(buffer, maxsize, "GA");
-	case naviTalkerId_GP:
-		return snprintf(buffer, maxsize, "GP");
-	case naviTalkerId_GL:
-		return snprintf(buffer, maxsize, "GL");
-	case naviTalkerId_GN:
-		return snprintf(buffer, maxsize, "GN");
-	case naviTalkerId_GW:
-		return snprintf(buffer, maxsize, "GW");
-	case naviTalkerId_HC:
-		return snprintf(buffer, maxsize, "HC");
-	case naviTalkerId_HE:
-		return snprintf(buffer, maxsize, "HE");
-	case naviTalkerId_HN:
-		return snprintf(buffer, maxsize, "HN");
-	case naviTalkerId_II:
-		return snprintf(buffer, maxsize, "II");
-	case naviTalkerId_IN:
-		return snprintf(buffer, maxsize, "IN");
-	case naviTalkerId_LC:
-		return snprintf(buffer, maxsize, "LC");
-	case naviTalkerId_P:
-		return snprintf(buffer, maxsize, "P");
-	case naviTalkerId_RA:
-		return snprintf(buffer, maxsize, "RA");
-	case naviTalkerId_SD:
-		return snprintf(buffer, maxsize, "SD");
-	case naviTalkerId_SN:
-		return snprintf(buffer, maxsize, "SN");
-	case naviTalkerId_SS:
-		return snprintf(buffer, maxsize, "SS");
-	case naviTalkerId_TI:
-		return snprintf(buffer, maxsize, "TI");
-	case naviTalkerId_VD:
-		return snprintf(buffer, maxsize, "VD");
-	case naviTalkerId_VM:
-		return snprintf(buffer, maxsize, "VM");
-	case naviTalkerId_VW:
-		return snprintf(buffer, maxsize, "VW");
-	case naviTalkerId_VR:
-		return snprintf(buffer, maxsize, "VR");
-	case naviTalkerId_YX:
-		return snprintf(buffer, maxsize, "YX");
-	case naviTalkerId_ZA:
-		return snprintf(buffer, maxsize, "ZA");
-	case naviTalkerId_ZC:
-		return snprintf(buffer, maxsize, "ZC");
-	case naviTalkerId_ZQ:
-		return snprintf(buffer, maxsize, "ZQ");
-	case naviTalkerId_ZV:
-		return snprintf(buffer, maxsize, "ZV");
-	case naviTalkerId_WI:
-		return snprintf(buffer, maxsize, "WI");
-	default:
-		break;
-	}
-
-	return 0;
-}
-
+/////////////////////
 int IecPrint_Utc(const struct navi_utc_t *utc, char *buffer,
 	int maxsize, int notnull)
 {
@@ -315,8 +219,7 @@ int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
 }
 
-int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
-	int maxsize, int notnull)
+int IecPrint_Datum(int datum, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -345,8 +248,7 @@ int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
 	}
 }
 
-int IecPrint_DatumSubdivision(enum naviLocalDatumSub_t lds,
-	char *buffer, int maxsize, int notnull)
+int IecPrint_DatumSubdivision(int lds, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -547,178 +449,94 @@ int IecLookupTalkerId(char *buffer, int *nmread)
 	*nmread = 2;
 
 	if (strncmp("AG", buffer, 2) == 0)
-	{
-		return naviTalkerId_AG;
-	}
+		return navi_AG;
 	else if (strncmp("AP", buffer, 2) == 0)
-	{
-		return naviTalkerId_AP;
-	}
+		return navi_AP;
 	else if (strncmp("AI", buffer, 2) == 0)
-	{
-		return naviTalkerId_AI;
-	}
+		return navi_AI;
 	else if (strncmp("CD", buffer, 2) == 0)
-	{
-		return naviTalkerId_CD;
-	}
+		return navi_CD;
 	else if (strncmp("CR", buffer, 2) == 0)
-	{
-		return naviTalkerId_CR;
-	}
+		return navi_CR;
 	else if (strncmp("CS", buffer, 2) == 0)
-	{
-		return naviTalkerId_CS;
-	}
+		return navi_CS;
 	else if (strncmp("CT", buffer, 2) == 0)
-	{
-		return naviTalkerId_CT;
-	}
+		return navi_CT;
 	else if (strncmp("CV", buffer, 2) == 0)
-	{
-		return naviTalkerId_CV;
-	}
+		return navi_CV;
 	else if (strncmp("CX", buffer, 2) == 0)
-	{
-		return naviTalkerId_CX;
-	}
+		return navi_CX;
 	else if (strncmp("DE", buffer, 2) == 0)
-	{
-		return naviTalkerId_DE;
-	}
+		return navi_DE;
 	else if (strncmp("DF", buffer, 2) == 0)
-	{
-		return naviTalkerId_DF;
-	}
+		return navi_DF;
 	else if (strncmp("EC", buffer, 2) == 0)
-	{
-		return naviTalkerId_EC;
-	}
+		return navi_EC;
 	else if (strncmp("EI", buffer, 2) == 0)
-	{
-		return naviTalkerId_EI;
-	}
+		return navi_EI;
 	else if (strncmp("EP", buffer, 2) == 0)
-	{
-		return naviTalkerId_EP;
-	}
+		return navi_EP;
 	else if (strncmp("ER", buffer, 2) == 0)
-	{
-		return naviTalkerId_ER;
-	}
+		return navi_ER;
 	else if (strncmp("GA", buffer, 2) == 0)
-	{
-		return naviTalkerId_GA;
-	}
+		return navi_GA;
 	else if (strncmp("GP", buffer, 2) == 0)
-	{
-		return naviTalkerId_GP;
-	}
+		return navi_GP;
 	else if (strncmp("GL", buffer, 2) == 0)
-	{
-		return naviTalkerId_GL;
-	}
+		return navi_GL;
 	else if (strncmp("GN", buffer, 2) == 0)
-	{
-		return naviTalkerId_GN;
-	}
+		return navi_GN;
 	else if (strncmp("GW", buffer, 2) == 0)
-	{
-		return naviTalkerId_GW;
-	}
+		return navi_GW;
 	else if (strncmp("HC", buffer, 2) == 0)
-	{
-		return naviTalkerId_HC;
-	}
+		return navi_HC;
 	else if (strncmp("HE", buffer, 2) == 0)
-	{
-		return naviTalkerId_HE;
-	}
+		return navi_HE;
 	else if (strncmp("HN", buffer, 2) == 0)
-	{
-		return naviTalkerId_HN;
-	}
+		return navi_HN;
 	else if (strncmp("II", buffer, 2) == 0)
-	{
-		return naviTalkerId_II;
-	}
+		return navi_II;
 	else if (strncmp("IN", buffer, 2) == 0)
-	{
-		return naviTalkerId_IN;
-	}
+		return navi_IN;
 	else if (strncmp("LC", buffer, 2) == 0)
-	{
-		return naviTalkerId_LC;
-	}
+		return navi_LC;
 	else if (strncmp("P", buffer, 1) == 0)
 	{
 		*nmread = 1;
-		return naviTalkerId_P;
+		return navi_P;
 	}
 	else if (strncmp("RA", buffer, 2) == 0)
-	{
-		return naviTalkerId_RA;
-	}
+		return navi_RA;
 	else if (strncmp("SD", buffer, 2) == 0)
-	{
-		return naviTalkerId_SD;
-	}
+		return navi_SD;
 	else if (strncmp("SN", buffer, 2) == 0)
-	{
-		return naviTalkerId_SN;
-	}
+		return navi_SN;
 	else if (strncmp("SS", buffer, 2) == 0)
-	{
-		return naviTalkerId_SS;
-	}
+		return navi_SS;
 	else if (strncmp("TI", buffer, 2) == 0)
-	{
-		return naviTalkerId_TI;
-	}
+		return navi_TI;
 	else if (strncmp("VD", buffer, 2) == 0)
-	{
-		return naviTalkerId_VD;
-	}
+		return navi_VD;
 	else if (strncmp("VM", buffer, 2) == 0)
-	{
-		return naviTalkerId_VM;
-	}
+		return navi_VM;
 	else if (strncmp("VW", buffer, 2) == 0)
-	{
-		return naviTalkerId_VW;
-	}
+		return navi_VW;
 	else if (strncmp("VR", buffer, 2) == 0)
-	{
-		return naviTalkerId_VR;
-	}
+		return navi_VR;
 	else if (strncmp("YX", buffer, 2) == 0)
-	{
-		return naviTalkerId_YX;
-	}
+		return navi_YX;
 	else if (strncmp("ZA", buffer, 2) == 0)
-	{
-		return naviTalkerId_ZA;
-	}
+		return navi_ZA;
 	else if (strncmp("ZC", buffer, 2) == 0)
-	{
-		return naviTalkerId_ZC;
-	}
+		return navi_ZC;
 	else if (strncmp("ZQ", buffer, 2) == 0)
-	{
-		return naviTalkerId_ZQ;
-	}
+		return navi_ZQ;
 	else if (strncmp("ZV", buffer, 2) == 0)
-	{
-		return naviTalkerId_ZV;
-	}
+		return navi_ZV;
 	else if (strncmp("WI", buffer, 2) == 0)
-	{
-		return naviTalkerId_WI;
-	}
+		return navi_WI;
 	else
-	{
-		return naviTalkerId_Undefined;
-	}
+		return -1;
 }
 
 // Looks up sentence formatter
@@ -1057,7 +875,7 @@ int IecParse_Datum(char *buffer, int *datum, int *nmread)
 	else if ((strncmp(",", buffer, 1) == 0) || (strncmp("*", buffer, 1) == 0))
 	{
 		*nmread = 0;
-		*datum = naviDatum_Undefined;
+		*datum = navi_Undefined;
 		return navi_NullField;
 	}
 	else

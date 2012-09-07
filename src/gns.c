@@ -1,9 +1,9 @@
 #include "gns.h"
 #include "common.h"
 
-#include <libnavigate/errors.h>
-#include <libnavigate/parser.h>
+#include <navigate.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
@@ -14,11 +14,13 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], fix[64],
-		mi[3], totalsats[3], hdop[32], antalt[32], geoidsep[32], ddage[32],
+	const char *talkerid;
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], fix[64], mi[3],
+		totalsats[3], hdop[32], antalt[32], geoidsep[32], ddage[32],
 		drsid[32], cs[3];
 
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
 

@@ -1,9 +1,9 @@
 #include "rmc.h"
 #include "common.h"
 
-#include <libnavigate/errors.h>
-#include <libnavigate/parser.h>
+#include <navigate.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
@@ -14,11 +14,13 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], status[2],
-		fix[64], snots[32], ctrue[32], day[3], month[3], year[3], magnetic[32],
+	const char *talkerid;
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], status[2], fix[64],
+		snots[32], ctrue[32], day[3], month[3], year[3], magnetic[32],
 		magsign[2], mi[2], cs[3];
 
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & RMC_VALID_UTC);
 	msglength += IecPrint_Status(msg->status, status, sizeof(status));

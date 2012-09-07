@@ -1,8 +1,7 @@
 #include "zda.h"
 #include "common.h"
 
-#include <libnavigate/errors.h>
-#include <libnavigate/parser.h>
+#include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -17,10 +16,12 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 {
 	int msglength;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], day[3],
+	const char *talkerid;
+	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], day[3],
 		month[3], year[5], lzhours[4], lzmins[3], cs[3];
 
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
+	msglength = strlen(talkerid = navi_talkerid_to_string(msg->tid));
+
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & ZDA_VALID_UTC);
 	msglength += snprintf(day, sizeof(day),

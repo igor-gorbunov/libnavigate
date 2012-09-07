@@ -37,6 +37,10 @@ NAVI_BEGIN_DECL
 NAVI_EXTERN(int) navi_create_msg(int type, void *msg, char *buffer,
 		int maxsize, int *nmwritten);
 
+//
+// Returns the string representation of talker identifier
+NAVI_EXTERN(const char *) navi_talkerid_to_string(int tid);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_generator_h

@@ -29,10 +29,6 @@ NAVI_BEGIN_DECL
 int remove_trailing_zeroes(char *buffer, int length);
 
 //
-// Prints talker identifier
-int IecPrint_TalkerId(int tid, char *buffer, int maxsize);
-
-//
 // Prints datum
 int IecPrint_Datum(int datum, char *buffer, int maxsize, int notnull);
 

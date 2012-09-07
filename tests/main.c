@@ -46,7 +46,7 @@ int main(void)
 	remain = sizeof(buffer);
 
 	// ZDA
-	zda.tid = naviTalkerId_GL;
+	zda.tid = navi_GL;
 	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DAY | ZDA_VALID_MONTH |
 		ZDA_VALID_YEAR | ZDA_VALID_LOCALZONE;
 	zda.utc.hour = 8;
@@ -71,7 +71,7 @@ int main(void)
 	}
 
 	// DTM
-	dtm.tid = naviTalkerId_GP;
+	dtm.tid = navi_GP;
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_LATOFFSET |
 		DTM_VALID_LONOFFSET | DTM_VALID_ALTITUDEOFFSET |
 		DTM_VALID_REFERENCEDATUM;
@@ -96,7 +96,7 @@ int main(void)
 	}
 
 	// GLL
-	gll.tid = naviTalkerId_SN;
+	gll.tid = navi_SN;
 	gll.vfields = GLL_VALID_POSITION_FIX | GLL_VALID_UTC;
 	gll.fix.latitude = 0.02;
 	gll.fix.latsign = navi_North;
@@ -121,7 +121,7 @@ int main(void)
 	}
 
 	// GNS
-	gns.tid = naviTalkerId_GL;
+	gns.tid = navi_GL;
 	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX |
 		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
 		GNS_VALID_HDOP  | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
@@ -155,7 +155,7 @@ int main(void)
 	}
 
 	// RMC
-	rmc.tid = naviTalkerId_GL;
+	rmc.tid = navi_GL;
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_POSITION_FIX | RMC_VALID_DATE;
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
@@ -201,7 +201,7 @@ int main(void)
 	}
 
 	// VTG
-	vtg.tid = naviTalkerId_VW;
+	vtg.tid = navi_VW;
 	vtg.vfields = VTG_VALID_COURSETRUE | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;
@@ -239,7 +239,8 @@ int main(void)
 			case navi_DTM:
 				{
 					struct dtm_t *dtm = (struct dtm_t *)parsedbuffer;
-					printf("Received DTM: talker id = %d\n", dtm->tid);
+					printf("Received DTM:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_to_string(dtm->tid), dtm->tid);
 
 					if (dtm->vfields & DTM_VALID_LOCALDATUM)
 					{
@@ -272,7 +273,8 @@ int main(void)
 			case navi_GLL:
 				{
 					struct gll_t *gll = (struct gll_t *)parsedbuffer;
-					printf("Received GLL: talker id = %d\n", gll->tid);
+					printf("Received GLL:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_to_string(gll->tid), gll->tid);
 
 					if (gll->vfields & GLL_VALID_POSITION_FIX)
 					{
@@ -297,7 +299,8 @@ int main(void)
 			case navi_GNS:
 				{
 					struct gns_t *gns = (struct gns_t *)parsedbuffer;
-					printf("Received GNS: talker id = %d\n", gns->tid);
+					printf("Received GNS:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_to_string(gns->tid), gns->tid);
 
 					if (gns->vfields & GNS_VALID_UTC)
 					{
@@ -344,7 +347,8 @@ int main(void)
 			case navi_RMC:
 				{
 					struct rmc_t *rmc = (struct rmc_t *)parsedbuffer;
-					printf("Received RMC: talker id = %d\n", rmc->tid);
+					printf("Received RMC:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_to_string(rmc->tid), rmc->tid);
 
 					if (rmc->vfields & RMC_VALID_UTC)
 					{
@@ -386,7 +390,8 @@ int main(void)
 			case navi_VTG:
 				{
 					struct vtg_t *vtg = (struct vtg_t *)parsedbuffer;
-					printf("Received VTG: talker id = %d\n", vtg->tid);
+					printf("Received VTG:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_to_string(vtg->tid), vtg->tid);
 
 					if (vtg->vfields & VTG_VALID_COURSETRUE)
 					{
@@ -406,7 +411,8 @@ int main(void)
 			case navi_ZDA:
 				{
 					struct zda_t *zda = (struct zda_t *)parsedbuffer;
-					printf("Received ZDA: talker id = %d\n", zda->tid);
+					printf("Received ZDA:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_to_string(zda->tid), zda->tid);
 
 					if (zda->vfields & ZDA_VALID_UTC)
 					{
