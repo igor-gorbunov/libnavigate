@@ -97,7 +97,7 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 	}
 	index += 1;
 
-	if (navi_msg_parse_offset(buffer + index, &msg->latofs, &nmread) != 0)
+	if (navi_parse_offset(buffer + index, &msg->latofs, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -108,7 +108,7 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 	}
 	index += nmread;
 
-	if (navi_msg_parse_offset(buffer + index, &msg->lonofs, &nmread) != 0)
+	if (navi_parse_offset(buffer + index, &msg->lonofs, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;

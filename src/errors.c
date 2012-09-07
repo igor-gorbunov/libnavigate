@@ -30,4 +30,3 @@ void navierr_set_last(int errclass)
 {
 	g_navi_error.errclass = errclass;
 }
-

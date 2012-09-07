@@ -10,7 +10,7 @@ NAVI_BEGIN_DECL
 //
 enum
 {
-	navi_Error = -1,		// undefined error
+	navi_Error = -1,		// error
 	navi_Ok = 0				// no error
 };
 
@@ -26,10 +26,11 @@ enum
 	navi_MsgNotSupported = 4,	// message type not supported
 	navi_NoValidMessage = 5,	// no valid message in buffer
 	navi_NullField = 6,			// null field in a message
-	navi_InvalidMessage = 7		// message does not conform to protocol
+	navi_InvalidMessage = 7,	// message does not conform to protocol
+	navi_NotImplemented = 8		// method not implemented
 };
 
-typedef struct
+typedef struct _navi_error_t
 {
 	int errclass;
 } navi_error_t;

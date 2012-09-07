@@ -111,16 +111,6 @@ int IecParse_Double(char *buffer, double *value, int *nmread);
 int IecParse_OffsetSign(char *buffer, int *sign, int *nmread);
 
 //
-// Parses latitude
-int IecParse_Latitude(char *buffer, struct navi_offset_t *latitude,
-	int *nmread);
-
-//
-// Parses longitude sign
-int IecParse_Longitude(char *buffer, struct navi_offset_t *longitude,
-	int *nmread);
-
-//
 // Parses time
 int IecParse_Time(char *buffer, struct naviUtc_t *utc, int *nmread);
 
@@ -151,4 +141,3 @@ int IecParse_LocalZone(char *buffer, int *offset, int *nmread);
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_common_h
-

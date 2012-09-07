@@ -296,7 +296,7 @@ enum
 //
 // Holds offset data
 //
-struct navi_offset_t
+NAVI_ALIGNED(struct, navi_offset_t)
 {
 	double offset;	// minutes
 	int sign;		// N/S or E/W
@@ -305,7 +305,7 @@ struct navi_offset_t
 //
 // Holds position data
 //
-struct navi_position_t
+NAVI_ALIGNED(struct, navi_position_t)
 {
 	double latitude;	// degrees
 	int latsign;		// N/S
@@ -400,16 +400,16 @@ struct navi_position_t
 
 //
 // Datum reference
-struct dtm_t
+NAVI_ALIGNED(struct, dtm_t)
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of DTM_VALID_xxx
-	int ld;			// local datum
-	int lds;		// local datum subdivision code
-	struct navi_offset_t latofs;		// latitude offset, min,N/S
-	struct navi_offset_t lonofs;		// longitude offset, min,E/W
+	int ld;					// local datum
+	int lds;				// local datum subdivision code
+	struct navi_offset_t latofs;	// latitude offset, min,N/S
+	struct navi_offset_t lonofs;	// longitude offset, min,E/W
 	double altoffset;				// altitude offset, m
-	int rd;			// reference datum
+	int rd;					// reference datum
 };
 
 #define DTM_VALID_LOCALDATUM		0x01

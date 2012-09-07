@@ -40,4 +40,3 @@ NAVI_EXTERN(int) navi_create_msg(int type, void *msg, char *buffer,
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_generator_h
-

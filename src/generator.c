@@ -25,6 +25,8 @@
 #include <string.h>
 #include <math.h>
 
+#ifndef NO_GENERATOR
+
 #include "dtm.h"
 #include "gll.h"
 #include "gns.h"
@@ -32,8 +34,13 @@
 #include "vtg.h"
 #include "zda.h"
 
+#endif // NO_GENERATOR
+
 int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
 {
+
+#ifndef NO_GENERATOR
+
 	switch (type)
 	{
 	case navi_AAM:
@@ -126,6 +133,12 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	}
 
 	navierr_set_last(navi_MsgNotSupported);
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+
+#endif // NO_GENERATOR
+
 	return -1;
 }
-

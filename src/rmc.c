@@ -100,7 +100,7 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer, int maxsize)
 	}
 	index += 1;
 
-	if (navi_msg_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
+	if (navi_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;

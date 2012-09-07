@@ -26,6 +26,9 @@
 #include <assert.h>
 
 #include "common.h"
+
+#ifndef NO_PARSER
+
 #include "dtm.h"
 #include "gll.h"
 #include "gns.h"
@@ -33,12 +36,17 @@
 #include "vtg.h"
 #include "zda.h"
 
+#endif // NO_PARSER
+
 //
 // navi_parse_msg
 //
 int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	void *msg, int *msgtype, int *nmread)
 {
+
+#ifndef NO_PARSER
+
 	int result;
 	int tid;	// talker id
 
@@ -53,7 +61,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	for (som = 0; buffer[som] != '$' && som < maxsize; som++) { }
 	if (som >= maxsize)
 	{	// No valid message
-		return navi_NoValidMessage;
+		navierr_set_last(navi_NoValidMessage);
+		return -1;
 	}
 
 	// Skip up to end of the message
@@ -66,7 +75,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	}
 	if (eom >= maxsize)
 	{	// No valid message
-		return navi_NoValidMessage;
+		navierr_set_last(navi_NoValidMessage);
+		return -1;
 	}
 
 	// At least read a message
@@ -77,7 +87,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	//
 	if ((result = IecScan_CheckSum(buffer + som, maxsize - (som + eom))) < 0)
 	{
-		return navi_CrcEror;
+		navierr_set_last(navi_CrcEror);
+		return -1;
 	}
 
 	//
@@ -86,7 +97,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	if (IecScan_AdressField(buffer + som + 1, maxsize - (som + eom + 1),
 			&tid, msgtype) < 0)
 	{
-		return navi_Undefined;
+		return -1;
 	}
 
 	//
@@ -115,7 +126,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_DTM:
 		if (maxsize < sizeof(struct dtm_t))
 		{
-			return navi_NotEnoughBuffer;
+			navierr_set_last(navi_NotEnoughBuffer);
+			return -1;
 		}
 		((struct dtm_t *)msg)->tid = tid;
 		return navi_msg_parse_dtm((struct dtm_t *)msg, buffer + som + 6,
@@ -128,7 +140,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_GLL:
 		if (maxsize < sizeof(struct gll_t))
 		{
-			return navi_NotEnoughBuffer;
+			navierr_set_last(navi_NotEnoughBuffer);
+			return -1;
 		}
 		((struct gll_t *)msg)->tid = tid;
 		return navi_msg_parse_gll((struct gll_t *)msg, buffer + som + 6,
@@ -136,7 +149,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_GNS:
 		if (maxsize < sizeof(struct gns_t))
 		{
-			return navi_NotEnoughBuffer;
+			navierr_set_last(navi_NotEnoughBuffer);
+			return -1;
 		}
 		((struct gns_t *)msg)->tid = tid;
 		return IecParse_GNS((struct gns_t *)msg, buffer + som + 6,
@@ -166,7 +180,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_RMC:
 		if (maxsize < sizeof(struct rmc_t))
 		{
-			return navi_NotEnoughBuffer;
+			navierr_set_last(navi_NotEnoughBuffer);
+			return -1;
 		}
 		((struct rmc_t *)msg)->tid = tid;
 		return IecParse_RMC((struct rmc_t *)msg, buffer + som + 6,
@@ -191,7 +206,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_VTG:
 		if (maxsize < sizeof(struct vtg_t))
 		{
-			return navi_NotEnoughBuffer;
+			navierr_set_last(navi_NotEnoughBuffer);
+			return -1;
 		}
 		((struct vtg_t *)msg)->tid = tid;
 		return IecParse_VTG((struct vtg_t *)msg, buffer + som + 6,
@@ -206,7 +222,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_ZDA:
 		if (maxsize < sizeof(struct zda_t))
 		{
-			return navi_NotEnoughBuffer;
+			navierr_set_last(navi_NotEnoughBuffer);
+			return -1;
 		}
 		((struct zda_t *)msg)->tid = tid;
 		return IecParse_ZDA((struct zda_t *)msg, buffer + som + 6,
@@ -219,11 +236,19 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		break;
 	}
 
-	return navi_MsgNotSupported;
+	navierr_set_last(navi_MsgNotSupported);
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+
+#endif // NO_PARSER
+
+	return -1;
 }
 
 //
-// navi_msg_parse_offset
+// navi_parse_offset
 //
 
 #define PARSE_OFFSET_INIT		0
@@ -232,7 +257,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 #define PARSE_OFFSET_SIGN		3
 #define PARSE_OFFSET_FINI		4
 
-int navi_msg_parse_offset(char *buffer, struct navi_offset_t *offset,
+int navi_parse_offset(char *buffer, struct navi_offset_t *offset,
 		int *nmread)
 {
 	double t;
@@ -362,7 +387,7 @@ _Exit:
 #undef PARSE_OFFSET_FINI
 
 //
-// navi_msg_parse_position_fix
+// navi_parse_position_fix
 //
 
 #define PARSE_POSITION_INIT				0
@@ -375,7 +400,7 @@ _Exit:
 #define PARSE_POSITION_NULLFIELD		7
 #define PARSE_POSITION_FINI				8
 
-int navi_msg_parse_position_fix(char *buffer, struct navi_position_t *fix,
+int navi_parse_position_fix(char *buffer, struct navi_position_t *fix,
 	int *nmread)
 {
 	int state, i = 0, j, k, c, error = 0;
@@ -625,4 +650,3 @@ _Exit:
 #undef PARSE_POSITION_LON_SIGN
 #undef PARSE_POSITION_NULLFIELD
 #undef PARSE_POSITION_FINI
-

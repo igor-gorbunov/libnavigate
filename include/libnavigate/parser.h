@@ -47,7 +47,7 @@ NAVI_EXTERN(int) navi_parse_msg(char *buffer, int maxsize, int msgsize,
 // @return 0 on success, or navi_Error if it's null or an error occured. Call
 // navierr_get_last() to check the error
 //
-NAVI_EXTERN(int) navi_msg_parse_offset(char *buffer,
+NAVI_EXTERN(int) navi_parse_offset(char *buffer,
 		struct navi_offset_t *offset, int *nmread);
 
 //
@@ -55,10 +55,9 @@ NAVI_EXTERN(int) navi_msg_parse_offset(char *buffer,
 // The field must end with ',' or '*'
 //
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
-NAVI_EXTERN(int) navi_msg_parse_position_fix(char *buffer,
+NAVI_EXTERN(int) navi_parse_position_fix(char *buffer,
 		struct navi_position_t *fix, int *nmread);
 
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h
-

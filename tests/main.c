@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-int main()
+int main(void)
 {
 	int result;
 	int msglength, nmwritten, nmread;
@@ -39,6 +39,8 @@ int main()
 	char parsedbuffer[1024];
 	int finished, parsed;
 	int msgtype;
+
+	const navi_error_t *lasterr;
 
 	msglength = 0;
 	remain = sizeof(buffer);
@@ -437,12 +439,15 @@ int main()
 				break;
 			}
 		}
-		if (result == navi_CrcEror)
+
+		lasterr = navierr_get_last();
+
+		if (lasterr->errclass == navi_CrcEror)
 		{
 			printf("CRC error\n");
 			parsed += nmread;	// advance to parse next message
 		}
-		else if (result == navi_MsgNotSupported)
+		else if (lasterr->errclass == navi_MsgNotSupported)
 		{
 			parsed += nmread;	// advance to parse next message
 
@@ -482,18 +487,17 @@ int main()
 				break;
 			}
 		}
-		else if (result == navi_NoValidMessage)
+		else if (lasterr->errclass == navi_NoValidMessage)
 		{
-			printf("Buffer emptied (%d)\n", result);
+			printf("Buffer emptied (%d)\n", lasterr->errclass);
 			finished = 1;
 		}
 		else
 		{
-			printf("Parsing result = %d\n", result);
+			printf("Parsing result = %d\n", lasterr->errclass);
 			finished = 1;
 		}
 	} while (!finished);
 
 	return 0;
 }
-

@@ -49,7 +49,7 @@ int navi_msg_parse_gll(struct gll_t *msg, char *buffer, int maxsize)
 
 	msg->vfields = 0;
 
-	if (navi_msg_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
+	if (navi_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
