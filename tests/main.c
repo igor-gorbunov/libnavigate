@@ -51,8 +51,7 @@ int main(void)
 		ZDA_VALID_YEAR | ZDA_VALID_LOCALZONE;
 	zda.utc.hour = 8;
 	zda.utc.min = 12;
-	zda.utc.sec = 38;
-	zda.utc.msec = 56;
+	zda.utc.sec = 38.56;
 	zda.day = 25;
 	zda.month = 5;
 	zda.year = 1982;
@@ -105,8 +104,7 @@ int main(void)
 	gll.fix.lonsign = navi_East;
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
-	gll.utc.sec = 18;
-	gll.utc.msec = 4;
+	gll.utc.sec = 18.4;
 	gll.status = naviStatus_DataValid;
 	gll.mi = naviModeIndicator_Autonomous;
 
@@ -130,8 +128,7 @@ int main(void)
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
 	gns.utc.hour = 20;
 	gns.utc.min = 0;
-	gns.utc.sec = 0;
-	gns.utc.msec = 0;
+	gns.utc.sec = 0.;
 	gns.fix.latitude = 60.;
 	gns.fix.latsign = navi_North;
 	gns.fix.longitude = 30.;
@@ -162,8 +159,7 @@ int main(void)
 	rmc.vfields = RMC_VALID_UTC | RMC_VALID_POSITION_FIX | RMC_VALID_DATE;
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
-	rmc.utc.sec = 39;
-	rmc.utc.msec = 980;
+	rmc.utc.sec = 39.98;
 	rmc.status = naviStatus_DataInvalid;
 	rmc.fix.latitude = 74.64772882;
 	rmc.fix.latsign = navi_South;
@@ -290,8 +286,8 @@ int main(void)
 					}
 					if (gll->vfields & GLL_VALID_UTC)
 					{
-						printf("\tutc = %d %d %d %d\n", gll->utc.hour,
-							gll->utc.min, gll->utc.sec, gll->utc.msec);
+						printf("\tutc = %d %d %f\n", gll->utc.hour, gll->utc.min,
+							gll->utc.sec);
 					}
 
 					printf("\tstatus = %d\n", gll->status);
@@ -305,8 +301,8 @@ int main(void)
 
 					if (gns->vfields & GNS_VALID_UTC)
 					{
-						printf("\tutc = %d %d %d %d\n", gns->utc.hour,
-							gns->utc.min, gns->utc.sec, gns->utc.msec);
+						printf("\tutc = %d %d %f\n", gns->utc.hour,
+							gns->utc.min, gns->utc.sec);
 					}
 					if (gns->vfields & GNS_VALID_POSITION_FIX)
 					{
@@ -352,8 +348,8 @@ int main(void)
 
 					if (rmc->vfields & RMC_VALID_UTC)
 					{
-						printf("\tutc = %d %d %d %d\n", rmc->utc.hour,
-							rmc->utc.min, rmc->utc.sec, rmc->utc.msec);
+						printf("\tutc = %d %d %f\n", rmc->utc.hour,
+							rmc->utc.min, rmc->utc.sec);
 					}
 					printf("\tstatus = %d\n", rmc->status);
 					if (rmc->vfields & RMC_VALID_POSITION_FIX)
@@ -414,8 +410,8 @@ int main(void)
 
 					if (zda->vfields & ZDA_VALID_UTC)
 					{
-						printf("\tutc = %d %d %d %d\n", zda->utc.hour,
-							zda->utc.min, zda->utc.sec, zda->utc.msec);
+						printf("\tutc = %d %d %f\n", zda->utc.hour,
+							zda->utc.min, zda->utc.sec);
 					}
 					if (zda->vfields & ZDA_VALID_DAY)
 					{

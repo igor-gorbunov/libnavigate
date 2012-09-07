@@ -52,7 +52,7 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 	return 0;
 }
 
-int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
+int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
@@ -161,4 +161,3 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer, int maxsize)
 
 	return 0;
 }
-

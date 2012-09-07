@@ -12,12 +12,26 @@
 
 NAVI_BEGIN_DECL
 
+//
+// ZDA Message Generator
+//
+#ifndef NO_GENERATOR
+
 int navi_create_zda(const struct zda_t *msg, char *buffer,
 		int maxsize, int *nmwritten);
 
-int IecParse_ZDA(struct zda_t *msg, char *buffer, int maxsize);
+#endif // NO_GENERATOR
+
+//
+// ZDA Message Parser
+//
+
+#ifndef NO_PARSER
+
+int navi_parse_zda(struct zda_t *msg, char *buffer);
+
+#endif // NO_PARSER
 
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_zda_h
-

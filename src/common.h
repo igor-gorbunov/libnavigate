@@ -57,7 +57,7 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 
 //
 // Prints UTC
-int IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
+int IecPrint_Utc(const struct navi_utc_t *utc, char *buffer,
 	int maxsize, int notnull);
 
 //
@@ -105,14 +105,6 @@ int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread);
 //
 // Parses floating point value
 int IecParse_Double(char *buffer, double *value, int *nmread);
-
-//
-// Parses latitude/longitude/offset sign
-int IecParse_OffsetSign(char *buffer, int *sign, int *nmread);
-
-//
-// Parses time
-int IecParse_Time(char *buffer, struct naviUtc_t *utc, int *nmread);
 
 //
 // Parses status

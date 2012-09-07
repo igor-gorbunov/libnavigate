@@ -124,37 +124,34 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_DSR:
 		break;
 	case navi_DTM:
-		if (maxsize < sizeof(struct dtm_t))
+		if (msgsize < sizeof(struct dtm_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return -1;
 		}
 		((struct dtm_t *)msg)->tid = tid;
-		return navi_msg_parse_dtm((struct dtm_t *)msg, buffer + som + 6,
-			maxsize - (som + eom + 11));
+		return navi_msg_parse_dtm((struct dtm_t *)msg, buffer + som + 6);
 	case navi_FSI:
 	case navi_GBS:
 	case navi_GGA:
 	case navi_GLC:
 		break;
 	case navi_GLL:
-		if (maxsize < sizeof(struct gll_t))
+		if (msgsize < sizeof(struct gll_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return -1;
 		}
 		((struct gll_t *)msg)->tid = tid;
-		return navi_msg_parse_gll((struct gll_t *)msg, buffer + som + 6,
-			maxsize - (som + eom + 11));
+		return navi_msg_parse_gll((struct gll_t *)msg, buffer + som + 6);
 	case navi_GNS:
-		if (maxsize < sizeof(struct gns_t))
+		if (msgsize < sizeof(struct gns_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return -1;
 		}
 		((struct gns_t *)msg)->tid = tid;
-		return IecParse_GNS((struct gns_t *)msg, buffer + som + 6,
-			maxsize - (som + eom + 11));
+		return IecParse_GNS((struct gns_t *)msg, buffer + som + 6);
 	case navi_GRS:
 	case navi_GSA:
 	case navi_GST:
@@ -178,14 +175,13 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_RMB:
 		break;
 	case navi_RMC:
-		if (maxsize < sizeof(struct rmc_t))
+		if (msgsize < sizeof(struct rmc_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return -1;
 		}
 		((struct rmc_t *)msg)->tid = tid;
-		return IecParse_RMC((struct rmc_t *)msg, buffer + som + 6,
-			maxsize - (som + eom + 11));
+		return IecParse_RMC((struct rmc_t *)msg, buffer + som + 6);
 	case navi_ROT:
 	case navi_RPM:
 	case navi_RSA:
@@ -204,14 +200,13 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_VPW:
 		break;
 	case navi_VTG:
-		if (maxsize < sizeof(struct vtg_t))
+		if (msgsize < sizeof(struct vtg_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return -1;
 		}
 		((struct vtg_t *)msg)->tid = tid;
-		return IecParse_VTG((struct vtg_t *)msg, buffer + som + 6,
-			maxsize - (som + eom + 11));
+		return IecParse_VTG((struct vtg_t *)msg, buffer + som + 6);
 	case navi_WCV:
 	case navi_WNC:
 	case navi_WPL:
@@ -220,14 +215,13 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_XTR:
 		break;
 	case navi_ZDA:
-		if (maxsize < sizeof(struct zda_t))
+		if (msgsize < sizeof(struct zda_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return -1;
 		}
 		((struct zda_t *)msg)->tid = tid;
-		return IecParse_ZDA((struct zda_t *)msg, buffer + som + 6,
-			maxsize - (som + eom + 11));
+		return navi_parse_zda((struct zda_t *)msg, buffer + som + 6);
 	case navi_ZDL:
 	case navi_ZFO:
 	case navi_ZTG:
@@ -260,8 +254,11 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 int navi_parse_offset(char *buffer, struct navi_offset_t *offset,
 		int *nmread)
 {
+
+#ifndef NO_PARSER
+
 	double t;
-	int i = 0, j = -1, state, c, s, error = 0;
+	int i = 0, j = -1, state, c, s = 0, error = 0;
 
 	assert(buffer != NULL);
 	assert(offset != NULL);
@@ -378,6 +375,14 @@ _Exit:
 	}
 
 	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return -1;
+
+#endif // NO_PARSER
+
 }
 
 #undef PARSE_OFFSET_INIT
@@ -403,7 +408,10 @@ _Exit:
 int navi_parse_position_fix(char *buffer, struct navi_position_t *fix,
 	int *nmread)
 {
-	int state, i = 0, j, k, c, error = 0;
+
+#ifndef NO_PARSER
+
+	int state, i = 0, j = -1, k, c, error = 0;
 	double deg, min;
 
 	assert(buffer != NULL);
@@ -639,6 +647,14 @@ _Exit:
 	}
 
 	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return -1;
+
+#endif // NO_PARSER
+
 }
 
 #undef PARSE_POSITION_INIT
@@ -650,3 +666,153 @@ _Exit:
 #undef PARSE_POSITION_LON_SIGN
 #undef PARSE_POSITION_NULLFIELD
 #undef PARSE_POSITION_FINI
+
+//
+// navi_parse_utc
+//
+
+#define PARSE_UTC_INIT			0
+#define PARSE_UTC_INTEGRAL		1
+#define PARSE_UTC_FRACTION		2
+
+int navi_parse_utc(char *buffer, struct navi_utc_t *utc, int *nmread)
+{
+
+#ifndef NO_PARSER
+
+	int state, i = 0, j = -1, k, c, error = 0;
+	int t = 0;
+	double d = 0.;
+
+	assert(buffer != NULL);
+	assert(utc != NULL);
+	assert(nmread != NULL);
+
+	state = PARSE_UTC_INIT;
+
+	for ( ; ; )
+	{
+		c = buffer[i++];
+
+		switch (state)
+		{
+		case PARSE_UTC_INIT:
+			if ((c == ',') || (c == '*'))
+			{	// null field
+				error = navi_NullField;
+				goto _Exit;
+			}
+			else if (isdigit(c))
+			{	// proceed utc time
+				state = PARSE_UTC_INTEGRAL;
+				t = c - '0';
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_UTC_INTEGRAL:
+			// parse second digit of hours
+			if (isdigit(c))
+			{
+				t = t * 10 + (c - '0');
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			utc->hour = t;
+			t = 0;
+			// parse two digits of minutes
+			for (k = 0; k < 2; k++, i++)
+			{
+				c = buffer[i];
+				if (isdigit(c))
+				{
+					t = t * 10 + (c - '0');
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			utc->min = t;
+			// parse two digits of seconds
+			for (k = 0; k < 2; k++, i++)
+			{
+				c = buffer[i];
+				if (isdigit(c))
+				{
+					d = d * 10. + (c - '0');
+				}
+				else
+				{
+					error = navi_InvalidMessage;
+					goto _Exit;
+				}
+			}
+			utc->sec = d;
+			// check if there is fractional part of seconds
+			c = buffer[i++];
+			if (c == '.')
+			{	// yes, there is
+				state = PARSE_UTC_FRACTION;
+				j = -1;
+			}
+			else if ((c == ',') || (c == '*'))
+			{	// no, finish the parsing
+				goto _Exit;
+			}
+			else
+			{	// invalid character
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_UTC_FRACTION:
+			if (isdigit(c))
+			{
+				d = d + pow(10., j--) * (c - '0');
+			}
+			else if ((c == ',') || (c == '*'))
+			{
+				utc->sec = d;
+				goto _Exit;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		}
+	}
+
+_Exit:
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return -1;
+
+#endif // NO_PARSER
+
+}
+
+#undef PARSE_UTC_INIT
+#undef PARSE_UTC_INTEGRAL
+#undef PARSE_UTC_FRACTION

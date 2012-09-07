@@ -267,11 +267,13 @@ enum naviModeIndicator_t
 };
 
 //
-// Holds UTC time
+// Holds UTC time (hours, minutes, seconds and
+// decimal fraction of seconds)
 //
-struct naviUtc_t
+NAVI_ALIGNED(struct, navi_utc_t)
 {
-	int hour, min, sec, msec;
+	int hour, min;
+	double sec;
 };
 
 //
@@ -294,11 +296,11 @@ enum
 };
 
 //
-// Holds offset data
+// Holds offset data (x.x,a)
 //
 NAVI_ALIGNED(struct, navi_offset_t)
 {
-	double offset;	// minutes
+	double offset;	// degrees/minutes
 	int sign;		// N/S or E/W
 };
 
@@ -446,7 +448,7 @@ struct gll_t
 	int tid;
 	unsigned vfields;			// valid fields, bitwise or of GLL_VALID_xxx
 	struct navi_position_t fix;	// latitude, longitude fix
-	struct naviUtc_t utc;
+	struct navi_utc_t utc;		// UTC time
 	int status;		// status
 	int mi;			// mode indicator
 };
@@ -460,7 +462,7 @@ struct gns_t
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of GNS_VALID_xxx
-	struct naviUtc_t utc;
+	struct navi_utc_t utc;		// UTC time
 	struct navi_position_t fix;	// latitude, longitude fix
 	int mi[2];				// GPS, GLONASS
 	int totalsats;			// Total number of satellites in use, 00-99
@@ -592,7 +594,7 @@ struct rmc_t
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
-	struct naviUtc_t utc;
+	struct navi_utc_t utc;		// UTC time
 	int status;		// status
 	struct navi_position_t fix;	// latitude, longitude fix
 	double speed;			// Speed over ground, knots
@@ -746,7 +748,7 @@ struct zda_t
 {
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of ValidFields_t
-	struct naviUtc_t utc;
+	struct navi_utc_t utc;	// UTC time
 	int day, month, year;	// Day (01 to 31), Month (01 to 12), Year (UTC)
 	int lzoffset;			// Local zone offset in minutes
 };
@@ -775,4 +777,3 @@ struct zda_t
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_sentence_h
-

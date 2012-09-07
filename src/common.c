@@ -112,13 +112,13 @@ int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
 	return 0;
 }
 
-int IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
+int IecPrint_Utc(const struct navi_utc_t *utc, char *buffer,
 	int maxsize, int notnull)
 {
 	if (notnull)
 	{
-		int result = snprintf(buffer, maxsize, "%02u%02u%02u.%03u",
-			utc->hour % 24, utc->min % 60, utc->sec % 60, utc->msec % 1000);
+		int result = snprintf(buffer, maxsize, "%02u%02u%06.3f",
+			utc->hour % 24, utc->min % 60, utc->sec);
 		return RemoveTrailingZeroes(buffer, result);
 	}
 	else
@@ -971,110 +971,6 @@ int IecParse_Double(char *buffer, double *value, int *nmread)
 	else if (*nmread == 0)
 	{
 		return navi_NullField;
-	}
-	else
-	{
-		return navi_Ok;
-	}
-}
-
-// Parses latitude/longitude/offset sign
-int IecParse_OffsetSign(char *buffer, int *sign, int *nmread)
-{
-	*nmread = 1;
-
-	if (strncmp("N", buffer, 1) == 0)
-	{
-		*sign = navi_North;
-		return navi_Ok;
-	}
-	else if (strncmp("S", buffer, 1) == 0)
-	{
-		*sign = navi_South;
-		return navi_Ok;
-	}
-	else if (strncmp("E", buffer, 1) == 0)
-	{
-		*sign = navi_East;
-		return navi_Ok;
-	}
-	else if (strncmp("W", buffer, 1) == 0)
-	{
-		*sign = navi_West;
-		return navi_Ok;
-	}
-	else
-	{
-		*nmread = 0;
-		return navi_NullField;
-	}
-}
-
-// Parses time
-int IecParse_Time(char *buffer, struct naviUtc_t *utc,
-	int *nmread)
-{
-	int idx;
-
-	utc->msec = 0;
-
-	for (idx = 0; ; idx++)
-	{
-		if (isdigit(buffer[idx]))
-		{
-			if (idx == 0)
-			{
-				utc->hour = buffer[idx] - '0';
-			}
-			else if (idx == 1)
-			{
-				utc->hour = utc->hour * 10 + (buffer[idx] - '0');
-			}
-			else if (idx == 2)
-			{
-				utc->min = buffer[idx] - '0';
-			}
-			else if (idx == 3)
-			{
-				utc->min = utc->min * 10 + (buffer[idx] - '0');
-			}
-			else if (idx == 4)
-			{
-				utc->sec = buffer[idx] - '0';
-			}
-			else if (idx == 5)
-			{
-				utc->sec = utc->sec * 10 + (buffer[idx] - '0');
-			}
-			else
-			{
-				utc->msec = utc->msec * 10 + (buffer[idx] - '0');
-			}
-		}
-		else if (buffer[idx] == '.')
-		{
-			continue;
-		}
-		else if ((buffer[idx] == ',') || (buffer[idx] == '*'))
-		{
-			break;
-		}
-		else
-		{
-			*nmread = idx;
-			return navi_InvalidMessage;
-		}
-	}
-
-	*nmread = idx;
-
-	if (idx == 0)
-	{
-		return navi_NullField;
-	}
-	else if (idx < 6)
-	{
-		return navi_InvalidMessage;
 	}
 	else
 	{

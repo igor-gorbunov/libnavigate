@@ -52,7 +52,7 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 	return navi_Ok;
 }
 
-int IecParse_VTG(struct vtg_t *msg, char *buffer, int maxsize)
+int IecParse_VTG(struct vtg_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
@@ -202,4 +202,3 @@ int IecParse_VTG(struct vtg_t *msg, char *buffer, int maxsize)
 
 	return navi_Ok;
 }
-

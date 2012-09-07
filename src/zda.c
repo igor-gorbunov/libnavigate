@@ -2,12 +2,15 @@
 #include "common.h"
 
 #include <libnavigate/errors.h>
+#include <libnavigate/parser.h>
 #include <stdio.h>
 #include <string.h>
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
 #endif // MSVC_VER
+
+#ifndef NO_GENERATOR
 
 int navi_create_zda(const struct zda_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
@@ -61,31 +64,27 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 	return navi_Ok;
 }
 
-int IecParse_ZDA(struct zda_t *msg, char *buffer, int maxsize)
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
+int navi_parse_zda(struct zda_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
 
 	msg->vfields = 0;
 
-	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
-	switch (result)
+	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= ZDA_VALID_UTC;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Integer(buffer + index, &msg->day, &nmread);
 	switch (result)
@@ -159,3 +158,4 @@ int IecParse_ZDA(struct zda_t *msg, char *buffer, int maxsize)
 	return navi_Ok;
 }
 
+#endif // NO_PARSER

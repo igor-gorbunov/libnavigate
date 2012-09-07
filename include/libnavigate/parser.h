@@ -55,8 +55,18 @@ NAVI_EXTERN(int) navi_parse_offset(char *buffer,
 // The field must end with ',' or '*'
 //
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
 NAVI_EXTERN(int) navi_parse_position_fix(char *buffer,
 		struct navi_position_t *fix, int *nmread);
+
+//
+// Parses UTC time in the form of 'hhmmss.ss' of null field.
+// The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_utc(char *buffer, struct navi_utc_t *utc,
+		int *nmread);
 
 NAVI_END_DECL
 

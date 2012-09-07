@@ -58,7 +58,7 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 	return navi_Ok;
 }
 
-int IecParse_RMC(struct rmc_t *msg, char *buffer, int maxsize)
+int IecParse_RMC(struct rmc_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
@@ -66,25 +66,16 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer, int maxsize)
 
 	msg->vfields = 0;
 
-	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
-	switch (result)
+	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= RMC_VALID_UTC;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Status(buffer + index, &msg->status, &nmread);
 	if (result != navi_Ok)
@@ -172,45 +163,16 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer, int maxsize)
 	}
 	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->magnetic.offset, &nmread);
+	if (navi_parse_offset(buffer + index, &msg->magnetic, &nmread) != 0)
+	{
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->vfields |= RMC_VALID_MAGNVARIATION;
+	}
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
-	switch (result)
-	{
-	case navi_Ok:
-		// next field must not be null too
-		result = IecParse_OffsetSign(buffer + index, &msg->magnetic.sign, &nmread);
-		if (result == navi_Ok)
-		{
-			msg->vfields |= RMC_VALID_MAGNVARIATION;
-		}
-		else
-		{
-			return navi_InvalidMessage;
-		}
-		break;
-	case navi_NullField:
-		// next field must be null too
-		result = IecParse_OffsetSign(buffer + index, &msg->magnetic.sign, &nmread);
-		if (result != navi_NullField)
-		{
-			return navi_InvalidMessage;
-		}
-		break;
-	default:
-		return result;
-	}
-
-	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
 	if (result != navi_Ok)
@@ -227,4 +189,3 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer, int maxsize)
 
 	return navi_Ok;
 }
-

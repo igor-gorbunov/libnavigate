@@ -42,7 +42,7 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 	return navi_Ok;
 }
 
-int navi_msg_parse_gll(struct gll_t *msg, char *buffer, int maxsize)
+int navi_msg_parse_gll(struct gll_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
@@ -58,28 +58,18 @@ int navi_msg_parse_gll(struct gll_t *msg, char *buffer, int maxsize)
 	{
 		msg->vfields |= GLL_VALID_POSITION_FIX;
 	}
-
 	index += nmread;
 
-	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
-	switch (result)
+	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= GLL_VALID_UTC;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Status(buffer + index, &msg->status, &nmread);
 	if (result != navi_Ok)
@@ -110,4 +100,3 @@ int navi_msg_parse_gll(struct gll_t *msg, char *buffer, int maxsize)
 
 	return navi_Ok;
 }
-

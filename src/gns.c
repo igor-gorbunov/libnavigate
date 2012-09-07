@@ -57,32 +57,23 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 	return navi_Ok;
 }
 
-int IecParse_GNS(struct gns_t *msg, char *buffer, int maxsize)
+int IecParse_GNS(struct gns_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
 
 	msg->vfields = 0;
 
-	result = IecParse_Time(buffer + index, &msg->utc, &nmread);
-	switch (result)
+	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= GNS_VALID_UTC;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	if (navi_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
@@ -225,4 +216,3 @@ int IecParse_GNS(struct gns_t *msg, char *buffer, int maxsize)
 
 	return navi_Ok;
 }
-
