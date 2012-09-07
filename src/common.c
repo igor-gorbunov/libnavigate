@@ -7,15 +7,174 @@
 #include <errno.h>
 #include <math.h>
 #include <ctype.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-
 #define snprintf	_snprintf
-
 #define EPROTO 100
-
 #endif // MSVC_VER
 
+//
+// navi_parse_status
+//
+
+int navi_parse_status(char *buffer, int *status, int *nmread)
+{
+
+#ifndef NO_PARSER
+
+	int i = 0, c, error = 0;
+
+	assert(buffer != NULL);
+	assert(status != NULL);
+	assert(nmread != NULL);
+
+	c = buffer[i++];
+	if ((c == 'A') || (c == 'V'))
+	{
+		*status = (c == 'A') ? navi_DataValid : navi_DataInvalid;
+		c = buffer[i++];
+		if ((c != ',') && (c != '*'))
+		{
+			error = navi_InvalidMessage;
+		}
+	}
+	else if ((c == ',') || (c == '*'))
+	{
+		error = navi_NullField;
+	}
+	else
+	{
+		error = navi_InvalidMessage;
+	}
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return -1;
+
+#endif // NO_PARSER
+
+}
+
+//
+// navi_parse_modeindicator
+//
+
+int navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
+{
+
+#ifndef NO_PARSER
+
+	int i = 0, c, error = 0;
+
+	assert(buffer != NULL);
+	assert(mi != NULL);
+	assert(nmread != NULL);
+
+	c = buffer[i++];
+
+	if ((c == 'A') || (c == 'D') || (c == 'E') ||
+		(c == 'M') || (c == 'S') || (c == 'N'))
+	{
+		switch (c)
+		{
+		case 'A':
+			*mi = navi_Autonomous;
+			break;
+		case 'D':
+			*mi = navi_Differential;
+			break;
+		case 'E':
+			*mi = navi_Estimated;
+			break;
+		case 'M':
+			*mi = navi_ManualInput;
+			break;
+		case 'S':
+			*mi = navi_Simulator;
+			break;
+		case 'N':
+			*mi = navi_DataNotValid;
+			break;
+		}
+
+		c = buffer[i++];
+		if ((c != ',') && (c != '*'))
+		{
+			error = navi_InvalidMessage;
+		}
+	}
+	else if ((c == ',') || (c == '*'))
+	{
+		error = navi_NullField;
+	}
+	else
+	{
+		error = navi_InvalidMessage;
+	}
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return -1;
+
+#endif // NO_PARSER
+
+}
+
+//
+// remove_trailing_zeroes
+//
+
+int remove_trailing_zeroes(char *buffer, int length)
+{
+	int i;
+
+	for (i = length - 1; ; i--)
+	{
+		if (buffer[i] == '0')
+		{
+			buffer[i] = '\0';
+			length--;
+		}
+		else if (buffer[i] == '.')
+		{
+			buffer[i] = '\0';
+			length--;
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return length;
+}
+
+
+////////////////////////
 int IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
 	int maxsize)
 {
@@ -119,7 +278,7 @@ int IecPrint_Utc(const struct navi_utc_t *utc, char *buffer,
 	{
 		int result = snprintf(buffer, maxsize, "%02u%02u%06.3f",
 			utc->hour % 24, utc->min % 60, utc->sec);
-		return RemoveTrailingZeroes(buffer, result);
+		return remove_trailing_zeroes(buffer, result);
 	}
 	else
 	{
@@ -154,32 +313,6 @@ int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 	}
 
 	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
-}
-
-int RemoveTrailingZeroes(char *buffer, int maxsize)
-{
-	int i;
-
-	for (i = maxsize - 1; ; i--)
-	{
-		if (buffer[i] == '0')
-		{
-			buffer[i] = '\0';
-			maxsize--;
-		}
-		else if (buffer[i] == '.')
-		{
-			buffer[i] = '\0';
-			maxsize--;
-			break;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	return maxsize;
 }
 
 int IecPrint_Datum(enum naviDatum_t datum, char *buffer,
@@ -243,7 +376,7 @@ int IecPrint_Latitude(double value, char *buffer, int maxsize, int notnull)
 		value = value + degrees;
 
 		result = snprintf(buffer, maxsize, "%013.8f", value);
-		return RemoveTrailingZeroes(buffer, result);
+		return remove_trailing_zeroes(buffer, result);
 	}
 	else
 	{
@@ -266,7 +399,7 @@ int IecPrint_Longitude(double value, char *buffer,
 		value = value + degrees;
 
 		result = snprintf(buffer, maxsize, "%014.8f", value);
-		return RemoveTrailingZeroes(buffer, result);
+		return remove_trailing_zeroes(buffer, result);
 	}
 	else
 	{
@@ -275,14 +408,13 @@ int IecPrint_Longitude(double value, char *buffer,
 	}
 }
 
-int IecPrint_Status(enum naviStatus_t status, char *buffer,
-	int maxsize)
+int IecPrint_Status(int status, char *buffer, int maxsize)
 {
 	switch (status)
 	{
-	case naviStatus_DataValid:
+	case navi_DataValid:
 		return snprintf(buffer, maxsize, "A");
-	case naviStatus_DataInvalid:
+	case navi_DataInvalid:
 		return snprintf(buffer, maxsize, "V");
 	default:
 		break;
@@ -291,22 +423,21 @@ int IecPrint_Status(enum naviStatus_t status, char *buffer,
 	return 0;
 }
 
-int IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
-	int maxsize)
+int IecPrint_ModeIndicator(int mi, char *buffer, int maxsize)
 {
 	switch (mi)
 	{
-	case naviModeIndicator_Autonomous:
+	case navi_Autonomous:
 		return snprintf(buffer, maxsize, "A");
-	case naviModeIndicator_Differential:
+	case navi_Differential:
 		return snprintf(buffer, maxsize, "D");
-	case naviModeIndicator_Estimated:
+	case navi_Estimated:
 		return snprintf(buffer, maxsize, "E");
-	case naviModeIndicator_ManualInput:
+	case navi_ManualInput:
 		return snprintf(buffer, maxsize, "M");
-	case naviModeIndicator_Simulator:
+	case navi_Simulator:
 		return snprintf(buffer, maxsize, "S");
-	case naviModeIndicator_DataNotValid:
+	case navi_DataNotValid:
 		return snprintf(buffer, maxsize, "N");
 	default:
 		break;
@@ -329,31 +460,31 @@ int IecPrint_ModeIndicatorArray(const int mi[], char *buffer, int maxsize,
 		{
 			switch (mi[i])
 			{
-			case naviModeIndicator_Autonomous:
+			case navi_Autonomous:
 				(void)strncat(buffer, "A", maxsize);
 				break;
-			case naviModeIndicator_Differential:
+			case navi_Differential:
 				(void)strncat(buffer, "D", maxsize);
 				break;
-			case naviModeIndicator_Estimated:
+			case navi_Estimated:
 				(void)strncat(buffer, "E", maxsize);
 				break;
-			case naviModeIndicator_ManualInput:
+			case navi_ManualInput:
 				(void)strncat(buffer, "M", maxsize);
 				break;
-			case naviModeIndicator_Simulator:
+			case navi_Simulator:
 				(void)strncat(buffer, "S", maxsize);
 				break;
-			case naviModeIndicator_DataNotValid:
+			case navi_DataNotValid:
 				(void)strncat(buffer, "N", maxsize);
 				break;
-			case naviModeIndicator_Precise:
+			case navi_Precise:
 				(void)strncat(buffer, "P", maxsize);
 				break;
-			case naviModeIndicator_RTKinematic:
+			case navi_RTKinematic:
 				(void)strncat(buffer, "R", maxsize);
 				break;
-			case naviModeIndicator_FloatRTK:
+			case navi_FloatRTK:
 				(void)strncat(buffer, "F", maxsize);
 				break;
 			default:
@@ -978,72 +1109,6 @@ int IecParse_Double(char *buffer, double *value, int *nmread)
 	}
 }
 
-// Parses status
-int IecParse_Status(char *buffer, int *status, int *nmread)
-{
-	*nmread = 1;
-
-	if (strncmp("A", buffer, 1) == 0)
-	{
-		*status = naviStatus_DataValid;
-		return navi_Ok;
-	}
-	else if (strncmp("V", buffer, 1) == 0)
-	{
-		*status = naviStatus_DataInvalid;
-		return navi_Ok;
-	}
-	else
-	{
-		*nmread = 0;
-		*status = naviStatus_Undefined;
-		return navi_NullField;
-	}
-}
-
-// Parses mode indicator
-int IecParse_ModeIndicator(char *buffer, int *mi, int *nmread)
-{
-	*nmread = 1;
-
-	if (strncmp("A", buffer, 1) == 0)
-	{
-		*mi = naviModeIndicator_Autonomous;
-		return navi_Ok;
-	}
-	else if (strncmp("D", buffer, 1) == 0)
-	{
-		*mi = naviModeIndicator_Differential;
-		return navi_Ok;
-	}
-	else if (strncmp("E", buffer, 1) == 0)
-	{
-		*mi = naviModeIndicator_Estimated;
-		return navi_Ok;
-	}
-	else if (strncmp("M", buffer, 1) == 0)
-	{
-		*mi = naviModeIndicator_ManualInput;
-		return navi_Ok;
-	}
-	else if (strncmp("S", buffer, 1) == 0)
-	{
-		*mi = naviModeIndicator_Simulator;
-		return navi_Ok;
-	}
-	else if (strncmp("N", buffer, 1) == 0)
-	{
-		*mi = naviModeIndicator_DataNotValid;
-		return navi_Ok;
-	}
-	else
-	{
-		*nmread = 0;
-		*mi = naviModeIndicator_Undefined;
-		return navi_NullField;
-	}
-}
-
 // Parses mode indicator array
 int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
 {
@@ -1055,43 +1120,43 @@ int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
 		{
 			if (strncmp("A", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_Autonomous;
+				mi[idx] = navi_Autonomous;
 			}
 			else if (strncmp("D", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_Differential;
+				mi[idx] = navi_Differential;
 			}
 			else if (strncmp("E", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_Estimated;
+				mi[idx] = navi_Estimated;
 			}
 			else if (strncmp("M", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_ManualInput;
+				mi[idx] = navi_ManualInput;
 			}
 			else if (strncmp("S", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_Simulator;
+				mi[idx] = navi_Simulator;
 			}
 			else if (strncmp("N", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_DataNotValid;
+				mi[idx] = navi_DataNotValid;
 			}
 			else if (strncmp("P", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_Precise;
+				mi[idx] = navi_Precise;
 			}
 			else if (strncmp("R", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_RTKinematic;
+				mi[idx] = navi_RTKinematic;
 			}
 			else if (strncmp("F", buffer + idx, 1) == 0)
 			{
-				mi[idx] = naviModeIndicator_FloatRTK;
+				mi[idx] = navi_FloatRTK;
 			}
 			else
 			{
-				mi[idx] = naviModeIndicator_Undefined;
+				mi[idx] = navi_Undefined;
 			}
 		}
 		idx += 1;
@@ -1316,7 +1381,7 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		fraction = fraction + degrees;
 
 		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
-		nmwritten = RemoveTrailingZeroes(buffer, nmwritten);
+		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
@@ -1334,7 +1399,7 @@ int navi_msg_create_position_fix(const struct navi_position_t *fix,
 		fraction = fraction + degrees;
 
 		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
-		nmwritten = RemoveTrailingZeroes(buffer, nmwritten);
+		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
@@ -1358,7 +1423,7 @@ int navi_msg_create_double(double value, char *buffer, int maxsize, int notnull)
 		int result;
 
 		result = snprintf(buffer, maxsize, "%f", value);
-		return RemoveTrailingZeroes(buffer, result);
+		return remove_trailing_zeroes(buffer, result);
 	}
 	else
 	{

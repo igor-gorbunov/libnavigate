@@ -24,6 +24,11 @@ NAVI_BEGIN_DECL
 
 
 //
+// Removes trailing zeroes of a floating point zeroes
+// Returns the remaining string length
+int remove_trailing_zeroes(char *buffer, int length);
+
+//
 // Prints talker identifier
 int IecPrint_TalkerId(int tid, char *buffer, int maxsize);
 
@@ -74,10 +79,6 @@ int IecPrint_ModeIndicatorArray(const int mi[], char *buffer,
 	int maxsize, int notnull);
 
 //
-// Removes trailing zeroes of a floating point zeroes
-int RemoveTrailingZeroes(char *buffer, int maxsize);
-
-//
 // Determines the talker id and sentence formatter
 int IecScan_AdressField(char *buffer, int maxsize, int *tid, int *msgtype);
 
@@ -105,14 +106,6 @@ int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread);
 //
 // Parses floating point value
 int IecParse_Double(char *buffer, double *value, int *nmread);
-
-//
-// Parses status
-int IecParse_Status(char *buffer, int *status, int *nmread);
-
-//
-// Parses mode indicator
-int IecParse_ModeIndicator(char *buffer, int *mi, int *nmread);
 
 //
 // Parses mode indicator array

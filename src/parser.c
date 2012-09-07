@@ -41,6 +41,7 @@
 //
 // navi_parse_msg
 //
+
 int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	void *msg, int *msgtype, int *nmread)
 {
@@ -143,7 +144,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			return -1;
 		}
 		((struct gll_t *)msg)->tid = tid;
-		return navi_msg_parse_gll((struct gll_t *)msg, buffer + som + 6);
+		return navi_parse_gll((struct gll_t *)msg, buffer + som + 6);
 	case navi_GNS:
 		if (msgsize < sizeof(struct gns_t))
 		{

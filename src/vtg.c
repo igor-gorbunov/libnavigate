@@ -2,6 +2,7 @@
 #include "common.h"
 
 #include <libnavigate/errors.h>
+#include <libnavigate/parser.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
@@ -187,17 +188,10 @@ int IecParse_VTG(struct vtg_t *msg, char *buffer)
 		msg->vfields |= VTG_VALID_SPEED;
 	}
 
-	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
-	if (result != navi_Ok)
-	{
-		return navi_InvalidMessage;
-	}
-
-	index += nmread;
-
-	if (buffer[index] != '*')
-	{
-		return navi_InvalidMessage;
+	if (navi_parse_modeindicator(buffer + index, &msg->mi, &nmread) != 0)
+	{	// cannot be null field
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 
 	return navi_Ok;

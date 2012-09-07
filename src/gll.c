@@ -9,6 +9,8 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
+#ifndef NO_GENERATOR
+
 int navi_create_gll(const struct gll_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
@@ -42,9 +44,12 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 	return navi_Ok;
 }
 
-int navi_msg_parse_gll(struct gll_t *msg, char *buffer)
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
+int navi_parse_gll(struct gll_t *msg, char *buffer)
 {
-	int result;
 	int index = 1, nmread;
 
 	msg->vfields = 0;
@@ -71,32 +76,20 @@ int navi_msg_parse_gll(struct gll_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_Status(buffer + index, &msg->status, &nmread);
-	if (result != navi_Ok)
-	{
-		return navi_InvalidMessage;
+	if (navi_parse_status(buffer + index, &msg->status, &nmread) != 0)
+	{	// cannot be null field
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
-
 	index += nmread;
 
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
-
-	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
-	if (result != navi_Ok)
-	{
-		return navi_InvalidMessage;
-	}
-
-	index += nmread;
-
-	if (buffer[index] != '*')
-	{
-		return navi_InvalidMessage;
+	if (navi_parse_modeindicator(buffer + index, &msg->mi, &nmread) != 0)
+	{	// cannot be null field
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 
 	return navi_Ok;
 }
+
+#endif // NO_PARSER

@@ -105,8 +105,8 @@ int main(void)
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18.4;
-	gll.status = naviStatus_DataValid;
-	gll.mi = naviModeIndicator_Autonomous;
+	gll.status = navi_DataValid;
+	gll.mi = navi_Autonomous;
 
 	result = navi_create_msg(navi_GLL, &gll, buffer + msglength,
 		remain, &nmwritten);
@@ -133,8 +133,8 @@ int main(void)
 	gns.fix.latsign = navi_North;
 	gns.fix.longitude = 30.;
 	gns.fix.lonsign = navi_East;
-	gns.mi[0] = naviModeIndicator_Autonomous;
-	gns.mi[1] = naviModeIndicator_Differential;
+	gns.mi[0] = navi_Autonomous;
+	gns.mi[1] = navi_Differential;
 	gns.totalsats = 4;
 	gns.hdop = 2.3;
 	gns.antaltitude = 2.003;
@@ -160,7 +160,7 @@ int main(void)
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39.98;
-	rmc.status = naviStatus_DataInvalid;
+	rmc.status = navi_DataInvalid;
 	rmc.fix.latitude = 74.64772882;
 	rmc.fix.latsign = navi_South;
 	rmc.fix.longitude = 132.0000333;
@@ -172,7 +172,7 @@ int main(void)
 	rmc.year = 2012;
 	rmc.magnetic.offset = 23.011;
 	rmc.magnetic.sign = navi_East;
-	rmc.mi = naviModeIndicator_Estimated;
+	rmc.mi = navi_Estimated;
 	// Part 1
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
@@ -206,7 +206,7 @@ int main(void)
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;
 	vtg.speed = 1.023;
-	vtg.mi = naviModeIndicator_Simulator;
+	vtg.mi = navi_Simulator;
 
 	result = navi_create_msg(navi_VTG, &vtg, buffer + msglength,
 		remain, &nmwritten);

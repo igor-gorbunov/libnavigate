@@ -68,6 +68,22 @@ NAVI_EXTERN(int) navi_parse_position_fix(char *buffer,
 NAVI_EXTERN(int) navi_parse_utc(char *buffer, struct navi_utc_t *utc,
 		int *nmread);
 
+//
+// Parses status in the form of 'A | V'. Shall not be null field.
+// The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_status(char *buffer, int *status, int *nmread);
+
+//
+// Parses mode indicator in the form of 'A | D | E | M | S | N'.
+// Shall not be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_modeindicator(char *buffer, int *mi, int *nmread);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h

@@ -77,19 +77,12 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_Status(buffer + index, &msg->status, &nmread);
-	if (result != navi_Ok)
-	{
-		return navi_InvalidMessage;
+	if (navi_parse_status(buffer + index, &msg->status, &nmread) != 0)
+	{	// cannot be null field
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
-
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	if (navi_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
 	{
@@ -174,17 +167,10 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_ModeIndicator(buffer + index, &msg->mi, &nmread);
-	if (result != navi_Ok)
-	{
-		return navi_InvalidMessage;
-	}
-
-	index += nmread;
-
-	if (buffer[index] != '*')
-	{
-		return navi_InvalidMessage;
+	if (navi_parse_modeindicator(buffer + index, &msg->mi, &nmread) != 0)
+	{	// cannot be null field
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 
 	return navi_Ok;

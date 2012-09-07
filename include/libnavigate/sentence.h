@@ -218,52 +218,51 @@ enum naviLocalDatumSub_t
 //
 // Status of PVT solution
 //
-enum naviStatus_t
+enum
 {
-	naviStatus_Undefined = -1,	// unefined or unsupported offset status
-
-	naviStatus_DataValid = 0,	// A = data valid
-	naviStatus_DataInvalid = 1	// V = data invalid
+	navi_DataValid = 0,		// A = data valid
+	navi_DataInvalid = 1	// V = data invalid
 };
 
 //
 // Positioning system Mode Indicator
 //
-enum naviModeIndicator_t
+enum
 {
-	// Unefined or unsupported Mode Indicator
-	naviModeIndicator_Undefined = -1,
+	// Satellite system used in non-differential
+	// mode in position fix (A)
+	navi_Autonomous = 0,
 
-	// Satellite system used in non-differential mode in position fix
-	naviModeIndicator_Autonomous = 0,
+	// Satellite sysytem used in differential
+	// mode in position fix (D)
+	navi_Differential = 1,
 
-	// Satellite sysytem used in differential mode in position fix
-	naviModeIndicator_Differential = 1,
+	// Estimated (dead reckoning) mode (E)
+	navi_Estimated = 2,
 
-	// Estimated (dead reckoning) mode
-	naviModeIndicator_Estimated = 2,
+	// Manual input mode (M)
+	navi_ManualInput = 3,
 
-	// Manual input mode
-	naviModeIndicator_ManualInput = 3,
+	// Simulator mode (S)
+	navi_Simulator = 4,
 
-	// Simulator mode
-	naviModeIndicator_Simulator = 4,
-
-	// No fix. Satellite system not used in position fix, or fix not valid
-	naviModeIndicator_DataNotValid = 5,
+	// No fix. Satellite system not used in
+	// position fix, or fix not valid (N)
+	navi_DataNotValid = 5,
 
 	//
 	// Additions to GNS message
 
-	// Satellite system used in precision mode
-	naviModeIndicator_Precise = 6,
+	// Satellite system used in precision mode (P)
+	navi_Precise = 6,
 
-	// Satellite system used in Real Time Kinematic mode with fixed integers
-	naviModeIndicator_RTKinematic = 7,
+	// Satellite system used in Real Time
+	// Kinematic mode with fixed integers (R)
+	navi_RTKinematic = 7,
 
-	// Satellite system used in Real Time Kinematic mode with
-	// floating integers
-	naviModeIndicator_FloatRTK = 8
+	// Satellite system used in Real Time
+	// Kinematic mode with floating integers (F)
+	navi_FloatRTK = 8
 };
 
 //
