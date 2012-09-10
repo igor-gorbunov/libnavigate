@@ -83,8 +83,7 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 
 int navi_parse_gns(struct gns_t *msg, char *buffer)
 {
-	int result;
-	int index = 1, nmread;
+	int result, index = 1, nmread;
 	double d;
 
 	msg->vfields = 0;
@@ -112,19 +111,12 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 
 	index += nmread;
 
-	result = IecParse_ModeIndicatorArray(buffer + index, msg->mi, &nmread);
-	if (result != navi_Ok)
+	result = sizeof(msg->mi) / sizeof(msg->mi[0]);
+	if (navi_parse_miarray(buffer + index, msg->mi, &result, &nmread) != 0)
 	{
-		return navi_InvalidMessage;
+		return -1;
 	}
-
 	index += nmread;
-
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
 	{

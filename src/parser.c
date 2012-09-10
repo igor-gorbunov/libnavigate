@@ -1009,3 +1009,77 @@ int navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
 		return navi_Error;
 	}
 }
+
+//
+// Parses mode navi_parse_miarray array
+//
+int navi_parse_miarray(char *buffer, int mi[], int *misize, int *nmread)
+{
+	int i = 0, c, error = 0;
+
+	assert(misize != NULL);
+	assert(*misize >= 2);
+
+	*misize = 0;
+
+	for (i = 0; ; i++)
+	{
+		c = buffer[i];
+
+		switch (c)
+		{
+		case 'A':
+			mi[i] = navi_Autonomous;
+			(*misize)++;
+			break;
+		case 'D':
+			mi[i] = navi_Differential;
+			(*misize)++;
+			break;
+		case 'E':
+			mi[i] = navi_Estimated;
+			(*misize)++;
+			break;
+		case 'M':
+			mi[i] = navi_ManualInput;
+			(*misize)++;
+			break;
+		case 'S':
+			mi[i] = navi_Simulator;
+			(*misize)++;
+			break;
+		case 'N':
+			mi[i] = navi_DataNotValid;
+			(*misize)++;
+			break;
+		case 'P':
+			mi[i] = navi_Precise;
+			(*misize)++;
+			break;
+		case 'R':
+			mi[i] = navi_RTKinematic;
+			(*misize)++;
+			break;
+		case 'F':
+			mi[i] = navi_FloatRTK;
+			(*misize)++;
+			break;
+		case ',': case '*':
+			goto _Exit;
+		default:
+			error = 1;
+			goto _Exit;
+		}
+	}
+
+_Exit:
+
+	*nmread = i;
+	if ((i < 3) || (error != 0))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		return navi_Error;
+	}
+
+	return navi_Ok;
+}

@@ -645,63 +645,6 @@ int IecLookupSentenceFormatter(char *buffer, int *nmread)
 	}
 }
 
-// Parses mode indicator array
-int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
-{
-	int idx = 0;
-
-	while (buffer[idx] != ',')
-	{
-		if (idx < 2)
-		{
-			if (strncmp("A", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_Autonomous;
-			}
-			else if (strncmp("D", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_Differential;
-			}
-			else if (strncmp("E", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_Estimated;
-			}
-			else if (strncmp("M", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_ManualInput;
-			}
-			else if (strncmp("S", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_Simulator;
-			}
-			else if (strncmp("N", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_DataNotValid;
-			}
-			else if (strncmp("P", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_Precise;
-			}
-			else if (strncmp("R", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_RTKinematic;
-			}
-			else if (strncmp("F", buffer + idx, 1) == 0)
-			{
-				mi[idx] = navi_FloatRTK;
-			}
-			else
-			{
-				mi[idx] = navi_Undefined;
-			}
-		}
-		idx += 1;
-	}
-
-	*nmread = idx;
-	return idx == 0 ? navi_InvalidMessage : navi_Ok;
-}
-
 // Parses date
 int IecParse_Date(char *buffer, struct naviDate_t *date,
 	int *nmread)

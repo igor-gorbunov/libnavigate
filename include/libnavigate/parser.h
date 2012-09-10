@@ -108,6 +108,14 @@ NAVI_EXTERN(int) navi_parse_datum(char *buffer, int *datum, int *nmread);
 //
 NAVI_EXTERN(int) navi_parse_datumsub(char *buffer, int *datumsub, int *nmread);
 
+//
+// Parses mode indicator array in the form of c--c.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_miarray(char *buffer, int mi[], int *misize, int *nmread);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h
