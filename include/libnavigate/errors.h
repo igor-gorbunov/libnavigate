@@ -27,7 +27,8 @@ enum
 	navi_NoValidMessage = 5,	// no valid message in buffer
 	navi_NullField = 6,			// null field in a message
 	navi_InvalidMessage = 7,	// message does not conform to protocol
-	navi_NotImplemented = 8		// method not implemented
+	navi_NotImplemented = 8,	// method not implemented
+	navi_InvalidParameter = 9	// invalid parameter to method
 };
 
 typedef struct _navi_error_t

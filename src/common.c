@@ -201,56 +201,6 @@ int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
 }
 
-int IecPrint_ModeIndicatorArray(const int mi[], char *buffer, int maxsize,
-		int notnull)
-{
-	int result = 0;
-
-	(void)strncpy(buffer, "", maxsize);
-
-	if (notnull)
-	{
-		int i;
-		for (i = 0; i < 2; i++, result++)
-		{
-			switch (mi[i])
-			{
-			case navi_Autonomous:
-				(void)strncat(buffer, "A", maxsize);
-				break;
-			case navi_Differential:
-				(void)strncat(buffer, "D", maxsize);
-				break;
-			case navi_Estimated:
-				(void)strncat(buffer, "E", maxsize);
-				break;
-			case navi_ManualInput:
-				(void)strncat(buffer, "M", maxsize);
-				break;
-			case navi_Simulator:
-				(void)strncat(buffer, "S", maxsize);
-				break;
-			case navi_DataNotValid:
-				(void)strncat(buffer, "N", maxsize);
-				break;
-			case navi_Precise:
-				(void)strncat(buffer, "P", maxsize);
-				break;
-			case navi_RTKinematic:
-				(void)strncat(buffer, "R", maxsize);
-				break;
-			case navi_FloatRTK:
-				(void)strncat(buffer, "F", maxsize);
-				break;
-			default:
-				return 0;
-			}
-		}
-	}
-
-	return result;
-}
-
 // Talker identifier and sentence formatter
 int IecScan_AdressField(char *buffer, int maxsize, int *tid, int *msgtype)
 {
@@ -828,7 +778,7 @@ int IecParse_Date(char *buffer, struct naviDate_t *date,
 
 //
 // Finite-state machine for parsing local time zone int the form of:
-// {[+|-]dd,dd*|,*}
+// '[+|-]dd,dd*|,*'
 #define PARSE_LOCALZONE_INITIAL		0
 #define PARSE_LOCALZONE_SIGN		1
 #define PARSE_LOCALZONE_HOURS		2

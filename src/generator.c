@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifndef NO_GENERATOR
 
@@ -353,6 +354,36 @@ const char *navi_modeindicator_str(int mi)
 }
 
 //
+// navi_modeindicator_extended_str
+//
+const char *navi_modeindicator_extended_str(int mi)
+{
+	switch (mi)
+	{
+	case navi_Autonomous:
+		return "A";
+	case navi_Differential:
+		return "D";
+	case navi_Estimated:
+		return "E";
+	case navi_ManualInput:
+		return "M";
+	case navi_Simulator:
+		return "S";
+	case navi_DataNotValid:
+		return "N";
+	case navi_Precise:
+		return "P";
+	case navi_RTKinematic:
+		return "R";
+	case navi_FloatRTK:
+		return "F";
+	default:
+		return NULL;
+	}
+}
+
+//
 // navi_print_position_fix
 //
 int navi_print_position_fix(const struct navi_position_t *fix,
@@ -445,4 +476,29 @@ int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 		(void)strncpy(buffer, "", maxsize);
 		return 0;
 	}
+}
+
+//
+// navi_print_miarray
+//
+int navi_print_miarray(const int mi[], int miquant, char *buffer)
+{
+	int i;
+	const char *mistr;
+
+	assert(buffer != NULL);
+
+	strcpy(buffer, "");
+	for (i = 0; i < miquant; i++)
+	{
+		mistr = navi_modeindicator_extended_str(mi[i]);
+		if (strlen(mistr) == 0)
+		{
+			navierr_set_last(navi_InvalidParameter);
+			return 0;
+		}
+		strcat(buffer, mistr);
+	}
+
+	return i;
 }

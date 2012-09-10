@@ -45,9 +45,8 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 		msg->vfields & GNS_VALID_UTC);
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GNS_VALID_POSITION_FIX);
-
-	msglength += IecPrint_ModeIndicatorArray(msg->mi, mi, sizeof(mi),
-		msg->vfields & GNS_VALID_MODEINDICATOR);
+	msglength += navi_print_miarray(msg->mi,
+		sizeof(msg->mi) / sizeof(msg->mi[0]), mi);
 	msglength += snprintf(totalsats, sizeof(totalsats),
 		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
 		msg->totalsats);

@@ -33,11 +33,6 @@ int remove_trailing_zeroes(char *buffer, int length);
 int IecPrint_Checksum(char *msg, int maxsize, char *cs);
 
 //
-// Prints array of mode indicators
-int IecPrint_ModeIndicatorArray(const int mi[], char *buffer,
-	int maxsize, int notnull);
-
-//
 // Determines the talker id and sentence formatter
 int IecScan_AdressField(char *buffer, int maxsize, int *tid, int *msgtype);
 

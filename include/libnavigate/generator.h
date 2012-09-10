@@ -79,6 +79,11 @@ NAVI_EXTERN(int) navi_print_number(double value, char *buffer,
 NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 		int maxsize, int notnull);
 
+//
+// Prints array of mode indicators
+// Returns the number of printed characters
+NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_generator_h
