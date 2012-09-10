@@ -1,3 +1,22 @@
+/*
+ * vtg.c - generator and parser of VTG message
+ *
+ * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "vtg.h"
 #include "common.h"
 
@@ -21,20 +40,19 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 		courseM[2], snots[32], speedN[4], skmph[32], speedK[2], cs[3];
 
 	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-
-	msglength += navi_msg_create_double(msg->courseTrue, ctrue, sizeof(ctrue),
+	msglength += navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
 		msg->vfields & VTG_VALID_COURSETRUE);
 	msglength += snprintf(courseT, sizeof(courseT),
 		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
-	msglength += navi_msg_create_double(msg->courseMagn, cmagn, sizeof(cmagn),
+	msglength += navi_print_number(msg->courseMagn, cmagn, sizeof(cmagn),
 		msg->vfields & VTG_VALID_COURSEMAGN);
 	msglength += snprintf(courseM, sizeof(courseM),
 		(msg->vfields & VTG_VALID_COURSEMAGN) ? "M" : "");
-	msglength += navi_msg_create_double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
+	msglength += navi_print_number(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
 		msg->vfields & VTG_VALID_SPEED);
 	msglength += snprintf(speedN, sizeof(speedN),
 		(msg->vfields & VTG_VALID_SPEED) ? "N" : "");
-	msglength += navi_msg_create_double(msg->speed * MPS_TO_KMH, skmph, sizeof(skmph),
+	msglength += navi_print_number(msg->speed * MPS_TO_KMH, skmph, sizeof(skmph),
 		msg->vfields & VTG_VALID_SPEED);
 	msglength += snprintf(speedK, sizeof(speedK),
 		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");

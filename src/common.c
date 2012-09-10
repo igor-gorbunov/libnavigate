@@ -220,23 +220,6 @@ int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
 }
 
-int IecPrint_DatumSubdivision(int lds, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (lds)
-		{
-		default:
-			return 0;
-		}
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
 int IecPrint_Latitude(double value, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
@@ -776,69 +759,6 @@ int IecLookupSentenceFormatter(char *buffer, int *nmread)
 	}
 }
 
-// Looks up datum code
-int IecParse_Datum(char *buffer, int *datum, int *nmread)
-{
-	*nmread = 3;
-
-	if (strncmp("W84", buffer, 3) == 0)
-	{
-		*datum = navi_WGS84;
-		return navi_Ok;
-	}
-	else if (strncmp("W72", buffer, 3) == 0)
-	{
-		*datum = navi_WGS72;
-		return navi_Ok;
-	}
-	else if (strncmp("S85", buffer, 3) == 0)
-	{
-		*datum = navi_SGS85;
-		return navi_Ok;
-	}
-	else if (strncmp("P90", buffer, 3) == 0)
-	{
-		*datum = navi_PE90;
-		return navi_Ok;
-	}
-	else if (strncmp("999", buffer, 3) == 0)
-	{
-		*datum = navi_UserDefined;
-		return navi_Ok;
-	}
-	else if ((strncmp(",", buffer, 1) == 0) || (strncmp("*", buffer, 1) == 0))
-	{
-		*nmread = 0;
-		*datum = navi_Undefined;
-		return navi_NullField;
-	}
-	else
-	{
-		*nmread = 0;
-		return navi_MsgNotSupported;
-	}
-}
-
-// Looks up datum subdivision code
-int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread)
-{
-	if (strncmp(",", buffer, 1) == 0)
-	{
-		*nmread = 0;
-		*datumsub = navi_Null;
-
-		navierr_set_last(navi_NullField);
-		return navi_Error;
-	}
-	else
-	{
-		*nmread = 0;
-
-		navierr_set_last(navi_MsgNotSupported);
-		return navi_Error;
-	}
-}
-
 // Parses mode indicator array
 int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
 {
@@ -1065,77 +985,4 @@ int IecParse_LocalZone(char *buffer, int *offset,
 
 	*nmread = idx;
 	return navi_Ok;
-}
-
-//
-// Prints position fix `llll.ll,a,yyyyy.yy,a`, or null fields
-// Returns the number of printed characters
-int navi_msg_create_position_fix(const struct navi_position_t *fix,
-	char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		int nmwritten;
-		double degrees, fraction;
-
-		const char *s;
-
-		nmwritten = 0;
-
-		// extract and print latitude
-		fraction = modf(fix->latitude, &degrees);
-		degrees = degrees * 100.;
-		fraction = fraction * 60.;
-		fraction = fraction + degrees;
-
-		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
-		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
-
-		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
-
-		nmwritten += strlen(s = navi_fixsign_str(fix->latsign, notnull));
-		(void)strncat(buffer, s, maxsize);
-
-		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
-
-		// extract and print longitude
-		fraction = modf(fix->longitude, &degrees);
-		degrees = degrees * 100.;
-		fraction = fraction * 60.;
-		fraction = fraction + degrees;
-
-		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
-		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
-
-		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
-
-		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
-		(void)strncat(buffer, s, maxsize);
-
-		return nmwritten;
-	}
-	else
-	{
-		(void)strncpy(buffer, ",,,", maxsize);
-		return 3;
-	}
-}
-
-int navi_msg_create_double(double value, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		int result;
-
-		result = snprintf(buffer, maxsize, "%f", value);
-		return remove_trailing_zeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
 }

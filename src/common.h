@@ -29,23 +29,8 @@ NAVI_BEGIN_DECL
 int remove_trailing_zeroes(char *buffer, int length);
 
 //
-// Prints local datum subdivision
-int IecPrint_DatumSubdivision(int lds, char *buffer, int maxsize, int notnull);
-
-//
 // Prints checksum of the generated message
 int IecPrint_Checksum(char *msg, int maxsize, char *cs);
-
-//
-// Prints a floating point value
-// Returns the number of printed characters
-int navi_msg_create_double(double value, char *buffer, int maxsize, int notnull);
-
-//
-// Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
-// Returns the number of printed characters
-int navi_msg_create_position_fix(const struct navi_position_t *fix,
-		char *buffer, int maxsize, int notnull);
 
 //
 // Prints UTC
@@ -73,14 +58,6 @@ int IecLookupTalkerId(char *buffer, int *nmread);
 //
 // Looks up sentence formatter
 int IecLookupSentenceFormatter(char *buffer, int *nmread);
-
-//
-// Parses datum field
-int IecParse_Datum(char *buffer, int *datum, int *nmread);
-
-//
-// Parses datum subdivision code field
-int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread);
 
 //
 // Parses mode indicator array

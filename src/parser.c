@@ -22,6 +22,7 @@
 #include <math.h>
 #include <ctype.h>
 #include <stddef.h>
+#include <string.h>
 #include <assert.h>
 
 #include "common.h"
@@ -937,3 +938,74 @@ _Exit:
 #undef PARSE_NUMBER_INIT
 #undef PARSE_NUMBER_INTEGRAL
 #undef PARSE_NUMBER_FRACTION
+
+//
+// navi_parse_datum
+//
+int navi_parse_datum(char *buffer, int *datum, int *nmread)
+{
+	int error = 0;
+
+	if (strncmp("W84", buffer, 3) == 0)
+		*datum = navi_WGS84;
+	else if (strncmp("W72", buffer, 3) == 0)
+		*datum = navi_WGS72;
+	else if (strncmp("S85", buffer, 3) == 0)
+		*datum = navi_SGS85;
+	else if (strncmp("P90", buffer, 3) == 0)
+		*datum = navi_PE90;
+	else if (strncmp("999", buffer, 3) == 0)
+		*datum = navi_UserDefined;
+	else if ((strncmp(",", buffer, 1) == 0) ||
+		(strncmp("*", buffer, 1) == 0))
+	{
+		*nmread = 1;
+		navierr_set_last(navi_NullField);
+		error = -1;
+	}
+	else
+	{
+		*nmread = 1;
+		navierr_set_last(navi_MsgNotSupported);
+		error = -1;
+	}
+
+	if ((error == 0) && ((strncmp(",", buffer + 3, 1) == 0) ||
+		(strncmp("*", buffer + 3, 1) == 0)))
+	{
+		*nmread = 4;
+		return 0;
+	}
+	else if (error == 0)
+	{
+		*nmread = 4;
+		navierr_set_last(navi_MsgNotSupported);
+		return -1;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+//
+// navi_parse_datumsub
+//
+int navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
+{
+	if (strncmp(",", buffer, 1) == 0)
+	{
+		*nmread = 1;
+		*datumsub = navi_Null;
+
+		navierr_set_last(navi_NullField);
+		return navi_Error;
+	}
+	else
+	{
+		*nmread = 1;
+
+		navierr_set_last(navi_MsgNotSupported);
+		return navi_Error;
+	}
+}

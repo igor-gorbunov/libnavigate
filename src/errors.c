@@ -1,5 +1,5 @@
 /*
- * error.c - library error status utilities
+ * errors.c - library error status utilities
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *

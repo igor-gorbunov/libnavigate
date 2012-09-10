@@ -18,6 +18,7 @@
  */
 
 #include <navigate.h>
+#include "common.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -34,6 +35,10 @@
 #include "zda.h"
 
 #endif // NO_GENERATOR
+
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
 
 int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
 {
@@ -145,7 +150,6 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 //
 //	navi_create_talkerid
 //
-
 const char *navi_talkerid_str(int tid)
 {
 	switch (tid)
@@ -242,7 +246,6 @@ const char *navi_talkerid_str(int tid)
 //
 // navi_datum_to_string
 //
-
 const char *navi_datum_str(int datum, int notnull)
 {
 	if (!notnull)
@@ -267,6 +270,26 @@ const char *navi_datum_str(int datum, int notnull)
 	}
 }
 
+//
+// navi_datumsubdiv_str
+//
+const char *navi_datumsubdiv_str(int datumsub, int notnull)
+{
+	if (!notnull)
+		datumsub = navi_Null;
+
+	switch (datumsub)
+	{
+	case navi_Null:
+		return "";
+	default:
+		return NULL;
+	}
+}
+
+//
+// navi_fixsign_str
+//
 const char *navi_fixsign_str(int fixsign, int notnull)
 {
 	if (!notnull)
@@ -289,6 +312,9 @@ const char *navi_fixsign_str(int fixsign, int notnull)
 	}
 }
 
+//
+// navi_status_str
+//
 const char *navi_status_str(int status)
 {
 	switch (status)
@@ -302,6 +328,9 @@ const char *navi_status_str(int status)
 	}
 }
 
+//
+// navi_modeindicator_str
+//
 const char *navi_modeindicator_str(int mi)
 {
 	switch (mi)
@@ -320,5 +349,81 @@ const char *navi_modeindicator_str(int mi)
 		return "N";
 	default:
 		return NULL;
+	}
+}
+
+//
+// navi_print_position_fix
+//
+int navi_print_position_fix(const struct navi_position_t *fix,
+	char *buffer, int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int nmwritten;
+		double degrees, fraction;
+
+		const char *s;
+
+		nmwritten = 0;
+
+		// extract and print latitude
+		fraction = modf(fix->latitude, &degrees);
+		degrees = degrees * 100.;
+		fraction = fraction * 60.;
+		fraction = fraction + degrees;
+
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
+		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		nmwritten += strlen(s = navi_fixsign_str(fix->latsign, notnull));
+		(void)strncat(buffer, s, maxsize);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		// extract and print longitude
+		fraction = modf(fix->longitude, &degrees);
+		degrees = degrees * 100.;
+		fraction = fraction * 60.;
+		fraction = fraction + degrees;
+
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
+		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
+		(void)strncat(buffer, s, maxsize);
+
+		return nmwritten;
+	}
+	else
+	{
+		(void)strncpy(buffer, ",,,", maxsize);
+		return 3;
+	}
+}
+
+//
+// navi_print_double
+//
+int navi_print_number(double value, char *buffer, int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result;
+
+		result = snprintf(buffer, maxsize, "%f", value);
+		return remove_trailing_zeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
 	}
 }

@@ -1,3 +1,22 @@
+/*
+ * gns.c - generator and parser of GNS message
+ *
+ * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "gns.h"
 #include "common.h"
 
@@ -26,7 +45,7 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
 
-	msglength += navi_msg_create_position_fix(&msg->fix, fix, sizeof(fix),
+	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GNS_VALID_POSITION_FIX);
 
 	msglength += IecPrint_ModeIndicatorArray(msg->mi, mi, sizeof(mi),
@@ -34,13 +53,13 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 	msglength += snprintf(totalsats, sizeof(totalsats),
 		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
 		msg->totalsats);
-	msglength += navi_msg_create_double(msg->hdop, hdop, sizeof(hdop),
+	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
 		msg->vfields & GNS_VALID_HDOP);
-	msglength += navi_msg_create_double(msg->antaltitude, antalt, sizeof(antalt),
+	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt),
 		msg->vfields & GNS_VALID_ANTENNAALTITUDE);
-	msglength += navi_msg_create_double(msg->geoidalsep, geoidsep, sizeof(geoidsep),
+	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep),
 		msg->vfields & GNS_VALID_GEOIDALSEP);
-	msglength += navi_msg_create_double(msg->diffage, ddage, sizeof(ddage),
+	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage),
 		msg->vfields & GNS_VALID_AGEOFDIFFDATA);
 	msglength += snprintf(drsid, sizeof(drsid),
 		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
