@@ -9,6 +9,8 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
+#ifndef NO_GENERATOR
+
 int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
@@ -55,33 +57,28 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 	return navi_Ok;
 }
 
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
 int IecParse_VTG(struct vtg_t *msg, char *buffer)
 {
-	int result;
 	int index = 1, nmread;
 	double speedknots, speedkmph;
 
 	msg->vfields = 0;
 
-	result = IecParse_Double(buffer + index, &msg->courseTrue, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->courseTrue, &nmread) != 0)
 	{
-	case navi_Ok:
-		msg->vfields |= VTG_VALID_COURSETRUE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
 	}
-
+	else
+	{
+		msg->vfields |= VTG_VALID_COURSETRUE;
+	}
 	index += nmread;
 
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 	if (buffer[index] == 'T')
 	{
 		index += 1;
@@ -92,25 +89,17 @@ int IecParse_VTG(struct vtg_t *msg, char *buffer)
 	}
 	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->courseMagn, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->courseMagn, &nmread) != 0)
 	{
-	case navi_Ok:
-		msg->vfields |= VTG_VALID_COURSEMAGN;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
 	}
-
+	else
+	{
+		msg->vfields |= VTG_VALID_COURSEMAGN;
+	}
 	index += nmread;
 
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 	if (buffer[index] == 'M')
 	{
 		index += 1;
@@ -121,25 +110,14 @@ int IecParse_VTG(struct vtg_t *msg, char *buffer)
 	}
 	index += 1;
 
-	result = IecParse_Double(buffer + index, &speedknots, &nmread);
-	switch (result)
+	speedknots = -1.0;
+	if (navi_parse_number(buffer + index, &speedknots, &nmread) != 0)
 	{
-	case navi_Ok:
-		break;
-	case navi_NullField:
-		speedknots = -1.0;
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
 	}
-
 	index += nmread;
 
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 	if (buffer[index] == 'N')
 	{
 		index += 1;
@@ -150,25 +128,14 @@ int IecParse_VTG(struct vtg_t *msg, char *buffer)
 	}
 	index += 1;
 
-	result = IecParse_Double(buffer + index, &speedkmph, &nmread);
-	switch (result)
+	speedkmph = -1.0;
+	if (navi_parse_number(buffer + index, &speedkmph, &nmread) != 0)
 	{
-	case navi_Ok:
-		break;
-	case navi_NullField:
-		speedkmph = -1.0;
-		break;
-	default:
-		return result;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
 	}
-
 	index += nmread;
 
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 	if (buffer[index] == 'K')
 	{
 		index += 1;
@@ -198,3 +165,5 @@ int IecParse_VTG(struct vtg_t *msg, char *buffer)
 
 	return navi_Ok;
 }
+
+#endif // NO_PARSER

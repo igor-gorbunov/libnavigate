@@ -9,6 +9,8 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
+#ifndef NO_GENERATOR
+
 int navi_create_gns(const struct gns_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
@@ -59,10 +61,15 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 	return navi_Ok;
 }
 
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
 int IecParse_GNS(struct gns_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
+	double d;
 
 	msg->vfields = 0;
 
@@ -103,118 +110,75 @@ int IecParse_GNS(struct gns_t *msg, char *buffer)
 	}
 	index += 1;
 
-	result = IecParse_Integer(buffer + index, &msg->totalsats, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->totalsats = (int)round(d);
 		msg->vfields |= GNS_VALID_TOTALNMOFSATELLITES;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->hdop, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->hdop, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= GNS_VALID_HDOP;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->antaltitude, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->antaltitude, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= GNS_VALID_ANTENNAALTITUDE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->geoidalsep, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->geoidalsep, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= GNS_VALID_GEOIDALSEP;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->diffage, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->diffage, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= GNS_VALID_AGEOFDIFFDATA;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Integer(buffer + index, &msg->id, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->id = (int)round(d);
 		msg->vfields |= GNS_VALID_DIFFREFSTATIONID;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != '*')
-	{
-		return navi_InvalidMessage;
-	}
 
 	return navi_Ok;
 }
+
+#endif // NO_PARSER

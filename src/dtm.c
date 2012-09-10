@@ -9,8 +9,10 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
+#ifndef NO_GENERATOR
+
 int navi_create_dtm(const struct dtm_t *msg, char *buffer,
-		int maxsize, int *nmwritten)
+	int maxsize, int *nmwritten)
 {
 	int msglength;
 
@@ -58,6 +60,10 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
 	return 0;
 }
+
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
 
 int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer)
 {
@@ -126,25 +132,16 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_Double(buffer + index, &msg->altoffset, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->altoffset, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= DTM_VALID_ALTITUDEOFFSET;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		navierr_set_last(navi_InvalidMessage);
-		return -1;
-	}
-	index += 1;
 
 	result = IecParse_Datum(buffer + index, &msg->rd, &nmread);
 	switch (result)
@@ -168,3 +165,5 @@ int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer)
 
 	return 0;
 }
+
+#endif // NO_PARSER

@@ -9,6 +9,8 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
+#ifndef NO_GENERATOR
+
 int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
@@ -61,6 +63,10 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 	return navi_Ok;
 }
 
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
 int IecParse_RMC(struct rmc_t *msg, char *buffer)
 {
 	int result;
@@ -99,43 +105,27 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer)
 
 	index += nmread;
 
-	result = IecParse_Double(buffer + index, &msg->speed, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->speed, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= RMC_VALID_SPEED;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Double(buffer + index, &msg->courseTrue, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &msg->courseTrue, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= RMC_VALID_COURSETRUE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_Date(buffer + index, &date, &nmread);
 	switch (result)
@@ -178,3 +168,5 @@ int IecParse_RMC(struct rmc_t *msg, char *buffer)
 
 	return navi_Ok;
 }
+
+#endif // NO_PARSER

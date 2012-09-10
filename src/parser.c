@@ -816,3 +816,124 @@ _Exit:
 #undef PARSE_UTC_INIT
 #undef PARSE_UTC_INTEGRAL
 #undef PARSE_UTC_FRACTION
+
+
+//
+// navi_parse_number
+//
+
+#define PARSE_NUMBER_INIT			0
+#define PARSE_NUMBER_INTEGRAL		1
+#define PARSE_NUMBER_FRACTION		2
+
+int navi_parse_number(char *buffer, double *parsed, int *nmread)
+{
+
+#ifndef NO_PARSER
+
+	int state = PARSE_NUMBER_INIT, i = 0, j = -1,
+		c, s = 1, error = 0;
+	double d = 0.;
+
+	assert(buffer != NULL);
+	assert(parsed != NULL);
+	assert(nmread != NULL);
+
+	for ( ; ; )
+	{
+		c = buffer[i++];
+
+		switch (state)
+		{
+		case PARSE_NUMBER_INIT:
+			if (isdigit(c))
+			{
+				state = PARSE_NUMBER_INTEGRAL;
+				d = c - '0';
+			}
+			else if (c == '+')
+			{	// 'plus' sign
+				state = PARSE_NUMBER_INTEGRAL;
+			}
+			else if (c == '-')
+			{	// 'minus' sign
+				s = -1;
+				state = PARSE_NUMBER_INTEGRAL;
+			}
+			else if (c == '.')
+			{
+				state = PARSE_NUMBER_FRACTION;
+			}
+			else if ((c == ',') || (c == '*'))
+			{	// null field
+				error = navi_NullField;
+				goto _Exit;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_NUMBER_INTEGRAL:
+			if (isdigit(c))
+			{
+				d = d * 10. + (c - '0');
+			}
+			else if (c == '.')
+			{
+				state = PARSE_NUMBER_FRACTION;
+			}
+			else if ((c == ',') || (c == '*'))
+			{	// field ends
+				goto _Exit;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		case PARSE_NUMBER_FRACTION:
+			if (isdigit(c))
+			{
+				d = d + pow(10., j--) * (c - '0');
+			}
+			else if ((c == ',') || (c == '*'))
+			{	// field ends
+				goto _Exit;
+			}
+			else
+			{
+				error = navi_InvalidMessage;
+				goto _Exit;
+			}
+			break;
+		}
+	}
+
+_Exit:
+
+	*nmread = i;
+
+	if (error)
+	{
+		navierr_set_last(error);
+		return navi_Error;
+	}
+
+	*parsed = s * d;
+	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return -1;
+
+#endif // NO_PARSER
+
+}
+
+#undef PARSE_NUMBER_INIT
+#undef PARSE_NUMBER_INTEGRAL
+#undef PARSE_NUMBER_FRACTION

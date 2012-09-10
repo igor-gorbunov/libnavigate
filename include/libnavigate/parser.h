@@ -84,6 +84,14 @@ NAVI_EXTERN(int) navi_parse_status(char *buffer, int *status, int *nmread);
 //
 NAVI_EXTERN(int) navi_parse_modeindicator(char *buffer, int *mi, int *nmread);
 
+//
+// Parses variable numbers in the form of 'x[.x]'.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_number(char *buffer, double *parsed, int *nmread);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h

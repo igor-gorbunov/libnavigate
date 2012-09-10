@@ -839,28 +839,6 @@ int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread)
 	}
 }
 
-// Parses floating point value
-int IecParse_Double(char *buffer, double *value, int *nmread)
-{
-	char *endptr = NULL;
-
-	errno = 0;
-	*value = strtod(buffer, &endptr);
-	*nmread = endptr - buffer;
-	if (errno != 0)
-	{
-		return navi_MsgNotSupported;
-	}
-	else if (*nmread == 0)
-	{
-		return navi_NullField;
-	}
-	else
-	{
-		return navi_Ok;
-	}
-}
-
 // Parses mode indicator array
 int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
 {
@@ -916,30 +894,6 @@ int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread)
 
 	*nmread = idx;
 	return idx == 0 ? navi_InvalidMessage : navi_Ok;
-}
-
-// Parses integer value
-int IecParse_Integer(char *buffer, int *value, int *nmread)
-{
-	char *endptr = NULL;
-	double tmp;
-
-	errno = 0;
-	tmp = strtod(buffer, &endptr);
-	*value = (int)tmp;
-	*nmread = endptr - buffer;
-	if (errno != 0)
-	{
-		return navi_MsgNotSupported;
-	}
-	else if (*nmread == 0)
-	{
-		return navi_NullField;
-	}
-	else
-	{
-		return navi_Ok;
-	}
 }
 
 // Parses date

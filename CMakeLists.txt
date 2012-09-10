@@ -1,8 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(navigate)
 
-FILE(GLOB SRC_LIBNAVIGATE src/*.c)
-
 # Find required dependencies
 INCLUDE_DIRECTORIES(include)
 
@@ -11,6 +9,12 @@ IF(MSVC)
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
 ELSE()
 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+ENDIF()
+
+IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	FILE(GLOB SRC src/*.c src/win32/*.c src/win32/navigate.rc)
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	FILE(GLOB SRC src/*.c)
 ENDIF()
 
 # Check if some parts of the library are not required
@@ -22,12 +26,7 @@ IF(NO_PARSER)
 	ADD_DEFINITIONS(-DNO_PARSER)
 ENDIF()
 
-
-IF(CMAKE_SYSTEM_NAME MATCHES "Windows")
-	SET(WINDOWS_RC "src/win32/navigate.rc")
-ENDIF ()
-
-ADD_LIBRARY(navigate SHARED ${SRC_LIBNAVIGATE} ${WINDOWS_RC})
+ADD_LIBRARY(navigate SHARED ${SRC})
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	TARGET_LINK_LIBRARIES(navigate m)

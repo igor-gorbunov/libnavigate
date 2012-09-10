@@ -83,16 +83,8 @@ int IecParse_Datum(char *buffer, int *datum, int *nmread);
 int IecParse_DatumSub(char *buffer, int *datumsub, int *nmread);
 
 //
-// Parses floating point value
-int IecParse_Double(char *buffer, double *value, int *nmread);
-
-//
 // Parses mode indicator array
 int IecParse_ModeIndicatorArray(char *buffer, int mi[], int *nmread);
-
-//
-// Parses integer value
-int IecParse_Integer(char *buffer, int *value, int *nmread);
 
 //
 // Parses date (ddmmyy or ddmmyyyy)
@@ -101,6 +93,10 @@ int IecParse_Date(char *buffer, struct naviDate_t *date, int *nmread);
 //
 // Parses local zone (sxx,xx)
 int IecParse_LocalZone(char *buffer, int *offset, int *nmread);
+
+#ifdef WIN32
+extern double round(double x);
+#endif // WIN32
 
 NAVI_END_DECL
 

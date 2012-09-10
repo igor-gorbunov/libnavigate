@@ -73,6 +73,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
+	double d;
 
 	msg->vfields = 0;
 
@@ -87,62 +88,41 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_Integer(buffer + index, &msg->day, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->day = (int)round(d);
 		msg->vfields |= ZDA_VALID_DAY;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Integer(buffer + index, &msg->month, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->month = (int)round(d);
 		msg->vfields |= ZDA_VALID_MONTH;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
-	result = IecParse_Integer(buffer + index, &msg->year, &nmread);
-	switch (result)
+	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
+		msg->year = (int)round(d);
 		msg->vfields |= ZDA_VALID_YEAR;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	result = IecParse_LocalZone(buffer + index, &msg->lzoffset, &nmread);
 	switch (result)
