@@ -1141,3 +1141,107 @@ int navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
 
 	return navi_Ok;
 }
+
+//
+// navi_parse_localzone
+//
+
+#define PARSE_LOCALZONE_INIT		0
+#define PARSE_LOCALZONE_HOURS		1
+#define PARSE_LOCALZONE_MINUTES		2
+#define PARSE_LOCALZONE_FINI		3
+
+int navi_parse_localzone(char *buffer, int *offset, int *nmread)
+{
+	int state = PARSE_LOCALZONE_INIT, i = 0, error = 0;
+	int c, s = 1, h = 0, m = 0;
+
+	for ( ; ; )
+	{
+		c = buffer[i++];
+
+		switch (state)
+		{
+		case PARSE_LOCALZONE_INIT:
+			if (isdigit(c))
+			{
+				state = PARSE_LOCALZONE_HOURS;
+				h = c - '0';
+			}
+			else if (c == ',')
+			{	// null field
+				state = PARSE_LOCALZONE_FINI;
+				navierr_set_last(navi_NullField);
+				error = 1;
+			}
+			else if (c == '-')
+			{
+				state = PARSE_LOCALZONE_HOURS;
+				s = -1;
+			}
+			else if (c == '+')
+			{
+				state = PARSE_LOCALZONE_HOURS;
+			}
+			else
+			{
+				error = 1;
+				goto _Exit;
+			}
+			break;
+		case PARSE_LOCALZONE_HOURS:
+			if (isdigit(c))
+			{
+				h = h * 10 + c - '0';
+			}
+			else if (c == ',')
+			{	// next field
+				state = PARSE_LOCALZONE_MINUTES;
+			}
+			else
+			{
+				error = 1;
+				goto _Exit;
+			}
+			break;
+		case PARSE_LOCALZONE_MINUTES:
+			if (isdigit(c))
+			{
+				m = m * 10 + c - '0';
+			}
+			else if ((c == ',') || (c == '*'))
+			{
+				goto _Exit;
+			}
+			else
+			{
+				error = 1;
+				goto _Exit;
+			}
+			break;
+		case PARSE_LOCALZONE_FINI:
+			if ((c != ',') && (c != '*'))
+			{
+				navierr_set_last(navi_InvalidMessage);
+			}
+			goto _Exit;
+		}
+	}
+
+_Exit:
+	*offset = s * (h * 60 + m);
+	*nmread = i + 1;
+
+	if (error)
+	{
+		return navi_Error;
+	}
+
+	return navi_Ok;
+}
+
+#undef PARSE_LOCALZONE_INIT
+#undef PARSE_LOCALZONE_SIGN
+#undef PARSE_LOCALZONE_HOURS
+#undef PARSE_LOCALZONE_MINUTES
+#undef PARSE_LOCALZONE_FINI

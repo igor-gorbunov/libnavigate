@@ -49,10 +49,6 @@ int IecLookupTalkerId(char *buffer, int *nmread);
 // Looks up sentence formatter
 int IecLookupSentenceFormatter(char *buffer, int *nmread);
 
-//
-// Parses local zone (sxx,xx)
-int IecParse_LocalZone(char *buffer, int *offset, int *nmread);
-
 #ifdef WIN32
 extern double round(double x);
 #endif // WIN32

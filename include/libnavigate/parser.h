@@ -124,6 +124,14 @@ NAVI_EXTERN(int) navi_parse_miarray(char *buffer, int mi[], int *misize, int *nm
 //
 NAVI_EXTERN(int) navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread);
 
+//
+// Parses local zone in the form of '[+|-]dd,dd'.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_localzone(char *buffer, int *offset, int *nmread);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h

@@ -89,7 +89,6 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 
 int navi_parse_zda(struct zda_t *msg, char *buffer)
 {
-	int result;
 	int index = 1, nmread;
 	double d;
 
@@ -142,16 +141,14 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_LocalZone(buffer + index, &msg->lzoffset, &nmread);
-	switch (result)
+	if (navi_parse_localzone(buffer + index, &msg->lzoffset, &nmread) != 0)
 	{
-	case navi_Ok:
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= ZDA_VALID_LOCALZONE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
 
 	return navi_Ok;
