@@ -33,11 +33,6 @@ int remove_trailing_zeroes(char *buffer, int length);
 int IecPrint_Checksum(char *msg, int maxsize, char *cs);
 
 //
-// Prints UTC
-int IecPrint_Utc(const struct navi_utc_t *utc, char *buffer,
-	int maxsize, int notnull);
-
-//
 // Prints array of mode indicators
 int IecPrint_ModeIndicatorArray(const int mi[], char *buffer,
 	int maxsize, int notnull);

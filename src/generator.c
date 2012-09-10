@@ -427,3 +427,22 @@ int navi_print_number(double value, char *buffer, int maxsize, int notnull)
 		return 0;
 	}
 }
+
+//
+// navi_print_utc
+//
+int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
+	int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result = snprintf(buffer, maxsize, "%02u%02u%06.3f",
+			utc->hour % 24, utc->min % 60, utc->sec);
+		return remove_trailing_zeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}

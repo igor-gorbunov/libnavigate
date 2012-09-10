@@ -73,6 +73,12 @@ NAVI_EXTERN(int) navi_print_position_fix(const struct navi_position_t *fix,
 NAVI_EXTERN(int) navi_print_number(double value, char *buffer,
 		int maxsize, int notnull);
 
+//
+// Prints UTC time
+// Returns the number of printed characters
+NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
+		int maxsize, int notnull);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_generator_h

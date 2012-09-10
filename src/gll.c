@@ -42,10 +42,8 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GLL_VALID_POSITION_FIX);
-
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GLL_VALID_UTC);
-
 	msglength += strlen(status = navi_status_str(msg->status));
 	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 

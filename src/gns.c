@@ -41,10 +41,8 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 		drsid[32], cs[3];
 
 	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
-
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GNS_VALID_POSITION_FIX);
 

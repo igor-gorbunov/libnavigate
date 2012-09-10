@@ -41,9 +41,8 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 
 	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
 
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
+	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & RMC_VALID_UTC);
-
 	msglength += strlen(status = navi_status_str(msg->status));
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & RMC_VALID_POSITION_FIX);
