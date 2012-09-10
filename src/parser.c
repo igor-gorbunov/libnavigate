@@ -1074,11 +1074,69 @@ int navi_parse_miarray(char *buffer, int mi[], int *misize, int *nmread)
 
 _Exit:
 
-	*nmread = i;
-	if ((i < 3) || (error != 0))
+	*nmread = i + 1;
+	if ((i < 2) || (error != 0))
 	{
 		navierr_set_last(navi_InvalidMessage);
 		return navi_Error;
+	}
+
+	return navi_Ok;
+}
+
+//
+// navi_parse_date
+//
+int navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
+{
+	int i, c;
+
+	assert(date != NULL);
+	assert(nmread != NULL);
+
+	for (i = 0; ; i++)
+	{
+		c = buffer[i];
+
+		if (isdigit(c))
+		{
+			if (i == 0)
+				date->day = c - '0';
+			else if (i == 1)
+				date->day = date->day * 10 + (c - '0');
+			else if (i == 2)
+				date->month = c - '0';
+			else if (i == 3)
+				date->month = date->month * 10 + (c - '0');
+			else if (i == 4)
+				date->year = c - '0';
+			else if ((i >= 5) && (i <= 7))
+				date->year = date->year * 10 + (c - '0');
+			else
+				break;
+		}
+		else if ((c == ',') || (c == '*'))
+		{
+			break;
+		}
+		else
+		{
+			*nmread = i;
+			return navi_InvalidMessage;
+		}
+	}
+
+	*nmread = i + 1;
+
+	if (i == 0)
+	{
+		navierr_set_last(navi_NullField);
+		return -1;
+	}
+	else if ((i < 6) || (i >= 8))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		return -1;
 	}
 
 	return navi_Ok;

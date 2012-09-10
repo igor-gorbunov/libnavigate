@@ -274,7 +274,7 @@ NAVI_ALIGNED(struct, navi_utc_t)
 //
 // Holds UTC date
 //
-NAVI_ALIGNED(struct, naviDate_t)
+NAVI_ALIGNED(struct, navi_date_t)
 {
 	int day, month, year;
 };
@@ -588,15 +588,15 @@ NAVI_ALIGNED(struct, gns_t)
 NAVI_ALIGNED(struct, rmc_t)
 {
 	int tid;
-	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
+	unsigned vfields;			// valid fields, bitwise or of RMC_VALID_xxx
 	struct navi_utc_t utc;		// UTC time
-	int status;		// status
+	int status;					// status
 	struct navi_position_t fix;	// latitude, longitude fix
-	double speed;			// Speed over ground, knots
-	double courseTrue;		// Course over ground, degrees true
-	int day, month, year;	// Day (01 to 31), Month (01 to 12), Year (UTC)
+	double speed;				// Speed over ground, knots
+	double courseTrue;			// Course over ground, degrees true
+	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
 	struct navi_offset_t magnetic;	// Magnetic variation, degrees,E/W
-	int mi;			// mode indicator
+	int mi;						// mode indicator
 };
 
 #define RMC_VALID_UTC				0x01
@@ -744,7 +744,7 @@ NAVI_ALIGNED(struct, zda_t)
 	int tid;
 	unsigned vfields;		// valid fields, bitwise or of ValidFields_t
 	struct navi_utc_t utc;	// UTC time
-	int day, month, year;	// Day (01 to 31), Month (01 to 12), Year (UTC)
+	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
 	int lzoffset;			// Local zone offset in minutes
 };
 

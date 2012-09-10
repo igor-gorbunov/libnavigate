@@ -52,9 +52,9 @@ int main(void)
 	zda.utc.hour = 8;
 	zda.utc.min = 12;
 	zda.utc.sec = 38.56;
-	zda.day = 25;
-	zda.month = 5;
-	zda.year = 1982;
+	zda.date.day = 25;
+	zda.date.month = 5;
+	zda.date.year = 1982;
 	zda.lzoffset = -240;
 
 	nmwritten = 0;
@@ -167,9 +167,9 @@ int main(void)
 	rmc.fix.lonsign = navi_East;
 	rmc.speed = 1.03553;
 	rmc.courseTrue = 180.2112;
-	rmc.day = 18;
-	rmc.month = 3;
-	rmc.year = 2012;
+	rmc.date.day = 18;
+	rmc.date.month = 3;
+	rmc.date.year = 2012;
 	rmc.magnetic.offset = 23.011;
 	rmc.magnetic.sign = navi_East;
 	rmc.mi = navi_Estimated;
@@ -376,8 +376,8 @@ int main(void)
 					}
 					if (rmc->vfields & RMC_VALID_DATE)
 					{
-						printf("\tdate = %d %d %d\n", rmc->day,
-							rmc->month, rmc->year);
+						printf("\tdate = %d %d %d\n", rmc->date.day,
+							rmc->date.month, rmc->date.year);
 					}
 					if (rmc->vfields & RMC_VALID_MAGNVARIATION)
 					{
@@ -421,15 +421,15 @@ int main(void)
 					}
 					if (zda->vfields & ZDA_VALID_DAY)
 					{
-						printf("\tday = %d\n", zda->day);
+						printf("\tday = %d\n", zda->date.day);
 					}
 					if (zda->vfields & ZDA_VALID_MONTH)
 					{
-						printf("\tmonth = %d\n", zda->month);
+						printf("\tmonth = %d\n", zda->date.month);
 					}
 					if (zda->vfields & ZDA_VALID_YEAR)
 					{
-						printf("\tyear = %d\n", zda->year);
+						printf("\tyear = %d\n", zda->date.year);
 					}
 					if (zda->vfields & ZDA_VALID_LOCALZONE)
 					{

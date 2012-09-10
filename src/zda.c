@@ -43,11 +43,11 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & ZDA_VALID_UTC);
 	msglength += snprintf(day, sizeof(day),
-		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->day);
+		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),
-		(msg->vfields & ZDA_VALID_MONTH) ? "%02u" : "", msg->month);
+		(msg->vfields & ZDA_VALID_MONTH) ? "%02u" : "", msg->date.month);
 	msglength += snprintf(year, sizeof(year),
-		(msg->vfields & ZDA_VALID_YEAR) ? "%04u" : "", msg->year);
+		(msg->vfields & ZDA_VALID_YEAR) ? "%04u" : "", msg->date.year);
 
 	memset(lzhours, 0, sizeof(lzhours));
 	memset(lzmins, 0, sizeof(lzmins));
@@ -113,7 +113,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->day = (int)round(d);
+		msg->date.day = (int)round(d);
 		msg->vfields |= ZDA_VALID_DAY;
 	}
 	index += nmread;
@@ -125,7 +125,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->month = (int)round(d);
+		msg->date.month = (int)round(d);
 		msg->vfields |= ZDA_VALID_MONTH;
 	}
 	index += nmread;
@@ -137,7 +137,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->year = (int)round(d);
+		msg->date.year = (int)round(d);
 		msg->vfields |= ZDA_VALID_YEAR;
 	}
 	index += nmread;

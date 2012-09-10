@@ -51,11 +51,11 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 	msglength += navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
 		msg->vfields & RMC_VALID_COURSETRUE);
 	msglength += snprintf(day, sizeof(day),
-		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->day);
+		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),
-		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->month);
+		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.month);
 	msglength += snprintf(year, sizeof(year),
-		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->year % 100);
+		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.year % 100);
 	msglength += navi_print_number(msg->magnetic.offset, magnetic, sizeof(magnetic),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
 	msglength += strlen(magsign = navi_fixsign_str(msg->magnetic.sign,
@@ -84,9 +84,7 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 
 int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 {
-	int result;
 	int index = 1, nmread;
-	struct naviDate_t date;
 
 	msg->vfields = 0;
 
@@ -142,27 +140,16 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	index += nmread;
 
-	result = IecParse_Date(buffer + index, &date, &nmread);
-	switch (result)
+	if (navi_parse_date(buffer + index, &msg->date, &nmread) != 0)
 	{
-	case navi_Ok:
-		msg->day = date.day;
-		msg->month = date.month;
-		msg->year = date.year;
+		if (navierr_get_last()->errclass != navi_NullField)
+			return -1;
+	}
+	else
+	{
 		msg->vfields |= RMC_VALID_DATE;
-		break;
-	case navi_NullField:
-		break;
-	default:
-		return result;
 	}
-
 	index += nmread;
-	if (buffer[index] != ',')
-	{
-		return navi_InvalidMessage;
-	}
-	index += 1;
 
 	if (navi_parse_offset(buffer + index, &msg->magnetic, &nmread) != 0)
 	{

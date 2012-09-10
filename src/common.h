@@ -50,10 +50,6 @@ int IecLookupTalkerId(char *buffer, int *nmread);
 int IecLookupSentenceFormatter(char *buffer, int *nmread);
 
 //
-// Parses date (ddmmyy or ddmmyyyy)
-int IecParse_Date(char *buffer, struct naviDate_t *date, int *nmread);
-
-//
 // Parses local zone (sxx,xx)
 int IecParse_LocalZone(char *buffer, int *offset, int *nmread);
 
