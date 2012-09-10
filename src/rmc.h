@@ -20,7 +20,7 @@ NAVI_BEGIN_DECL
 int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 		int maxsize, int *nmwritten);
 
-int IecParse_RMC(struct rmc_t *msg, char *buffer);
+int navi_parse_rmc(struct rmc_t *msg, char *buffer);
 
 NAVI_END_DECL
 

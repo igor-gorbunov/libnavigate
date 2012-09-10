@@ -19,7 +19,7 @@ NAVI_BEGIN_DECL
 int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 		int maxsize, int *nmwritten);
 
-int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer);
+int navi_parse_dtm(struct dtm_t *msg, char *buffer);
 
 NAVI_END_DECL
 

@@ -79,7 +79,7 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int IecParse_VTG(struct vtg_t *msg, char *buffer)
+int navi_parse_vtg(struct vtg_t *msg, char *buffer)
 {
 	int index = 1, nmread;
 	double speedknots, speedkmph;

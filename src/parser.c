@@ -131,7 +131,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			return -1;
 		}
 		((struct dtm_t *)msg)->tid = tid;
-		return navi_msg_parse_dtm((struct dtm_t *)msg, buffer + som + 6);
+		return navi_parse_dtm((struct dtm_t *)msg, buffer + som + 6);
 	case navi_FSI:
 	case navi_GBS:
 	case navi_GGA:
@@ -152,7 +152,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			return -1;
 		}
 		((struct gns_t *)msg)->tid = tid;
-		return IecParse_GNS((struct gns_t *)msg, buffer + som + 6);
+		return navi_parse_gns((struct gns_t *)msg, buffer + som + 6);
 	case navi_GRS:
 	case navi_GSA:
 	case navi_GST:
@@ -182,7 +182,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			return -1;
 		}
 		((struct rmc_t *)msg)->tid = tid;
-		return IecParse_RMC((struct rmc_t *)msg, buffer + som + 6);
+		return navi_parse_rmc((struct rmc_t *)msg, buffer + som + 6);
 	case navi_ROT:
 	case navi_RPM:
 	case navi_RSA:
@@ -207,7 +207,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			return -1;
 		}
 		((struct vtg_t *)msg)->tid = tid;
-		return IecParse_VTG((struct vtg_t *)msg, buffer + som + 6);
+		return navi_parse_vtg((struct vtg_t *)msg, buffer + som + 6);
 	case navi_WCV:
 	case navi_WNC:
 	case navi_WPL:

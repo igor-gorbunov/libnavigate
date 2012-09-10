@@ -78,7 +78,7 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_msg_parse_dtm(struct dtm_t *msg, char *buffer)
+int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 {
 	int index = 1, nmread;
 

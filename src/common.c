@@ -18,7 +18,6 @@
 //
 // navi_parse_status
 //
-
 int navi_parse_status(char *buffer, int *status, int *nmread)
 {
 
@@ -71,7 +70,6 @@ int navi_parse_status(char *buffer, int *status, int *nmread)
 //
 // navi_parse_modeindicator
 //
-
 int navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
 {
 
@@ -147,7 +145,6 @@ int navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
 //
 // remove_trailing_zeroes
 //
-
 int remove_trailing_zeroes(char *buffer, int length)
 {
 	int i;
@@ -218,51 +215,6 @@ int IecPrint_Checksum(char *msg, int maxsize, char *cs)
 	}
 
 	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
-}
-
-int IecPrint_Latitude(double value, char *buffer, int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		int result;
-		double degrees;
-
-		value = modf(value, &degrees);
-		degrees = degrees * 100.;
-		value = value * 60.;
-		value = value + degrees;
-
-		result = snprintf(buffer, maxsize, "%013.8f", value);
-		return remove_trailing_zeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-int IecPrint_Longitude(double value, char *buffer,
-	int maxsize, int notnull)
-{
-	if (notnull)
-	{
-		int result;
-		double degrees;
-
-		value = modf(value, &degrees);
-		degrees = degrees * 100.;
-		value = value * 60.;
-		value = value + degrees;
-
-		result = snprintf(buffer, maxsize, "%014.8f", value);
-		return remove_trailing_zeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
 }
 
 int IecPrint_ModeIndicatorArray(const int mi[], char *buffer, int maxsize,

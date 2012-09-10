@@ -83,7 +83,7 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int IecParse_RMC(struct rmc_t *msg, char *buffer)
+int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 {
 	int result;
 	int index = 1, nmread;
