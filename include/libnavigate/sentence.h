@@ -116,79 +116,79 @@ enum naviFormatter_t
 //
 // Talker Identifier Mnemonics
 //
-enum
+enum naviTalkerId_t
 {
 	// Heading/track controller (autopilot)
-	navi_AG = 0,	// general
-	navi_AP = 1,	// magnetic
+	navi_AG,	// general
+	navi_AP,	// magnetic
 	// Automatic identification system
-	navi_AI = 2,
+	navi_AI,
 	// Communications:
-	navi_CD = 3,	// digital selective calling (DSC)
-	navi_CR = 4,	// data receiver
-	navi_CS = 5,	// satellite
-	navi_CT = 6,	// radio-telephone (MF/HF)
-	navi_CV = 7,	// radio-telephone (VHF)
-	navi_CX = 8,	// scanning receiver
+	navi_CD,	// digital selective calling (DSC)
+	navi_CR,	// data receiver
+	navi_CS,	// satellite
+	navi_CT,	// radio-telephone (MF/HF)
+	navi_CV,	// radio-telephone (VHF)
+	navi_CX,	// scanning receiver
 	// DECCA navigator
-	navi_DE = 9,
+	navi_DE,
 	// Direction finder
-	navi_DF = 10,
+	navi_DF,
 	// Electronic chart systems (ECS)
-	navi_EC = 11,
+	navi_EC,
 	// Electronic chart display and information system (ECDIS)
-	navi_EI = 12,
+	navi_EI,
 	// Emergency position indicating radio beacon (EPIRB)
-	navi_EP = 13,
+	navi_EP,
 	// Engine room monitoring systems
-	navi_ER = 14,
+	navi_ER,
 	// Galileo receiver
-	navi_GA = 15,
+	navi_GA,
 	// Global positioning system (GPS)
-	navi_GP = 16,
+	navi_GP,
 	// GLONASS receiver
-	navi_GL = 17,
+	navi_GL,
 	// Global navigation satellite system (GNSS)
-	navi_GN = 18,
+	navi_GN,
 	// SBAS receiver
-	navi_GW = 19,
+	navi_GW,
 	// Heading sensors:
-	navi_HC = 20,	// compass, magnetic
-	navi_HE = 21,	// gyro, north seeking
-	navi_HN = 22,	// gyro, non-north seeking
+	navi_HC,	// compass, magnetic
+	navi_HE,	// gyro, north seeking
+	navi_HN,	// gyro, non-north seeking
 	// Integrated instrumentation
-	navi_II = 23,
+	navi_II,
 	// Integrated navigation
-	navi_IN = 24,
+	navi_IN,
 	// LORAN: LORAN-C
-	navi_LC = 25,
-	// Proprietary code
-	navi_P = 26,
+	navi_LC,
 	// Radar and/or radar plotting
-	navi_RA = 27,
+	navi_RA,
 	// Sounder, depth
-	navi_SD = 28,
+	navi_SD,
 	// Electronic positioning system, other/general
-	navi_SN = 29,
+	navi_SN,
 	// Sounder, scanning
-	navi_SS = 30,
+	navi_SS,
 	// Turn rate indicator
-	navi_TI = 31,
+	navi_TI,
 	// Velocity sensors:
-	navi_VD = 32,	// Doppler, other/general
-	navi_VM = 33,	// speed log, water, magnetic
-	navi_VW = 34,	// speed log, water, mechanical
+	navi_VD,	// Doppler, other/general
+	navi_VM,	// speed log, water, magnetic
+	navi_VW,	// speed log, water, mechanical
 	// Voyage data recorder
-	navi_VR = 35,
+	navi_VR,
 	// Transducer
-	navi_YX = 36,
+	navi_YX,
 	// Timekeepers, time/date
-	navi_ZA = 37,	// atomic clock
-	navi_ZC = 38,	// chronometer
-	navi_ZQ = 39,	// quartz
-	navi_ZV = 40,	// radio update
+	navi_ZA,	// atomic clock
+	navi_ZC,	// chronometer
+	navi_ZQ,	// quartz
+	navi_ZV,	// radio update
 	// Weather instruments
-	navi_WI = 41
+	navi_WI,
+	// Proprietary code
+	navi_P
 };
 
 //

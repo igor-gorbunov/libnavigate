@@ -1265,97 +1265,23 @@ int navi_parse_address(char *buffer, int *tid, int *msgtype)
 // Looks up Talker ID
 int navi_parse_talkerid(char *buffer, int *nmread)
 {
-	*nmread = 2;
+	int i;
 
-	if (strncmp("AG", buffer, 2) == 0)
-		return navi_AG;
-	else if (strncmp("AP", buffer, 2) == 0)
-		return navi_AP;
-	else if (strncmp("AI", buffer, 2) == 0)
-		return navi_AI;
-	else if (strncmp("CD", buffer, 2) == 0)
-		return navi_CD;
-	else if (strncmp("CR", buffer, 2) == 0)
-		return navi_CR;
-	else if (strncmp("CS", buffer, 2) == 0)
-		return navi_CS;
-	else if (strncmp("CT", buffer, 2) == 0)
-		return navi_CT;
-	else if (strncmp("CV", buffer, 2) == 0)
-		return navi_CV;
-	else if (strncmp("CX", buffer, 2) == 0)
-		return navi_CX;
-	else if (strncmp("DE", buffer, 2) == 0)
-		return navi_DE;
-	else if (strncmp("DF", buffer, 2) == 0)
-		return navi_DF;
-	else if (strncmp("EC", buffer, 2) == 0)
-		return navi_EC;
-	else if (strncmp("EI", buffer, 2) == 0)
-		return navi_EI;
-	else if (strncmp("EP", buffer, 2) == 0)
-		return navi_EP;
-	else if (strncmp("ER", buffer, 2) == 0)
-		return navi_ER;
-	else if (strncmp("GA", buffer, 2) == 0)
-		return navi_GA;
-	else if (strncmp("GP", buffer, 2) == 0)
-		return navi_GP;
-	else if (strncmp("GL", buffer, 2) == 0)
-		return navi_GL;
-	else if (strncmp("GN", buffer, 2) == 0)
-		return navi_GN;
-	else if (strncmp("GW", buffer, 2) == 0)
-		return navi_GW;
-	else if (strncmp("HC", buffer, 2) == 0)
-		return navi_HC;
-	else if (strncmp("HE", buffer, 2) == 0)
-		return navi_HE;
-	else if (strncmp("HN", buffer, 2) == 0)
-		return navi_HN;
-	else if (strncmp("II", buffer, 2) == 0)
-		return navi_II;
-	else if (strncmp("IN", buffer, 2) == 0)
-		return navi_IN;
-	else if (strncmp("LC", buffer, 2) == 0)
-		return navi_LC;
-	else if (strncmp("P", buffer, 1) == 0)
+	if (buffer[0] == 'P')
 	{
 		*nmread = 1;
 		return navi_P;
 	}
-	else if (strncmp("RA", buffer, 2) == 0)
-		return navi_RA;
-	else if (strncmp("SD", buffer, 2) == 0)
-		return navi_SD;
-	else if (strncmp("SN", buffer, 2) == 0)
-		return navi_SN;
-	else if (strncmp("SS", buffer, 2) == 0)
-		return navi_SS;
-	else if (strncmp("TI", buffer, 2) == 0)
-		return navi_TI;
-	else if (strncmp("VD", buffer, 2) == 0)
-		return navi_VD;
-	else if (strncmp("VM", buffer, 2) == 0)
-		return navi_VM;
-	else if (strncmp("VW", buffer, 2) == 0)
-		return navi_VW;
-	else if (strncmp("VR", buffer, 2) == 0)
-		return navi_VR;
-	else if (strncmp("YX", buffer, 2) == 0)
-		return navi_YX;
-	else if (strncmp("ZA", buffer, 2) == 0)
-		return navi_ZA;
-	else if (strncmp("ZC", buffer, 2) == 0)
-		return navi_ZC;
-	else if (strncmp("ZQ", buffer, 2) == 0)
-		return navi_ZQ;
-	else if (strncmp("ZV", buffer, 2) == 0)
-		return navi_ZV;
-	else if (strncmp("WI", buffer, 2) == 0)
-		return navi_WI;
-	else
-		return -1;
+
+	*nmread = 2;
+
+	for (i = 0; navi_tidlist[i] != NULL; i++)
+	{
+		if (strncmp(navi_tidlist[i], buffer, 2) == 0)
+			return i;
+	}
+
+	return -1;
 }
 
 // Looks up sentence formatter
@@ -1368,9 +1294,7 @@ int navi_parse_sentencefmt(char *buffer, int *nmread)
 	for (i = 0; navi_fmtlist[i] != NULL; i++)
 	{
 		if (strncmp(navi_fmtlist[i], buffer, 3) == 0)
-		{
 			return i;
-		}
 	}
 
 	return -1;

@@ -149,102 +149,6 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 }
 
 //
-//	navi_create_talkerid
-//
-const char *navi_talkerid_str(int tid)
-{
-	switch (tid)
-	{
-	case navi_AG:
-		return "AG";
-	case navi_AP:
-		return "AP";
-	case navi_AI:
-		return "AI";
-	case navi_CD:
-		return "CD";
-	case navi_CR:
-		return "CR";
-	case navi_CS:
-		return "CS";
-	case navi_CT:
-		return "CT";
-	case navi_CV:
-		return "CV";
-	case navi_CX:
-		return "CX";
-	case navi_DE:
-		return "DE";
-	case navi_DF:
-		return "DF";
-	case navi_EC:
-		return "EC";
-	case navi_EI:
-		return "EI";
-	case navi_EP:
-		return "EP";
-	case navi_ER:
-		return "ER";
-	case navi_GA:
-		return "GA";
-	case navi_GP:
-		return "GP";
-	case navi_GL:
-		return "GL";
-	case navi_GN:
-		return "GN";
-	case navi_GW:
-		return "GW";
-	case navi_HC:
-		return "HC";
-	case navi_HE:
-		return "HE";
-	case navi_HN:
-		return "HN";
-	case navi_II:
-		return "II";
-	case navi_IN:
-		return "IN";
-	case navi_LC:
-		return "LC";
-	case navi_P:
-		return "P";
-	case navi_RA:
-		return "RA";
-	case navi_SD:
-		return "SD";
-	case navi_SN:
-		return "SN";
-	case navi_SS:
-		return "SS";
-	case navi_TI:
-		return "TI";
-	case navi_VD:
-		return "VD";
-	case navi_VM:
-		return "VM";
-	case navi_VW:
-		return "VW";
-	case navi_VR:
-		return "VR";
-	case navi_YX:
-		return "YX";
-	case navi_ZA:
-		return "ZA";
-	case navi_ZC:
-		return "ZC";
-	case navi_ZQ:
-		return "ZQ";
-	case navi_ZV:
-		return "ZV";
-	case navi_WI:
-		return "WI";
-	default:
-		return NULL;
-	}
-}
-
-//
 // navi_datum_to_string
 //
 const char *navi_datum_str(int datum, int notnull)
@@ -542,4 +446,13 @@ const char *navi_sentencefmt_str(int fmt)
 {
 	assert((fmt >= 0) && (fmt <= navi_ZTG));
 	return navi_fmtlist[fmt];
+}
+
+//
+//	navi_create_talkerid
+//
+const char *navi_talkerid_str(int tid)
+{
+	assert((tid >= 0) && (tid <= navi_P));
+	return navi_tidlist[tid];
 }

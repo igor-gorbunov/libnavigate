@@ -32,6 +32,12 @@ int remove_trailing_zeroes(char *buffer, int length);
 extern double round(double x);
 #endif // WIN32
 
+//
+// Talker IDs list
+extern const char *navi_tidlist[];
+
+//
+// Approved sentence formatters list
 extern const char *navi_fmtlist[];
 
 NAVI_END_DECL
