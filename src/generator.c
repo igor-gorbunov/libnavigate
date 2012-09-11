@@ -534,3 +534,12 @@ int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
 
 	return navi_Ok;
 }
+
+//
+// navi_sentencefmt_str
+//
+const char *navi_sentencefmt_str(int fmt)
+{
+	assert((fmt >= 0) && (fmt <= navi_ZTG));
+	return navi_fmtlist[fmt];
+}

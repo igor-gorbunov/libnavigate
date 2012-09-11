@@ -42,6 +42,10 @@ NAVI_EXTERN(int) navi_create_msg(int type, void *msg, char *buffer,
 NAVI_EXTERN(const char *) navi_talkerid_str(int tid);
 
 //
+// Returns the string representation of approved sentence
+NAVI_EXTERN(const char *) navi_sentencefmt_str(int fmt);
+
+//
 // Returns the string representation of geodetic datum
 NAVI_EXTERN(const char *) navi_datum_str(int datum, int notnull);
 

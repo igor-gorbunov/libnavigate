@@ -169,3 +169,16 @@ int remove_trailing_zeroes(char *buffer, int length)
 
 	return length;
 }
+
+const char *navi_fmtlist[] =
+{
+	"AAM", "ACK", "ALM", "ALR", "APB", "BEC", "BOD", "BWC", "BWR",
+	"BWW", "DBT", "DCN", "DPT", "DSC", "DSE", "DSI", "DSR", "DTM",
+	"FSI", "GBS", "GGA", "GLC", "GLL", "GNS", "GRS", "GSA", "GST",
+	"GSV", "HDG", "HDT", "HMR", "HMS", "HSC", "HTC", "HTD", "LCD",
+	"MLA", "MSK", "MSS", "MTW", "MWD", "MWV", "OSD", "RMA", "RMB",
+	"RMC", "ROT", "RPM", "RSA", "RSD", "RTE", "SFI", "STN", "TLB",
+	"TLL", "TTM", "TXT", "VBW", "VDR", "VHW", "VLW", "VPW", "VTG",
+	"WCV", "WNC", "WPL", "XDR", "XTE", "XTR", "ZDA", "ZDL", "ZFO",
+	"ZTG", NULL
+};

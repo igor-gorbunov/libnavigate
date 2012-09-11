@@ -32,6 +32,8 @@ int remove_trailing_zeroes(char *buffer, int length);
 extern double round(double x);
 #endif // WIN32
 
+extern const char *navi_fmtlist[];
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_common_h

@@ -1361,154 +1361,17 @@ int navi_parse_talkerid(char *buffer, int *nmread)
 // Looks up sentence formatter
 int navi_parse_sentencefmt(char *buffer, int *nmread)
 {
+	int i;
+
 	*nmread = 3;
 
-	if (strncmp("AAM", buffer, 3) == 0)
-		return navi_AAM;
-	else if (strncmp("ACK", buffer, 3) == 0)
-		return navi_ACK;
-	else if (strncmp("ALM", buffer, 3) == 0)
-		return navi_ALM;
-	else if (strncmp("ALR", buffer, 3) == 0)
-		return navi_ALR;
-	else if (strncmp("APB", buffer, 3) == 0)
-		return navi_APB;
-	else if (strncmp("BEC", buffer, 3) == 0)
-		return navi_BEC;
-	else if (strncmp("BOD", buffer, 3) == 0)
-		return navi_BOD;
-	else if (strncmp("BWC", buffer, 3) == 0)
-		return navi_BWC;
-	else if (strncmp("BWR", buffer, 3) == 0)
-		return navi_BWR;
-	else if (strncmp("BWW", buffer, 3) == 0)
-		return navi_BWW;
-	else if (strncmp("DBT", buffer, 3) == 0)
-		return navi_DBT;
-	else if (strncmp("DCN", buffer, 3) == 0)
-		return navi_DCN;
-	else if (strncmp("DPT", buffer, 3) == 0)
-		return navi_DPT;
-	else if (strncmp("DSC", buffer, 3) == 0)
-		return navi_DSC;
-	else if (strncmp("DSE", buffer, 3) == 0)
-		return navi_DSE;
-	else if (strncmp("DSI", buffer, 3) == 0)
-		return navi_DSI;
-	else if (strncmp("DSR", buffer, 3) == 0)
-		return navi_DSR;
-	else if (strncmp("DTM", buffer, 3) == 0)
-		return navi_DTM;
-	else if (strncmp("FSI", buffer, 3) == 0)
-		return navi_FSI;
-	else if (strncmp("GBS", buffer, 3) == 0)
-		return navi_GBS;
-	else if (strncmp("GGA", buffer, 3) == 0)
-		return navi_GGA;
-	else if (strncmp("GLC", buffer, 3) == 0)
-		return navi_GLC;
-	else if (strncmp("GLL", buffer, 3) == 0)
-		return navi_GLL;
-	else if (strncmp("GNS", buffer, 3) == 0)
-		return navi_GNS;
-	else if (strncmp("GRS", buffer, 3) == 0)
-		return navi_GRS;
-	else if (strncmp("GSA", buffer, 3) == 0)
-		return navi_GSA;
-	else if (strncmp("GST", buffer, 3) == 0)
-		return navi_GST;
-	else if (strncmp("GSV", buffer, 3) == 0)
-		return navi_GSV;
-	else if (strncmp("HDG", buffer, 3) == 0)
-		return navi_HDG;
-	else if (strncmp("HDT", buffer, 3) == 0)
-		return navi_HDT;
-	else if (strncmp("HMR", buffer, 3) == 0)
-		return navi_HMR;
-	else if (strncmp("HMS", buffer, 3) == 0)
-		return navi_HMS;
-	else if (strncmp("HSC", buffer, 3) == 0)
-		return navi_HSC;
-	else if (strncmp("HTC", buffer, 3) == 0)
-		return navi_HTC;
-	else if (strncmp("HTD", buffer, 3) == 0)
-		return navi_HTD;
-	else if (strncmp("LCD", buffer, 3) == 0)
-		return navi_LCD;
-	else if (strncmp("MLA", buffer, 3) == 0)
-		return navi_MLA;
-	else if (strncmp("MSK", buffer, 3) == 0)
-		return navi_MSK;
-	else if (strncmp("MSS", buffer, 3) == 0)
-		return navi_MSS;
-	else if (strncmp("MTW", buffer, 3) == 0)
-		return navi_MTW;
-	else if (strncmp("MWD", buffer, 3) == 0)
-		return navi_MWD;
-	else if (strncmp("MWV", buffer, 3) == 0)
-		return navi_MWV;
-	else if (strncmp("OSD", buffer, 3) == 0)
-		return navi_OSD;
-	else if (strncmp("RMA", buffer, 3) == 0)
-		return navi_RMA;
-	else if (strncmp("RMB", buffer, 3) == 0)
-		return navi_RMB;
-	else if (strncmp("RMC", buffer, 3) == 0)
-		return navi_RMC;
-	else if (strncmp("ROT", buffer, 3) == 0)
-		return navi_ROT;
-	else if (strncmp("RPM", buffer, 3) == 0)
-		return navi_RPM;
-	else if (strncmp("RSA", buffer, 3) == 0)
-		return navi_RSA;
-	else if (strncmp("RSD", buffer, 3) == 0)
-		return navi_RSD;
-	else if (strncmp("RTE", buffer, 3) == 0)
-		return navi_RTE;
-	else if (strncmp("SFI", buffer, 3) == 0)
-		return navi_SFI;
-	else if (strncmp("STN", buffer, 3) == 0)
-		return navi_STN;
-	else if (strncmp("TLB", buffer, 3) == 0)
-		return navi_TLB;
-	else if (strncmp("TLL", buffer, 3) == 0)
-		return navi_TLL;
-	else if (strncmp("TTM", buffer, 3) == 0)
-		return navi_TTM;
-	else if (strncmp("TXT", buffer, 3) == 0)
-		return navi_TXT;
-	else if (strncmp("VBW", buffer, 3) == 0)
-		return navi_VBW;
-	else if (strncmp("VDR", buffer, 3) == 0)
-		return navi_VDR;
-	else if (strncmp("VHW", buffer, 3) == 0)
-		return navi_VHW;
-	else if (strncmp("VLW", buffer, 3) == 0)
-		return navi_VLW;
-	else if (strncmp("VPW", buffer, 3) == 0)
-		return navi_VPW;
-	else if (strncmp("VTG", buffer, 3) == 0)
-		return navi_VTG;
-	else if (strncmp("WCV", buffer, 3) == 0)
-		return navi_WCV;
-	else if (strncmp("WNC", buffer, 3) == 0)
-		return navi_WNC;
-	else if (strncmp("WPL", buffer, 3) == 0)
-		return navi_WPL;
-	else if (strncmp("XDR", buffer, 3) == 0)
-		return navi_XDR;
-	else if (strncmp("XTE", buffer, 3) == 0)
-		return navi_XTE;
-	else if (strncmp("XTR", buffer, 3) == 0)
-		return navi_XTR;
-	else if (strncmp("ZDA", buffer, 3) == 0)
-		return navi_ZDA;
-	else if (strncmp("ZDL", buffer, 3) == 0)
-		return navi_ZDL;
-	else if (strncmp("ZFO", buffer, 3) == 0)
-		return navi_ZFO;
-	else if (strncmp("ZTG", buffer, 3) == 0)
-		return navi_ZTG;
-	else
-		return navi_Error;
+	for (i = 0; navi_fmtlist[i] != NULL; i++)
+	{
+		if (strncmp(navi_fmtlist[i], buffer, 3) == 0)
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
