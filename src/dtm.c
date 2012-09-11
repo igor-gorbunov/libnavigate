@@ -68,7 +68,7 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 	msglength = snprintf(iecmsg, sizeof(iecmsg),
 		"$%sDTM,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, ldatum,
 		datumsd, latofs, latsign, lonofs, lonsign, altofs, rdatum, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
+	navi_checksum(iecmsg, msglength, cs, NULL);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
 	return 0;
@@ -80,11 +80,11 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 
 int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 {
-	int index = 1, nmread;
+	int i = 0, nmread;
 
 	msg->vfields = 0;
 
-	if (navi_parse_datum(buffer + index, &msg->ld, &nmread) != 0)
+	if (navi_parse_datum(buffer + i, &msg->ld, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -93,9 +93,9 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_LOCALDATUM;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_datumsub(buffer + index, &msg->lds, &nmread) != 0)
+	if (navi_parse_datumsub(buffer + i, &msg->lds, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -104,9 +104,9 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_LOCALDATUMSUB;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_offset(buffer + index, &msg->latofs, &nmread) != 0)
+	if (navi_parse_offset(buffer + i, &msg->latofs, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -115,9 +115,9 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_LATOFFSET;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_offset(buffer + index, &msg->lonofs, &nmread) != 0)
+	if (navi_parse_offset(buffer + i, &msg->lonofs, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -126,9 +126,9 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_LONOFFSET;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_number(buffer + index, &msg->altoffset, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->altoffset, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -137,9 +137,9 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_ALTITUDEOFFSET;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_datum(buffer + index, &msg->rd, &nmread) != 0)
+	if (navi_parse_datum(buffer + i, &msg->rd, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -148,7 +148,7 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_REFERENCEDATUM;
 	}
-	index += nmread;
+	i += nmread;
 
 	return 0;
 }

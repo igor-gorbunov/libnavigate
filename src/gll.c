@@ -56,7 +56,7 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s*%s\r\n",
 		talkerid, fix, utc, status, mi, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
+	navi_checksum(iecmsg, msglength, cs, NULL);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
 	return navi_Ok;
@@ -68,11 +68,11 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 
 int navi_parse_gll(struct gll_t *msg, char *buffer)
 {
-	int index = 1, nmread;
+	int i = 0, nmread;
 
 	msg->vfields = 0;
 
-	if (navi_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
+	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -81,9 +81,9 @@ int navi_parse_gll(struct gll_t *msg, char *buffer)
 	{
 		msg->vfields |= GLL_VALID_POSITION_FIX;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -92,16 +92,16 @@ int navi_parse_gll(struct gll_t *msg, char *buffer)
 	{
 		msg->vfields |= GLL_VALID_UTC;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_status(buffer + index, &msg->status, &nmread) != 0)
+	if (navi_parse_status(buffer + i, &msg->status, &nmread) != 0)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
 		return -1;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_modeindicator(buffer + index, &msg->mi, &nmread) != 0)
+	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != 0)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
 		return -1;

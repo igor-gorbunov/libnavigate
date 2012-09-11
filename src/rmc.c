@@ -46,10 +46,10 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 	msglength += strlen(status = navi_status_str(msg->status));
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & RMC_VALID_POSITION_FIX);
-	msglength += navi_print_number(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
-		msg->vfields & RMC_VALID_SPEED);
-	msglength += navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
-		msg->vfields & RMC_VALID_COURSETRUE);
+	msglength += navi_print_number(MPS_TO_KNOTS(msg->speed), snots,
+		sizeof(snots), msg->vfields & RMC_VALID_SPEED);
+	msglength += navi_print_number(msg->courseTrue, ctrue,
+		sizeof(ctrue), msg->vfields & RMC_VALID_COURSETRUE);
 	msglength += snprintf(day, sizeof(day),
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),
@@ -72,7 +72,7 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 	msglength = snprintf(iecmsg, sizeof(iecmsg),
 		"$%sRMC,%s,%s,%s,%s,%s,%s%s%s,%s,%s,%s*%s\r\n", talkerid, utc, status,
 		fix, snots, ctrue, day, month, year, magnetic, magsign, mi, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
+	navi_checksum(iecmsg, msglength, cs, NULL);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
 	return navi_Ok;
@@ -84,11 +84,11 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 
 int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 {
-	int index = 1, nmread;
+	int i = 0, nmread;
 
 	msg->vfields = 0;
 
-	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -97,16 +97,16 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	{
 		msg->vfields |= RMC_VALID_UTC;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_status(buffer + index, &msg->status, &nmread) != 0)
+	if (navi_parse_status(buffer + i, &msg->status, &nmread) != 0)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
 		return -1;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_position_fix(buffer + index, &msg->fix, &nmread) != 0)
+	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -115,10 +115,9 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	{
 		msg->vfields |= RMC_VALID_POSITION_FIX;
 	}
+	i += nmread;
 
-	index += nmread;
-
-	if (navi_parse_number(buffer + index, &msg->speed, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->speed, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -127,9 +126,9 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	{
 		msg->vfields |= RMC_VALID_SPEED;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_number(buffer + index, &msg->courseTrue, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->courseTrue, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -138,9 +137,9 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	{
 		msg->vfields |= RMC_VALID_COURSETRUE;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_date(buffer + index, &msg->date, &nmread) != 0)
+	if (navi_parse_date(buffer + i, &msg->date, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -149,9 +148,9 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	{
 		msg->vfields |= RMC_VALID_DATE;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_offset(buffer + index, &msg->magnetic, &nmread) != 0)
+	if (navi_parse_offset(buffer + i, &msg->magnetic, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -160,9 +159,9 @@ int navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	{
 		msg->vfields |= RMC_VALID_MAGNVARIATION;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_modeindicator(buffer + index, &msg->mi, &nmread) != 0)
+	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != 0)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
 		return -1;

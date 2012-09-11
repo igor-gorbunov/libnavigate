@@ -132,6 +132,31 @@ NAVI_EXTERN(int) navi_parse_date(char *buffer, struct navi_date_t *date, int *nm
 //
 NAVI_EXTERN(int) navi_parse_localzone(char *buffer, int *offset, int *nmread);
 
+//
+// Calculates the checksum of a message between the '$' and
+// '*' characters. Returns both string and binary
+// representation.
+// Returns 
+//
+NAVI_EXTERN(int) navi_checksum(char *msg, int maxsize, char *csstr, int *cs);
+
+//
+// Determines the talker id and sentence formatter
+NAVI_EXTERN(int) IecScan_AdressField(char *buffer, int *tid, int *msgtype);
+
+//
+// Checks that the message is not broken
+// Returns 0, if the checksum is correct, -EPROTO otherwise
+NAVI_EXTERN(int) IecScan_CheckSum(char *buffer, int maxsize);
+
+//
+// Looks up Talker ID
+NAVI_EXTERN(int) IecLookupTalkerId(char *buffer, int *nmread);
+
+//
+// Looks up sentence formatter
+NAVI_EXTERN(int) IecLookupSentenceFormatter(char *buffer, int *nmread);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h

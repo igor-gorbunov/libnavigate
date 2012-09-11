@@ -77,7 +77,7 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 
 	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sZDA,%s,%s,%s,%s,%s,%s*%s\r\n",
 		talkerid, utc, day, month, year, lzhours, lzmins, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
+	navi_checksum(iecmsg, msglength, cs, NULL);
 
 	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
 	return navi_Ok;
@@ -89,12 +89,12 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 
 int navi_parse_zda(struct zda_t *msg, char *buffer)
 {
-	int index = 1, nmread;
+	int i = 0, nmread;
 	double d;
 
 	msg->vfields = 0;
 
-	if (navi_parse_utc(buffer + index, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -103,9 +103,9 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	{
 		msg->vfields |= ZDA_VALID_UTC;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -115,9 +115,9 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 		msg->date.day = (int)round(d);
 		msg->vfields |= ZDA_VALID_DAY;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -127,9 +127,9 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 		msg->date.month = (int)round(d);
 		msg->vfields |= ZDA_VALID_MONTH;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_number(buffer + index, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
@@ -139,9 +139,9 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 		msg->date.year = (int)round(d);
 		msg->vfields |= ZDA_VALID_YEAR;
 	}
-	index += nmread;
+	i += nmread;
 
-	if (navi_parse_localzone(buffer + index, &msg->lzoffset, &nmread) != 0)
+	if (navi_parse_localzone(buffer + i, &msg->lzoffset, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return -1;
