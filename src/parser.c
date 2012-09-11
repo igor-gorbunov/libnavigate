@@ -61,7 +61,8 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	//
 
 	// Skip up to beginning of the next message
-	for (som = 0; buffer[som] != '$' && som < maxsize; som++) { }
+	for (som = 0; buffer[som] != '$' && som < maxsize; som++);
+
 	if (som >= maxsize)
 	{	// No valid message
 		navierr_set_last(navi_NoValidMessage);
