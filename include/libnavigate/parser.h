@@ -134,28 +134,25 @@ NAVI_EXTERN(int) navi_parse_localzone(char *buffer, int *offset, int *nmread);
 
 //
 // Calculates the checksum of a message between the '$' and
-// '*' characters. Returns both string and binary
-// representation.
-// Returns 
+// '*' characters. Returns both string and binary representation.
+// Either csstr or cs may be NULL, if the return value is not
+// used.
 //
-NAVI_EXTERN(int) navi_checksum(char *msg, int maxsize, char *csstr, int *cs);
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs);
 
 //
 // Determines the talker id and sentence formatter
-NAVI_EXTERN(int) IecScan_AdressField(char *buffer, int *tid, int *msgtype);
-
-//
-// Checks that the message is not broken
-// Returns 0, if the checksum is correct, -EPROTO otherwise
-NAVI_EXTERN(int) IecScan_CheckSum(char *buffer, int maxsize);
+NAVI_EXTERN(int) navi_parse_address(char *buffer, int *tid, int *msgtype);
 
 //
 // Looks up Talker ID
-NAVI_EXTERN(int) IecLookupTalkerId(char *buffer, int *nmread);
+NAVI_EXTERN(int) navi_parse_talkerid(char *buffer, int *nmread);
 
 //
 // Looks up sentence formatter
-NAVI_EXTERN(int) IecLookupSentenceFormatter(char *buffer, int *nmread);
+NAVI_EXTERN(int) navi_parse_sentencefmt(char *buffer, int *nmread);
 
 NAVI_END_DECL
 

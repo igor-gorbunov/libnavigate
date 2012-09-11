@@ -49,11 +49,12 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 
 #ifndef NO_PARSER
 
-	int result;
 	int tid;	// talker id
 
 	int som;	// start of message index
 	int eom;	// end of message index
+
+	unsigned ucs, cs;
 
 	//
 	//	Determine the borders of message in buffer
@@ -64,7 +65,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	if (som >= maxsize)
 	{	// No valid message
 		navierr_set_last(navi_NoValidMessage);
-		return -1;
+		return navi_Error;
 	}
 
 	// Skip up to end of the message
@@ -78,23 +79,30 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	if (eom >= maxsize)
 	{	// No valid message
 		navierr_set_last(navi_NoValidMessage);
-		return -1;
+		return navi_Error;
 	}
 
 	// At least read a message
 	*nmread = eom + 1;
 
 	// Check that the message is not broken
-	if ((result = IecScan_CheckSum(buffer + som, maxsize - (som + eom))) < 0)
+	if (navi_checksum(buffer + som, maxsize - (som + eom), NULL, &ucs) < 0)
+	{
+		navierr_set_last(navi_InvalidMessage);
+		return navi_Error;
+	}
+
+	cs = strtoul(buffer + eom - 3, NULL, 16);
+	if (ucs != cs)
 	{
 		navierr_set_last(navi_CrcEror);
-		return -1;
+		return navi_Error;
 	}
 
 	// Determine the talker ID and message type
-	if (IecScan_AdressField(buffer + som + 1, &tid, msgtype) < 0)
+	if (navi_parse_address(buffer + som + 1, &tid, msgtype) < 0)
 	{
-		return -1;
+		return navi_Error;
 	}
 
 	// Parse the message fields
@@ -122,7 +130,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		if (msgsize < sizeof(struct dtm_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
-			return -1;
+			return navi_Error;
 		}
 		((struct dtm_t *)msg)->tid = tid;
 		return navi_parse_dtm((struct dtm_t *)msg, buffer + som + 7);
@@ -135,7 +143,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		if (msgsize < sizeof(struct gll_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
-			return -1;
+			return navi_Error;
 		}
 		((struct gll_t *)msg)->tid = tid;
 		return navi_parse_gll((struct gll_t *)msg, buffer + som + 7);
@@ -143,7 +151,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		if (msgsize < sizeof(struct gns_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
-			return -1;
+			return navi_Error;
 		}
 		((struct gns_t *)msg)->tid = tid;
 		return navi_parse_gns((struct gns_t *)msg, buffer + som + 7);
@@ -173,7 +181,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		if (msgsize < sizeof(struct rmc_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
-			return -1;
+			return navi_Error;
 		}
 		((struct rmc_t *)msg)->tid = tid;
 		return navi_parse_rmc((struct rmc_t *)msg, buffer + som + 7);
@@ -198,7 +206,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		if (msgsize < sizeof(struct vtg_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
-			return -1;
+			return navi_Error;
 		}
 		((struct vtg_t *)msg)->tid = tid;
 		return navi_parse_vtg((struct vtg_t *)msg, buffer + som + 7);
@@ -213,7 +221,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		if (msgsize < sizeof(struct zda_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
-			return -1;
+			return navi_Error;
 		}
 		((struct zda_t *)msg)->tid = tid;
 		return navi_parse_zda((struct zda_t *)msg, buffer + som + 7);
@@ -233,7 +241,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 
 #endif // NO_PARSER
 
-	return -1;
+	return navi_Error;
 }
 
 //
@@ -1241,52 +1249,20 @@ _Exit:
 #undef PARSE_LOCALZONE_FINI
 
 // Talker identifier and sentence formatter
-int IecScan_AdressField(char *buffer, int *tid, int *msgtype)
+int navi_parse_address(char *buffer, int *tid, int *msgtype)
 {
 	int result, nmread;
 
-	*tid = IecLookupTalkerId(buffer, &nmread);
+	*tid = navi_parse_talkerid(buffer, &nmread);
 	result = nmread;
-	*msgtype = IecLookupSentenceFormatter(buffer + result, &nmread);
+	*msgtype = navi_parse_sentencefmt(buffer + result, &nmread);
 	result += nmread;
 
 	return result;
 }
 
-// Scan checksum
-int IecScan_CheckSum(char *buffer, int maxsize)
-{
-	int r, i;
-	unsigned long cs, ucs = 0;
-
-	r = -1;	// suppose the CRC error
-
-	// Skip up to next character after '$'
-	for (i = 0; buffer[i] != '$' && i < maxsize; i++) { }
-	if (i >= maxsize)
-	{
-		return -1;
-	}
-	for (i += 1; buffer[i] != '*' && i < maxsize; i++)
-	{
-		ucs = ucs ^ buffer[i];
-	}
-	if (i >= maxsize)
-	{
-		return -1;
-	}
-
-	cs = strtoul(buffer + i + 1, NULL, 16);
-	if (ucs == cs)
-	{
-		r = 0;
-	}
-
-	return r;
-}
-
 // Looks up Talker ID
-int IecLookupTalkerId(char *buffer, int *nmread)
+int navi_parse_talkerid(char *buffer, int *nmread)
 {
 	*nmread = 2;
 
@@ -1382,7 +1358,7 @@ int IecLookupTalkerId(char *buffer, int *nmread)
 }
 
 // Looks up sentence formatter
-int IecLookupSentenceFormatter(char *buffer, int *nmread)
+int navi_parse_sentencefmt(char *buffer, int *nmread)
 {
 	*nmread = 3;
 

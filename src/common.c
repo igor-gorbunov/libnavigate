@@ -12,7 +12,6 @@
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf
-#define EPROTO 134
 #endif // MSVC_VER
 
 //
