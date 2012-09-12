@@ -196,11 +196,11 @@ enum naviTalkerId_t
 //
 enum
 {
-	navi_WGS84 = 0,
-	navi_WGS72 = 1,
-	navi_SGS85 = 2,
-	navi_PE90 = 3,
-	navi_UserDefined = 4
+	navi_WGS84,
+	navi_WGS72,
+	navi_SGS85,
+	navi_PE90,
+	navi_UserDefined
 };
 
 //
@@ -399,22 +399,21 @@ NAVI_ALIGNED(struct, navi_position_t)
 // Datum reference
 NAVI_ALIGNED(struct, dtm_t)
 {
-	int tid;
+	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of DTM_VALID_xxx
-	int ld;					// local datum
-	int lds;				// local datum subdivision code
-	struct navi_offset_t latofs;	// latitude offset, min,N/S
-	struct navi_offset_t lonofs;	// longitude offset, min,E/W
-	double altoffset;				// altitude offset, m
-	int rd;					// reference datum
+	int locdatum;			// local datum
+	int locdatumsub;		// local datum subdivision code
+	struct navi_offset_t latofs;	// latitude offset, min, N/S
+	struct navi_offset_t lonofs;	// longitude offset, min, E/W
+	double altoffset;		// altitude offset, m
+	int refdatum;			// reference datum
 };
 
 #define DTM_VALID_LOCALDATUM		0x01
 #define DTM_VALID_LOCALDATUMSUB		0x02
-#define DTM_VALID_LATOFFSET			0x04
-#define DTM_VALID_LONOFFSET			0x08
-#define DTM_VALID_ALTITUDEOFFSET	0x10
-#define DTM_VALID_REFERENCEDATUM	0x20
+#define DTM_VALID_OFFSET			0x04
+#define DTM_VALID_ALTOFFSET			0x08
+#define DTM_VALID_REFDATUM			0x10
 
 //	// Frequency set information
 //	struct fsi_t
@@ -440,22 +439,22 @@ NAVI_ALIGNED(struct, dtm_t)
 // Geographic position, latitude/longitude
 NAVI_ALIGNED(struct, gll_t)
 {
-	int tid;
-	unsigned vfields;			// valid fields, bitwise or of GLL_VALID_xxx
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GLL_VALID_xxx
 	struct navi_position_t fix;	// latitude, longitude fix
-	struct navi_utc_t utc;		// UTC time
+	struct navi_utc_t utc;	// UTC time
 	int status;		// status
 	int mi;			// mode indicator
 };
 
 #define GLL_VALID_POSITION_FIX		0x01
-#define GLL_VALID_UTC				0x04
+#define GLL_VALID_UTC				0x02
 
 //
 // GNSS fix data
 NAVI_ALIGNED(struct, gns_t)
 {
-	int tid;
+	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GNS_VALID_xxx
 	struct navi_utc_t utc;		// UTC time
 	struct navi_position_t fix;	// latitude, longitude fix
@@ -470,13 +469,13 @@ NAVI_ALIGNED(struct, gns_t)
 
 #define GNS_VALID_UTC					0x001
 #define GNS_VALID_POSITION_FIX			0x002
-#define GNS_VALID_MODEINDICATOR			0x008
-#define GNS_VALID_TOTALNMOFSATELLITES	0x010
-#define GNS_VALID_HDOP					0x020
-#define GNS_VALID_ANTENNAALTITUDE		0x040
-#define GNS_VALID_GEOIDALSEP			0x080
-#define GNS_VALID_AGEOFDIFFDATA			0x100
-#define GNS_VALID_DIFFREFSTATIONID		0x200
+#define GNS_VALID_MODEINDICATOR			0x004
+#define GNS_VALID_TOTALNMOFSATELLITES	0x008
+#define GNS_VALID_HDOP					0x010
+#define GNS_VALID_ANTENNAALTITUDE		0x020
+#define GNS_VALID_GEOIDALSEP			0x040
+#define GNS_VALID_AGEOFDIFFDATA			0x080
+#define GNS_VALID_DIFFREFSTATIONID		0x100
 
 //	// GNSS range residuals
 //	struct grs_t
@@ -587,10 +586,10 @@ NAVI_ALIGNED(struct, gns_t)
 // Recommended minimum specific GNSS data
 NAVI_ALIGNED(struct, rmc_t)
 {
-	int tid;
-	unsigned vfields;			// valid fields, bitwise or of RMC_VALID_xxx
-	struct navi_utc_t utc;		// UTC time
-	int status;					// status
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	int status;				// status
 	struct navi_position_t fix;	// latitude, longitude fix
 	double speed;				// Speed over ground, knots
 	double courseTrue;			// Course over ground, degrees true
@@ -601,10 +600,10 @@ NAVI_ALIGNED(struct, rmc_t)
 
 #define RMC_VALID_UTC				0x01
 #define RMC_VALID_POSITION_FIX		0x02
-#define RMC_VALID_SPEED				0x08
-#define RMC_VALID_COURSETRUE		0x10
-#define RMC_VALID_DATE				0x20
-#define RMC_VALID_MAGNVARIATION		0x40
+#define RMC_VALID_SPEED				0x04
+#define RMC_VALID_COURSETRUE		0x08
+#define RMC_VALID_DATE				0x10
+#define RMC_VALID_MAGNVARIATION		0x20
 
 //	// Rate of turn
 //	struct rot_t
@@ -695,12 +694,12 @@ NAVI_ALIGNED(struct, rmc_t)
 // Cource over ground and ground speed
 NAVI_ALIGNED(struct, vtg_t)
 {
-	int tid;
-	unsigned vfields;		// valid fields, bitwise or of ValidFields_t
-	double courseTrue;		// Course over ground, degrees true
-	double courseMagn;		// Course over ground, degrees magnetic
-	double speed;			// Speed over ground, m/s
-	int mi;					// Mode indicator
+	int tid;			// talker id
+	unsigned vfields;	// valid fields, bitwise or of ValidFields_t
+	double courseTrue;	// Course over ground, degrees true
+	double courseMagn;	// Course over ground, degrees magnetic
+	double speed;		// Speed over ground, m/s
+	int mi;				// Mode indicator
 };
 
 #define VTG_VALID_COURSETRUE	0x01
@@ -741,7 +740,7 @@ NAVI_ALIGNED(struct, vtg_t)
 // Time and date
 NAVI_ALIGNED(struct, zda_t)
 {
-	int tid;
+	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of ValidFields_t
 	struct navi_utc_t utc;	// UTC time
 	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
