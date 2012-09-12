@@ -35,13 +35,10 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid;
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], fix[64], mi[3],
-		totalsats[3], hdop[32], antalt[32], geoidsep[32], ddage[32],
-		drsid[32], cs[3];
+	char utc[32], fix[64], mi[3], totalsats[3], hdop[32], antalt[32],
+		geoidsep[32], ddage[32], drsid[32];
 
-	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GNS_VALID_POSITION_FIX);
@@ -61,19 +58,14 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 	msglength += snprintf(drsid, sizeof(drsid),
 		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
 
-	msglength += 23;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
+	if (msglength > maxsize)
 	{
-		navierr_set_last(navi_MsgExceedsMaxSize);
+		navierr_set_last(navi_NotEnoughBuffer);
 		return navi_Error;
 	}
 
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sGNS,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, utc, fix, mi,
-		totalsats, hdop, antalt, geoidsep, ddage, drsid, "%s");
-	navi_checksum(iecmsg, msglength, cs, NULL);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
+	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+		utc, fix, mi, totalsats, hdop, antalt, geoidsep, ddage, drsid);
 	return navi_Ok;
 }
 

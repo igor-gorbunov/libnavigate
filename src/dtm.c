@@ -35,13 +35,10 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid, *ldatum, *rdatum, *datumsd,
-		*latsign, *lonsign;
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], latofs[32],
-		lonofs[32], altofs[32], cs[3];
+	const char *ldatum, *rdatum, *datumsd, *latsign, *lonsign;
+	char latofs[32], lonofs[32], altofs[32];
 
-	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-	msglength += strlen(ldatum = navi_datum_str(msg->ld,
+	msglength = strlen(ldatum = navi_datum_str(msg->ld,
 		msg->vfields & DTM_VALID_LOCALDATUM));
 	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->lds,
 		msg->vfields & DTM_VALID_LOCALDATUMSUB));
@@ -58,20 +55,15 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 	msglength += strlen(rdatum = navi_datum_str(msg->rd,
 		msg->vfields & DTM_VALID_REFERENCEDATUM));
 
-	msglength += 17;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
+	if (msglength > maxsize)
 	{
-		navierr_set_last(navi_MsgExceedsMaxSize);
-		return -1;
+		navierr_set_last(navi_NotEnoughBuffer);
+		return navi_Error;
 	}
 
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sDTM,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, ldatum,
-		datumsd, latofs, latsign, lonofs, lonsign, altofs, rdatum, "%s");
-	navi_checksum(iecmsg, msglength, cs, NULL);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return 0;
+	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s,%s,%s",
+		ldatum, datumsd, latofs, latsign, lonofs, lonsign, altofs, rdatum);
+	return navi_Ok;
 }
 
 #endif // NO_GENERATOR

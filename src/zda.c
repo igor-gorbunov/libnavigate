@@ -30,17 +30,12 @@
 
 #ifndef NO_GENERATOR
 
-int navi_create_zda(const struct zda_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+int navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	int msglength;
+	char utc[32], day[3], month[3], year[5], lzhours[4], lzmins[3];
 
-	const char *talkerid;
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], utc[32], day[3],
-		month[3], year[5], lzhours[4], lzmins[3], cs[3];
-
-	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & ZDA_VALID_UTC);
 	msglength += snprintf(day, sizeof(day),
 		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->date.day);
@@ -68,18 +63,14 @@ int navi_create_zda(const struct zda_t *msg, char *buffer,
 		msglength += snprintf(lzmins, sizeof(lzmins), "%02u", lz % 60);
 	}
 
-	msglength += 15;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
+	if (msglength > maxsize)
 	{
-		navierr_set_last(navi_MsgExceedsMaxSize);
+		navierr_set_last(navi_NotEnoughBuffer);
 		return navi_Error;
 	}
 
-	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sZDA,%s,%s,%s,%s,%s,%s*%s\r\n",
-		talkerid, utc, day, month, year, lzhours, lzmins, "%s");
-	navi_checksum(iecmsg, msglength, cs, NULL);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
+	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s",
+		utc, day, month, year, lzhours, lzmins);
 	return navi_Ok;
 }
 

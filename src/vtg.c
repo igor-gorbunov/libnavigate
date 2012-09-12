@@ -35,12 +35,11 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid, *mi;
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], ctrue[32], courseT[2], cmagn[32],
-		courseM[2], snots[32], speedN[4], skmph[32], speedK[2], cs[3];
+	const char *mi;
+	char ctrue[32], courseT[2], cmagn[32], courseM[2], snots[32],
+		speedN[4], skmph[32], speedK[2];
 
-	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-	msglength += navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
+	msglength = navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
 		msg->vfields & VTG_VALID_COURSETRUE);
 	msglength += snprintf(courseT, sizeof(courseT),
 		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
@@ -59,19 +58,14 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 
 	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
-	msglength += 18;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
+	if (msglength > maxsize)
 	{
-		navierr_set_last(navi_MsgExceedsMaxSize);
+		navierr_set_last(navi_NotEnoughBuffer);
 		return navi_Error;
 	}
 
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sVTG,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, ctrue, courseT,
-		cmagn, courseM, snots, speedN, skmph, speedK, mi, "%s");
-	navi_checksum(iecmsg, msglength, cs, NULL);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
+	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+		ctrue, courseT, cmagn, courseM, snots, speedN, skmph, speedK, mi);
 	return navi_Ok;
 }
 

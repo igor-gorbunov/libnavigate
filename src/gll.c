@@ -35,30 +35,24 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 {
 	int msglength;
 
-	const char *talkerid, *status, *mi;
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], fix[64],
-		utc[32], cs[3];
+	const char *status, *mi;
+	char fix[64], utc[32];
 
-	msglength = strlen(talkerid = navi_talkerid_str(msg->tid));
-	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
+	msglength = navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GLL_VALID_POSITION_FIX);
 	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GLL_VALID_UTC);
 	msglength += strlen(status = navi_status_str(msg->status));
 	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
-	msglength += 16;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
+	if (msglength > maxsize)
 	{
-		navierr_set_last(navi_MsgExceedsMaxSize);
+		navierr_set_last(navi_NotEnoughBuffer);
 		return navi_Error;
 	}
 
-	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s*%s\r\n",
-		talkerid, fix, utc, status, mi, "%s");
-	navi_checksum(iecmsg, msglength, cs, NULL);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
+	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s",
+		fix, utc, status, mi);
 	return navi_Ok;
 }
 

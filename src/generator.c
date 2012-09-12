@@ -46,6 +46,15 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 
 #ifndef NO_GENERATOR
 
+	const char *tid = NULL, *sfmt = NULL;
+	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
+
+	int msglen = 0;
+
+	assert(msg != NULL);
+	assert(buffer != NULL);
+	assert(nmwritten != NULL);
+
 	switch (type)
 	{
 	case navi_AAM:
@@ -65,18 +74,44 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_DSE:
 	case navi_DSI:
 	case navi_DSR:
-		break;
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_DTM:
-		return navi_create_dtm((const struct dtm_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct dtm_t *pdtm = (const struct dtm_t *)msg;
+			tid = navi_talkerid_str(pdtm->tid);
+			sfmt = navi_sentencefmt_str(navi_DTM);
+
+			if (navi_create_dtm(pdtm, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_FSI:
 	case navi_GBS:
 	case navi_GGA:
 	case navi_GLC:
-		break;
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_GLL:
-		return navi_create_gll((const struct gll_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct gll_t *pgll = (const struct gll_t *)msg;
+			tid = navi_talkerid_str(pgll->tid);
+			sfmt = navi_sentencefmt_str(navi_GLL);
+
+			if (navi_create_gll(pgll, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GNS:
-		return navi_create_gns((const struct gns_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct gns_t *pgns = (const struct gns_t *)msg;
+			tid = navi_talkerid_str(pgns->tid);
+			sfmt = navi_sentencefmt_str(navi_GNS);
+
+			if (navi_create_gns(pgns, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GRS:
 	case navi_GSA:
 	case navi_GST:
@@ -98,9 +133,18 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_OSD:
 	case navi_RMA:
 	case navi_RMB:
-		break;
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_RMC:
-		return navi_create_rmc((const struct rmc_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct rmc_t *prmc = (const struct rmc_t *)msg;
+			tid = navi_talkerid_str(prmc->tid);
+			sfmt = navi_sentencefmt_str(navi_RMC);
+
+			if (navi_create_rmc(prmc, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ROT:
 	case navi_RPM:
 	case navi_RSA:
@@ -117,35 +161,75 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_VHW:
 	case navi_VLW:
 	case navi_VPW:
-		break;
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_VTG:
-		return navi_create_vtg((const struct vtg_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct vtg_t *pvtg = (const struct vtg_t *)msg;
+			tid = navi_talkerid_str(pvtg->tid);
+			sfmt = navi_sentencefmt_str(navi_VTG);
+
+			if (navi_create_vtg(pvtg, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_WCV:
 	case navi_WNC:
 	case navi_WPL:
 	case navi_XDR:
 	case navi_XTE:
 	case navi_XTR:
-		break;
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_ZDA:
-		return navi_create_zda((const struct zda_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct zda_t *pzda = (const struct zda_t *)msg;
+			tid = navi_talkerid_str(pzda->tid);
+			sfmt = navi_sentencefmt_str(navi_ZDA);
+
+			if (navi_create_zda(pzda, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ZDL:
 	case navi_ZFO:
 	case navi_ZTG:
-		break;
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	default:
-		break;
+		navierr_set_last(navi_MsgNotSupported);
+		return navi_Error;
 	}
 
-	navierr_set_last(navi_MsgNotSupported);
+	if (msglen + 12 > NAVI_SENTENCE_MAXSIZE)
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+
+	if (msglen + 12 > maxsize)
+	{
+		navierr_set_last(navi_NotEnoughBuffer);
+		return navi_Error;
+	}
+
+	msglen = snprintf(buffer, maxsize, "$%s%s,%s*", tid, sfmt, msgbody);
+	if (navi_checksum(buffer, msglen, csstr, NULL) != navi_Ok)
+		return navi_Error;
+	strcat(buffer, csstr);
+	strcat(buffer, "\r\n");
+
+	*nmwritten = msglen + 4;
+
+	return navi_Ok;
 
 #else
 
 	navierr_set_last(navi_NotImplemented);
+	return navi_Error;
 
 #endif // NO_GENERATOR
 
-	return -1;
 }
 
 //
