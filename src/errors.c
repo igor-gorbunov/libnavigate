@@ -1,5 +1,5 @@
 /*
- * iecgenerator.h - interface to IEC message generator
+ * errors.c - library error status utilities
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,31 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IEC_GENERATOR_H
-#define IEC_GENERATOR_H
+#include <libnavigate/errors.h>
 
-#include <libnavigate/iecsentence.h>
-#include <sys/types.h>
+navi_error_t g_navi_error = { navi_Undefined };
 
-#ifdef __cplusplus
-extern "C"
+const navi_error_t *navierr_get_last(void)
 {
-#endif // __cplusplus
-
-//
-// Generator for IEC 61162-1 (2000-07) messages
-//
-// Generates IEC sentence by its description given by type and msg.
-// Stores the result to buffer which has the maximum size of maxsize.
-// The number of stored characters is stored to nmwritten.
-// Returns the status of sentence compilation
-//
-enum naviError_t IecComposeMessage(enum naviSentence_t type, void *msg,
-	char *buffer, size_t maxsize, size_t *nmwritten);
-
-#ifdef __cplusplus
+	return &g_navi_error;
 }
-#endif // __cplusplus
 
-#endif // IEC_GENERATOR_H
-
+void navierr_set_last(int errclass)
+{
+	g_navi_error.errclass = errclass;
+}

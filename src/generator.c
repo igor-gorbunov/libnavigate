@@ -17,926 +17,526 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/iecgenerator.h>
+#include <navigate.h>
+#include "common.h"
 
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
-//
-// Meters per second to knots (nautical mile per hour)
-#define MPS_TO_KNOTS		1.94384449
+#ifndef NO_GENERATOR
 
-//
-// Meters per second to km/h convertion coefficient
-#define MPS_TO_KMH			3.600
+#include "dtm.h"
+#include "gll.h"
+#include "gns.h"
+#include "rmc.h"
+#include "vtg.h"
+#include "zda.h"
 
-//
-// DTM - Datum reference
-// Local geodetic datum and datum offsets from a reference datum. This sentence
-// is used to define the datum to which a position location, and geographic
-// locations in subsequent sentences, are referenced. Lattitude, longitude and
-// altitude offsets from the reference datum, and the selection of the reference
-// datum, are also provided.
-// $--DTM,ccc,a,x.x,a,x.x,a,x.x,ccc*hh<cr><lf>
-static enum naviError_t IecCompose_DTM(const struct dtm_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+#endif // NO_GENERATOR
 
-//
-// GLL - Geographic position - latitude/longitude
-// Latitude and longitude of vessel position, time of position fix and status.
-// $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh<cr><lf>
-static enum naviError_t IecCompose_GLL(const struct gll_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
 
-//
-// GNS - GNSS fix data
-// Fix data for single or combined sattelite navigation systems (GNSS).
-// $--GNS,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
-static enum naviError_t IecCompose_GNS(const struct gns_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
-
-//
-// RMC - Recommended minimum specific GNSS data
-// Time, date, position, course and speed data provided by a GNSS navigation
-// receiver. This sentence is transmitted at intervals not exceeding 2 s and is
-// always accompanied by RMB when a destination waypoint is active. RMC and RMB
-// are the recommended minimum data to be provided by a GNSS receiver. All data
-// fields must be provided, null fields used only when data is temporarily
-// unavailable.
-// $--RMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,xxxxxx,x.x,a,a*hh<cr><lf>
-static enum naviError_t IecCompose_RMC(const struct rmc_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
-
-//
-// VTG - Course over ground and ground speed
-// The actual course and speed relative to the ground.
-// $--VTG,x.x,T,x.x,M,x.x,N,x.x,K,a*hh<cr><lf>
-static enum naviError_t IecCompose_VTG(const struct vtg_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
-
-//
-// ZDA - Time and date
-// UTC, day, month, year and local time zone.
-// $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<cr><lf>
-static enum naviError_t IecCompose_ZDA(const struct zda_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
-
-//
-// Generator for IEC 61162-1 (2000-07) messages
-enum naviError_t IecComposeMessage(enum naviSentence_t type, void *msg,
-	char *buffer, size_t maxsize, size_t *nmwritten)
+int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
 {
+
+#ifndef NO_GENERATOR
+
+	const char *tid = NULL, *sfmt = NULL;
+	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
+
+	int msglen = 0;
+
+	assert(msg != NULL);
+	assert(buffer != NULL);
+	assert(nmwritten != NULL);
+
 	switch (type)
 	{
-	case naviSentence_AAM:
-	case naviSentence_ACK:
-	case naviSentence_ALM:
-	case naviSentence_ALR:
-	case naviSentence_APB:
-	case naviSentence_BEC:
-	case naviSentence_BOD:
-	case naviSentence_BWC:
-	case naviSentence_BWR:
-	case naviSentence_BWW:
-	case naviSentence_DBT:
-	case naviSentence_DCN:
-	case naviSentence_DPT:
-	case naviSentence_DSC:
-	case naviSentence_DSE:
-	case naviSentence_DSI:
-	case naviSentence_DSR:
+	case navi_AAM:
+	case navi_ACK:
+	case navi_ALM:
+	case navi_ALR:
+	case navi_APB:
+	case navi_BEC:
+	case navi_BOD:
+	case navi_BWC:
+	case navi_BWR:
+	case navi_BWW:
+	case navi_DBT:
+	case navi_DCN:
+	case navi_DPT:
+	case navi_DSC:
+	case navi_DSE:
+	case navi_DSI:
+	case navi_DSR:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
+	case navi_DTM:
+		{
+			const struct dtm_t *pdtm = (const struct dtm_t *)msg;
+			tid = navi_talkerid_str(pdtm->tid);
+			sfmt = navi_sentencefmt_str(navi_DTM);
+
+			if (navi_create_dtm(pdtm, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
 		break;
-	case naviSentence_DTM:
-		return IecCompose_DTM((const struct dtm_t *)msg, buffer, maxsize, nmwritten);
-	case naviSentence_FSI:
-	case naviSentence_GBS:
-	case naviSentence_GGA:
-	case naviSentence_GLC:
+	case navi_FSI:
+	case navi_GBS:
+	case navi_GGA:
+	case navi_GLC:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
+	case navi_GLL:
+		{
+			const struct gll_t *pgll = (const struct gll_t *)msg;
+			tid = navi_talkerid_str(pgll->tid);
+			sfmt = navi_sentencefmt_str(navi_GLL);
+
+			if (navi_create_gll(pgll, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
 		break;
-	case naviSentence_GLL:
-		return IecCompose_GLL((const struct gll_t *)msg, buffer, maxsize, nmwritten);
-	case naviSentence_GNS:
-		return IecCompose_GNS((const struct gns_t *)msg, buffer, maxsize, nmwritten);
-	case naviSentence_GRS:
-	case naviSentence_GSA:
-	case naviSentence_GST:
-	case naviSentence_GSV:
-	case naviSentence_HDG:
-	case naviSentence_HDT:
-	case naviSentence_HMR:
-	case naviSentence_HMS:
-	case naviSentence_HSC:
-	case naviSentence_HTC:
-	case naviSentence_HTD:
-	case naviSentence_LCD:
-	case naviSentence_MLA:
-	case naviSentence_MSK:
-	case naviSentence_MSS:
-	case naviSentence_MTW:
-	case naviSentence_MWD:
-	case naviSentence_MWV:
-	case naviSentence_OSD:
-	case naviSentence_RMA:
-	case naviSentence_RMB:
+	case navi_GNS:
+		{
+			const struct gns_t *pgns = (const struct gns_t *)msg;
+			tid = navi_talkerid_str(pgns->tid);
+			sfmt = navi_sentencefmt_str(navi_GNS);
+
+			if (navi_create_gns(pgns, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
 		break;
-	case naviSentence_RMC:
-		return IecCompose_RMC((const struct rmc_t *)msg, buffer, maxsize, nmwritten);
-	case naviSentence_ROT:
-	case naviSentence_RPM:
-	case naviSentence_RSA:
-	case naviSentence_RSD:
-	case naviSentence_RTE:
-	case naviSentence_SFI:
-	case naviSentence_STN:
-	case naviSentence_TLB:
-	case naviSentence_TLL:
-	case naviSentence_TTM:
-	case naviSentence_TXT:
-	case naviSentence_VBW:
-	case naviSentence_VDR:
-	case naviSentence_VHW:
-	case naviSentence_VLW:
-	case naviSentence_VPW:
+	case navi_GRS:
+	case navi_GSA:
+	case navi_GST:
+	case navi_GSV:
+	case navi_HDG:
+	case navi_HDT:
+	case navi_HMR:
+	case navi_HMS:
+	case navi_HSC:
+	case navi_HTC:
+	case navi_HTD:
+	case navi_LCD:
+	case navi_MLA:
+	case navi_MSK:
+	case navi_MSS:
+	case navi_MTW:
+	case navi_MWD:
+	case navi_MWV:
+	case navi_OSD:
+	case navi_RMA:
+	case navi_RMB:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
+	case navi_RMC:
+		{
+			const struct rmc_t *prmc = (const struct rmc_t *)msg;
+			tid = navi_talkerid_str(prmc->tid);
+			sfmt = navi_sentencefmt_str(navi_RMC);
+
+			if (navi_create_rmc(prmc, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
 		break;
-	case naviSentence_VTG:
-		return IecCompose_VTG((const struct vtg_t *)msg, buffer, maxsize, nmwritten);
-	case naviSentence_WCV:
-	case naviSentence_WNC:
-	case naviSentence_WPL:
-	case naviSentence_XDR:
-	case naviSentence_XTE:
-	case naviSentence_XTR:
+	case navi_ROT:
+	case navi_RPM:
+	case navi_RSA:
+	case navi_RSD:
+	case navi_RTE:
+	case navi_SFI:
+	case navi_STN:
+	case navi_TLB:
+	case navi_TLL:
+	case navi_TTM:
+	case navi_TXT:
+	case navi_VBW:
+	case navi_VDR:
+	case navi_VHW:
+	case navi_VLW:
+	case navi_VPW:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
+	case navi_VTG:
+		{
+			const struct vtg_t *pvtg = (const struct vtg_t *)msg;
+			tid = navi_talkerid_str(pvtg->tid);
+			sfmt = navi_sentencefmt_str(navi_VTG);
+
+			if (navi_create_vtg(pvtg, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
 		break;
-	case naviSentence_ZDA:
-		return IecCompose_ZDA((const struct zda_t *)msg, buffer, maxsize, nmwritten);
-	case naviSentence_ZDL:
-	case naviSentence_ZFO:
-	case naviSentence_ZTG:
+	case navi_WCV:
+	case navi_WNC:
+	case navi_WPL:
+	case navi_XDR:
+	case navi_XTE:
+	case navi_XTR:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
+	case navi_ZDA:
+		{
+			const struct zda_t *pzda = (const struct zda_t *)msg;
+			tid = navi_talkerid_str(pzda->tid);
+			sfmt = navi_sentencefmt_str(navi_ZDA);
+
+			if (navi_create_zda(pzda, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
 		break;
+	case navi_ZDL:
+	case navi_ZFO:
+	case navi_ZTG:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	default:
-		break;
+		navierr_set_last(navi_MsgNotSupported);
+		return navi_Error;
 	}
 
-	return naviError_MsgNotSupported;
+	if (msglen + 12 > NAVI_SENTENCE_MAXSIZE)
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+
+	if (msglen + 12 > maxsize)
+	{
+		navierr_set_last(navi_NotEnoughBuffer);
+		return navi_Error;
+	}
+
+	msglen = snprintf(buffer, maxsize, "$%s%s,%s*", tid, sfmt, msgbody);
+	if (navi_checksum(buffer, msglen, csstr, NULL) != navi_Ok)
+		return navi_Error;
+	strcat(buffer, csstr);
+	strcat(buffer, "\r\n");
+
+	*nmwritten = msglen + 4;
+
+	return navi_Ok;
+
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return navi_Error;
+
+#endif // NO_GENERATOR
+
 }
 
 //
-// Prints talker identifier
-static size_t IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
-	size_t maxsize);
-
+// navi_datum_to_string
 //
-// Prints datum
-static size_t IecPrint_Datum(enum naviDatum_t datum, char *buffer,
-	size_t maxsize, int notnull);
-
-//
-// Prints local datum subdivision
-static size_t IecPrint_DatumSubdivision(enum naviLocalDatumSub_t lds,
-	char *buffer, size_t maxsize, int notnull);
-
-//
-// Prints a floating point value
-static size_t IecPrint_Double(double value, char *buffer,
-	size_t maxsize, int notnull);
-
-//
-// Prints offset sign
-static size_t IecPrint_OffsetSign(enum naviOfsSign_t sign, char *buffer,
-	size_t maxsize, int notnull);
-
-//
-// Prints checksum of the generated message
-static size_t IecPrint_Checksum(char *msg, size_t maxsize, char *cs);
-
-//
-// Prints latitude (llll.ll)
-static size_t IecPrint_Latitude(double value, char *buffer,
-	size_t maxsize, int notnull);
-
-//
-// Prints longitude (yyyyy.yy)
-static size_t IecPrint_Longitude(double value, char *buffer,
-	size_t maxsize, int notnull);
-
-//
-// Prints UTC
-static size_t IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
-	size_t maxsize, int notnull);
-
-//
-// Prints message status
-static size_t IecPrint_Status(enum naviStatus_t status, char *buffer,
-	size_t maxsize);
-
-//
-// Prints mode indicator
-static size_t IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
-	size_t maxsize);
-
-//
-// Prints array of mode indicators
-static size_t IecPrint_ModeIndicatorArray(const enum naviModeIndicator_t mi[],
-	char *buffer, size_t maxsize, int notnull);
-
-//
-// Removes trailing zeroes of a floating point zeroes
-static size_t RemoveTrailingZeroes(char *buffer, size_t maxsize);
-
-//
-// DTM
-static enum naviError_t IecCompose_DTM(const struct dtm_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
+const char *navi_datum_str(int datum, int notnull)
 {
-	size_t msglength;
+	if (!notnull)
+		datum = navi_Null;
 
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], locdatum[4],
-		locdatumsub[2], latofs[32], latsign[2], lonofs[32], lonsign[2],
-		altofs[32], refdatum[4], cs[3];
-
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Datum(msg->ld, locdatum, sizeof(locdatum),
-		msg->vfields & DTM_VALID_LOCALDATUM);
-	msglength += IecPrint_DatumSubdivision(msg->lds, locdatumsub,
-		sizeof(locdatumsub), msg->vfields & DTM_VALID_LOCALDATUMSUB);
-	msglength += IecPrint_Double(msg->latofs.offset, latofs, sizeof(latofs),
-		msg->vfields & DTM_VALID_LATOFFSET);
-	msglength += IecPrint_OffsetSign(msg->latofs.sign, latsign, sizeof(latsign),
-		msg->vfields & DTM_VALID_LATOFFSET);
-	msglength += IecPrint_Double(msg->lonofs.offset, lonofs, sizeof(lonofs),
-		msg->vfields & DTM_VALID_LONOFFSET);
-	msglength += IecPrint_OffsetSign(msg->lonofs.sign, lonsign, sizeof(lonsign),
-		msg->vfields & DTM_VALID_LONOFFSET);
-	msglength += IecPrint_Double(msg->altoffset, altofs, sizeof(altofs),
-		msg->vfields & DTM_VALID_ALTITUDEOFFSET);
-	msglength += IecPrint_Datum(msg->rd, refdatum, sizeof(refdatum),
-		msg->vfields & DTM_VALID_REFERENCEDATUM);
-
-	msglength += 17;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
+	switch (datum)
 	{
-		return naviError_MsgExceedsMaxSize;
-	}
-
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sDTM,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, locdatum, locdatumsub,
-		latofs, latsign, lonofs, lonsign, altofs, refdatum, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return naviError_OK;
-}
-
-//
-// GLL
-static enum naviError_t IecCompose_GLL(const struct gll_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
-{
-	size_t msglength;
-
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], latitude[32], latsign[2],
-		longitude[32], lonsign[2], utc[32], status[2], mi[2], cs[3];
-
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
-		msg->vfields & GLL_VALID_LATITUDE);
-	msglength += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
-		msg->vfields & GLL_VALID_LATITUDE);
-	msglength += IecPrint_Longitude(msg->longitude.offset, longitude,
-		sizeof(longitude), msg->vfields & GLL_VALID_LONGITUDE);
-	msglength += IecPrint_OffsetSign(msg->longitude.sign, lonsign,
-		sizeof(lonsign), msg->vfields & GLL_VALID_LONGITUDE);
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & GLL_VALID_UTC);
-	msglength += IecPrint_Status(msg->status, status, sizeof(status));
-	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
-
-	msglength += 16;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
-	{
-		return naviError_MsgExceedsMaxSize;
-	}
-
-	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sGLL,%s,%s,%s,%s,%s,%s,%s*%s\r\n",
-		talkerid, latitude, latsign, longitude, lonsign, utc, status, mi, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return naviError_OK;
-}
-
-//
-// GNS
-static enum naviError_t IecCompose_GNS(const struct gns_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
-{
-	size_t msglength;
-
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], latitude[32],
-		latsign[2], longitude[32], lonsign[2], mi[3], totalsats[3], hdop[32],
-		antalt[32], geoidsep[32], ddage[32], drsid[32], cs[3];
-
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & GNS_VALID_UTC);
-	msglength += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
-		msg->vfields & GNS_VALID_LATITUDE);
-	msglength += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
-		msg->vfields & GNS_VALID_LATITUDE);
-	msglength += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
-		msg->vfields & GNS_VALID_LONGITUDE);
-	msglength += IecPrint_OffsetSign(msg->longitude.sign, lonsign, sizeof(lonsign),
-		msg->vfields & GNS_VALID_LONGITUDE);
-	msglength += IecPrint_ModeIndicatorArray(msg->mi, mi, sizeof(mi),
-		msg->vfields & GNS_VALID_MODEINDICATOR);
-	msglength += snprintf(totalsats, sizeof(totalsats),
-		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
-		msg->totalsats);
-	msglength += IecPrint_Double(msg->hdop, hdop, sizeof(hdop),
-		msg->vfields & GNS_VALID_HDOP);
-	msglength += IecPrint_Double(msg->antaltitude, antalt, sizeof(antalt),
-		msg->vfields & GNS_VALID_ANTENNAALTITUDE);
-	msglength += IecPrint_Double(msg->geoidalsep, geoidsep, sizeof(geoidsep),
-		msg->vfields & GNS_VALID_GEOIDALSEP);
-	msglength += IecPrint_Double(msg->diffage, ddage, sizeof(ddage),
-		msg->vfields & GNS_VALID_AGEOFDIFFDATA);
-	msglength += snprintf(drsid, sizeof(drsid),
-		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
-
-	msglength += 23;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
-	{
-		return naviError_MsgExceedsMaxSize;
-	}
-
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sGNS,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, utc,
-		latitude, latsign, longitude, lonsign, mi, totalsats, hdop, antalt,
-		geoidsep, ddage, drsid, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return naviError_OK;
-}
-
-//
-// RMC
-static enum naviError_t IecCompose_RMC(const struct rmc_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
-{
-	size_t msglength;
-
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], status[2],
-		latitude[32], latsign[2], longitude[32], lonsign[2], snots[32],
-		ctrue[32], day[3], month[3], year[3], magnetic[32], magsign[2],
-		mi[2], cs[3];
-
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & RMC_VALID_UTC);
-	msglength += IecPrint_Status(msg->status, status, sizeof(status));
-	msglength += IecPrint_Latitude(msg->latitude.offset, latitude, sizeof(latitude),
-		msg->vfields & RMC_VALID_LATITUDE);
-	msglength += IecPrint_OffsetSign(msg->latitude.sign, latsign, sizeof(latsign),
-		msg->vfields & RMC_VALID_LATITUDE);
-	msglength += IecPrint_Longitude(msg->longitude.offset, longitude, sizeof(longitude),
-		msg->vfields & RMC_VALID_LONGITUDE);
-	msglength += IecPrint_OffsetSign(msg->longitude.sign, lonsign, sizeof(lonsign),
-		msg->vfields & RMC_VALID_LONGITUDE);
-	msglength += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
-		msg->vfields & RMC_VALID_SPEED);
-	msglength += IecPrint_Double(msg->courseTrue, ctrue, sizeof(ctrue),
-		msg->vfields & RMC_VALID_COURSETRUE);
-	msglength += snprintf(day, sizeof(day),
-		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->day);
-	msglength += snprintf(month, sizeof(month),
-		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->month);
-	msglength += snprintf(year, sizeof(year),
-		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->year % 100);
-	msglength += IecPrint_Double(msg->magnetic.offset, magnetic, sizeof(magnetic),
-		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	msglength += IecPrint_OffsetSign(msg->magnetic.sign, magsign, sizeof(magsign),
-		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
-
-	msglength += 17;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
-	{
-		return naviError_MsgExceedsMaxSize;
-	}
-
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sRMC,%s,%s,%s,%s,%s,%s,%s,%s,%s%s%s,%s,%s,%s*%s\r\n", talkerid, utc,
-		status, latitude, latsign, longitude, lonsign, snots, ctrue, day, month,
-		year, magnetic, magsign, mi, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return naviError_OK;
-}
-
-//
-// VTG
-static enum naviError_t IecCompose_VTG(const struct vtg_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
-{
-	size_t msglength;
-
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], ctrue[32], courseT[2],
-		cmagn[32], courseM[2], snots[32], speedN[4], skmph[32], speedK[2],
-		mi[2], cs[3];
-
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Double(msg->courseTrue, ctrue, sizeof(ctrue),
-		msg->vfields & VTG_VALID_COURSETRUE);
-	msglength += snprintf(courseT, sizeof(courseT),
-		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
-	msglength += IecPrint_Double(msg->courseMagn, cmagn, sizeof(cmagn),
-		msg->vfields & VTG_VALID_COURSEMAGN);
-	msglength += snprintf(courseM, sizeof(courseM),
-		(msg->vfields & VTG_VALID_COURSEMAGN) ? "M" : "");
-	msglength += IecPrint_Double(msg->speed * MPS_TO_KNOTS, snots, sizeof(snots),
-		msg->vfields & VTG_VALID_SPEED);
-	msglength += snprintf(speedN, sizeof(speedN),
-		(msg->vfields & VTG_VALID_SPEED) ? "N" : "");
-	msglength += IecPrint_Double(msg->speed * MPS_TO_KMH, skmph, sizeof(skmph),
-		msg->vfields & VTG_VALID_SPEED);
-	msglength += snprintf(speedK, sizeof(speedK),
-		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");
-	msglength += IecPrint_ModeIndicator(msg->mi, mi, sizeof(mi));
-
-	msglength += 18;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
-	{
-		return naviError_MsgExceedsMaxSize;
-	}
-
-	msglength = snprintf(iecmsg, sizeof(iecmsg),
-		"$%sVTG,%s,%s,%s,%s,%s,%s,%s,%s,%s*%s\r\n", talkerid, ctrue, courseT,
-		cmagn, courseM, snots, speedN, skmph, speedK, mi, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return naviError_OK;
-}
-
-//
-// ZDA
-static enum naviError_t IecCompose_ZDA(const struct zda_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
-{
-	size_t msglength;
-
-	char iecmsg[NAVI_SENTENCE_MAXSIZE + 1], talkerid[3], utc[32], day[3],
-		month[3], year[5], lzhours[4], lzmins[3], cs[3];
-
-	msglength = IecPrint_TalkerId(msg->tid, talkerid, sizeof(talkerid));
-	msglength += IecPrint_Utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & ZDA_VALID_UTC);
-	msglength += snprintf(day, sizeof(day),
-		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->day);
-	msglength += snprintf(month, sizeof(month),
-		(msg->vfields & ZDA_VALID_MONTH) ? "%02u" : "", msg->month);
-	msglength += snprintf(year, sizeof(year),
-		(msg->vfields & ZDA_VALID_YEAR) ? "%04u" : "", msg->year);
-
-	memset(lzhours, 0, sizeof(lzhours));
-	memset(lzmins, 0, sizeof(lzmins));
-
-	// Local zone hours (00 h to +/-13 h), Local zone minutes (00 to +59)
-	if (msg->vfields & ZDA_VALID_LOCALZONE)
-	{
-		char sign[2];
-		int lz = msg->lzoffset;
-
-		snprintf(sign, sizeof(sign), lz >= 0 ? "" : "-");
-		if (lz < 0)
-		{
-			lz = -lz;
-		}
-
-		msglength += snprintf(lzhours, sizeof(lzhours), "%s%02d", sign, lz / 60);
-		msglength += snprintf(lzmins, sizeof(lzmins), "%02u", lz % 60);
-	}
-
-	msglength += 15;
-	if (msglength > NAVI_SENTENCE_MAXSIZE)
-	{
-		return naviError_MsgExceedsMaxSize;
-	}
-
-	msglength = snprintf(iecmsg, sizeof(iecmsg), "$%sZDA,%s,%s,%s,%s,%s,%s*%s\r\n",
-		talkerid, utc, day, month, year, lzhours, lzmins, "%s");
-	IecPrint_Checksum(iecmsg, msglength, cs);
-
-	*nmwritten = snprintf(buffer, maxsize, iecmsg, cs);
-	return naviError_OK;
-}
-
-static size_t IecPrint_TalkerId(enum naviTalkerId_t tid, char *buffer,
-	size_t maxsize)
-{
-	switch (tid)
-	{
-	case naviTalkerId_AG:
-		return snprintf(buffer, maxsize, "AG");
-	case naviTalkerId_AP:
-		return snprintf(buffer, maxsize, "AP");
-	case naviTalkerId_AI:
-		return snprintf(buffer, maxsize, "AI");
-	case naviTalkerId_CD:
-		return snprintf(buffer, maxsize, "CD");
-	case naviTalkerId_CR:
-		return snprintf(buffer, maxsize, "CR");
-	case naviTalkerId_CS:
-		return snprintf(buffer, maxsize, "CS");
-	case naviTalkerId_CT:
-		return snprintf(buffer, maxsize, "CT");
-	case naviTalkerId_CV:
-		return snprintf(buffer, maxsize, "CV");
-	case naviTalkerId_CX:
-		return snprintf(buffer, maxsize, "CX");
-	case naviTalkerId_DE:
-		return snprintf(buffer, maxsize, "DE");
-	case naviTalkerId_DF:
-		return snprintf(buffer, maxsize, "DF");
-	case naviTalkerId_EC:
-		return snprintf(buffer, maxsize, "EC");
-	case naviTalkerId_EI:
-		return snprintf(buffer, maxsize, "EI");
-	case naviTalkerId_EP:
-		return snprintf(buffer, maxsize, "EP");
-	case naviTalkerId_ER:
-		return snprintf(buffer, maxsize, "ER");
-	case naviTalkerId_GA:
-		return snprintf(buffer, maxsize, "GA");
-	case naviTalkerId_GP:
-		return snprintf(buffer, maxsize, "GP");
-	case naviTalkerId_GL:
-		return snprintf(buffer, maxsize, "GL");
-	case naviTalkerId_GN:
-		return snprintf(buffer, maxsize, "GN");
-	case naviTalkerId_GW:
-		return snprintf(buffer, maxsize, "GW");
-	case naviTalkerId_HC:
-		return snprintf(buffer, maxsize, "HC");
-	case naviTalkerId_HE:
-		return snprintf(buffer, maxsize, "HE");
-	case naviTalkerId_HN:
-		return snprintf(buffer, maxsize, "HN");
-	case naviTalkerId_II:
-		return snprintf(buffer, maxsize, "II");
-	case naviTalkerId_IN:
-		return snprintf(buffer, maxsize, "IN");
-	case naviTalkerId_LC:
-		return snprintf(buffer, maxsize, "LC");
-	case naviTalkerId_P:
-		return snprintf(buffer, maxsize, "P");
-	case naviTalkerId_RA:
-		return snprintf(buffer, maxsize, "RA");
-	case naviTalkerId_SD:
-		return snprintf(buffer, maxsize, "SD");
-	case naviTalkerId_SN:
-		return snprintf(buffer, maxsize, "SN");
-	case naviTalkerId_SS:
-		return snprintf(buffer, maxsize, "SS");
-	case naviTalkerId_TI:
-		return snprintf(buffer, maxsize, "TI");
-	case naviTalkerId_VD:
-		return snprintf(buffer, maxsize, "VD");
-	case naviTalkerId_VM:
-		return snprintf(buffer, maxsize, "VM");
-	case naviTalkerId_VW:
-		return snprintf(buffer, maxsize, "VW");
-	case naviTalkerId_VR:
-		return snprintf(buffer, maxsize, "VR");
-	case naviTalkerId_YX:
-		return snprintf(buffer, maxsize, "YX");
-	case naviTalkerId_ZA:
-		return snprintf(buffer, maxsize, "ZA");
-	case naviTalkerId_ZC:
-		return snprintf(buffer, maxsize, "ZC");
-	case naviTalkerId_ZQ:
-		return snprintf(buffer, maxsize, "ZQ");
-	case naviTalkerId_ZV:
-		return snprintf(buffer, maxsize, "ZV");
-	case naviTalkerId_WI:
-		return snprintf(buffer, maxsize, "WI");
+	case navi_WGS84:
+		return "W84";
+	case navi_WGS72:
+		return "W72";
+	case navi_SGS85:
+		return "S85";
+	case navi_PE90:
+		return "P90";
+	case navi_UserDefined:
+		return "999";
+	case navi_Null:
+		return "";
 	default:
-		break;
+		return NULL;
 	}
-
-	return 0;
 }
 
-static size_t IecPrint_Utc(const struct naviUtc_t *utc, char *buffer,
-	size_t maxsize, int notnull)
+//
+// navi_datumsubdiv_str
+//
+const char *navi_datumsubdiv_str(int datumsub, int notnull)
 {
-	if (notnull)
+	if (!notnull)
+		datumsub = navi_Null;
+
+	switch (datumsub)
 	{
-		size_t result = snprintf(buffer, maxsize, "%02u%02u%02u.%03u",
-			utc->hour % 24, utc->min % 60, utc->sec % 60, utc->msec % 1000);
-		return RemoveTrailingZeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
+	case navi_Null:
+		return "";
+	default:
+		return NULL;
 	}
 }
 
-static size_t IecPrint_Checksum(char *msg, size_t maxsize, char *cs)
+//
+// navi_fixsign_str
+//
+const char *navi_fixsign_str(int fixsign, int notnull)
 {
-	if ((msg == NULL) || (maxsize <= 0) || (cs == NULL))
+	if (!notnull)
+		fixsign = navi_Null;
+
+	switch (fixsign)
 	{
-		return -EINVAL;
-	}
-
-	unsigned i, ucs = 0;
-
-	// Skip up to next character after '$'
-	for (i = 0; msg[i] != '$' && i < maxsize; i++) { }
-	if (i >= maxsize)
-	{
-		return -EPROTO;
-	}
-	for (i += 1; msg[i] != '*' && i < maxsize; i++)
-	{
-		ucs = ucs ^ msg[i];
-	}
-	if (i >= maxsize)
-	{
-		return -EPROTO;
-	}
-
-	return snprintf(cs, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
-}
-
-static size_t RemoveTrailingZeroes(char *buffer, size_t maxsize)
-{
-	int i;
-
-	for (i = maxsize - 1; ; i--)
-	{
-		if (buffer[i] == '0')
-		{
-			buffer[i] = '\0';
-			maxsize--;
-		}
-		else if (buffer[i] == '.')
-		{
-			buffer[i] = '\0';
-			maxsize--;
-			break;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	return maxsize;
-}
-
-static size_t IecPrint_Datum(enum naviDatum_t datum, char *buffer,
-	size_t maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (datum)
-		{
-		case naviDatum_WGS84:
-			return snprintf(buffer, maxsize, "W84");
-		case naviDatum_WGS72:
-			return snprintf(buffer, maxsize, "W72");
-		case naviDatum_SGS85:
-			return snprintf(buffer, maxsize, "S85");
-		case naviDatum_PE90:
-			return snprintf(buffer, maxsize, "P90");
-		case naviDatum_UserDefined:
-			return snprintf(buffer, maxsize, "999");
-		default:
-			break;
-		}
-
-		return 0;
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
+	case navi_North:
+		return "N";
+	case navi_South:
+		return "S";
+	case navi_East:
+		return "E";
+	case navi_West:
+		return "W";
+	case navi_Null:
+		return "";
+	default:
+		return NULL;
 	}
 }
 
-static size_t IecPrint_DatumSubdivision(enum naviLocalDatumSub_t lds,
-	char *buffer, size_t maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (lds)
-		{
-		default:
-			return 0;
-		}
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-static size_t IecPrint_Double(double value, char *buffer, size_t maxsize, int notnull)
-{
-	if (notnull)
-	{
-		size_t result;
-
-		value = value * 100000000.0;
-		value = round(value);
-		value = value / 100000000.0;
-
-		result = snprintf(buffer, maxsize, "%.8f", value);
-		return RemoveTrailingZeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-static size_t IecPrint_OffsetSign(enum naviOfsSign_t sign, char *buffer,
-	size_t maxsize, int notnull)
-{
-	if (notnull)
-	{
-		switch (sign)
-		{
-		case naviOfsSign_North:
-			return snprintf(buffer, maxsize, "N");
-		case naviOfsSign_South:
-			return snprintf(buffer, maxsize, "S");
-		case naviOfsSign_East:
-			return snprintf(buffer, maxsize, "E");
-		case naviOfsSign_West:
-			return snprintf(buffer, maxsize, "W");
-		default:
-			break;
-		}
-
-		return 0;
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-static size_t IecPrint_Latitude(double value, char *buffer,
-	size_t maxsize, int notnull)
-{
-	if (notnull)
-	{
-		size_t result;
-		double degrees;
-
-		value = value * 100000000.;
-		value = round(value);
-		value = value / 100000000.;
-
-		value = modf(value, &degrees);
-		degrees = degrees * 100.;
-		value = value * 60.;
-		value = value + degrees;
-
-		result = snprintf(buffer, maxsize, "%013.8f", value);
-		return RemoveTrailingZeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-static size_t IecPrint_Longitude(double value, char *buffer,
-	size_t maxsize, int notnull)
-{
-	if (notnull)
-	{
-		size_t result;
-		double degrees;
-
-		value = value * 100000000.;
-		value = round(value);
-		value = value / 100000000.;
-
-		value = modf(value, &degrees);
-		degrees = degrees * 100.;
-		value = value * 60.;
-		value = value + degrees;
-
-		result = snprintf(buffer, maxsize, "%014.8f", value);
-		return RemoveTrailingZeroes(buffer, result);
-	}
-	else
-	{
-		(void)strncpy(buffer, "", maxsize);
-		return 0;
-	}
-}
-
-static size_t IecPrint_Status(enum naviStatus_t status, char *buffer,
-	size_t maxsize)
+//
+// navi_status_str
+//
+const char *navi_status_str(int status)
 {
 	switch (status)
 	{
-	case naviStatus_DataValid:
-		return snprintf(buffer, maxsize, "A");
-	case naviStatus_DataInvalid:
-		return snprintf(buffer, maxsize, "V");
+	case navi_DataValid:
+		return "A";
+	case navi_DataInvalid:
+		return "V";
 	default:
-		break;
+		return NULL;
 	}
-
-	return 0;
 }
 
-static size_t IecPrint_ModeIndicator(enum naviModeIndicator_t mi, char *buffer,
-	size_t maxsize)
+//
+// navi_modeindicator_str
+//
+const char *navi_modeindicator_str(int mi)
 {
 	switch (mi)
 	{
-	case naviModeIndicator_Autonomous:
-		return snprintf(buffer, maxsize, "A");
-	case naviModeIndicator_Differential:
-		return snprintf(buffer, maxsize, "D");
-	case naviModeIndicator_Estimated:
-		return snprintf(buffer, maxsize, "E");
-	case naviModeIndicator_ManualInput:
-		return snprintf(buffer, maxsize, "M");
-	case naviModeIndicator_Simulator:
-		return snprintf(buffer, maxsize, "S");
-	case naviModeIndicator_DataNotValid:
-		return snprintf(buffer, maxsize, "N");
+	case navi_Autonomous:
+		return "A";
+	case navi_Differential:
+		return "D";
+	case navi_Estimated:
+		return "E";
+	case navi_ManualInput:
+		return "M";
+	case navi_Simulator:
+		return "S";
+	case navi_DataNotValid:
+		return "N";
 	default:
-		break;
+		return NULL;
 	}
-
-	return 0;
 }
 
-static size_t IecPrint_ModeIndicatorArray(const enum naviModeIndicator_t mi[],
-	char *buffer, size_t maxsize, int notnull)
+//
+// navi_modeindicator_extended_str
+//
+const char *navi_modeindicator_extended_str(int mi)
 {
-	size_t result = 0;
+	switch (mi)
+	{
+	case navi_Autonomous:
+		return "A";
+	case navi_Differential:
+		return "D";
+	case navi_Estimated:
+		return "E";
+	case navi_ManualInput:
+		return "M";
+	case navi_Simulator:
+		return "S";
+	case navi_DataNotValid:
+		return "N";
+	case navi_Precise:
+		return "P";
+	case navi_RTKinematic:
+		return "R";
+	case navi_FloatRTK:
+		return "F";
+	default:
+		return NULL;
+	}
+}
 
-	(void)strncpy(buffer, "", maxsize);
-
+//
+// navi_print_position_fix
+//
+int navi_print_position_fix(const struct navi_position_t *fix,
+	char *buffer, int maxsize, int notnull)
+{
 	if (notnull)
 	{
-		int i;
-		for (i = 0; i < 2; i++, result++)
-		{
-			switch (mi[i])
-			{
-			case naviModeIndicator_Autonomous:
-				(void)strncat(buffer, "A", maxsize);
-				break;
-			case naviModeIndicator_Differential:
-				(void)strncat(buffer, "D", maxsize);
-				break;
-			case naviModeIndicator_Estimated:
-				(void)strncat(buffer, "E", maxsize);
-				break;
-			case naviModeIndicator_ManualInput:
-				(void)strncat(buffer, "M", maxsize);
-				break;
-			case naviModeIndicator_Simulator:
-				(void)strncat(buffer, "S", maxsize);
-				break;
-			case naviModeIndicator_DataNotValid:
-				(void)strncat(buffer, "N", maxsize);
-				break;
-			case naviModeIndicator_Precise:
-				(void)strncat(buffer, "P", maxsize);
-				break;
-			case naviModeIndicator_RTKinematic:
-				(void)strncat(buffer, "R", maxsize);
-				break;
-			case naviModeIndicator_FloatRTK:
-				(void)strncat(buffer, "F", maxsize);
-				break;
-			default:
-				return 0;
-			}
-		}
-	}
+		int nmwritten;
+		double degrees, fraction;
 
-	return result;
+		const char *s;
+
+		nmwritten = 0;
+
+		// extract and print latitude
+		fraction = modf(fix->latitude, &degrees);
+		degrees = degrees * 100.;
+		fraction = fraction * 60.;
+		fraction = fraction + degrees;
+
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
+		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		nmwritten += strlen(s = navi_fixsign_str(fix->latsign, notnull));
+		(void)strncat(buffer, s, maxsize);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		// extract and print longitude
+		fraction = modf(fix->longitude, &degrees);
+		degrees = degrees * 100.;
+		fraction = fraction * 60.;
+		fraction = fraction + degrees;
+
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
+		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten += 1;
+
+		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
+		(void)strncat(buffer, s, maxsize);
+
+		return nmwritten;
+	}
+	else
+	{
+		(void)strncpy(buffer, ",,,", maxsize);
+		return 3;
+	}
 }
 
+//
+// navi_print_double
+//
+int navi_print_number(double value, char *buffer, int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result;
+
+		result = snprintf(buffer, maxsize, "%f", value);
+		return remove_trailing_zeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+//
+// navi_print_utc
+//
+int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
+	int maxsize, int notnull)
+{
+	if (notnull)
+	{
+		int result = snprintf(buffer, maxsize, "%02u%02u%06.3f",
+			utc->hour % 24, utc->min % 60, utc->sec);
+		return remove_trailing_zeroes(buffer, result);
+	}
+	else
+	{
+		(void)strncpy(buffer, "", maxsize);
+		return 0;
+	}
+}
+
+//
+// navi_print_miarray
+//
+int navi_print_miarray(const int mi[], int miquant, char *buffer)
+{
+	int i;
+	const char *mistr;
+
+	assert(buffer != NULL);
+
+	strcpy(buffer, "");
+	for (i = 0; i < miquant; i++)
+	{
+		mistr = navi_modeindicator_extended_str(mi[i]);
+		if (strlen(mistr) == 0)
+		{
+			navierr_set_last(navi_InvalidParameter);
+			return 0;
+		}
+		strcat(buffer, mistr);
+	}
+
+	return i;
+}
+
+//
+// navi_checksum
+//
+int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
+{
+	int i;
+	unsigned ucs = 0;
+
+	assert(msg != NULL);
+	assert(maxsize > 0);
+
+	// Skip up to next character after '$'
+	for (i = 0; msg[i] != '$' && i < maxsize; i++);
+
+	if (i >= maxsize)
+		return -1;
+	
+	for (i += 1; msg[i] != '*' && i < maxsize; i++)
+		ucs = ucs ^ msg[i];
+	
+	if (i >= maxsize)
+		return -1;
+
+	if (cs)
+		*cs = ucs;
+
+	if (csstr)
+		snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
+
+	return navi_Ok;
+}
+
+//
+// navi_sentencefmt_str
+//
+const char *navi_sentencefmt_str(int fmt)
+{
+	assert((fmt >= 0) && (fmt <= navi_ZTG));
+	return navi_fmtlist[fmt];
+}
+
+//
+//	navi_create_talkerid
+//
+const char *navi_talkerid_str(int tid)
+{
+	assert((tid >= 0) && (tid <= navi_P));
+	return navi_tidlist[tid];
+}
