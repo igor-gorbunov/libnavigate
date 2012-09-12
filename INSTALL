@@ -1,0 +1,17 @@
+Building libnavigate
+====================
+
+The libnavigate library is built using CMake 2.6+ (<http://www.cmake.org>) on all platforms.
+It is tested to build on Linux and Windows for x86, x86-64 and ARM platforms without any
+external dependencies.
+
+On most systems you can build the library using the following commands
+
+	$ mkdir build && cd build
+	$ cmake ..
+	$ cmake --build .
+
+Alternatively you can point the CMake GUI tool to the CMakeLists.txt file and generate platform
+specific build project or IDE workspace.
+
+For more advanced use or questions about CMake please read <http://www.cmake.org/Wiki/CMake_FAQ>.
