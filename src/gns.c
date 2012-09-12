@@ -23,6 +23,7 @@
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #ifdef _MSC_VER
 #define snprintf	_snprintf

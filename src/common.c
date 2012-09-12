@@ -202,7 +202,7 @@ const char *navi_fmtlist[] =
 	"ZTG", NULL
 };
 
-extern const char *navi_tidlist[] =
+const char *navi_tidlist[] =
 {
 	"AG", "AP", "AI", "CD", "CR", "CS", "CT", "CV", "CX", "DE", "DF",
 	"EC", "EI", "EP", "ER", "GA", "GP", "GL", "GN", "GW", "HC", "HE",
