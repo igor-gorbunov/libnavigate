@@ -2,12 +2,6 @@ libnavigate --- TODO
 
 Todo:
 
-    * hash table for convertion between Talker ID and its text representation
-    * hash table for convertion between sentence formatter and its text
-      representation
-    * generator and parser must return error status and number of
-      proceeded characters stored to additional argument
-    * switch temporarily to EN_US locale while parsing doubles with strtod
+    * switch temporarily to POSIX C locale while parsing doubles with strtod
 
 end of file TODO
-
