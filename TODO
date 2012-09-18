@@ -2,6 +2,6 @@ libnavigate --- TODO
 
 Todo:
 
-    * switch temporarily to POSIX C locale while parsing doubles with strtod
+    * switch temporarily to POSIX C locale while printing doubles with snprintf
 
 end of file TODO
