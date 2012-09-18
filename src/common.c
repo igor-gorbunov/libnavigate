@@ -24,6 +24,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES
+#endif // MSVC_VER
+
 #include <math.h>
 #include <ctype.h>
 #include <assert.h>
