@@ -154,6 +154,14 @@ NAVI_EXTERN(int) navi_parse_talkerid(char *buffer, int *nmread);
 // Looks up sentence formatter
 NAVI_EXTERN(int) navi_parse_sentencefmt(char *buffer, int *nmread);
 
+//
+// Extracts the latitude and longitude from the navi_position_t structure and
+// converts them to radians.
+// Output latitude is in the range of [-pi, +pi].
+// Output longitude in the range of [0, +2pi].
+NAVI_EXTERN(int) navi_get_position(struct navi_position_t *in,
+		double *latitude, double *longitude);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_parser_h

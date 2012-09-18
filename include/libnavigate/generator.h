@@ -88,6 +88,17 @@ NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
 
+//
+// Fills in the navi_position_t structure with latitude and longitude
+// given as arguments in radians.
+// Latitude is provided in the range of [-pi/2, +pi/2] and the result is within
+// [90°S, 90°N].
+// The longitude is provided in the range of [-pi, +2pi) and result is within
+// [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
+// and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
+NAVI_EXTERN(int) navi_set_position(double latitude, double longitude,
+		struct navi_position_t *out);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_generator_h

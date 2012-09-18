@@ -379,12 +379,13 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 {
 	if (notnull)
 	{
-		int nmwritten;
+		int nmwritten, precision;
 		double degrees, fraction;
 
 		const char *s;
 
 		nmwritten = 0;
+		precision = naviconf_get_presicion();
 
 		// extract and print latitude
 		fraction = modf(fix->latitude, &degrees);
@@ -392,7 +393,8 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		fraction = fraction * 60.;
 		fraction = fraction + degrees;
 
-		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
+			precision + 5, precision, fraction);
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
@@ -410,7 +412,8 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		fraction = fraction * 60.;
 		fraction = fraction + degrees;
 
-		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
+			precision + 6, precision, fraction);
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
@@ -429,15 +432,16 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 }
 
 //
-// navi_print_double
+// navi_print_number
 //
 int navi_print_number(double value, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
 	{
-		int result;
+		int result, precision;
 
-		result = snprintf(buffer, maxsize, "%f", value);
+		precision = naviconf_get_presicion();
+		result = snprintf(buffer, maxsize, "%.*f", precision, value);
 		return remove_trailing_zeroes(buffer, result);
 	}
 	else

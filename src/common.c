@@ -23,15 +23,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
 #include <math.h>
 #include <ctype.h>
 #include <assert.h>
-
-#ifdef _MSC_VER
-#define snprintf	_snprintf
-#endif // MSVC_VER
 
 //
 // navi_parse_status
@@ -187,6 +182,67 @@ int remove_trailing_zeroes(char *buffer, int length)
 	}
 
 	return length;
+}
+
+int navi_set_position(double latitude, double longitude,
+	struct navi_position_t *out)
+{
+	assert((latitude >= -M_PI) && (latitude <= M_PI));
+	assert((longitude >= -M_PI) && (longitude < 2. * M_PI));
+	assert(out != NULL);
+
+	if (latitude >= 0.)
+	{
+		out->latitude = latitude * 180. / M_PI;
+		out->latsign = navi_North;
+	}
+	else
+	{
+		out->latitude = fabs(latitude) * 180. / M_PI;
+		out->latsign = navi_South;
+	}
+
+	if ((longitude >= 0.) && (longitude < M_PI))
+	{
+		out->longitude = longitude * 180. / M_PI;
+		out->lonsign = navi_East;
+	}
+	else if (longitude >= M_PI)
+	{
+		out->longitude = (longitude - M_PI) * 180. / M_PI;
+		out->lonsign = navi_West;
+	}
+	else
+	{
+		out->latitude = fabs(latitude) * 180. / M_PI;
+		out->latsign = navi_West;
+	}
+
+	return navi_Ok;
+}
+
+int navi_get_position(struct navi_position_t *in, double *latitude,
+	double *longitude)
+{
+	double d;
+
+	assert(in != NULL);
+	assert(latitude != NULL);
+	assert(longitude != NULL);
+
+	d = in->latitude * M_PI / 180.;
+	if (in->latsign == navi_North)
+		*latitude = d;
+	else
+		*latitude = -d;
+
+	d = in->longitude * M_PI / 180.;
+	if (in->latsign == navi_East)
+		*longitude = d;
+	else
+		*longitude = 2 * M_PI - d;
+
+	return navi_Ok;
 }
 
 const char *navi_fmtlist[] =
