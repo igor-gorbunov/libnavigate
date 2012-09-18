@@ -1,7 +1,67 @@
 libnavigate --- TODO
 
-Todo:
+Library versions roadmap:
 
-    * switch temporarily to POSIX C locale while printing doubles with snprintf
+	v0.2:
+    * switch temporarily to POSIX C locale while printing
+	  doubles with snprintf
+	* implement generation/parsing of ALM, GBS, GGA, GRS, GSA,
+	  GST, GSV, and MLA sentences
+	* implement target installation using CMake
+
+	v0.3:
+	* add C++ bindings to the library
+	* implement generation/parsing of AAM, ACK, ALR and TXT sentences
+	* implement building RPM package of libnavigate
+
+	v0.4:
+	* implement generation/parsing of APB, BEC, BOD, BWC, BWR
+	  and BWW sentences
+	* implement building MSI package of libnavigate
+
+	v0.5:
+	* implement registration/unregistration and call to user-
+	  supplied generator/parser for proprietary sentences
+
+	v0.6:
+	* implement generation/parsing of Query sentences
+
+	v0.7:
+	* implement generation/parsing of DBT and DPT sentences
+	* implement generation/parsing of HDG, HDT, HMR, HMS, HSC, HTC
+	  and HTD sentences
+
+	v0.8:
+	* implement generation/parsing of DCN, LCD and GLC sentences
+	* implement generation/parsing of RMA and RMB sentences
+
+	v0.9:
+	* implement generation/parsing of TLB, TLL and TTM sentences
+	* implement generation/parsing of ZDL, ZFO and ZTG sentences
+
+	v0.10:
+	* implement generation/parsing of DSC, DSE, DSI and DSR sentences
+	* implement generation/parsing of FSI, ROT and RPM sentences
+
+	v0.11:
+	* implement generation/parsing of MSK and MSS sentences
+	* implement generation/parsing of SFI, STN and XDR sentences
+
+	v0.12:
+	* implement generation/parsing of MTW, MWD and MWV sentences
+	* implement generation/parsing of VBW, VDR, VHW, VLW and VPW
+	  sentences
+
+	v0.13:
+	* implement generation/parsing of OSD, RSA, RSD and RTE sentences
+	* implement generation/parsing of WCV, WNC and WPL sentences
+
+	v0.14:
+	* implement generation/parsing of XTE and XTR sentences
+	* implement full testing of libnavigation work
+	* implement fine tuning of what is built into the library
+
+	v1.0:
+	* release the library
 
 end of file TODO
