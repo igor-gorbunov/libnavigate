@@ -1,0 +1,17 @@
+2012-09-19  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Implemented target installation using CMake
+
+2012-09-12  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Release 1 of libnavigate (version 0.1.0a)
+	* Implemented generating/parsing of DTM, GLL, GNS, RMC, VTG and ZDA
+	  sentences
+	* Using CMake build system
+
+Copyright 2012 Igor Gorbunov
+
+Copying and distribution of this file, with or without modification, are
+permitted in any medium without royalty provided the copyright notice
+and this notice are preserved.
+

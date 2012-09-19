@@ -33,6 +33,23 @@ extern double round(double x);
 #endif // WIN32
 
 //
+// Print fixed length field with given radix
+extern int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
+	char *buffer, int maxsize);
+
+//
+// Splits an integer into array of digits. Radix may be 10 or 16.
+// Most significant digit is put at bytes[0]
+extern int navi_split_integer(unsigned int value, char bytes[], int width, int radix);
+
+//
+// Composes an integer from array of digits. Radix may be 10 or 16.
+// Most significant digit is taken from bytes[0]
+//
+// Returns the combined value
+extern unsigned int navi_compose_integer(char bytes[], int width, int radix);
+
+//
 // Talker IDs list
 extern const char *navi_tidlist[];
 

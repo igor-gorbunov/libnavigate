@@ -177,7 +177,6 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 		msg->id = (int)round(d);
 		msg->vfields |= GNS_VALID_DIFFREFSTATIONID;
 	}
-	i += nmread;
 
 	return navi_Ok;
 }

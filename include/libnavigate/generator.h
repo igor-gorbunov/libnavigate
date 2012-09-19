@@ -78,6 +78,20 @@ NAVI_EXTERN(int) navi_print_number(double value, char *buffer,
 		int maxsize, int notnull);
 
 //
+// Prints fixed length hexadecimal numbers, MSB on the left.
+// If fieldwidth equals 0, the field is considered to be null.
+// Returns the number of printed characters
+NAVI_EXTERN(int) navi_print_hexfield(const char bytes[], int fieldwidth,
+		char *buffer, int maxsize);
+
+//
+// Prints fixed length decimal numbers
+// If fieldwidth equals 0, the field is considered to be null.
+// Returns the number of printed characters
+NAVI_EXTERN(int) navi_print_decfield(const char bytes[], int fieldwidth,
+		char *buffer, int maxsize);
+
+//
 // Prints UTC time
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,

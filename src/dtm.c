@@ -140,7 +140,6 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		msg->vfields |= DTM_VALID_REFDATUM;
 	}
-	i += nmread;
 
 	return 0;
 }

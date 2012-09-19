@@ -93,6 +93,24 @@ NAVI_EXTERN(int) navi_parse_modeindicator(char *buffer, int *mi, int *nmread);
 NAVI_EXTERN(int) navi_parse_number(char *buffer, double *parsed, int *nmread);
 
 //
+// Parses fixed length hexadecimal field, MSB on the left: 'hh-'.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_hexfield(char *buffer, int fieldwidth,
+		char bytes[], int *nmread);
+
+//
+// Parses fixed length decimal field: 'xx-'.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_decfield(char *buffer, int fieldwidth,
+		char bytes[], int *nmread);
+
+//
 // Parses datum field in the form of 'ccc'
 // May be null field. The field must end with ',' or '*'
 //

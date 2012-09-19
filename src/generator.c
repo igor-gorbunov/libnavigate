@@ -28,6 +28,7 @@
 
 #ifndef NO_GENERATOR
 
+#include "alm.h"
 #include "dtm.h"
 #include "gll.h"
 #include "gns.h"
@@ -59,7 +60,10 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	{
 	case navi_AAM:
 	case navi_ACK:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_ALM:
+		return navi_create_alm((const struct alm_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ALR:
 	case navi_APB:
 	case navi_BEC:
@@ -459,8 +463,11 @@ int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 {
 	if (notnull)
 	{
-		int result = snprintf(buffer, maxsize, "%02u%02u%06.3f",
-			utc->hour % 24, utc->min % 60, utc->sec);
+		int result, precision;
+
+		precision = naviconf_get_presicion();
+		result = snprintf(buffer, maxsize, "%02u%02u%0*.*f",
+			utc->hour % 24, utc->min % 60, precision + 3, precision, utc->sec);
 		return remove_trailing_zeroes(buffer, result);
 	}
 	else
@@ -544,3 +551,56 @@ const char *navi_talkerid_str(int tid)
 	assert((tid >= 0) && (tid <= navi_P));
 	return navi_tidlist[tid];
 }
+
+//
+// navi_print_numfield
+//
+int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
+	char *buffer, int maxsize)
+{
+	int i;
+	char str[4];
+
+	assert(buffer != NULL);
+	assert(maxsize > fieldwidth);
+
+	(void)strncpy(buffer, "", maxsize);
+
+	for (i = 0; i < fieldwidth; i++)
+	{
+		switch (radix)
+		{
+		case 10:
+			snprintf(str, sizeof(str), "%d", bytes[i]);
+			break;
+		case 16:
+			snprintf(str, sizeof(str), "%x", bytes[i]);
+			break;
+		default:
+			snprintf(str, sizeof(str), "%c", bytes[i]);
+			break;
+		}
+		(void)strncat(buffer, str, maxsize);
+	}
+
+	return i;
+}
+
+//
+// navi_print_hexfield
+//
+int navi_print_hexfield(const char bytes[], int fieldwidth,
+	char *buffer, int maxsize)
+{
+	return navi_print_fixedfield(bytes, fieldwidth, 16, buffer, maxsize);
+}
+
+//
+// navi_print_decfield
+//
+int navi_print_decfield(const char bytes[], int fieldwidth,
+	char *buffer, int maxsize)
+{
+	return navi_print_fixedfield(bytes, fieldwidth, 10, buffer, maxsize);
+}
+

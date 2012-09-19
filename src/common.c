@@ -250,6 +250,36 @@ int navi_get_position(struct navi_position_t *in, double *latitude,
 	return navi_Ok;
 }
 
+int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
+{
+	int i;
+
+	if ((radix != 10) && (radix != 16))
+	{
+		navierr_set_last(navi_InvalidParameter);
+		return navi_Error;
+	}
+
+	for (i = width - 1; i > 0; i--)
+	{
+		bytes[i] = value % radix;
+		value /= radix;
+	}
+
+	return navi_Ok;
+}
+
+unsigned int navi_compose_integer(char bytes[], int width, int radix)
+{
+	int i;
+	unsigned result = 0;
+
+	for (i = 0; i < width; i++)
+		result = result * radix + bytes[i];
+
+	return result;
+}
+
 const char *navi_fmtlist[] =
 {
 	"AAM", "ACK", "ALM", "ALR", "APB", "BEC", "BOD", "BWC", "BWR",

@@ -30,6 +30,7 @@
 
 #ifndef NO_PARSER
 
+#include "alm.h"
 #include "dtm.h"
 #include "gll.h"
 #include "gns.h"
@@ -111,7 +112,15 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	{
 	case navi_AAM:
 	case navi_ACK:
+		break;
 	case navi_ALM:
+		if (msgsize < sizeof(struct alm_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct alm_t *)msg)->tid = tid;
+		return navi_parse_alm((struct alm_t *)msg, buffer + som + 7);
 	case navi_ALR:
 	case navi_APB:
 	case navi_BEC:
@@ -1299,3 +1308,18 @@ int navi_parse_sentencefmt(char *buffer, int *nmread)
 
 	return -1;
 }
+
+//
+// navi_parse_hexfield
+//
+int navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+{
+}
+
+//
+// navi_parse_decfield
+//
+int navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+{
+}
+
