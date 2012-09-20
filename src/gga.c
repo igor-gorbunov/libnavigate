@@ -194,7 +194,7 @@ int navi_parse_gga(struct gga_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->diffage = (int)round(d);
+		msg->id = (int)round(d);
 		msg->vfields |= GGA_VALID_ID;
 	}
 

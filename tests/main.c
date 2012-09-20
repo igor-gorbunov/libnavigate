@@ -535,7 +535,7 @@ int main(void)
 	gga.diffage = 21;
 	gga.id = 1011;
 
-	result = navi_create_msg(navi_GGA, &gbs, buffer + msglength,
+	result = navi_create_msg(navi_GGA, &gga, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)
 	{
@@ -693,10 +693,10 @@ int main(void)
 		}
 	} while (!finished);
 
-
 	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
 	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
 	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));
+	printf("sizeof struct gga_t = %u\n", sizeof(struct gga_t));
 	printf("sizeof struct gll_t = %u\n", sizeof(struct gll_t));
 	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
 	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));

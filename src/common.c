@@ -33,6 +33,10 @@
 #include <ctype.h>
 #include <assert.h>
 
+#ifdef _MSC_VER
+#define snprintf	_snprintf
+#endif // MSVC_VER
+
 //
 // navi_parse_status
 //
@@ -271,7 +275,7 @@ int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
 
 	for (i = width - 1; i >= 0; i--)
 	{
-		bytes[i] = value % radix;
+		bytes[i] = (char)(value % radix);
 		value /= radix;
 	}
 
