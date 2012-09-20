@@ -156,13 +156,14 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->diffage, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	else
 	{
+		msg->diffage = (int)round(d);
 		msg->vfields |= GNS_VALID_AGEOFDIFFDATA;
 	}
 	i += nmread;

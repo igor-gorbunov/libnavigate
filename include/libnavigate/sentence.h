@@ -262,6 +262,24 @@ enum
 };
 
 //
+// GPS quality indicator
+//
+enum naviGpsQualityIndicator_t
+{
+	navi_GpsInvalid = 0,		// Fix not available or invalid
+	navi_GpsSpsMode = 1,		// GPS SPS mode, fix valid
+	navi_GpsDifferential = 2,	// differential GPS, SPS mode, fix valid
+	navi_GpsPpsMode = 3,		// GPS PPS mode, fix valid
+	navi_GpsFixedRtk = 4,		// Real Time Kinematic. Satellite system used in
+								// RTK mode with fixed integers
+	navi_GpsFloatRtk = 5,		// Float RTK. Satellite system used in
+								// RTK mode with floating integers
+	navi_GpsEstimated = 6,		// Estimated (dead reckoning) mode
+	navi_GpsManual = 7,			// Manual input mode
+	navi_GpsSimulator = 8		// Simulator mode
+};
+
+//
 // Holds UTC time (hours, minutes, seconds and
 // decimal fraction of seconds)
 //
@@ -469,7 +487,7 @@ NAVI_ALIGNED(struct, gbs_t)
 	double experrlat;		// expected error in latitude
 	double experrlon;		// expected error in longitude
 	double experralt;		// expected error in altitude
-	unsigned int id;		// ID number of most likely failed satellite
+	int id;					// ID number of most likely failed satellite
 	double probability;		// probability of missed detection for most likely
 							// failed satellite
 	double estimate;		// estimate of bias on most likely failed satellite
@@ -483,10 +501,30 @@ NAVI_ALIGNED(struct, gbs_t)
 #define GBS_VALID_ESTIMATE		0x10
 #define GBS_VALID_DEVIATION		0x20
 
-//	// Global positioning system fix data
-//	struct gga_t
-//	{
-//	};
+// Global positioning system fix data
+NAVI_ALIGNED(struct, gga_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GGA_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	struct navi_position_t fix;	// latitude, longitude fix
+	int gpsindicator;		// GPS quality indicator
+	int nmsatellites;		// Number of satellites in use (00-12)
+	double hdop;			// Horizontal dilution of precision
+	double antaltitude;		// Antenna altitude above/below mean sea level (geoid)
+	double geoidalsep;		// Geoidal separation
+	int diffage;			// Age of differential GPS data, seconds
+	int id;					// Differential reference station ID, 1-1023
+};
+
+#define GGA_VALID_UTC				0x01
+#define GGA_VALID_FIX				0x02
+#define GGA_VALID_NMSATELLITES		0x04
+#define GGA_VALID_HDOP				0x08
+#define GGA_VALID_ANTALTITUDE		0x10
+#define GGA_VALID_GEOIDALSEP		0x20
+#define GGA_VALID_DIFFAGE			0x40
+#define GGA_VALID_ID				0x80
 
 //	// Geographic position, LORAN-C
 //	struct glc_t
@@ -521,8 +559,8 @@ NAVI_ALIGNED(struct, gns_t)
 	double hdop;			// Horizontal Dilution of Precision
 	double antaltitude;		// Antenna altitude, m, re:mean-sea-level (geoid)
 	double geoidalsep;		// Geoidal separation, m
-	double diffage;			// Age of differential data
-	int id;					// Differential reference station ID
+	int diffage;			// Age of differential data, seconds
+	int id;					// Differential reference station ID, 1-1023
 };
 
 #define GNS_VALID_UTC					0x001

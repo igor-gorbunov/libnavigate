@@ -31,6 +31,7 @@
 #include "alm.h"
 #include "dtm.h"
 #include "gbs.h"
+#include "gga.h"
 #include "gll.h"
 #include "gns.h"
 #include "rmc.h"
@@ -105,6 +106,15 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_GGA:
+		{
+			const struct gga_t *pgga = (const struct gga_t *)msg;
+			tid = navi_talkerid_str(pgga->tid);
+			sfmt = navi_sentencefmt_str(navi_GGA);
+
+			if (navi_create_gga(pgga, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GLC:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;

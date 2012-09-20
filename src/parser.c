@@ -33,6 +33,7 @@
 #include "alm.h"
 #include "dtm.h"
 #include "gbs.h"
+#include "gga.h"
 #include "gll.h"
 #include "gns.h"
 #include "rmc.h"
@@ -156,6 +157,13 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		((struct gbs_t *)msg)->tid = tid;
 		return navi_parse_gbs((struct gbs_t *)msg, buffer + som + 7);
 	case navi_GGA:
+		if (msgsize < sizeof(struct gga_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gga_t *)msg)->tid = tid;
+		return navi_parse_gga((struct gga_t *)msg, buffer + som + 7);
 	case navi_GLC:
 		break;
 	case navi_GLL:

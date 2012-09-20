@@ -32,6 +32,7 @@ int main(void)
 	struct alm_t alm;
 	struct dtm_t dtm;
 	struct gbs_t gbs;
+	struct gga_t gga;
 	struct gll_t gll;
 	struct gns_t gns;
 	struct rmc_t rmc;
@@ -304,7 +305,7 @@ int main(void)
 					if (gns->vfields & GNS_VALID_GEOIDALSEP)
 						printf("\tgeoidal separation = %.12f\n", gns->geoidalsep);
 					if (gns->vfields & GNS_VALID_AGEOFDIFFDATA)
-						printf("\tage of dd = %.12f\n", gns->diffage);
+						printf("\tage of dd = %if\n", gns->diffage);
 					if (gns->vfields & GNS_VALID_DIFFREFSTATIONID)
 						printf("\tid = %d\n", gns->id);
 				}
@@ -513,6 +514,39 @@ int main(void)
 		printf("Composition of GBS failed (%d)\n", result);
 	}
 
+	// GGA
+	gga.tid = navi_GP;
+
+	gga.vfields = GGA_VALID_UTC | GGA_VALID_FIX | GGA_VALID_NMSATELLITES |
+		GGA_VALID_HDOP | GGA_VALID_ANTALTITUDE | GGA_VALID_GEOIDALSEP |
+		GGA_VALID_DIFFAGE | GGA_VALID_ID;
+	gga.utc.hour = 0;
+	gga.utc.min = 34;
+	gga.utc.sec = 16.;
+	gga.fix.latitude = 12.0;
+	gga.fix.latsign = navi_South;
+	gga.fix.longitude = 112.01;
+	gga.fix.lonsign = navi_West;
+	gga.gpsindicator = navi_GpsDifferential;
+	gga.nmsatellites = 8;
+	gga.hdop = 1.0;
+	gga.antaltitude = 8.1;
+	gga.geoidalsep = -1.2;
+	gga.diffage = 21;
+	gga.id = 1011;
+
+	result = navi_create_msg(navi_GGA, &gbs, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of GGA failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -583,13 +617,43 @@ int main(void)
 					if (gbs->vfields & GBS_VALID_EXPERRALT)
 						printf("\tExpected error in altitude: %f\n", gbs->experralt);
 					if (gbs->vfields & GBS_VALID_ID)
-						printf("\tFolt station ID: %u\n", gbs->id);
+						printf("\tFault station ID: %d\n", gbs->id);
 					if (gbs->vfields & GBS_VALID_PROBABILITY)
 						printf("\tProbability: %f\n", gbs->probability);
 					if (gbs->vfields & GBS_VALID_ESTIMATE)
 						printf("\tEstimated: %f\n", gbs->estimate);
 					if (gbs->vfields & GBS_VALID_DEVIATION)
 						printf("\tDeviation: %f\n", gbs->deviation);
+				}
+				break;
+			case navi_GGA:
+				{
+					struct gga_t *gga = (struct gga_t *)parsedbuffer;
+
+					printf("Received GGA:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(gga->tid), gga->tid);
+					if (gga->vfields & GGA_VALID_UTC)
+						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour,
+							gga->utc.min, gga->utc.sec);
+					if (gga->vfields & GGA_VALID_FIX)
+						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude,
+							navi_fixsign_str(gga->fix.latsign, 1), gga->fix.latsign);
+					if (gga->vfields & GGA_VALID_FIX)
+						printf("\tlongitude = %f %s (%d)\n", gga->fix.longitude,
+							navi_fixsign_str(gga->fix.lonsign, 1), gga->fix.lonsign);
+					printf("\tGPS quality indicator: %i\n", gga->gpsindicator);
+					if (gga->vfields & GGA_VALID_NMSATELLITES)
+						printf("\tNm of satellites in use: %i\n", gga->nmsatellites);
+					if (gga->vfields & GGA_VALID_HDOP)
+						printf("\tHDOP: %f\n", gga->hdop);
+					if (gga->vfields & GGA_VALID_ANTALTITUDE)
+						printf("\tAntenna altitude: %f\n", gga->antaltitude);
+					if (gga->vfields & GGA_VALID_GEOIDALSEP)
+						printf("\tGeoidal separation: %f\n", gga->geoidalsep);
+					if (gga->vfields & GGA_VALID_DIFFAGE)
+						printf("\tAge of differential GPS data: %i\n", gga->diffage);
+					if (gga->vfields & GGA_VALID_ID)
+						printf("\tRef. station ID: %i\n", gga->id);
 				}
 				break;
 			default:
