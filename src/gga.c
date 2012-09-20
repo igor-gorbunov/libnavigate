@@ -40,17 +40,10 @@ int navi_create_gga(const struct gga_t *msg, char *buffer,
 	char utc[32], fix[64], qi[2], nmsats[3], hdop[32], antalt[32],
 		geoidsep[32], ddage[32], id[32];
 
-	printf("1\n");
-
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GGA_VALID_UTC);
-
-	printf("1.5\n");
-
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
 		msg->vfields & GGA_VALID_FIX);
-
-	printf("2\n");
 
 	(void)navi_split_integer(msg->gpsindicator, bytes, 1, 10);
 	msglength += navi_print_decfield(bytes, 1, qi, sizeof(qi));
@@ -58,8 +51,6 @@ int navi_create_gga(const struct gga_t *msg, char *buffer,
 	(void)navi_split_integer(msg->nmsatellites, bytes, 2, 10);
 	msglength += navi_print_decfield(bytes,
 		msg->vfields & GGA_VALID_NMSATELLITES ? 2 : 0, nmsats, sizeof(nmsats));
-
-	printf("3\n");
 
 	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
 		msg->vfields & GGA_VALID_HDOP);
@@ -70,13 +61,9 @@ int navi_create_gga(const struct gga_t *msg, char *buffer,
 	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage),
 		msg->vfields & GGA_VALID_DIFFAGE);
 
-	printf("4\n");
-
 	(void)navi_split_integer(msg->id, bytes, 4, 10);
 	msglength += navi_print_decfield(bytes,
 		msg->vfields & GGA_VALID_ID ? 4 : 0, id, sizeof(id));
-
-	printf("5\n");
 
 	if (msglength > maxsize)
 	{
@@ -121,7 +108,6 @@ int navi_parse_gga(struct gga_t *msg, char *buffer)
 	{
 		msg->vfields |= GGA_VALID_FIX;
 	}
-
 	i += nmread;
 
 	if (navi_parse_decfield(buffer + i, 1, bytes, &nmread) != 0)

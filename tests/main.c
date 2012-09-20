@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 int main(void)
 {
@@ -35,6 +36,7 @@ int main(void)
 	struct gga_t gga;
 	struct gll_t gll;
 	struct gns_t gns;
+	struct grs_t grs;
 	struct rmc_t rmc;
 	struct vtg_t vtg;
 	struct zda_t zda;
@@ -547,6 +549,46 @@ int main(void)
 		printf("Composition of GGA failed (%d)\n", result);
 	}
 
+	// GRS
+	memset(&grs, 0, sizeof(grs));
+	grs.tid = navi_GP;
+
+	grs.utc.hour = 0;
+	grs.utc.min = 34;
+	grs.utc.sec = 16.;
+
+	grs.mode = 0;
+
+	grs.residuals[0].notnull = 1;
+	grs.residuals[0].residual = 1.0;
+
+	grs.residuals[1].notnull = 1;
+	grs.residuals[1].residual = 0.2;
+
+	grs.residuals[2].notnull = 1;
+	grs.residuals[2].residual = 0.34;
+
+	grs.residuals[3].notnull = 1;
+	grs.residuals[3].residual = 1.01;
+
+	grs.residuals[4].notnull = 1;
+	grs.residuals[4].residual = 0.98;
+
+	grs.residuals[7].notnull = 1;
+	grs.residuals[7].residual = 0.1;
+
+	result = navi_create_msg(navi_GRS, &grs, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of GRS failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -656,6 +698,25 @@ int main(void)
 						printf("\tRef. station ID: %i\n", gga->id);
 				}
 				break;
+			case navi_GRS:
+				{
+					int i;
+					struct grs_t *grs = (struct grs_t *)parsedbuffer;
+
+					printf("Received GRS:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(grs->tid), grs->tid);
+					printf("\tutc = %02u:%02u:%06.3f\n", grs->utc.hour,
+							grs->utc.min, grs->utc.sec);
+					printf("\tmode = %i\n", grs->mode);
+					for (i = 0; i < 12; i++)
+					{
+						if (grs->residuals[i].notnull)
+						{
+							printf("\tResidual %i = %f\n", i, grs->residuals[i].residual);
+						}
+					}
+				}
+				break;
 			default:
 				break;
 			}
@@ -699,6 +760,7 @@ int main(void)
 	printf("sizeof struct gga_t = %u\n", sizeof(struct gga_t));
 	printf("sizeof struct gll_t = %u\n", sizeof(struct gll_t));
 	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
+	printf("sizeof struct grs_t = %u\n", sizeof(struct grs_t));
 	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
 	printf("sizeof struct vtg_t = %u\n", sizeof(struct vtg_t));
 	printf("sizeof struct zda_t = %u\n", sizeof(struct zda_t));

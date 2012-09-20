@@ -373,6 +373,7 @@ NAVI_ALIGNED(struct, navi_gpsalm_t)
 //	{
 //	};
 
+//
 // GPS almanac data
 NAVI_ALIGNED(struct, alm_t)
 {
@@ -478,6 +479,7 @@ NAVI_ALIGNED(struct, dtm_t)
 //	{
 //	};
 
+//
 // GNSS Satellite fault detection
 NAVI_ALIGNED(struct, gbs_t)
 {
@@ -501,6 +503,7 @@ NAVI_ALIGNED(struct, gbs_t)
 #define GBS_VALID_ESTIMATE		0x10
 #define GBS_VALID_DEVIATION		0x20
 
+//
 // Global positioning system fix data
 NAVI_ALIGNED(struct, gga_t)
 {
@@ -573,17 +576,30 @@ NAVI_ALIGNED(struct, gns_t)
 #define GNS_VALID_AGEOFDIFFDATA			0x080
 #define GNS_VALID_DIFFREFSTATIONID		0x100
 
-//	// GNSS range residuals
-//	struct grs_t
-//	{
-//	};
+//
+// GNSS range residuals
+NAVI_ALIGNED(struct, grs_t)
+{
+	int tid;				// talker id
+	struct navi_utc_t utc;	// UTC time
+	int mode;				// Mode:
+							// 0 = residuals were used to calculate the position
+							// given in the matching GGA or GNS sentence
+							// 1 = residuals were recomputed after the GGA or GNS
+							// position was computed
+	struct
+	{
+		int notnull;		// 0 = null field, 1 = not null
+		double residual;	// residual for given satellite ID
+	} residuals[12];		// range residuals
+};
 
 //	// GNSS DOP and active satellites
 //	struct gsa_t
 //	{
 //	};
 
-//	// GNSS pseudorange error statistics
+//	// GNSS pseudorange noise statistics
 //	struct gst_t
 //	{
 //	};
