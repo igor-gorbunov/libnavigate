@@ -503,38 +503,6 @@ int navi_print_miarray(const int mi[], int miquant, char *buffer)
 }
 
 //
-// navi_checksum
-//
-int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
-{
-	int i;
-	unsigned ucs = 0;
-
-	assert(msg != NULL);
-	assert(maxsize > 0);
-
-	// Skip up to next character after '$'
-	for (i = 0; msg[i] != '$' && i < maxsize; i++);
-
-	if (i >= maxsize)
-		return -1;
-	
-	for (i += 1; msg[i] != '*' && i < maxsize; i++)
-		ucs = ucs ^ msg[i];
-	
-	if (i >= maxsize)
-		return -1;
-
-	if (cs)
-		*cs = ucs;
-
-	if (csstr)
-		snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
-
-	return navi_Ok;
-}
-
-//
 // navi_sentencefmt_str
 //
 const char *navi_sentencefmt_str(int fmt)

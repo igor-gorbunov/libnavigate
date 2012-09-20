@@ -99,11 +99,6 @@ int navi_create_alm(const struct alm_t *msg, char *buffer,
 			msg->almlist[i].vfields & GPSALM_VALID_OMEGA0 ? 6 : 0,
 			omega0, sizeof(omega0));
 
-		(void)navi_split_integer(msg->almlist[i].omega0, bytes, 6, 16);
-		msglength += navi_print_hexfield(bytes,
-			msg->almlist[i].vfields & GPSALM_VALID_OMEGA0 ? 6 : 0,
-			omega0, sizeof(omega0));
-
 		(void)navi_split_integer(msg->almlist[i].m0, bytes, 6, 16);
 		msglength += navi_print_hexfield(bytes,
 			msg->almlist[i].vfields & GPSALM_VALID_M0 ? 6 : 0,
@@ -129,16 +124,15 @@ int navi_create_alm(const struct alm_t *msg, char *buffer,
 			"$%s%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s*",
 			tid, sfmt, totalnm, msgnm, prnnm, weeknm, svhealth, e,
 			toa, sigmai, omegadot, sqrtsemi, omega, omega0, m0, af0, af1);
-		total += msglength;
+
 		if (navi_checksum(buffer + total, msglength, csstr, NULL) != navi_Ok)
 			return navi_Error;
 		strcat(buffer, csstr);
 		strcat(buffer, "\r\n");
-		total += 4;
+		total = total + msglength + 4;
 	}
 
 	*nmwritten = total;
-
 	return navi_Ok;
 }
 
@@ -169,7 +163,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -181,7 +175,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -193,7 +187,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 2, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -205,7 +199,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 4, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -217,7 +211,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 2, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -229,7 +223,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 4, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -241,7 +235,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 4, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -253,7 +247,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 6, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -265,7 +259,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 6, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -277,7 +271,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 6, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -289,7 +283,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 6, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -301,7 +295,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 3, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -313,7 +307,7 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	if (navi_parse_hexfield(buffer + i, 3, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -322,7 +316,6 @@ int navi_parse_alm(struct alm_t *msg, char *buffer)
 	}
 
 	msg->nmsatellites = 1;
-
 	return navi_Ok;
 }
 

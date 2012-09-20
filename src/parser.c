@@ -1314,6 +1314,44 @@ int navi_parse_sentencefmt(char *buffer, int *nmread)
 //
 int navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
 {
+	int result = navi_Ok, i = 0, c;
+
+	if ((buffer[i] == ',') || (buffer[i] == '*'))
+	{
+		navierr_set_last(navi_NullField);
+		result = navi_Error;
+		goto _Exit;
+	}
+
+	for (i = 0; i < fieldwidth; i++)
+	{
+		c = buffer[i];
+		if (isxdigit(c))
+		{
+			if (c >= '0' && c <= '9')
+				bytes[i] = (char)(c - '0');
+			else if (c >= 'A' && c <= 'F')
+				bytes[i] = (char)(c - 'A' + 10);
+			else
+				bytes[i] = (char)(c - 'a' + 10);
+		}
+		else
+		{
+			navierr_set_last(navi_InvalidMessage);
+			result = navi_Error;
+			goto _Exit;
+		}
+	}
+
+	if ((buffer[i] != ',') && (buffer[i] != '*'))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+_Exit:
+	*nmread = i + 1;
+	return result;
 }
 
 //
@@ -1321,5 +1359,38 @@ int navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
 //
 int navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
 {
+	int result = navi_Ok, i = 0, c;
+
+	if ((buffer[i] == ',') || (buffer[i] == '*'))
+	{
+		navierr_set_last(navi_NullField);
+		result = navi_Error;
+		goto _Exit;
+	}
+
+	for (i = 0; i < fieldwidth; i++)
+	{
+		c = buffer[i];
+		if (isdigit(c))
+		{
+			bytes[i] = (char)(c - '0');
+		}
+		else
+		{
+			navierr_set_last(navi_InvalidMessage);
+			result = navi_Error;
+			goto _Exit;
+		}
+	}
+
+	if ((buffer[i] != ',') && (buffer[i] != '*'))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+_Exit:
+	*nmread = i + 1;
+	return result;
 }
 

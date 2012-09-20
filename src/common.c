@@ -189,6 +189,9 @@ int remove_trailing_zeroes(char *buffer, int length)
 	return length;
 }
 
+//
+// navi_set_position
+//
 int navi_set_position(double latitude, double longitude,
 	struct navi_position_t *out)
 {
@@ -226,6 +229,9 @@ int navi_set_position(double latitude, double longitude,
 	return navi_Ok;
 }
 
+//
+// navi_get_position
+//
 int navi_get_position(struct navi_position_t *in, double *latitude,
 	double *longitude)
 {
@@ -250,6 +256,9 @@ int navi_get_position(struct navi_position_t *in, double *latitude,
 	return navi_Ok;
 }
 
+//
+// navi_split_integer
+//
 int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
 {
 	int i;
@@ -260,7 +269,7 @@ int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
 		return navi_Error;
 	}
 
-	for (i = width - 1; i > 0; i--)
+	for (i = width - 1; i >= 0; i--)
 	{
 		bytes[i] = value % radix;
 		value /= radix;
@@ -269,6 +278,9 @@ int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
 	return navi_Ok;
 }
 
+//
+// navi_compose_integer
+//
 unsigned int navi_compose_integer(char bytes[], int width, int radix)
 {
 	int i;
@@ -278,6 +290,44 @@ unsigned int navi_compose_integer(char bytes[], int width, int radix)
 		result = result * radix + bytes[i];
 
 	return result;
+}
+
+//
+// navi_checksum
+//
+int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
+{
+	int i;
+	unsigned ucs = 0;
+
+	assert(msg != NULL);
+	assert(maxsize > 0);
+
+	// Skip up to next character after '$'
+	for (i = 0; msg[i] != '$' && i < maxsize; i++);
+
+	if (i >= maxsize)
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+
+	for (i += 1; msg[i] != '*' && i < maxsize; i++)
+		ucs = ucs ^ msg[i];
+
+	if (i >= maxsize)
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+
+	if (cs)
+		*cs = ucs;
+
+	if (csstr)
+		snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
+
+	return navi_Ok;
 }
 
 const char *navi_fmtlist[] =
