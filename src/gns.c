@@ -84,7 +84,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -95,7 +95,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -107,14 +107,14 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	j = sizeof(msg->mi) / sizeof(msg->mi[0]);
 	if (navi_parse_miarray(buffer + i, msg->mi, &j, &nmread) != 0)
 	{
-		return -1;
+		return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -126,7 +126,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_number(buffer + i, &msg->hdop, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -137,7 +137,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_number(buffer + i, &msg->antaltitude, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -148,7 +148,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_number(buffer + i, &msg->geoidalsep, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -159,7 +159,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_number(buffer + i, &msg->diffage, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -170,7 +170,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{

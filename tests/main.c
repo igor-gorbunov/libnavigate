@@ -31,6 +31,7 @@ int main(void)
 	char buffer[1024];
 	struct alm_t alm;
 	struct dtm_t dtm;
+	struct gbs_t gbs;
 	struct gll_t gll;
 	struct gns_t gns;
 	struct rmc_t rmc;
@@ -127,8 +128,8 @@ int main(void)
 		GNS_VALID_HDOP | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
 	gns.utc.hour = 20;
-	gns.utc.min = 0;
-	gns.utc.sec = 0.;
+	gns.utc.min = 7;
+	gns.utc.sec = 1.;
 	gns.fix.latitude = 60.;
 	gns.fix.latsign = navi_North;
 	gns.fix.longitude = 30.;
@@ -271,8 +272,8 @@ int main(void)
 						printf("\tlongitude = %.12f %s (%d)\n", gll->fix.longitude,
 							navi_fixsign_str(gll->fix.lonsign, 1), gll->fix.lonsign);
 					if (gll->vfields & GLL_VALID_UTC)
-						printf("\tutc = %d %d %f\n", gll->utc.hour, gll->utc.min,
-							gll->utc.sec);
+						printf("\tutc = %02u:%02u:%06.3f\n", gll->utc.hour,
+							gll->utc.min, gll->utc.sec);
 
 					printf("\tstatus = %d\n", gll->status);
 					printf("\tmode indicator = %d\n", gll->mi);
@@ -285,7 +286,7 @@ int main(void)
 						navi_talkerid_str(gns->tid), gns->tid);
 
 					if (gns->vfields & GNS_VALID_UTC)
-						printf("\tutc = %d %d %f\n", gns->utc.hour,
+						printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour,
 							gns->utc.min, gns->utc.sec);
 					if (gns->vfields & GNS_VALID_POSITION_FIX)
 						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude,
@@ -315,7 +316,7 @@ int main(void)
 						navi_talkerid_str(rmc->tid), rmc->tid);
 
 					if (rmc->vfields & RMC_VALID_UTC)
-						printf("\tutc = %d %d %f\n", rmc->utc.hour,
+						printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour,
 							rmc->utc.min, rmc->utc.sec);
 					printf("\tstatus = %d\n", rmc->status);
 					if (rmc->vfields & RMC_VALID_POSITION_FIX)
@@ -359,7 +360,7 @@ int main(void)
 						navi_talkerid_str(zda->tid), zda->tid);
 
 					if (zda->vfields & ZDA_VALID_UTC)
-						printf("\tutc = %d %d %f\n", zda->utc.hour,
+						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour,
 							zda->utc.min, zda->utc.sec);
 					if (zda->vfields & ZDA_VALID_DAY)
 						printf("\tday = %d\n", zda->date.day);
@@ -483,6 +484,35 @@ int main(void)
 		printf("Composition of ALM failed (%d)\n", result);
 	}
 
+	// GBS
+	gbs.tid = navi_GL;
+
+	gbs.vfields = GBS_VALID_EXPERRLATLON | GBS_VALID_EXPERRALT |
+		GBS_VALID_ID | GBS_VALID_PROBABILITY | GBS_VALID_ESTIMATE |
+		GBS_VALID_DEVIATION;
+	gbs.utc.hour = 0;
+	gbs.utc.min = 34;
+	gbs.utc.sec = 16.;
+	gbs.experrlat = 1.4;
+	gbs.experrlon = 0.12;
+	gbs.experralt = 1.1;
+	gbs.id = 66;
+	gbs.probability = 0.12;
+	gbs.estimate = 1.1;
+	gbs.deviation = 1.3;
+
+	result = navi_create_msg(navi_GBS, &gbs, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of GBS failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -538,6 +568,30 @@ int main(void)
 						printf("\tClock parameter 2: 0x%x\n", alm->almlist[0].af1);
 				}
 				break;
+			case navi_GBS:
+				{
+					struct gbs_t *gbs = (struct gbs_t *)parsedbuffer;
+
+					printf("Received GBS:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(gbs->tid), gbs->tid);
+					printf("\tutc = %02u:%02u:%06.3f\n", gbs->utc.hour,
+						gbs->utc.min, gbs->utc.sec);
+					if (gbs->vfields & GBS_VALID_EXPERRLATLON)
+						printf("\tExpected error in latitude: %f\n", gbs->experrlat);
+					if (gbs->vfields & GBS_VALID_EXPERRLATLON)
+						printf("\tExpected error in longitude: %f\n", gbs->experrlon);
+					if (gbs->vfields & GBS_VALID_EXPERRALT)
+						printf("\tExpected error in altitude: %f\n", gbs->experralt);
+					if (gbs->vfields & GBS_VALID_ID)
+						printf("\tFolt station ID: %u\n", gbs->id);
+					if (gbs->vfields & GBS_VALID_PROBABILITY)
+						printf("\tProbability: %f\n", gbs->probability);
+					if (gbs->vfields & GBS_VALID_ESTIMATE)
+						printf("\tEstimated: %f\n", gbs->estimate);
+					if (gbs->vfields & GBS_VALID_DEVIATION)
+						printf("\tDeviation: %f\n", gbs->deviation);
+				}
+				break;
 			default:
 				break;
 			}
@@ -578,6 +632,7 @@ int main(void)
 
 	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
 	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
+	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));
 	printf("sizeof struct gll_t = %u\n", sizeof(struct gll_t));
 	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
 	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
