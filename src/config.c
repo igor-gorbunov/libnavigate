@@ -26,6 +26,7 @@ NAVI_ALIGNED(struct, navi_config_t)
 {
 	unsigned int caps;		// capabilities of the library
 	const char *version;	// version of the library
+	int presicion;			// precision of generated variable numbers
 };
 
 static struct navi_config_t g_navi_config_t =
@@ -40,10 +41,29 @@ static struct navi_config_t g_navi_config_t =
 #endif //  NO_PARSER
 
 	0,
-	LIBNAVIGATE_VERSION_STRING
+	LIBNAVIGATE_VERSION_STRING,
+	5
 };
 
 unsigned int naviconf_get_caps(void)
 {
 	return g_navi_config_t.caps;
 }
+
+int naviconf_get_presicion(void)
+{
+	return g_navi_config_t.presicion;
+}
+
+int naviconf_set_presicion(int precision)
+{
+	if ((precision < 0) || (precision > 15))
+	{
+		navierr_set_last(navi_InvalidParameter);
+		return navi_Error;
+	}
+
+	g_navi_config_t.presicion = precision;
+	return navi_Ok;
+}
+

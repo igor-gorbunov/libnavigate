@@ -77,6 +77,14 @@ NAVI_EXTERN(int) navi_parse_utc(char *buffer, struct navi_utc_t *utc,
 NAVI_EXTERN(int) navi_parse_status(char *buffer, int *status, int *nmread);
 
 //
+// Parses GSA sentence 2D/3D switching mode in the form of 'M | A'.
+// The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_gsamode(char *buffer, int *mode, int *nmread);
+
+//
 // Parses mode indicator in the form of 'A | D | E | M | S | N'.
 // Shall not be null field. The field must end with ',' or '*'
 //
@@ -91,6 +99,24 @@ NAVI_EXTERN(int) navi_parse_modeindicator(char *buffer, int *mi, int *nmread);
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
 NAVI_EXTERN(int) navi_parse_number(char *buffer, double *parsed, int *nmread);
+
+//
+// Parses fixed length hexadecimal field, MSB on the left: 'hh-'.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_hexfield(char *buffer, int fieldwidth,
+		char bytes[], int *nmread);
+
+//
+// Parses fixed length decimal field: 'xx-'.
+// May be null field. The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_decfield(char *buffer, int fieldwidth,
+		char bytes[], int *nmread);
 
 //
 // Parses datum field in the form of 'ccc'
@@ -153,6 +179,14 @@ NAVI_EXTERN(int) navi_parse_talkerid(char *buffer, int *nmread);
 //
 // Looks up sentence formatter
 NAVI_EXTERN(int) navi_parse_sentencefmt(char *buffer, int *nmread);
+
+//
+// Extracts the latitude and longitude from the navi_position_t structure and
+// converts them to radians.
+// Output latitude is in the range of [-pi, +pi].
+// Output longitude in the range of [0, +2pi].
+NAVI_EXTERN(int) navi_get_position(struct navi_position_t *in,
+		double *latitude, double *longitude);
 
 NAVI_END_DECL
 

@@ -66,6 +66,10 @@ NAVI_EXTERN(const char *) navi_status_str(int status);
 NAVI_EXTERN(const char *) navi_modeindicator_str(int mi);
 
 //
+// Returns the GSA 2D/3D switching mode
+NAVI_EXTERN(const char *) navi_gsamode_str(int mode, int notnull);
+
+//
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_position_fix(const struct navi_position_t *fix,
@@ -78,6 +82,20 @@ NAVI_EXTERN(int) navi_print_number(double value, char *buffer,
 		int maxsize, int notnull);
 
 //
+// Prints fixed length hexadecimal numbers, MSB on the left.
+// If fieldwidth equals 0, the field is considered to be null.
+// Returns the number of printed characters
+NAVI_EXTERN(int) navi_print_hexfield(const char bytes[], int fieldwidth,
+		char *buffer, int maxsize);
+
+//
+// Prints fixed length decimal numbers
+// If fieldwidth equals 0, the field is considered to be null.
+// Returns the number of printed characters
+NAVI_EXTERN(int) navi_print_decfield(const char bytes[], int fieldwidth,
+		char *buffer, int maxsize);
+
+//
 // Prints UTC time
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
@@ -87,6 +105,17 @@ NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 // Prints array of mode indicators
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
+
+//
+// Fills in the navi_position_t structure with latitude and longitude
+// given as arguments in radians.
+// Latitude is provided in the range of [-pi/2, +pi/2] and the result is within
+// [90°S, 90°N].
+// The longitude is provided in the range of [-pi, +2pi) and result is within
+// [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
+// and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
+NAVI_EXTERN(int) navi_set_position(double latitude, double longitude,
+		struct navi_position_t *out);
 
 NAVI_END_DECL
 

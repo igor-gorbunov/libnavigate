@@ -262,6 +262,33 @@ enum
 };
 
 //
+// GPS quality indicator
+//
+enum naviGpsQualityIndicator_t
+{
+	navi_GpsInvalid = 0,	// Fix not available or invalid
+	navi_GpsSpsMode = 1,	// GPS SPS mode, fix valid
+	navi_GpsDifferential = 2,	// differential GPS, SPS mode, fix valid
+	navi_GpsPpsMode = 3,	// GPS PPS mode, fix valid
+	navi_GpsFixedRtk = 4,	// Real Time Kinematic. Satellite system used in
+							// RTK mode with fixed integers
+	navi_GpsFloatRtk = 5,	// Float RTK. Satellite system used in
+							// RTK mode with floating integers
+	navi_GpsEstimated = 6,	// Estimated (dead reckoning) mode
+	navi_GpsManual = 7,		// Manual input mode
+	navi_GpsSimulator = 8	// Simulator mode
+};
+
+//
+// GSA message 2D/3D switching mode
+//
+enum naviGsaSwitchMode_t
+{
+	navi_GsaManual = 0,		// manual, forced to operate in 2D or 3D mode
+	navi_GsaAutomatic = 1	// automatic, allowed to automatically switch 2D/3D
+};
+
+//
 // Holds UTC time (hours, minutes, seconds and
 // decimal fraction of seconds)
 //
@@ -310,6 +337,93 @@ NAVI_ALIGNED(struct, navi_position_t)
 	int lonsign;		// E/W
 };
 
+//
+// Holds GPS almanac data for one satellite
+//
+NAVI_ALIGNED(struct, navi_gpsalm_t)
+{
+	unsigned vfields;		// valid fields, bitwise or of GPSALM_VALID_xxx
+	unsigned satelliteprn;	// 01 to 32
+	unsigned gpsweek;		// 0 to 9999
+	unsigned svhealth;		// SV health
+	unsigned e;				// eccentricity
+	unsigned toa;			// almanac reference time
+	unsigned sigmai;		// inclination angle
+	unsigned omegadot;		// rate of right ascension
+	unsigned sqrtsemiaxis;	// root of semi-major axis
+	unsigned omega;			// argument of perigee
+	unsigned omega0;		// longitude of ascension node
+	unsigned m0;			// mean anomaly
+	unsigned af0;			// clock parameter
+	unsigned af1;			// clock parameter
+};
+
+#define GPSALM_VALID_SATELLITEPRN		0x0001
+#define GPSALM_VALID_GPSWEEK			0x0002
+#define GPSALM_VALID_SVHEALTH			0x0004
+#define GPSALM_VALID_E					0x0008
+#define GPSALM_VALID_TOA				0x0010
+#define GPSALM_VALID_SIGMAI				0x0020
+#define GPSALM_VALID_OMEGADOT			0x0040
+#define GPSALM_VALID_SQRTSEMIAXIS		0x0080
+#define GPSALM_VALID_OMEGA				0x0100
+#define GPSALM_VALID_OMEGA0				0x0200
+#define GPSALM_VALID_M0					0x0400
+#define GPSALM_VALID_AF0				0x0800
+#define GPSALM_VALID_AF1				0x1000
+
+//
+// Holds GLONASS almanac data for one satellite
+//
+NAVI_ALIGNED(struct, navi_gloalm_t)
+{
+	unsigned vfields;	// valid fields, bitwise or of GLOALM_VALID_xxx
+	unsigned satslot;	// 01 to 24
+	unsigned daycount;	// calendar day count within the four-year period,
+						// beginning with the previous leap year
+	unsigned svhealth;	// generalized health and carrier frequency number
+	unsigned e;			// eccentricity
+	unsigned dot;		// rate of change of the draconic circling time
+	unsigned omega;		// argument of perigee
+	unsigned tauc_high;	// 16 MSB of system time scale correction
+	unsigned deltat;	// correction to the average value of the
+						// draconic circling time
+	unsigned t;			// time of the ascension node almanac reference time
+	unsigned lambda;	// Greenwich longitude of the ascension node
+	unsigned deltai;	// correction to the average value of the inclination angle
+	unsigned tauc_low;	// 12 LSB of system time scale correction
+	unsigned taun;		// cource value of the time scale shift
+};
+
+#define GLOALM_VALID_SATSLOT		0x001
+#define GLOALM_VALID_DAYCOUNT		0x002
+#define GLOALM_VALID_SVHEALTH		0x004
+#define GLOALM_VALID_E				0x008
+#define GLOALM_VALID_DOT			0x010
+#define GLOALM_VALID_OMEGA			0x020
+#define GLOALM_VALID_TAUC			0x040
+#define GLOALM_VALID_DELTAT			0x080
+#define GLOALM_VALID_T				0x100
+#define GLOALM_VALID_LAMBDA			0x200
+#define GLOALM_VALID_DELTAI			0x400
+#define GLOALM_VALID_TAUN			0x800
+
+//
+// Holds satellite information for one satellite
+//
+NAVI_ALIGNED(struct, navi_satinfo_t)
+{
+	unsigned vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
+	unsigned id;		// satellite ID number
+	unsigned elevation;	// degrees 00-90
+	unsigned azimuth;	// degrees true, 000-359
+	unsigned snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+};
+
+#define SATINFO_VALID_ELEVATION		0x1
+#define SATINFO_VALID_AZIMUTH		0x2
+#define SATINFO_VALID_SNR			0x4
+
 //	// Waypoint arrival alarm
 //	struct aam_t
 //	{
@@ -320,10 +434,16 @@ NAVI_ALIGNED(struct, navi_position_t)
 //	{
 //	};
 
-//	// GPS almanac data
-//	struct alm_t
-//	{
-//	};
+//
+// GPS almanac data
+NAVI_ALIGNED(struct, alm_t)
+{
+	int tid;				// talker id
+	int nmsatellites;		// number of satellites in the almlist array
+	struct navi_gpsalm_t almlist[32];	// almanacs of GPS satellites
+	int totalnm;	// total number of messages (filled during parsing)
+	int msgnm;		// number of received message
+};
 
 //	// Set alarm state
 //	struct alr_t
@@ -420,15 +540,55 @@ NAVI_ALIGNED(struct, dtm_t)
 //	{
 //	};
 
-//	// GNSS Satellite fault detection
-//	struct gbs_t
-//	{
-//	};
+//
+// GNSS Satellite fault detection
+NAVI_ALIGNED(struct, gbs_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GBS_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	double experrlat;		// expected error in latitude
+	double experrlon;		// expected error in longitude
+	double experralt;		// expected error in altitude
+	int id;					// ID number of most likely failed satellite
+	double probability;		// probability of missed detection for most likely
+							// failed satellite
+	double estimate;		// estimate of bias on most likely failed satellite
+	double deviation;		// standard deviation of bias estimate
+};
 
-//	// Global positioning system fix data
-//	struct gga_t
-//	{
-//	};
+#define GBS_VALID_EXPERRLATLON	0x01
+#define GBS_VALID_EXPERRALT		0x02
+#define GBS_VALID_ID			0x04
+#define GBS_VALID_PROBABILITY	0x08
+#define GBS_VALID_ESTIMATE		0x10
+#define GBS_VALID_DEVIATION		0x20
+
+//
+// Global positioning system fix data
+NAVI_ALIGNED(struct, gga_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GGA_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	struct navi_position_t fix;	// latitude, longitude fix
+	int gpsindicator;		// GPS quality indicator
+	int nmsatellites;		// Number of satellites in use (00-12)
+	double hdop;			// Horizontal dilution of precision
+	double antaltitude;		// Antenna altitude above/below mean sea level (geoid)
+	double geoidalsep;		// Geoidal separation
+	int diffage;			// Age of differential GPS data, seconds
+	int id;					// Differential reference station ID, 1-1023
+};
+
+#define GGA_VALID_UTC				0x01
+#define GGA_VALID_FIX				0x02
+#define GGA_VALID_NMSATELLITES		0x04
+#define GGA_VALID_HDOP				0x08
+#define GGA_VALID_ANTALTITUDE		0x10
+#define GGA_VALID_GEOIDALSEP		0x20
+#define GGA_VALID_DIFFAGE			0x40
+#define GGA_VALID_ID				0x80
 
 //	// Geographic position, LORAN-C
 //	struct glc_t
@@ -463,8 +623,8 @@ NAVI_ALIGNED(struct, gns_t)
 	double hdop;			// Horizontal Dilution of Precision
 	double antaltitude;		// Antenna altitude, m, re:mean-sea-level (geoid)
 	double geoidalsep;		// Geoidal separation, m
-	double diffage;			// Age of differential data
-	int id;					// Differential reference station ID
+	int diffage;			// Age of differential data, seconds
+	int id;					// Differential reference station ID, 1-1023
 };
 
 #define GNS_VALID_UTC					0x001
@@ -477,25 +637,81 @@ NAVI_ALIGNED(struct, gns_t)
 #define GNS_VALID_AGEOFDIFFDATA			0x080
 #define GNS_VALID_DIFFREFSTATIONID		0x100
 
-//	// GNSS range residuals
-//	struct grs_t
-//	{
-//	};
+//
+// GNSS range residuals
+NAVI_ALIGNED(struct, grs_t)
+{
+	int tid;				// talker id
+	struct navi_utc_t utc;	// UTC time
+	int mode;				// Mode: 
+							// 0 = residuals were used to calculate the position
+							// given in the matching GGA or GNS sentence
+							// 1 = residuals were recomputed after the GGA or GNS
+							// position was computed
+	struct
+	{
+		int notnull;		// 0 = null field, 1 = not null
+		double residual;	// residual for given satellite ID
+	} residuals[12];		// range residuals
+};
 
-//	// GNSS DOP and active satellites
-//	struct gsa_t
-//	{
-//	};
+//
+// GNSS DOP and active satellites
+NAVI_ALIGNED(struct, gsa_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GSA_VALID_xxx
+	int switchmode;			// Mode: one of naviGsaSwitchMode_t constants
+	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D
+	struct
+	{
+		int notnull;		// 0 = null field, 1 = not null
+		int id;				// ID number of satellite used in solution
+	} satellites[12];		// satellites ID numbers array
+	double pdop;			// Position dilution of precision
+	double hdop;			// Horizontal dilution of precision
+	double vdop;			// Vertical dilution of precision
+};
 
-//	// GNSS pseudorange error statistics
-//	struct gst_t
-//	{
-//	};
+#define GSA_VALID_SWITCHMODE	0x01
+#define GSA_VALID_FIXMODE		0x02
+#define GSA_VALID_PDOP			0x04
+#define GSA_VALID_HDOP			0x08
+#define GSA_VALID_VDOP			0x10
 
-//	// GNSS satellites in view
-//	struct gsv_t
-//	{
-//	};
+//
+// GNSS pseudorange noise statistics
+NAVI_ALIGNED(struct, gst_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GST_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	double rms;			// RMS value of the standard deviation
+	double devmajor;	// Standard deviation of semi-major axis of error ellipse, m
+	double devminor;	// Standard deviation of semi-minor axis of error ellipse, m
+	double orientmajor;	// Orientation of semi-major axis of error ellipse,
+						// degrees from true north
+	double devlaterr;	// Standard deviation of latitude error, m
+	double devlonerr;	// Standard deviation of longitude error, m
+	double devalterr;	// Standard deviation of altitude error, m
+};
+
+#define GST_VALID_RMS				0x1
+#define GST_VALID_STDDEVELLIPSE		0x2
+#define GST_VALID_DEVLATLONERR		0x4
+#define GST_VALID_DEVALTERR			0x8
+
+//
+// GNSS satellites in view
+NAVI_ALIGNED(struct, gsv_t)
+{
+	int tid;		// talker id
+	int totalsv;	// total number of satellites in view
+	int nmsatellites;				// number of satellites in info array
+	struct navi_satinfo_t info[36];	// satellite info array
+	int totalnm;	// total number of messages (filled during parsing)
+	int msgnm;		// number of received message
+};
 
 //	// Heading, deviation and variation
 //	struct hdg_t
@@ -537,10 +753,16 @@ NAVI_ALIGNED(struct, gns_t)
 //	{
 //	};
 
-//	// Glonass almanac data
-//	struct mla_t
-//	{
-//	};
+//
+// GLONASS almanac data
+NAVI_ALIGNED(struct, mla_t)
+{
+	int tid;				// talker id
+	int nmsatellites;		// number of satellites in the almlist array
+	struct navi_gloalm_t almlist[32];	// almanacs of GLONASS satellites
+	int totalnm;	// total number of messages (filled during parsing)
+	int msgnm;		// number of received message
+};
 
 //	// MKS receiver interface
 //	struct msk_t
