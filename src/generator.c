@@ -37,6 +37,7 @@
 #include "grs.h"
 #include "gsa.h"
 #include "gst.h"
+#include "gsv.h"
 #include "mla.h"
 #include "rmc.h"
 #include "vtg.h"
@@ -173,6 +174,7 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_GSV:
+		return navi_create_gsv((const struct gsv_t *)msg, buffer, maxsize, nmwritten);
 	case navi_HDG:
 	case navi_HDT:
 	case navi_HMR:

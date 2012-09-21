@@ -408,6 +408,22 @@ NAVI_ALIGNED(struct, navi_gloalm_t)
 #define GLOALM_VALID_DELTAI			0x400
 #define GLOALM_VALID_TAUN			0x800
 
+//
+// Holds satellite information for one satellite
+//
+NAVI_ALIGNED(struct, navi_satinfo_t)
+{
+	unsigned vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
+	unsigned id;		// satellite ID number
+	unsigned elevation;	// degrees 00-90
+	unsigned azimuth;	// degrees true, 000-359
+	unsigned snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+};
+
+#define SATINFO_VALID_ELEVATION		0x1
+#define SATINFO_VALID_AZIMUTH		0x2
+#define SATINFO_VALID_SNR			0x4
+
 //	// Waypoint arrival alarm
 //	struct aam_t
 //	{
@@ -685,10 +701,17 @@ NAVI_ALIGNED(struct, gst_t)
 #define GST_VALID_DEVLATLONERR		0x4
 #define GST_VALID_DEVALTERR			0x8
 
-//	// GNSS satellites in view
-//	struct gsv_t
-//	{
-//	};
+//
+// GNSS satellites in view
+NAVI_ALIGNED(struct, gsv_t)
+{
+	int tid;		// talker id
+	int totalsv;	// total number of satellites in view
+	int nmsatellites;				// number of satellites in info array
+	struct navi_satinfo_t info[36];	// satellite info array
+	int totalnm;	// total number of messages (filled during parsing)
+	int msgnm;		// number of received message
+};
 
 //	// Heading, deviation and variation
 //	struct hdg_t

@@ -39,6 +39,7 @@ int main(void)
 	struct grs_t grs;
 	struct gsa_t gsa;
 	struct gst_t gst;
+	struct gsv_t gsv;
 	struct mla_t mla;
 	struct rmc_t rmc;
 	struct vtg_t vtg;
@@ -728,6 +729,63 @@ int main(void)
 		printf("Composition of MLA failed (%d)\n", result);
 	}
 
+	// GSV
+	gsv.tid = navi_GL;
+	gsv.totalsv = gsv.nmsatellites = 9;
+
+	gsv.info[0].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH;
+	gsv.info[0].id = 4;
+	gsv.info[0].elevation = 12;
+	gsv.info[0].azimuth = 0;
+
+	gsv.info[1].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH |
+		SATINFO_VALID_SNR;
+	gsv.info[1].id = 5;
+	gsv.info[1].elevation = 18;
+	gsv.info[1].azimuth = 12;
+	gsv.info[1].snr = 45;
+
+	gsv.info[2].vfields = 0;
+	gsv.info[2].id = 14;
+
+	gsv.info[3].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH |
+		SATINFO_VALID_SNR;
+	gsv.info[3].id = 18;
+	gsv.info[3].elevation = 12;
+	gsv.info[3].azimuth = 300;
+	gsv.info[3].snr = 70;
+
+	gsv.info[4].vfields = 0;
+	gsv.info[4].id = 6;
+
+	gsv.info[5].vfields = SATINFO_VALID_SNR;
+	gsv.info[5].id = 7;
+	gsv.info[5].snr = 4;
+
+	gsv.info[6].vfields = SATINFO_VALID_SNR;
+	gsv.info[6].id = 8;
+	gsv.info[6].snr = 4;
+
+	gsv.info[7].vfields = SATINFO_VALID_SNR;
+	gsv.info[7].id = 9;
+	gsv.info[7].snr = 4;
+
+	gsv.info[8].vfields = SATINFO_VALID_SNR;
+	gsv.info[8].id = 10;
+	gsv.info[8].snr = 4;
+
+	result = navi_create_msg(navi_GSV, &gsv, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of GSV failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -951,6 +1009,29 @@ int main(void)
 						printf("\tTau n: 0x%x\n", mla->almlist[0].taun);
 				}
 				break;
+			case navi_GSV:
+				{
+					int i;
+					struct gsv_t *gsv = (struct gsv_t *)parsedbuffer;
+
+					printf("Received GSV:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(gsv->tid), gsv->tid);
+					printf("\tTotal nm of messages: %i\n", gsv->totalnm);
+					printf("\tMessage number: %i\n", gsv->msgnm);
+					printf("\tTotal satellites in view: %i\n", gsv->totalsv);
+
+					for (i = 0; i < gsv->nmsatellites; i++)
+					{
+						printf("\tSatellite id: %i\n", gsv->info[i].id);
+						if (gsv->info[i].vfields & SATINFO_VALID_ELEVATION)
+							printf("\t\tElevation: %i\n", gsv->info[i].elevation);
+						if (gsv->info[i].vfields & SATINFO_VALID_AZIMUTH)
+							printf("\t\tAzimuth: %i\n", gsv->info[i].azimuth);
+						if (gsv->info[i].vfields & SATINFO_VALID_SNR)
+							printf("\t\tSNR: %i\n", gsv->info[i].snr);
+					}
+				}
+				break;
 			default:
 				break;
 			}
@@ -997,6 +1078,7 @@ int main(void)
 	printf("sizeof struct grs_t = %u\n", sizeof(struct grs_t));
 	printf("sizeof struct gsa_t = %u\n", sizeof(struct gsa_t));
 	printf("sizeof struct gst_t = %u\n", sizeof(struct gst_t));
+	printf("sizeof struct gsv_t = %u\n", sizeof(struct gsv_t));
 	printf("sizeof struct mla_t = %u\n", sizeof(struct mla_t));
 	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
 	printf("sizeof struct vtg_t = %u\n", sizeof(struct vtg_t));
