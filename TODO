@@ -2,12 +2,6 @@ libnavigate --- TODO
 
 Library versions roadmap:
 
-	v0.2:
-    * switch temporarily to POSIX C locale while printing
-	  doubles with snprintf
-	* implement generation/parsing of ALM, GBS, GGA, GRS, GSA,
-	  GST, GSV, and MLA sentences
-
 	v0.3:
 	* add C++ bindings to the library
 	* implement generation/parsing of AAM, ACK, ALR and TXT sentences

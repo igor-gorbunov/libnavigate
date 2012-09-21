@@ -25,6 +25,7 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <locale.h>
 
 #ifndef NO_GENERATOR
 
@@ -468,6 +469,8 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		double degrees, fraction;
 
 		const char *s;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "POSIX");
 
 		nmwritten = 0;
 		precision = naviconf_get_presicion();
@@ -507,6 +510,7 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
 		(void)strncat(buffer, s, maxsize);
 
+		setlocale(LC_NUMERIC, oldlocale);
 		return nmwritten;
 	}
 	else
@@ -524,9 +528,13 @@ int navi_print_number(double value, char *buffer, int maxsize, int notnull)
 	if (notnull)
 	{
 		int result, precision;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "POSIX");
 
 		precision = naviconf_get_presicion();
 		result = snprintf(buffer, maxsize, "%.*f", precision, value);
+
+		setlocale(LC_NUMERIC, oldlocale);
 		return remove_trailing_zeroes(buffer, result);
 	}
 	else
@@ -545,10 +553,14 @@ int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 	if (notnull)
 	{
 		int result, precision;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "POSIX");
 
 		precision = naviconf_get_presicion();
 		result = snprintf(buffer, maxsize, "%02u%02u%0*.*f",
 			utc->hour % 24, utc->min % 60, precision + 3, precision, utc->sec);
+
+		setlocale(LC_NUMERIC, oldlocale);
 		return remove_trailing_zeroes(buffer, result);
 	}
 	else

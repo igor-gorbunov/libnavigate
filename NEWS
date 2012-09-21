@@ -1,3 +1,11 @@
+2012-09-21  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Implemented generation/parsing of ALM, GBS, GGA, GRS, GSA,
+	  GST, GSV and MLA sentences
+    * Switching temporarily to POSIX locale while printing
+	  doubles with snprintf
+	* Release 2 of libnavigate (version 0.2.0a)
+
 2012-09-19  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* Implemented target installation using CMake
