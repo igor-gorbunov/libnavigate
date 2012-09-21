@@ -10,6 +10,10 @@ NAVI_BEGIN_DECL
 
 NAVI_EXTERN(unsigned int) naviconf_get_caps(void);
 
+NAVI_EXTERN(int) naviconf_get_presicion(void);
+
+NAVI_EXTERN(int) naviconf_set_presicion(int precision);
+
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_config_h

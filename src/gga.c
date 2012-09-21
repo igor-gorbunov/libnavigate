@@ -1,5 +1,5 @@
 /*
- * gns.c - generator and parser of GNS message
+ * gga.c - generator and parser of GGA message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gns.h"
+#include "gga.h"
 #include "common.h"
 
 #include <navigate.h>
@@ -31,33 +31,39 @@
 
 #ifndef NO_GENERATOR
 
-int navi_create_gns(const struct gns_t *msg, char *buffer,
+int navi_create_gga(const struct gga_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;
 
-	char utc[32], fix[64], mi[3], totalsats[3], hdop[32], antalt[32],
-		geoidsep[32], ddage[32], drsid[32];
+	char bytes[4];
+	char utc[32], fix[64], qi[2], nmsats[3], hdop[32], antalt[32],
+		geoidsep[32], ddage[32], id[32];
 
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & GNS_VALID_UTC);
+		msg->vfields & GGA_VALID_UTC);
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
-		msg->vfields & GNS_VALID_POSITION_FIX);
-	msglength += navi_print_miarray(msg->mi,
-		sizeof(msg->mi) / sizeof(msg->mi[0]), mi);
-	msglength += snprintf(totalsats, sizeof(totalsats),
-		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
-		msg->totalsats);
+		msg->vfields & GGA_VALID_FIX);
+
+	(void)navi_split_integer(msg->gpsindicator, bytes, 1, 10);
+	msglength += navi_print_decfield(bytes, 1, qi, sizeof(qi));
+
+	(void)navi_split_integer(msg->nmsatellites, bytes, 2, 10);
+	msglength += navi_print_decfield(bytes,
+		msg->vfields & GGA_VALID_NMSATELLITES ? 2 : 0, nmsats, sizeof(nmsats));
+
 	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
-		msg->vfields & GNS_VALID_HDOP);
+		msg->vfields & GGA_VALID_HDOP);
 	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt),
-		msg->vfields & GNS_VALID_ANTENNAALTITUDE);
+		msg->vfields & GGA_VALID_ANTALTITUDE);
 	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep),
-		msg->vfields & GNS_VALID_GEOIDALSEP);
+		msg->vfields & GGA_VALID_GEOIDALSEP);
 	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage),
-		msg->vfields & GNS_VALID_AGEOFDIFFDATA);
-	msglength += snprintf(drsid, sizeof(drsid),
-		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
+		msg->vfields & GGA_VALID_DIFFAGE);
+
+	(void)navi_split_integer(msg->id, bytes, 4, 10);
+	msglength += navi_print_decfield(bytes,
+		msg->vfields & GGA_VALID_ID ? 4 : 0, id, sizeof(id));
 
 	if (msglength > maxsize)
 	{
@@ -65,8 +71,8 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 		return navi_Error;
 	}
 
-	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
-		utc, fix, mi, totalsats, hdop, antalt, geoidsep, ddage, drsid);
+	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+		utc, fix, qi, nmsats, hdop, antalt, "M", geoidsep, "M", ddage, id);
 	return navi_Ok;
 }
 
@@ -74,10 +80,11 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gns(struct gns_t *msg, char *buffer)
+int navi_parse_gga(struct gga_t *msg, char *buffer)
 {
-	int i = 0, j, nmread;
+	int i = 0, nmread;
 	double d;
+	char bytes[4];
 
 	msg->vfields = 0;
 
@@ -88,7 +95,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->vfields |= GNS_VALID_UTC;
+		msg->vfields |= GGA_VALID_UTC;
 	}
 	i += nmread;
 
@@ -99,26 +106,25 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->vfields |= GNS_VALID_POSITION_FIX;
+		msg->vfields |= GGA_VALID_FIX;
 	}
 	i += nmread;
 
-	j = sizeof(msg->mi) / sizeof(msg->mi[0]);
-	if (navi_parse_miarray(buffer + i, msg->mi, &j, &nmread) != 0)
-	{
+	if (navi_parse_decfield(buffer + i, 1, bytes, &nmread) != 0)
 		return navi_Error;
-	}
+	else
+		msg->gpsindicator = navi_compose_integer(bytes, 1, 10);
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_hexfield(buffer + i, 2, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	else
 	{
-		msg->totalsats = (int)round(d);
-		msg->vfields |= GNS_VALID_TOTALNMOFSATELLITES;
+		msg->nmsatellites = navi_compose_integer(bytes, 2, 10);
+		msg->vfields |= GGA_VALID_NMSATELLITES;
 	}
 	i += nmread;
 
@@ -129,7 +135,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->vfields |= GNS_VALID_HDOP;
+		msg->vfields |= GGA_VALID_HDOP;
 	}
 	i += nmread;
 
@@ -140,9 +146,9 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->vfields |= GNS_VALID_ANTENNAALTITUDE;
+		msg->vfields |= GGA_VALID_ANTALTITUDE;
 	}
-	i += nmread;
+	i += nmread + 2;	// skip 'M,'
 
 	if (navi_parse_number(buffer + i, &msg->geoidalsep, &nmread) != 0)
 	{
@@ -151,9 +157,9 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->vfields |= GNS_VALID_GEOIDALSEP;
+		msg->vfields |= GGA_VALID_GEOIDALSEP;
 	}
-	i += nmread;
+	i += nmread + 2;	// skip 'M,'
 
 	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 	{
@@ -163,7 +169,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	else
 	{
 		msg->diffage = (int)round(d);
-		msg->vfields |= GNS_VALID_AGEOFDIFFDATA;
+		msg->vfields |= GGA_VALID_DIFFAGE;
 	}
 	i += nmread;
 
@@ -175,10 +181,11 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	else
 	{
 		msg->id = (int)round(d);
-		msg->vfields |= GNS_VALID_DIFFREFSTATIONID;
+		msg->vfields |= GGA_VALID_ID;
 	}
 
 	return navi_Ok;
 }
 
 #endif // NO_PARSER
+

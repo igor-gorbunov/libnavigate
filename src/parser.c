@@ -30,9 +30,17 @@
 
 #ifndef NO_PARSER
 
+#include "alm.h"
 #include "dtm.h"
+#include "gbs.h"
+#include "gga.h"
 #include "gll.h"
 #include "gns.h"
+#include "grs.h"
+#include "gsa.h"
+#include "gst.h"
+#include "gsv.h"
+#include "mla.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -111,7 +119,15 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	{
 	case navi_AAM:
 	case navi_ACK:
+		break;
 	case navi_ALM:
+		if (msgsize < sizeof(struct alm_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct alm_t *)msg)->tid = tid;
+		return navi_parse_alm((struct alm_t *)msg, buffer + som + 7);
 	case navi_ALR:
 	case navi_APB:
 	case navi_BEC:
@@ -136,8 +152,23 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		((struct dtm_t *)msg)->tid = tid;
 		return navi_parse_dtm((struct dtm_t *)msg, buffer + som + 7);
 	case navi_FSI:
+		break;
 	case navi_GBS:
+		if (msgsize < sizeof(struct gbs_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gbs_t *)msg)->tid = tid;
+		return navi_parse_gbs((struct gbs_t *)msg, buffer + som + 7);
 	case navi_GGA:
+		if (msgsize < sizeof(struct gga_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gga_t *)msg)->tid = tid;
+		return navi_parse_gga((struct gga_t *)msg, buffer + som + 7);
 	case navi_GLC:
 		break;
 	case navi_GLL:
@@ -157,9 +188,37 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		((struct gns_t *)msg)->tid = tid;
 		return navi_parse_gns((struct gns_t *)msg, buffer + som + 7);
 	case navi_GRS:
+		if (msgsize < sizeof(struct grs_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct grs_t *)msg)->tid = tid;
+		return navi_parse_grs((struct grs_t *)msg, buffer + som + 7);
 	case navi_GSA:
+		if (msgsize < sizeof(struct gsa_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gsa_t *)msg)->tid = tid;
+		return navi_parse_gsa((struct gsa_t *)msg, buffer + som + 7);
 	case navi_GST:
+		if (msgsize < sizeof(struct gst_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gst_t *)msg)->tid = tid;
+		return navi_parse_gst((struct gst_t *)msg, buffer + som + 7);
 	case navi_GSV:
+		if (msgsize < sizeof(struct gsv_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gsv_t *)msg)->tid = tid;
+		return navi_parse_gsv((struct gsv_t *)msg, buffer + som + 7);
 	case navi_HDG:
 	case navi_HDT:
 	case navi_HMR:
@@ -168,7 +227,15 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_HTC:
 	case navi_HTD:
 	case navi_LCD:
+		break;
 	case navi_MLA:
+		if (msgsize < sizeof(struct mla_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct mla_t *)msg)->tid = tid;
+		return navi_parse_mla((struct mla_t *)msg, buffer + som + 7);
 	case navi_MSK:
 	case navi_MSS:
 	case navi_MTW:
@@ -1299,3 +1366,122 @@ int navi_parse_sentencefmt(char *buffer, int *nmread)
 
 	return -1;
 }
+
+//
+// navi_parse_hexfield
+//
+int navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+{
+	int result = navi_Ok, i = 0, c;
+
+	if ((buffer[i] == ',') || (buffer[i] == '*'))
+	{
+		navierr_set_last(navi_NullField);
+		result = navi_Error;
+		goto _Exit;
+	}
+
+	for (i = 0; i < fieldwidth; i++)
+	{
+		c = buffer[i];
+		if (isxdigit(c))
+		{
+			if (c >= '0' && c <= '9')
+				bytes[i] = (char)(c - '0');
+			else if (c >= 'A' && c <= 'F')
+				bytes[i] = (char)(c - 'A' + 10);
+			else
+				bytes[i] = (char)(c - 'a' + 10);
+		}
+		else
+		{
+			navierr_set_last(navi_InvalidMessage);
+			result = navi_Error;
+			goto _Exit;
+		}
+	}
+
+	if ((buffer[i] != ',') && (buffer[i] != '*'))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+_Exit:
+	*nmread = i + 1;
+	return result;
+}
+
+//
+// navi_parse_decfield
+//
+int navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+{
+	int result = navi_Ok, i = 0, c;
+
+	if ((buffer[i] == ',') || (buffer[i] == '*'))
+	{
+		navierr_set_last(navi_NullField);
+		result = navi_Error;
+		goto _Exit;
+	}
+
+	for (i = 0; i < fieldwidth; i++)
+	{
+		c = buffer[i];
+		if (isdigit(c))
+		{
+			bytes[i] = (char)(c - '0');
+		}
+		else
+		{
+			navierr_set_last(navi_InvalidMessage);
+			result = navi_Error;
+			goto _Exit;
+		}
+	}
+
+	if ((buffer[i] != ',') && (buffer[i] != '*'))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+_Exit:
+	*nmread = i + 1;
+	return result;
+}
+
+//
+// navi_parse_gsamode
+//
+int navi_parse_gsamode(char *buffer, int *mode, int *nmread)
+{
+	int result = navi_Ok, c, i = 0;
+
+	c = buffer[i++];
+	if (c == 'M')
+	{
+		*mode = navi_GsaManual;
+	}
+	else if (c == 'A')
+	{
+		*mode = navi_GsaAutomatic;
+	}
+	else
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+	c = buffer[i++];
+	if ((c != ',') && (c != '*'))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+	*nmread = i;
+	return result;
+}
+

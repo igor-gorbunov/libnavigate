@@ -25,12 +25,21 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <locale.h>
 
 #ifndef NO_GENERATOR
 
+#include "alm.h"
 #include "dtm.h"
+#include "gbs.h"
+#include "gga.h"
 #include "gll.h"
 #include "gns.h"
+#include "grs.h"
+#include "gsa.h"
+#include "gst.h"
+#include "gsv.h"
+#include "mla.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -59,7 +68,10 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	{
 	case navi_AAM:
 	case navi_ACK:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_ALM:
+		return navi_create_alm((const struct alm_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ALR:
 	case navi_APB:
 	case navi_BEC:
@@ -87,8 +99,28 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_FSI:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_GBS:
+		{
+			const struct gbs_t *pgbs = (const struct gbs_t *)msg;
+			tid = navi_talkerid_str(pgbs->tid);
+			sfmt = navi_sentencefmt_str(navi_GBS);
+
+			if (navi_create_gbs(pgbs, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GGA:
+		{
+			const struct gga_t *pgga = (const struct gga_t *)msg;
+			tid = navi_talkerid_str(pgga->tid);
+			sfmt = navi_sentencefmt_str(navi_GGA);
+
+			if (navi_create_gga(pgga, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GLC:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
@@ -113,9 +145,37 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_GRS:
+		{
+			const struct grs_t *pgrs = (const struct grs_t *)msg;
+			tid = navi_talkerid_str(pgrs->tid);
+			sfmt = navi_sentencefmt_str(navi_GRS);
+
+			if (navi_create_grs(pgrs, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GSA:
+		{
+			const struct gsa_t *pgsa = (const struct gsa_t *)msg;
+			tid = navi_talkerid_str(pgsa->tid);
+			sfmt = navi_sentencefmt_str(navi_GSA);
+
+			if (navi_create_gsa(pgsa, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GST:
+		{
+			const struct gst_t *pgst = (const struct gst_t *)msg;
+			tid = navi_talkerid_str(pgst->tid);
+			sfmt = navi_sentencefmt_str(navi_GST);
+
+			if (navi_create_gst(pgst, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GSV:
+		return navi_create_gsv((const struct gsv_t *)msg, buffer, maxsize, nmwritten);
 	case navi_HDG:
 	case navi_HDT:
 	case navi_HMR:
@@ -124,7 +184,10 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_HTC:
 	case navi_HTD:
 	case navi_LCD:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_MLA:
+		return navi_create_mla((const struct mla_t *)msg, buffer, maxsize, nmwritten);
 	case navi_MSK:
 	case navi_MSS:
 	case navi_MTW:
@@ -372,6 +435,29 @@ const char *navi_modeindicator_extended_str(int mi)
 }
 
 //
+// navi_gsamode_str
+//
+const char *navi_gsamode_str(int mode, int notnull)
+{
+	if (notnull)
+	{
+		switch (mode)
+		{
+		case navi_GsaManual:
+			return "M";
+		case navi_GsaAutomatic:
+			return "A";
+		default:
+			return NULL;
+		}
+	}
+	else
+	{
+		return "";
+	}
+}
+
+//
 // navi_print_position_fix
 //
 int navi_print_position_fix(const struct navi_position_t *fix,
@@ -379,12 +465,15 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 {
 	if (notnull)
 	{
-		int nmwritten;
+		int nmwritten, precision;
 		double degrees, fraction;
 
 		const char *s;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "POSIX");
 
 		nmwritten = 0;
+		precision = naviconf_get_presicion();
 
 		// extract and print latitude
 		fraction = modf(fix->latitude, &degrees);
@@ -392,7 +481,8 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		fraction = fraction * 60.;
 		fraction = fraction + degrees;
 
-		nmwritten += snprintf(buffer + nmwritten, maxsize, "%013.8f", fraction);
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
+			precision + 5, precision, fraction);
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
@@ -410,7 +500,8 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		fraction = fraction * 60.;
 		fraction = fraction + degrees;
 
-		nmwritten += snprintf(buffer + nmwritten, maxsize, "%014.8f", fraction);
+		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
+			precision + 6, precision, fraction);
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
@@ -419,6 +510,7 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
 		(void)strncat(buffer, s, maxsize);
 
+		setlocale(LC_NUMERIC, oldlocale);
 		return nmwritten;
 	}
 	else
@@ -429,15 +521,20 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 }
 
 //
-// navi_print_double
+// navi_print_number
 //
 int navi_print_number(double value, char *buffer, int maxsize, int notnull)
 {
 	if (notnull)
 	{
-		int result;
+		int result, precision;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "POSIX");
 
-		result = snprintf(buffer, maxsize, "%f", value);
+		precision = naviconf_get_presicion();
+		result = snprintf(buffer, maxsize, "%.*f", precision, value);
+
+		setlocale(LC_NUMERIC, oldlocale);
 		return remove_trailing_zeroes(buffer, result);
 	}
 	else
@@ -455,8 +552,15 @@ int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 {
 	if (notnull)
 	{
-		int result = snprintf(buffer, maxsize, "%02u%02u%06.3f",
-			utc->hour % 24, utc->min % 60, utc->sec);
+		int result, precision;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "POSIX");
+
+		precision = naviconf_get_presicion();
+		result = snprintf(buffer, maxsize, "%02u%02u%0*.*f",
+			utc->hour % 24, utc->min % 60, precision + 3, precision, utc->sec);
+
+		setlocale(LC_NUMERIC, oldlocale);
 		return remove_trailing_zeroes(buffer, result);
 	}
 	else
@@ -492,38 +596,6 @@ int navi_print_miarray(const int mi[], int miquant, char *buffer)
 }
 
 //
-// navi_checksum
-//
-int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
-{
-	int i;
-	unsigned ucs = 0;
-
-	assert(msg != NULL);
-	assert(maxsize > 0);
-
-	// Skip up to next character after '$'
-	for (i = 0; msg[i] != '$' && i < maxsize; i++);
-
-	if (i >= maxsize)
-		return -1;
-	
-	for (i += 1; msg[i] != '*' && i < maxsize; i++)
-		ucs = ucs ^ msg[i];
-	
-	if (i >= maxsize)
-		return -1;
-
-	if (cs)
-		*cs = ucs;
-
-	if (csstr)
-		snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
-
-	return navi_Ok;
-}
-
-//
 // navi_sentencefmt_str
 //
 const char *navi_sentencefmt_str(int fmt)
@@ -540,3 +612,56 @@ const char *navi_talkerid_str(int tid)
 	assert((tid >= 0) && (tid <= navi_P));
 	return navi_tidlist[tid];
 }
+
+//
+// navi_print_numfield
+//
+int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
+	char *buffer, int maxsize)
+{
+	int i;
+	char str[4];
+
+	assert(buffer != NULL);
+	assert(maxsize > fieldwidth);
+
+	(void)strncpy(buffer, "", maxsize);
+
+	for (i = 0; i < fieldwidth; i++)
+	{
+		switch (radix)
+		{
+		case 10:
+			snprintf(str, sizeof(str), "%d", bytes[i]);
+			break;
+		case 16:
+			snprintf(str, sizeof(str), "%x", bytes[i]);
+			break;
+		default:
+			snprintf(str, sizeof(str), "%c", bytes[i]);
+			break;
+		}
+		(void)strncat(buffer, str, maxsize);
+	}
+
+	return i;
+}
+
+//
+// navi_print_hexfield
+//
+int navi_print_hexfield(const char bytes[], int fieldwidth,
+	char *buffer, int maxsize)
+{
+	return navi_print_fixedfield(bytes, fieldwidth, 16, buffer, maxsize);
+}
+
+//
+// navi_print_decfield
+//
+int navi_print_decfield(const char bytes[], int fieldwidth,
+	char *buffer, int maxsize)
+{
+	return navi_print_fixedfield(bytes, fieldwidth, 10, buffer, maxsize);
+}
+
