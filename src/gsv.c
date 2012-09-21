@@ -51,13 +51,16 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 		(void)navi_split_integer(nmoffullmsg + 1, bytes, 1, 10);
 	else
 		(void)navi_split_integer(nmoffullmsg, bytes, 1, 10);
-	msglength = navi_print_decfield(bytes, 1, totalnm, sizeof(totalnm));
+	(void)navi_print_decfield(bytes, 1, totalnm, sizeof(totalnm));
 
 	(void)navi_split_integer(msg->totalsv, bytes, 2, 10);
-	msglength += navi_print_decfield(bytes, 2, totalsv, sizeof(totalsv));
+	(void)navi_print_decfield(bytes, 2, totalsv, sizeof(totalsv));
 
 	for (i = 0; i < nmoffullmsg; i++)
 	{	// compose all the messages, where all four satellites are used
+		msglength = strlen(totalnm);
+		msglength += strlen(totalsv);
+
 		(void)navi_split_integer(i + 1, bytes, 1, 10);
 		msglength += navi_print_decfield(bytes, 1, msgnm, sizeof(msgnm));
 
