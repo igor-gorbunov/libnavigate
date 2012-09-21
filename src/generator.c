@@ -35,6 +35,7 @@
 #include "gll.h"
 #include "gns.h"
 #include "grs.h"
+#include "gsa.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -150,6 +151,15 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_GSA:
+		{
+			const struct gsa_t *pgsa = (const struct gsa_t *)msg;
+			tid = navi_talkerid_str(pgsa->tid);
+			sfmt = navi_sentencefmt_str(navi_GSA);
+
+			if (navi_create_gsa(pgsa, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GST:
 	case navi_GSV:
 	case navi_HDG:
@@ -404,6 +414,29 @@ const char *navi_modeindicator_extended_str(int mi)
 		return "F";
 	default:
 		return NULL;
+	}
+}
+
+//
+// navi_gsamode_str
+//
+const char *navi_gsamode_str(int mode, int notnull)
+{
+	if (notnull)
+	{
+		switch (mode)
+		{
+		case navi_GsaManual:
+			return "M";
+		case navi_GsaAutomatic:
+			return "A";
+		default:
+			return NULL;
+		}
+	}
+	else
+	{
+		return "";
 	}
 }
 

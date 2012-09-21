@@ -46,8 +46,16 @@ int navi_create_grs(const struct grs_t *msg, char *buffer,
 
 	for (i = 0; i < 12; i++)
 	{
-		msglength += navi_print_number(msg->residuals[i].residual, residuals[i],
-			sizeof(residuals[i]), msg->residuals[i].notnull);
+		if (msg->residuals[i].notnull && (fabs(msg->residuals[i].residual) > 99.9))
+		{
+			msglength += navi_print_number((int)msg->residuals[i].residual, residuals[i],
+				sizeof(residuals[i]), msg->residuals[i].notnull);
+		}
+		else
+		{
+			msglength += navi_print_number(msg->residuals[i].residual, residuals[i],
+				sizeof(residuals[i]), msg->residuals[i].notnull);
+		}
 	}
 
 	if (msglength > maxsize)

@@ -66,6 +66,10 @@ NAVI_EXTERN(const char *) navi_status_str(int status);
 NAVI_EXTERN(const char *) navi_modeindicator_str(int mi);
 
 //
+// Returns the GSA 2D/3D switching mode
+NAVI_EXTERN(const char *) navi_gsamode_str(int mode, int notnull);
+
+//
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_position_fix(const struct navi_position_t *fix,

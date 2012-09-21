@@ -37,6 +37,7 @@
 #include "gll.h"
 #include "gns.h"
 #include "grs.h"
+#include "gsa.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -192,6 +193,13 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		((struct grs_t *)msg)->tid = tid;
 		return navi_parse_grs((struct grs_t *)msg, buffer + som + 7);
 	case navi_GSA:
+		if (msgsize < sizeof(struct gsa_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gsa_t *)msg)->tid = tid;
+		return navi_parse_gsa((struct gsa_t *)msg, buffer + som + 7);
 	case navi_GST:
 	case navi_GSV:
 	case navi_HDG:
@@ -1416,6 +1424,39 @@ int navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
 
 _Exit:
 	*nmread = i + 1;
+	return result;
+}
+
+//
+// navi_parse_gsamode
+//
+int navi_parse_gsamode(char *buffer, int *mode, int *nmread)
+{
+	int result = navi_Ok, c, i = 0;
+
+	c = buffer[i++];
+	if (c == 'M')
+	{
+		*mode = navi_GsaManual;
+	}
+	else if (c == 'A')
+	{
+		*mode = navi_GsaAutomatic;
+	}
+	else
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+	c = buffer[i++];
+	if ((c != ',') && (c != '*'))
+	{
+		navierr_set_last(navi_InvalidMessage);
+		result = navi_Error;
+	}
+
+	*nmread = i;
 	return result;
 }
 

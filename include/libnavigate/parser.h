@@ -77,6 +77,14 @@ NAVI_EXTERN(int) navi_parse_utc(char *buffer, struct navi_utc_t *utc,
 NAVI_EXTERN(int) navi_parse_status(char *buffer, int *status, int *nmread);
 
 //
+// Parses GSA sentence 2D/3D switching mode in the form of 'M | A'.
+// The field must end with ',' or '*'
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_parse_gsamode(char *buffer, int *mode, int *nmread);
+
+//
 // Parses mode indicator in the form of 'A | D | E | M | S | N'.
 // Shall not be null field. The field must end with ',' or '*'
 //

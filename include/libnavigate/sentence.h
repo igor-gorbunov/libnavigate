@@ -280,6 +280,15 @@ enum naviGpsQualityIndicator_t
 };
 
 //
+// GSA message 2D/3D switching mode
+//
+enum naviGsaSwitchMode_t
+{
+	navi_GsaManual = 0,		// manual, forced to operate in 2D or 3D mode
+	navi_GsaAutomatic = 1	// automatic, allowed to automatically switch 2D/3D
+};
+
+//
 // Holds UTC time (hours, minutes, seconds and
 // decimal fraction of seconds)
 //
@@ -582,7 +591,7 @@ NAVI_ALIGNED(struct, grs_t)
 {
 	int tid;				// talker id
 	struct navi_utc_t utc;	// UTC time
-	int mode;				// Mode:
+	int mode;				// Mode: 
 							// 0 = residuals were used to calculate the position
 							// given in the matching GGA or GNS sentence
 							// 1 = residuals were recomputed after the GGA or GNS
@@ -594,10 +603,29 @@ NAVI_ALIGNED(struct, grs_t)
 	} residuals[12];		// range residuals
 };
 
-//	// GNSS DOP and active satellites
-//	struct gsa_t
-//	{
-//	};
+//
+// GNSS DOP and active satellites
+NAVI_ALIGNED(struct, gsa_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GSA_VALID_xxx
+	int switchmode;			// Mode: one of naviGsaSwitchMode_t constants
+	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D
+	struct
+	{
+		int notnull;		// 0 = null field, 1 = not null
+		int id;				// ID number of satellite used in solution
+	} satellites[12];		// satellites ID numbers array
+	double pdop;			// Position dilution of precision
+	double hdop;			// Horizontal dilution of precision
+	double vdop;			// Vertical dilution of precision
+};
+
+#define GSA_VALID_SWITCHMODE	0x01
+#define GSA_VALID_FIXMODE		0x02
+#define GSA_VALID_PDOP			0x04
+#define GSA_VALID_HDOP			0x08
+#define GSA_VALID_VDOP			0x10
 
 //	// GNSS pseudorange noise statistics
 //	struct gst_t

@@ -37,6 +37,7 @@ int main(void)
 	struct gll_t gll;
 	struct gns_t gns;
 	struct grs_t grs;
+	struct gsa_t gsa;
 	struct rmc_t rmc;
 	struct vtg_t vtg;
 	struct zda_t zda;
@@ -577,6 +578,9 @@ int main(void)
 	grs.residuals[7].notnull = 1;
 	grs.residuals[7].residual = 0.1;
 
+	grs.residuals[8].notnull = 1;
+	grs.residuals[8].residual = -103.7;
+
 	result = navi_create_msg(navi_GRS, &grs, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)
@@ -587,6 +591,53 @@ int main(void)
 	else
 	{
 		printf("Composition of GRS failed (%d)\n", result);
+	}
+
+	// GSA
+	memset(&gsa, 0, sizeof(gsa));
+	gsa.tid = navi_GP;
+
+	gsa.switchmode = navi_GsaAutomatic;
+	gsa.fixmode = 3;
+
+	gsa.satellites[0].notnull = 1;
+	gsa.satellites[0].id = 1;
+
+	gsa.satellites[1].notnull = 1;
+	gsa.satellites[1].id = 12;
+
+	gsa.satellites[2].notnull = 1;
+	gsa.satellites[2].id = 3;
+
+	gsa.satellites[3].notnull = 1;
+	gsa.satellites[3].id = 2;
+
+	gsa.satellites[4].notnull = 1;
+	gsa.satellites[4].id = 18;
+
+	gsa.satellites[7].notnull = 1;
+	gsa.satellites[7].id = 24;
+
+	gsa.satellites[8].notnull = 1;
+	gsa.satellites[8].id = 14;
+
+	gsa.hdop = 2.12;
+	gsa.vdop = .012;
+	gsa.pdop = 2.12003396;
+
+	gsa.vfields = GSA_VALID_SWITCHMODE | GSA_VALID_FIXMODE | GSA_VALID_PDOP |
+		GSA_VALID_HDOP | GSA_VALID_VDOP;
+
+	result = navi_create_msg(navi_GSA, &gsa, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of GSA failed (%d)\n", result);
 	}
 
 	printf("msglength = %d\n", msglength);
@@ -717,6 +768,32 @@ int main(void)
 					}
 				}
 				break;
+			case navi_GSA:
+				{
+					int i;
+					struct gsa_t *gsa = (struct gsa_t *)parsedbuffer;
+
+					printf("Received GSA:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(gsa->tid), gsa->tid);
+					if (gsa->vfields & GSA_VALID_SWITCHMODE)
+						printf("\tswitchmode = %i\n", gsa->switchmode);
+					if (gsa->vfields & GSA_VALID_FIXMODE)
+						printf("\tfixmode = %i\n", gsa->fixmode);
+					for (i = 0; i < 12; i++)
+					{
+						if (gsa->satellites[i].notnull)
+						{
+							printf("\tSatellite %i = %i\n", i, gsa->satellites[i].id);
+						}
+					}
+					if (gsa->vfields & GSA_VALID_PDOP)
+						printf("\tPDOP = %f\n", gsa->pdop);
+					if (gsa->vfields & GSA_VALID_HDOP)
+						printf("\tHDOP = %f\n", gsa->hdop);
+					if (gsa->vfields & GSA_VALID_VDOP)
+						printf("\tVDOP = %f\n", gsa->vdop);
+				}
+				break;
 			default:
 				break;
 			}
@@ -761,6 +838,7 @@ int main(void)
 	printf("sizeof struct gll_t = %u\n", sizeof(struct gll_t));
 	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
 	printf("sizeof struct grs_t = %u\n", sizeof(struct grs_t));
+	printf("sizeof struct gsa_t = %u\n", sizeof(struct gsa_t));
 	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
 	printf("sizeof struct vtg_t = %u\n", sizeof(struct vtg_t));
 	printf("sizeof struct zda_t = %u\n", sizeof(struct zda_t));
