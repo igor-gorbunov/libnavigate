@@ -36,6 +36,7 @@
 #include "gns.h"
 #include "grs.h"
 #include "gsa.h"
+#include "gst.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -161,6 +162,15 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_GST:
+		{
+			const struct gst_t *pgst = (const struct gst_t *)msg;
+			tid = navi_talkerid_str(pgst->tid);
+			sfmt = navi_sentencefmt_str(navi_GST);
+
+			if (navi_create_gst(pgst, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_GSV:
 	case navi_HDG:
 	case navi_HDT:

@@ -38,6 +38,7 @@
 #include "gns.h"
 #include "grs.h"
 #include "gsa.h"
+#include "gst.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -201,6 +202,13 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 		((struct gsa_t *)msg)->tid = tid;
 		return navi_parse_gsa((struct gsa_t *)msg, buffer + som + 7);
 	case navi_GST:
+		if (msgsize < sizeof(struct gst_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct gst_t *)msg)->tid = tid;
+		return navi_parse_gst((struct gst_t *)msg, buffer + som + 7);
 	case navi_GSV:
 	case navi_HDG:
 	case navi_HDT:

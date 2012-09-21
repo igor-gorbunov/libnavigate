@@ -266,17 +266,17 @@ enum
 //
 enum naviGpsQualityIndicator_t
 {
-	navi_GpsInvalid = 0,		// Fix not available or invalid
-	navi_GpsSpsMode = 1,		// GPS SPS mode, fix valid
+	navi_GpsInvalid = 0,	// Fix not available or invalid
+	navi_GpsSpsMode = 1,	// GPS SPS mode, fix valid
 	navi_GpsDifferential = 2,	// differential GPS, SPS mode, fix valid
-	navi_GpsPpsMode = 3,		// GPS PPS mode, fix valid
-	navi_GpsFixedRtk = 4,		// Real Time Kinematic. Satellite system used in
-								// RTK mode with fixed integers
-	navi_GpsFloatRtk = 5,		// Float RTK. Satellite system used in
-								// RTK mode with floating integers
-	navi_GpsEstimated = 6,		// Estimated (dead reckoning) mode
-	navi_GpsManual = 7,			// Manual input mode
-	navi_GpsSimulator = 8		// Simulator mode
+	navi_GpsPpsMode = 3,	// GPS PPS mode, fix valid
+	navi_GpsFixedRtk = 4,	// Real Time Kinematic. Satellite system used in
+							// RTK mode with fixed integers
+	navi_GpsFloatRtk = 5,	// Float RTK. Satellite system used in
+							// RTK mode with floating integers
+	navi_GpsEstimated = 6,	// Estimated (dead reckoning) mode
+	navi_GpsManual = 7,		// Manual input mode
+	navi_GpsSimulator = 8	// Simulator mode
 };
 
 //
@@ -627,10 +627,27 @@ NAVI_ALIGNED(struct, gsa_t)
 #define GSA_VALID_HDOP			0x08
 #define GSA_VALID_VDOP			0x10
 
-//	// GNSS pseudorange noise statistics
-//	struct gst_t
-//	{
-//	};
+//
+// GNSS pseudorange noise statistics
+NAVI_ALIGNED(struct, gst_t)
+{
+	int tid;				// talker id
+	unsigned vfields;		// valid fields, bitwise or of GST_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	double rms;			// RMS value of the standard deviation
+	double devmajor;	// Standard deviation of semi-major axis of error ellipse, m
+	double devminor;	// Standard deviation of semi-minor axis of error ellipse, m
+	double orientmajor;	// Orientation of semi-major axis of error ellipse,
+						// degrees from true north
+	double devlaterr;	// Standard deviation of latitude error, m
+	double devlonerr;	// Standard deviation of longitude error, m
+	double devalterr;	// Standard deviation of altitude error, m
+};
+
+#define GST_VALID_RMS				0x1
+#define GST_VALID_STDDEVELLIPSE		0x2
+#define GST_VALID_DEVLATLONERR		0x4
+#define GST_VALID_DEVALTERR			0x8
 
 //	// GNSS satellites in view
 //	struct gsv_t

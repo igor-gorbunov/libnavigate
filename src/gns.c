@@ -101,7 +101,6 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	{
 		msg->vfields |= GNS_VALID_POSITION_FIX;
 	}
-
 	i += nmread;
 
 	j = sizeof(msg->mi) / sizeof(msg->mi[0]);

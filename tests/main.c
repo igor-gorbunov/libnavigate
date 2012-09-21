@@ -38,6 +38,7 @@ int main(void)
 	struct gns_t gns;
 	struct grs_t grs;
 	struct gsa_t gsa;
+	struct gst_t gst;
 	struct rmc_t rmc;
 	struct vtg_t vtg;
 	struct zda_t zda;
@@ -640,6 +641,36 @@ int main(void)
 		printf("Composition of GSA failed (%d)\n", result);
 	}
 
+	// GST
+	gst.tid = navi_GP;
+
+	gst.vfields = GST_VALID_RMS | GST_VALID_STDDEVELLIPSE |
+		GST_VALID_DEVLATLONERR | GST_VALID_DEVALTERR;
+
+	gst.utc.hour = 14;
+	gst.utc.min = 8;
+	gst.utc.sec = 16;
+
+	gst.rms = 1.4;
+	gst.devmajor = .56;
+	gst.devminor = 3.2;
+	gst.orientmajor = 18.;
+	gst.devlaterr = 0.2;
+	gst.devlonerr = 0.1;
+	gst.devalterr = 1.;
+
+	result = navi_create_msg(navi_GST, &gst, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of GST failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -794,6 +825,36 @@ int main(void)
 						printf("\tVDOP = %f\n", gsa->vdop);
 				}
 				break;
+			case navi_GST:
+				{
+					struct gst_t *gst = (struct gst_t *)parsedbuffer;
+
+					printf("Received GST:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(gst->tid), gst->tid);
+					printf("\tutc = %02u:%02u:%06.3f\n", gst->utc.hour,
+						gst->utc.min, gst->utc.sec);
+
+					if (gst->vfields & GST_VALID_RMS)
+					{
+						printf("\tRMS = %f\n", gst->rms);
+					}
+					if (gst->vfields & GST_VALID_STDDEVELLIPSE)
+					{
+						printf("\tstd dev of semi-major = %f\n", gst->devmajor);
+						printf("\tstd dev of semi-minor = %f\n", gst->devminor);
+						printf("\torientation of semi-major = %f\n", gst->orientmajor);
+					}
+					if (gst->vfields & GST_VALID_DEVLATLONERR)
+					{
+						printf("\tstd dev of latitude err = %f\n", gst->devlaterr);
+						printf("\tstd dev of longitude err = %f\n", gst->devlonerr);
+					}
+					if (gst->vfields & GST_VALID_DEVALTERR)
+					{
+						printf("\tstd dev of altitude err = %f\n", gst->devalterr);
+					}
+				}
+				break;
 			default:
 				break;
 			}
@@ -839,6 +900,7 @@ int main(void)
 	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
 	printf("sizeof struct grs_t = %u\n", sizeof(struct grs_t));
 	printf("sizeof struct gsa_t = %u\n", sizeof(struct gsa_t));
+	printf("sizeof struct gst_t = %u\n", sizeof(struct gst_t));
 	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
 	printf("sizeof struct vtg_t = %u\n", sizeof(struct vtg_t));
 	printf("sizeof struct zda_t = %u\n", sizeof(struct zda_t));
