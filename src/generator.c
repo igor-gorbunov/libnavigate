@@ -37,6 +37,7 @@
 #include "grs.h"
 #include "gsa.h"
 #include "gst.h"
+#include "mla.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -180,7 +181,10 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_HTC:
 	case navi_HTD:
 	case navi_LCD:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_MLA:
+		return navi_create_mla((const struct mla_t *)msg, buffer, maxsize, nmwritten);
 	case navi_MSK:
 	case navi_MSS:
 	case navi_MTW:

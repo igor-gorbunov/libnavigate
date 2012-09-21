@@ -39,6 +39,7 @@
 #include "grs.h"
 #include "gsa.h"
 #include "gst.h"
+#include "mla.h"
 #include "rmc.h"
 #include "vtg.h"
 #include "zda.h"
@@ -218,7 +219,15 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_HTC:
 	case navi_HTD:
 	case navi_LCD:
+		break;
 	case navi_MLA:
+		if (msgsize < sizeof(struct mla_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		((struct mla_t *)msg)->tid = tid;
+		return navi_parse_mla((struct mla_t *)msg, buffer + som + 7);
 	case navi_MSK:
 	case navi_MSS:
 	case navi_MTW:
