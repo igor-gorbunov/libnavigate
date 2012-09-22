@@ -36,7 +36,7 @@ NAVI_BEGIN_DECL
 //
 // Approved sentence formatters
 //
-enum naviFormatter_t
+enum
 {
 	navi_AAM,	// waypoint arrival alarm
 	navi_ACK,	// acknowledgement alarm
@@ -116,7 +116,7 @@ enum naviFormatter_t
 //
 // Talker Identifier Mnemonics
 //
-enum naviTalkerId_t
+enum
 {
 	// Heading/track controller (autopilot)
 	navi_AG,	// general
