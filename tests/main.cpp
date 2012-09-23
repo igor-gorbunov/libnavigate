@@ -6,14 +6,25 @@ using namespace libnavigate;
 int main(void)
 {
 	Navigate_t navi;
-	int nmwritten = 0;
+	int msglength = 0, nmwritten = 0;
 
 	char buffer[1024];
-	struct alm_t alm;
+	Gll_t gll;
+
+	int remain = sizeof(buffer);
+
+	// GLL
+	gll.setTalkerId(TalkerId_t::GN);
+	gll.setPositionFix(PositionFix_t(0.02, 0.00000000999));
+	gll.setUtc(Utc_t(4, 34, 18.4));
+	gll.setStatus(Status_t::DataValid);
+	gll.setModeIndicator(ModeIndicator_t::Autonomous);
 
 	try
 	{
-		nmwritten = navi.CreateMessage(MessageType_t::ALM, &alm, buffer, sizeof(buffer));
+		nmwritten = navi.CreateMessage(gll, buffer, sizeof(buffer));
+		msglength += nmwritten;
+		remain -= nmwritten;
 	}
 	catch (NaviError_t e)
 	{
@@ -25,22 +36,25 @@ int main(void)
 		}
 	}
 
-	int nmread = 0;
-	MessageType_t mtype;
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", buffer);
 
-	try
-	{
-		nmread = navi.ParseMessage(0, 0, 0, mtype, 0);
-	}
-	catch (NaviError_t e)
-	{
-		switch (e)
-		{
-		case NaviError_t::NotImplemented:
-			std::cout << "Method not implemented\n";
-			break;
-		}
-	}
+	//int nmread = 0;
+	//Message_t 
+
+	//try
+	//{
+	//	nmread = navi.ParseMessage(0, 0, 0, mtype, 0);
+	//}
+	//catch (NaviError_t e)
+	//{
+	//	switch (e)
+	//	{
+	//	case NaviError_t::NotImplemented:
+	//		std::cout << "Method not implemented\n";
+	//		break;
+	//	}
+	//}
 
 	return 0;
 }

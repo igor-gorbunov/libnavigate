@@ -106,6 +106,7 @@ namespace libnavigate
 	public:
 		enum talkerid_t
 		{
+			Unknown,	// not defined
 			// Heading/track controller (autopilot)
 			AG,	// general
 			AP,	// magnetic
@@ -221,16 +222,131 @@ namespace libnavigate
 		enum errtype_t m_value;
 	};
 
+	class NAVI_EXTERN(PositionFix_t)
+	{
+	public:
+		PositionFix_t(double latitude, double longitude);
+	};
+
+	class NAVI_EXTERN(Utc_t)
+	{
+	public:
+		Utc_t(int hh, int mm, double ss);
+	};
+
+	class NAVI_EXTERN(Status_t)
+	{
+	public:
+		enum status_t
+		{
+			DataValid,
+			DataInvalid
+		};
+
+	public:
+		Status_t(enum Status_t::status_t status);
+	};
+
+	class NAVI_EXTERN(ModeIndicator_t)
+	{
+	public:
+		enum modeind_t
+		{
+			// Satellite system used in non-differential
+			// mode in position fix (A)
+			Autonomous,
+
+			// Satellite sysytem used in differential
+			// mode in position fix (D)
+			Differential,
+
+			// Estimated (dead reckoning) mode (E)
+			Estimated,
+
+			// Manual input mode (M)
+			ManualInput,
+
+			// Simulator mode (S)
+			Simulator,
+
+			// No fix. Satellite system not used in
+			// position fix, or fix not valid (N)
+			DataNotValid,
+
+			//
+			// Additions to GNS message
+
+			// Satellite system used in precision mode (P)
+			Precise,
+
+			// Satellite system used in Real Time
+			// Kinematic mode with fixed integers (R)
+			RTKinematic,
+
+			// Satellite system used in Real Time
+			// Kinematic mode with floating integers (F)
+			FloatRTK
+		};
+
+	public:
+		ModeIndicator_t(enum ModeIndicator_t::modeind_t mi);
+	};
+
+	class NAVI_EXTERN(Message_t)
+	{
+	public:
+		Message_t(const MessageType_t &type);
+		virtual ~Message_t();
+
+	public:
+		virtual const MessageType_t &msgType() const;
+
+	public:
+		virtual operator void *() const;
+		virtual operator void *();
+
+	private:
+		MessageType_t m_type;
+	};
+
+	class NAVI_EXTERN(Gll_t) : public Message_t
+	{
+	public:
+		Gll_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+		virtual ~Gll_t();
+
+	public:
+		virtual TalkerId_t talkerId() const;
+		virtual PositionFix_t positionFix() const;
+		virtual Utc_t utc() const;
+		virtual Status_t status() const;
+		virtual ModeIndicator_t modeIndicator() const;
+
+	public:
+		virtual void setTalkerId(const TalkerId_t &tid);
+		virtual void setPositionFix(const PositionFix_t &fix);
+		virtual void setUtc(const Utc_t &utc);
+		virtual void setStatus(const Status_t &status);
+		virtual void setModeIndicator(const ModeIndicator_t &mi);
+
+	public:
+		virtual operator void *() const;
+		virtual operator void *();
+
+	private:
+		struct gll_t m_value;
+	};
+
 	class NAVI_EXTERN(Navigate_t)
 	{
 	public:
 		// returns the number of characters written
 		// in case of error throws an exception
-		int CreateMessage(const MessageType_t &type, void *msg, char *buffer, int maxsize);
+		int CreateMessage(const Message_t &msg, char *buffer, int maxsize);
 
 		// returns the number of characters read
 		// in case of error throws an exception
-		int ParseMessage(char *buffer, int maxsize, int msgsize, MessageType_t &type, void *msg);
+		Message_t ParseMessage(char *buffer, int maxsize, int *nmread);
 
 	private:
 		NaviError_t NaviErrorFromErrorCode(int errcode);
