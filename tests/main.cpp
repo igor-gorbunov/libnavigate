@@ -8,9 +8,12 @@ int main(void)
 	Navigate_t navi;
 	int nmwritten = 0;
 
+	char buffer[1024];
+	struct alm_t alm;
+
 	try
 	{
-		nmwritten = navi.CreateMessage(MessageType_t::AAM, 0, 0, 0);
+		nmwritten = navi.CreateMessage(MessageType_t::ALM, &alm, buffer, sizeof(buffer));
 	}
 	catch (NaviError_t e)
 	{

@@ -94,12 +94,100 @@ namespace libnavigate
 
 		virtual ~MessageType_t();
 
+	public:
+		operator int() const;
+
 	private:
 		enum msgtype_t m_value;
 	};
 
 	class NAVI_EXTERN(TalkerId_t)
 	{
+	public:
+		enum talkerid_t
+		{
+			// Heading/track controller (autopilot)
+			AG,	// general
+			AP,	// magnetic
+			// Automatic identification system
+			AI,
+			// Communications:
+			CD,	// digital selective calling (DSC)
+			CR,	// data receiver
+			CS,	// satellite
+			CT,	// radio-telephone (MF/HF)
+			CV,	// radio-telephone (VHF)
+			CX,	// scanning receiver
+			// DECCA navigator
+			DE,
+			// Direction finder
+			DF,
+			// Electronic chart systems (ECS)
+			EC,
+			// Electronic chart display and information system (ECDIS)
+			EI,
+			// Emergency position indicating radio beacon (EPIRB)
+			EP,
+			// Engine room monitoring systems
+			ER,
+			// Galileo receiver
+			GA,
+			// Global positioning system (GPS)
+			GP,
+			// GLONASS receiver
+			GL,
+			// Global navigation satellite system (GNSS)
+			GN,
+			// SBAS receiver
+			GW,
+			// Heading sensors:
+			HC,	// compass, magnetic
+			HE,	// gyro, north seeking
+			HN,	// gyro, non-north seeking
+			// Integrated instrumentation
+			II,
+			// Integrated navigation
+			IN,
+			// LORAN: LORAN-C
+			LC,
+			// Radar and/or radar plotting
+			RA,
+			// Sounder, depth
+			SD,
+			// Electronic positioning system, other/general
+			SN,
+			// Sounder, scanning
+			SS,
+			// Turn rate indicator
+			TI,
+			// Velocity sensors:
+			VD,	// Doppler, other/general
+			VM,	// speed log, water, magnetic
+			VW,	// speed log, water, mechanical
+			// Voyage data recorder
+			VR,
+			// Transducer
+			YX,
+			// Timekeepers, time/date
+			ZA,	// atomic clock
+			ZC,	// chronometer
+			ZQ,	// quartz
+			ZV,	// radio update
+			// Weather instruments
+			WI,
+			// Proprietary code
+			P
+		};
+
+	public:
+		TalkerId_t();
+		TalkerId_t(enum TalkerId_t::talkerid_t initial);
+		TalkerId_t(const TalkerId_t &right);
+
+		virtual ~TalkerId_t();
+
+	private:
+		enum talkerid_t m_value;
 	};
 
 	class NAVI_EXTERN(NaviError_t)
@@ -143,6 +231,12 @@ namespace libnavigate
 		// returns the number of characters read
 		// in case of error throws an exception
 		int ParseMessage(char *buffer, int maxsize, int msgsize, MessageType_t &type, void *msg);
+
+	private:
+		NaviError_t NaviErrorFromErrorCode(int errcode);
+
+	private:
+		int MsgCodeFromMessageType(const MessageType_t &type);
 	};
 
 }
