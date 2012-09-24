@@ -282,19 +282,19 @@ public:
 
 public:
 	Status_t(enum Status_t::status_t status = Unknown)
-		{ m_status = status; }
+		{ m_value = status; }
 
 	virtual ~Status_t() { }
 
 public:
 	operator int() const
-		{ return int(m_status); }
+		{ return int(m_value); }
 
 public:
 	virtual int toStatusCode() const;
 
 private:
-	enum status_t m_status;
+	enum status_t m_value;
 };
 
 NAVI_EXTERN_CLASS(class, ModeIndicator_t)
@@ -345,19 +345,19 @@ public:
 
 public:
 	ModeIndicator_t(enum ModeIndicator_t::modeind_t mi = Unknown)
-		{ m_modeind = mi; }
+		{ m_value = mi; }
 
 	virtual ~ModeIndicator_t() { }
 
 public:
 	operator int() const
-		{ return int(m_modeind); }
+		{ return int(m_value); }
 
 public:
 	virtual int toModeIndCode() const;
 
 private:
-	enum modeind_t m_modeind;
+	enum modeind_t m_value;
 };
 
 NAVI_EXTERN_CLASS(class, Message_t)

@@ -1,4 +1,5 @@
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/c++/errors.hpp>
 
 namespace libnavigate
 {
@@ -318,7 +319,7 @@ ModeIndicator_t ModeIndicator_t::fromModeIndCode(int mi)
 
 int ModeIndicator_t::toModeIndCode() const
 {
-	switch (mi)
+	switch (m_value)
 	{
 	case Autonomous: return navi_Autonomous;
 	case Differential: return navi_Differential;
