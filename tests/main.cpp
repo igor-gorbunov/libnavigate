@@ -11,6 +11,7 @@ int main(void)
 	char buffer[1024];
 	Alm_t alm;
 	Gll_t gll;
+	Rmc_t rmc;
 
 	int remain = sizeof(buffer);
 
@@ -23,7 +24,7 @@ int main(void)
 
 	try
 	{
-		nmwritten = navi.CreateMessage(gll, buffer, sizeof(buffer));
+		nmwritten = navi.CreateMessage(gll, buffer + msglength, remain);
 		msglength += nmwritten;
 		remain -= nmwritten;
 	}
@@ -67,7 +68,45 @@ int main(void)
 
 	try
 	{
-		nmwritten = navi.CreateMessage(alm, buffer, sizeof(buffer));
+		nmwritten = navi.CreateMessage(alm, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
+	// RMC
+	rmc.setTalkerId(TalkerId_t::GN);
+	rmc.setStatus(Status_t::DataInvalid);
+	rmc.setModeIndicator(ModeIndicator_t::Estimated);
+
+	rmc.setUtc(Utc_t(9, 19, 39.98));
+	rmc.setPositionFix(PositionFix_t(-1.2323440, 1.834949));
+	rmc.setDate(Date_t(2012, 3, 18));
+
+	// Part 1
+	try
+	{
+		nmwritten = navi.CreateMessage(rmc, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
+	rmc.clearMessage();
+	rmc.setUtc(Utc_t(9, 19, 39.98));
+	rmc.setDate(Date_t(2012, 3, 18));
+	rmc.setSpeed(1.03553);
+	rmc.setCourse(180.2112);
+	rmc.setMagneticVariation(Offset_t(23.011, Offset_t::East));
+
+	// Part 2
+	try
+	{
+		nmwritten = navi.CreateMessage(rmc, buffer + msglength, remain);
 		msglength += nmwritten;
 		remain -= nmwritten;
 	}

@@ -106,6 +106,16 @@ public:
 	virtual void setClockParameter1(int satIdx, unsigned int value);
 
 public:
+	virtual void clearMessage()
+		{
+			m_value.nmsatellites = 0;
+			for (int i = 0; i < MaxSatellites; i++)
+			{
+				m_value.almlist[i].vfields = 0;
+			}
+		}
+
+public:
 	virtual operator const void *() const
 		{ return (const void *)&m_value; }
 

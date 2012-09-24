@@ -5,7 +5,7 @@ namespace libnavigate
 
 void Gll_t::setPositionFix(const PositionFix_t &fix)
 {
-	navi_set_position(fix.latitude(), fix.longitude(), &m_value.fix);
+	m_value.fix = fix.toPosition();
 	m_value.vfields |= GLL_VALID_POSITION_FIX;
 }
 

@@ -276,6 +276,13 @@ PositionFix_t PositionFix_t::fromPosition(const struct navi_position_t *position
 	return PositionFix_t(latitude, longitude);
 }
 
+struct navi_position_t PositionFix_t::toPosition() const
+{
+	struct navi_position_t result;
+	navi_set_position(latitude(), longitude(), &result);
+	return result;
+}
+
 Status_t Status_t::fromStatusCode(int status)
 {
 	switch (status)
@@ -332,6 +339,53 @@ int ModeIndicator_t::toModeIndCode() const
 	default:
 		return -1;
 	}
+}
+
+struct navi_date_t Date_t::toDate() const
+{
+	struct navi_date_t result;
+
+	result.year = m_year;
+	result.month = m_month;
+	result.day = m_day;
+
+	return result;
+}
+
+enum Offset_t::quarters_t Offset_t::quarterFromCode(int quarter)
+{
+	switch (quarter)
+	{
+	case navi_North: return North;
+	case navi_South: return South;
+	case navi_East: return East;
+	case navi_West: return West;
+	default:
+		return Unknown;
+	}
+}
+
+int Offset_t::quarterToCode(enum quarters_t quarter)
+{
+	switch (quarter)
+	{
+	case North: return navi_North;
+	case South: return navi_South;
+	case East: return navi_East;
+	case West: return navi_West;
+	default:
+		return -1;
+	}
+}
+
+struct navi_offset_t Offset_t::toOffset() const
+{
+	struct navi_offset_t result;
+
+	result.offset = m_offset;
+	result.sign = quarterToCode(m_quarter);
+
+	return result;
 }
 
 }

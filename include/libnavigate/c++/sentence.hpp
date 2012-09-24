@@ -238,6 +238,9 @@ public:
 	virtual double longitude() const
 		{ return m_longitude; }
 
+public:
+	virtual struct navi_position_t toPosition() const;
+
 private:
 	double m_latitude;
 	double m_longitude;
@@ -265,6 +268,83 @@ private:
 	int m_hours;
 	int m_minutes;
 	double m_seconds;
+};
+
+NAVI_EXTERN_CLASS(class, Date_t)
+{
+public:
+	static Date_t fromDate(const struct navi_date_t *date)
+		{ return Date_t(date->year, date->month, date->day); }
+
+public:
+	Date_t(int yy, int mm, int dd)
+		{ m_year = yy; m_month = mm; m_day = dd; }
+
+	virtual ~Date_t() { }
+
+public:
+	virtual int year() const
+		{ return m_year; }
+
+	virtual int month() const
+		{ return m_month; }
+
+	virtual int day() const
+		{ return m_day; }
+
+public:
+	virtual struct navi_date_t toDate() const;
+
+private:
+	int m_year;
+	int m_month;
+	int m_day;
+};
+
+NAVI_EXTERN_CLASS(class, Offset_t)
+{
+public:
+	enum quarters_t
+	{
+		Unknown, North, South, East, West
+	};
+
+public:
+	static Offset_t fromOffset(const struct navi_offset_t *offset)
+		{ return Offset_t(offset->offset, quarterFromCode(offset->sign)); }
+
+	static enum quarters_t quarterFromCode(int quarter);
+	static int quarterToCode(enum quarters_t quarter);
+
+public:
+	Offset_t(double offset, enum quarters_t quarter)
+		{
+			m_offset = offset;
+			m_quarter = quarter;
+		}
+
+	virtual ~Offset_t() { }
+
+public:
+	virtual double offset() const
+		{ return m_offset; }
+
+	virtual enum quarters_t quarter() const
+		{ return m_quarter; }
+
+public:
+	virtual void setOffset(double offset)
+		{ m_offset = offset; }
+
+	virtual void setQuarter(enum quarters_t quarter)
+		{ m_quarter = quarter; }
+
+public:
+	virtual struct navi_offset_t toOffset() const;
+
+private:
+	double m_offset;
+	enum quarters_t m_quarter;
 };
 
 NAVI_EXTERN_CLASS(class, Status_t)
@@ -372,11 +452,11 @@ public:
 	virtual const MessageType_t &type() const
 		{ return m_type; }
 
+	virtual void clearMessage() = 0;
+
 public:
-	virtual operator const void *() const
-		{ return 0; }
-	virtual operator void *()
-		{ return 0; }
+	virtual operator const void *() const = 0;
+	virtual operator void *() = 0;
 
 private:
 	MessageType_t m_type;

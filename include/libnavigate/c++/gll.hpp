@@ -48,6 +48,10 @@ public:
 		{ m_value.mi = mi.toModeIndCode(); }
 
 public:
+	virtual void clearMessage()
+		{ m_value.vfields = 0; }
+
+public:
 	virtual operator const void *() const
 		{ return (const void *)&m_value; }
 

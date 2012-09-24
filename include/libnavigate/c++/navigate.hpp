@@ -13,9 +13,9 @@ public:
 	// in case of error throws an exception
 	int CreateMessage(const Message_t &msg, char *buffer, int maxsize);
 
-	// returns the number of characters read
-	// in case of error throws an exception
-	Message_t ParseMessage(char *buffer, int maxsize, int *nmread);
+//	// returns the number of characters read
+//	// in case of error throws an exception
+//	Message_t ParseMessage(char *buffer, int maxsize, int *nmread);
 };
 
 }
