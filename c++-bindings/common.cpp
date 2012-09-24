@@ -211,4 +211,11 @@ namespace libnavigate
 			throw NaviError_t(NaviError_t::InvalidParameter);
 		}
 	}
+
+	TalkerId_t::TalkerId_t(enum TalkerId_t::talkerid_t initial)
+	{
+		m_value = initial;
+	}
+
 }
+
