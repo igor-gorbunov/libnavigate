@@ -1,4 +1,4 @@
-#include <navigate++.hpp>
+#include <navigate++>
 #include <iostream>
 
 using namespace libnavigate;

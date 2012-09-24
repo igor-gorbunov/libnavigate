@@ -36,7 +36,7 @@ NAVI_BEGIN_DECL
 //
 // Approved sentence formatters
 //
-enum
+enum SentenceFormatter_t
 {
 	navi_AAM,	// waypoint arrival alarm
 	navi_ACK,	// acknowledgement alarm
