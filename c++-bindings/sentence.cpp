@@ -1,5 +1,4 @@
 #include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/c++/errors.hpp>
 
 namespace libnavigate
 {
@@ -82,7 +81,7 @@ int MessageType_t::toSentenceFormatter() const
 	case ZFO: return navi_ZFO;
 	case ZTG: return navi_ZTG;
 	default:
-		throw NaviError_t(NaviError_t::InvalidParameter);
+		return -1;
 	}
 }
 
@@ -164,7 +163,7 @@ MessageType_t MessageType_t::fromSentenceFormatter(int type)
 	case navi_ZFO: return ZFO;
 	case navi_ZTG: return ZTG;
 	default:
-		throw Unknown;
+		return Unknown;
 	}
 }
 
@@ -266,7 +265,7 @@ int TalkerId_t::toTalkerIdCode() const
 	case WI: return navi_WI;
 	case P: return navi_P;
 	default:
-		throw NaviError_t(NaviError_t::InvalidParameter);
+		return -1;
 	}
 }
 
@@ -295,7 +294,7 @@ int Status_t::toStatusCode() const
 	case DataValid: return navi_DataValid;
 	case DataInvalid: return navi_DataInvalid;
 	default:
-		throw NaviError_t(NaviError_t::InvalidParameter);
+		return -1;
 	}
 }
 
@@ -331,7 +330,7 @@ int ModeIndicator_t::toModeIndCode() const
 	case RTKinematic: return navi_RTKinematic;
 	case FloatRTK: return navi_FloatRTK;
 	default:
-		throw NaviError_t(NaviError_t::InvalidParameter);
+		return -1;
 	}
 }
 
