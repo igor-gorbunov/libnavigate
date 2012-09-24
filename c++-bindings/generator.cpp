@@ -7,7 +7,7 @@ namespace libnavigate
 	{
 		int nmwritten;
 
-		if (navi_create_msg(MsgCodeFromMessageType(msg.msgType()), msg, buffer, maxsize, &nmwritten) != navi_Ok)
+		if (navi_create_msg(MsgCodeFromMessageType(msg.type()), msg, buffer, maxsize, &nmwritten) != navi_Ok)
 			throw NaviErrorFromErrorCode(navierr_get_last()->errclass);
 
 		return nmwritten;

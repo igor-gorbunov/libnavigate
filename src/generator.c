@@ -50,7 +50,7 @@
 #define snprintf	_snprintf
 #endif // MSVC_VER
 
-int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
+int navi_create_msg(int type, const void *msg, char *buffer, int maxsize, int *nmwritten)
 {
 
 #ifndef NO_GENERATOR

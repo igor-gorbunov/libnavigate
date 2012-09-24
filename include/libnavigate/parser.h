@@ -185,7 +185,7 @@ NAVI_EXTERN(int) navi_parse_sentencefmt(char *buffer, int *nmread);
 // converts them to radians.
 // Output latitude is in the range of [-pi, +pi].
 // Output longitude in the range of [0, +2pi].
-NAVI_EXTERN(int) navi_get_position(struct navi_position_t *in,
+NAVI_EXTERN(int) navi_get_position(const struct navi_position_t *in,
 		double *latitude, double *longitude);
 
 NAVI_END_DECL

@@ -236,7 +236,7 @@ int navi_set_position(double latitude, double longitude,
 //
 // navi_get_position
 //
-int navi_get_position(struct navi_position_t *in, double *latitude,
+int navi_get_position(const struct navi_position_t *in, double *latitude,
 	double *longitude)
 {
 	double d;

@@ -29,7 +29,7 @@ namespace libnavigate
 		return int(m_value);
 	}
 
-	NaviError_t Navigate_t::NaviErrorFromErrorCode(int errcode)
+	NaviError_t NaviErrorFromErrorCode(int errcode)
 	{
 		switch (errcode)
 		{
@@ -57,7 +57,7 @@ namespace libnavigate
 		}
 	}
 
-	int Navigate_t::MsgCodeFromMessageType(const MessageType_t &type)
+	int MsgCodeFromMessageType(const MessageType_t &type)
 	{
 		switch (type)
 		{
@@ -217,5 +217,365 @@ namespace libnavigate
 		m_value = initial;
 	}
 
+	TalkerId_t::~TalkerId_t() { }
+
+	Message_t::~Message_t() { }
+
+	const MessageType_t &Message_t::type() const
+	{
+		return m_type;
+	}
+
+	Message_t::operator void *() { return 0; }
+
+	Message_t::operator const void *() const { return 0; }
+
+	Gll_t::operator const void *() const { return (const void *)&m_value; }
+
+	Gll_t::operator void *() { return &m_value; }
+
+	TalkerId_t Gll_t::talkerId() const
+	{
+		return TalkerIdFromCode(m_value.tid);
+	}
+
+	TalkerId_t TalkerIdFromCode(int tid)
+	{
+		switch (tid)
+		{
+		case navi_AG:
+			return TalkerId_t::AG;
+		case navi_AP:
+			return TalkerId_t::AP;
+		case navi_AI:
+			return TalkerId_t::AI;
+		case navi_CD:
+			return TalkerId_t::CD;
+		case navi_CR:
+			return TalkerId_t::CR;
+		case navi_CS:
+			return TalkerId_t::CS;
+		case navi_CT:
+			return TalkerId_t::CT;
+		case navi_CV:
+			return TalkerId_t::CV;
+		case navi_CX:
+			return TalkerId_t::CX;
+		case navi_DE:
+			return TalkerId_t::DE;
+		case navi_DF:
+			return TalkerId_t::DF;
+		case navi_EC:
+			return TalkerId_t::EC;
+		case navi_EI:
+			return TalkerId_t::EI;
+		case navi_EP:
+			return TalkerId_t::EP;
+		case navi_ER:
+			return TalkerId_t::ER;
+		case navi_GA:
+			return TalkerId_t::GA;
+		case navi_GP:
+			return TalkerId_t::GP;
+		case navi_GL:
+			return TalkerId_t::GL;
+		case navi_GN:
+			return TalkerId_t::GN;
+		case navi_GW:
+			return TalkerId_t::GW;
+		case navi_HC:
+			return TalkerId_t::HC;
+		case navi_HE:
+			return TalkerId_t::HE;
+		case navi_HN:
+			return TalkerId_t::HN;
+		case navi_II:
+			return TalkerId_t::II;
+		case navi_IN:
+			return TalkerId_t::IN;
+		case navi_LC:
+			return TalkerId_t::LC;
+		case navi_RA:
+			return TalkerId_t::RA;
+		case navi_SD:
+			return TalkerId_t::SD;
+		case navi_SN:
+			return TalkerId_t::SN;
+		case navi_SS:
+			return TalkerId_t::SS;
+		case navi_TI:
+			return TalkerId_t::TI;
+		case navi_VD:
+			return TalkerId_t::VD;
+		case navi_VM:
+			return TalkerId_t::VM;
+		case navi_VW:
+			return TalkerId_t::VW;
+		case navi_VR:
+			return TalkerId_t::VR;
+		case navi_YX:
+			return TalkerId_t::YX;
+		case navi_ZA:
+			return TalkerId_t::ZA;
+		case navi_ZC:
+			return TalkerId_t::ZC;
+		case navi_ZQ:
+			return TalkerId_t::ZQ;
+		case navi_ZV:
+			return TalkerId_t::ZV;
+		case navi_WI:
+			return TalkerId_t::WI;
+		case navi_P:
+			return TalkerId_t::P;
+		default:
+			return TalkerId_t::Unknown;
+		}
+	}
+
+	PositionFix_t PositionFixFromPosition(const struct navi_position_t *position)
+	{
+		double latitude, longitude;
+
+		navi_get_position(position, &latitude, &longitude);
+
+		return PositionFix_t(latitude, longitude);
+	}
+
+	PositionFix_t Gll_t::positionFix() const
+	{
+		return PositionFixFromPosition(&m_value.fix);
+	}
+
+	Utc_t Gll_t::utc() const
+	{
+		return Utc_t(m_value.utc.hour, m_value.utc.min, m_value.utc.sec);
+	}
+
+	Status_t Gll_t::status() const
+	{
+		return StatusFromCode(m_value.status);
+	}
+
+	ModeIndicator_t Gll_t::modeIndicator() const
+	{
+		return ModeIndicatorFromCode(m_value.mi);
+	}
+
+	Status_t StatusFromCode(int status)
+	{
+		switch (status)
+		{
+		case navi_DataValid:
+			return Status_t::DataValid;
+		case navi_DataInvalid:
+			return Status_t::DataInvalid;
+		default:
+			return Status_t::Unknown;
+		}
+	}
+
+	ModeIndicator_t ModeIndicatorFromCode(int mi)
+	{
+		switch (mi)
+		{
+		case navi_Autonomous:
+			return ModeIndicator_t::Autonomous;
+		case navi_Differential:
+			return ModeIndicator_t::Differential;
+		case navi_Estimated:
+			return ModeIndicator_t::Estimated;
+		case navi_ManualInput:
+			return ModeIndicator_t::ManualInput;
+		case navi_Simulator:
+			return ModeIndicator_t::Simulator;
+		case navi_DataNotValid:
+			return ModeIndicator_t::DataNotValid;
+		case navi_Precise:
+			return ModeIndicator_t::Precise;
+		case navi_RTKinematic:
+			return ModeIndicator_t::RTKinematic;
+		case navi_FloatRTK:
+			return ModeIndicator_t::FloatRTK;
+		default:
+			return ModeIndicator_t::Unknown;
+		}
+	}
+
+	Gll_t::Gll_t(const TalkerId_t &tid) : Message_t(MessageType_t::GLL)
+	{
+		m_value.tid = TalkerIdCodeFromTalkerId(tid);
+		m_value.vfields = 0;
+	}
+
+	TalkerId_t::operator int() const
+	{
+		return int(m_value);
+	}
+
+	int TalkerIdCodeFromTalkerId(const TalkerId_t &tid)
+	{
+		switch (tid)
+		{
+		case TalkerId_t::AG:
+			return navi_AG;
+		case TalkerId_t::AP:
+			return navi_AP;
+		case TalkerId_t::AI:
+			return navi_AI;
+		case TalkerId_t::CD:
+			return navi_CD;
+		case TalkerId_t::CR:
+			return navi_CR;
+		case TalkerId_t::CS:
+			return navi_CS;
+		case TalkerId_t::CT:
+			return navi_CT;
+		case TalkerId_t::CV:
+			return navi_CV;
+		case TalkerId_t::CX:
+			return navi_CX;
+		case TalkerId_t::DE:
+			return navi_DE;
+		case TalkerId_t::DF:
+			return navi_DF;
+		case TalkerId_t::EC:
+			return navi_EC;
+		case TalkerId_t::EI:
+			return navi_EI;
+		case TalkerId_t::EP:
+			return navi_EP;
+		case TalkerId_t::ER:
+			return navi_ER;
+		case TalkerId_t::GA:
+			return navi_GA;
+		case TalkerId_t::GP:
+			return navi_GP;
+		case TalkerId_t::GL:
+			return navi_GL;
+		case TalkerId_t::GN:
+			return navi_GN;
+		case TalkerId_t::GW:
+			return navi_GW;
+		case TalkerId_t::HC:
+			return navi_HC;
+		case TalkerId_t::HE:
+			return navi_HE;
+		case TalkerId_t::HN:
+			return navi_HN;
+		case TalkerId_t::II:
+			return navi_II;
+		case TalkerId_t::IN:
+			return navi_IN;
+		case TalkerId_t::LC:
+			return navi_LC;
+		case TalkerId_t::RA:
+			return navi_RA;
+		case TalkerId_t::SD:
+			return navi_SD;
+		case TalkerId_t::SN:
+			return navi_SN;
+		case TalkerId_t::SS:
+			return navi_SS;
+		case TalkerId_t::TI:
+			return navi_TI;
+		case TalkerId_t::VD:
+			return navi_VD;
+		case TalkerId_t::VM:
+			return navi_VM;
+		case TalkerId_t::VW:
+			return navi_VW;
+		case TalkerId_t::VR:
+			return navi_VR;
+		case TalkerId_t::YX:
+			return navi_YX;
+		case TalkerId_t::ZA:
+			return navi_ZA;
+		case TalkerId_t::ZC:
+			return navi_ZC;
+		case TalkerId_t::ZQ:
+			return navi_ZQ;
+		case TalkerId_t::ZV:
+			return navi_ZV;
+		case TalkerId_t::WI:
+			return navi_WI;
+		case TalkerId_t::P:
+			return navi_P;
+		default:
+			return -1;
+		}
+	}
+
+	void Gll_t::setTalkerId(const TalkerId_t &tid)
+	{
+		m_value.tid = TalkerIdCodeFromTalkerId(tid);
+	}
+
+	void Gll_t::setPositionFix(const PositionFix_t &fix)
+	{
+		navi_set_position(fix.latitude(), fix.longitude(), &m_value.fix);
+		m_value.vfields |= GLL_VALID_POSITION_FIX;
+	}
+
+	double PositionFix_t::latitude() const { return m_latitude; }
+
+	double PositionFix_t::longitude() const  { return m_longitude; }
+
+	void Gll_t::setUtc(const Utc_t &utc)
+	{
+		m_value.utc.hour = utc.hours();
+		m_value.utc.min = utc.minutes();
+		m_value.utc.sec = utc.seconds();
+		m_value.vfields |= GLL_VALID_UTC;
+	}
+
+	void Gll_t::setStatus(const Status_t &status)
+	{
+		m_value.status = StatusCodeFromStatus(status);
+	}
+
+	void Gll_t::setModeIndicator(const ModeIndicator_t &mi)
+	{
+		m_value.mi = ModeIndicatorCodeFromModeIndicator(mi);
+	}
+
+	int StatusCodeFromStatus(const Status_t &status)
+	{
+		switch (status)
+		{
+		case Status_t::DataValid:
+			return navi_DataValid;
+		case Status_t::DataInvalid:
+			return navi_DataInvalid;
+		default:
+			return -1;
+		}
+	}
+
+	int ModeIndicatorCodeFromModeIndicator(const ModeIndicator_t &mi)
+	{
+		switch (mi)
+		{
+		case ModeIndicator_t::Autonomous:
+			return navi_Autonomous;
+		case ModeIndicator_t::Differential:
+			return navi_Differential;
+		case ModeIndicator_t::Estimated:
+			return navi_Estimated;
+		case ModeIndicator_t::ManualInput:
+			return navi_ManualInput;
+		case ModeIndicator_t::Simulator:
+			return navi_Simulator;
+		case ModeIndicator_t::DataNotValid:
+			return navi_DataNotValid;
+		case ModeIndicator_t::Precise:
+			return navi_Precise;
+		case ModeIndicator_t::RTKinematic:
+			return navi_RTKinematic;
+		case ModeIndicator_t::FloatRTK:
+			return navi_FloatRTK;
+		default:
+			return -1;
+		}
+	}
 }
 

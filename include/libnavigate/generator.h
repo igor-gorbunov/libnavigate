@@ -34,7 +34,7 @@ NAVI_BEGIN_DECL
 // Returns 0 if succeeded, -1 otherwise
 // Call navierr_get_last() to get the error description
 //
-NAVI_EXTERN(int) navi_create_msg(int type, void *msg, char *buffer,
+NAVI_EXTERN(int) navi_create_msg(int type, const void *msg, char *buffer,
 		int maxsize, int *nmwritten);
 
 //

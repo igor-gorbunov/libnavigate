@@ -195,6 +195,9 @@ namespace libnavigate
 
 		virtual ~TalkerId_t();
 
+	public:
+		operator int() const;
+
 	private:
 		enum talkerid_t m_value;
 	};
@@ -233,13 +236,38 @@ namespace libnavigate
 	NAVI_EXTERN_CLASS(class, PositionFix_t)
 	{
 	public:
-		PositionFix_t(double latitude, double longitude);
+		PositionFix_t(double latitude, double longitude)
+			{ m_latitude = latitude; m_longitude = longitude; }
+
+	public:
+		virtual double latitude() const;
+		virtual double longitude() const;
+
+	private:
+		double m_latitude;
+		double m_longitude;
 	};
 
 	NAVI_EXTERN_CLASS(class, Utc_t)
 	{
 	public:
-		Utc_t(int hh, int mm, double ss);
+		Utc_t(int hh, int mm, double ss)
+			{ m_hours = hh; m_minutes = mm; m_seconds = ss; }
+
+	public:
+		virtual int hours() const
+			{ return m_hours; }
+
+		virtual int minutes() const
+			{ return m_minutes; }
+
+		virtual double seconds() const
+			{ return m_seconds; }
+
+	private:
+		int m_hours;
+		int m_minutes;
+		double m_seconds;
 	};
 
 	NAVI_EXTERN_CLASS(class, Status_t)
@@ -247,12 +275,21 @@ namespace libnavigate
 	public:
 		enum status_t
 		{
+			Unknown,
 			DataValid,
 			DataInvalid
 		};
 
 	public:
-		Status_t(enum Status_t::status_t status);
+		Status_t(enum Status_t::status_t status = Unknown)
+			{ m_status = status; }
+
+	public:
+		operator int() const
+			{ return int(m_status); }
+
+	private:
+		enum status_t m_status;
 	};
 
 	NAVI_EXTERN_CLASS(class, ModeIndicator_t)
@@ -260,6 +297,8 @@ namespace libnavigate
 	public:
 		enum modeind_t
 		{
+			Unknown,
+
 			// Satellite system used in non-differential
 			// mode in position fix (A)
 			Autonomous,
@@ -297,20 +336,30 @@ namespace libnavigate
 		};
 
 	public:
-		ModeIndicator_t(enum ModeIndicator_t::modeind_t mi);
+		ModeIndicator_t(enum ModeIndicator_t::modeind_t mi = Unknown)
+			{ m_modeind = mi; }
+
+	public:
+		operator int() const
+			{ return int(m_modeind); }
+
+	private:
+		enum modeind_t m_modeind;
 	};
 
 	NAVI_EXTERN_CLASS(class, Message_t)
 	{
 	public:
-		Message_t(const MessageType_t &type);
+		Message_t(const MessageType_t &type)
+			{ m_type = type; }
+
 		virtual ~Message_t();
 
 	public:
-		virtual const MessageType_t &msgType() const;
+		virtual const MessageType_t &type() const;
 
 	public:
-		virtual operator void *() const;
+		virtual operator const void *() const;
 		virtual operator void *();
 
 	private:
@@ -321,7 +370,8 @@ namespace libnavigate
 	{
 	public:
 		Gll_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-		virtual ~Gll_t();
+
+		virtual ~Gll_t() { }
 
 	public:
 		virtual TalkerId_t talkerId() const;
@@ -338,7 +388,7 @@ namespace libnavigate
 		virtual void setModeIndicator(const ModeIndicator_t &mi);
 
 	public:
-		virtual operator void *() const;
+		virtual operator const void *() const;
 		virtual operator void *();
 
 	private:
@@ -355,14 +405,18 @@ namespace libnavigate
 		// returns the number of characters read
 		// in case of error throws an exception
 		Message_t ParseMessage(char *buffer, int maxsize, int *nmread);
-
-	private:
-		NaviError_t NaviErrorFromErrorCode(int errcode);
-
-	private:
-		int MsgCodeFromMessageType(const MessageType_t &type);
 	};
 
+	NaviError_t NaviErrorFromErrorCode(int errcode);
+	TalkerId_t TalkerIdFromCode(int tid);
+	PositionFix_t PositionFixFromPosition(const struct navi_position_t *position);
+	Status_t StatusFromCode(int status);
+	ModeIndicator_t ModeIndicatorFromCode(int mi);
+
+	int MsgCodeFromMessageType(const MessageType_t &type);
+	int TalkerIdCodeFromTalkerId(const TalkerId_t &tid);
+	int StatusCodeFromStatus(const Status_t &status);
+	int ModeIndicatorCodeFromModeIndicator(const ModeIndicator_t &mi);
 }
 
 #endif // INCLUDE_navi_navigateplusplus
