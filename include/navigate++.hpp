@@ -6,7 +6,15 @@ namespace libnavigate
 
 #include <navigate.h>
 
-	class NAVI_EXTERN(MessageType_t)
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define NAVI_EXTERN_CLASS(type, name)	type __attribute__((visibility("default"))) name
+#elif defined(_MSC_VER)
+#define NAVI_EXTERN_CLASS(type, name)	type __declspec(dllexport) name
+#else
+#define NAVI_EXTERN_CLASS(type, name)	extern type name
+#endif // __GNUC__, _MSC_VER or other compiler
+
+	NAVI_EXTERN_CLASS(class, MessageType_t)
 	{
 	public:
 		enum msgtype_t
@@ -101,7 +109,7 @@ namespace libnavigate
 		enum msgtype_t m_value;
 	};
 
-	class NAVI_EXTERN(TalkerId_t)
+	NAVI_EXTERN_CLASS(class, TalkerId_t)
 	{
 	public:
 		enum talkerid_t
@@ -191,7 +199,7 @@ namespace libnavigate
 		enum talkerid_t m_value;
 	};
 
-	class NAVI_EXTERN(NaviError_t)
+	NAVI_EXTERN_CLASS(class, NaviError_t)
 	{
 	public:
 		enum errtype_t
@@ -222,19 +230,19 @@ namespace libnavigate
 		enum errtype_t m_value;
 	};
 
-	class NAVI_EXTERN(PositionFix_t)
+	NAVI_EXTERN_CLASS(class, PositionFix_t)
 	{
 	public:
 		PositionFix_t(double latitude, double longitude);
 	};
 
-	class NAVI_EXTERN(Utc_t)
+	NAVI_EXTERN_CLASS(class, Utc_t)
 	{
 	public:
 		Utc_t(int hh, int mm, double ss);
 	};
 
-	class NAVI_EXTERN(Status_t)
+	NAVI_EXTERN_CLASS(class, Status_t)
 	{
 	public:
 		enum status_t
@@ -247,7 +255,7 @@ namespace libnavigate
 		Status_t(enum Status_t::status_t status);
 	};
 
-	class NAVI_EXTERN(ModeIndicator_t)
+	NAVI_EXTERN_CLASS(class, ModeIndicator_t)
 	{
 	public:
 		enum modeind_t
@@ -292,7 +300,7 @@ namespace libnavigate
 		ModeIndicator_t(enum ModeIndicator_t::modeind_t mi);
 	};
 
-	class NAVI_EXTERN(Message_t)
+	NAVI_EXTERN_CLASS(class, Message_t)
 	{
 	public:
 		Message_t(const MessageType_t &type);
@@ -309,7 +317,7 @@ namespace libnavigate
 		MessageType_t m_type;
 	};
 
-	class NAVI_EXTERN(Gll_t) : public Message_t
+	NAVI_EXTERN_CLASS(class, Gll_t) : public Message_t
 	{
 	public:
 		Gll_t(const TalkerId_t &tid = TalkerId_t::Unknown);
@@ -337,7 +345,7 @@ namespace libnavigate
 		struct gll_t m_value;
 	};
 
-	class NAVI_EXTERN(Navigate_t)
+	NAVI_EXTERN_CLASS(class, Navigate_t)
 	{
 	public:
 		// returns the number of characters written

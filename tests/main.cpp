@@ -36,8 +36,8 @@ int main(void)
 		}
 	}
 
-	printf("msglength = %d\n", msglength);
-	printf("message = '%s'\n", buffer);
+	std::cout << "msglength = " << msglength << "\n";
+	std::cout << "message = '" << buffer << "'\n";
 
 	//int nmread = 0;
 	//Message_t 
