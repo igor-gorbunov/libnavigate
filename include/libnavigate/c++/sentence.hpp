@@ -212,6 +212,66 @@ private:
 	enum talkerid_t m_value;
 };
 
+NAVI_EXTERN_CLASS(class, Datum_t)
+{
+public:
+	static Datum_t fromDatumCode(int code);
+
+public:
+	enum datums_t
+		{ Unknown, WGS84, WGS72, SGS85, PE90, UserDefined };
+
+public:
+	Datum_t(enum datums_t datum = Unknown);
+	virtual ~Datum_t();
+
+public:
+	virtual enum datums_t datum() const;
+
+public:
+	virtual void setDatum(enum datums_t datum);
+
+public:
+	inline operator int() const
+		{ return int(m_value); }
+
+public:
+	virtual int toDatumCode() const;
+
+private:
+	enum datums_t m_value;
+};
+
+NAVI_EXTERN_CLASS(class, DatumSubdivision_t)
+{
+public:
+	static DatumSubdivision_t fromDatumSubcode(int subcode);
+
+public:
+	enum datumsubcodes_t
+		{ Unknown };
+
+public:
+	DatumSubdivision_t(enum datumsubcodes_t datumsubcode = Unknown);
+	virtual ~DatumSubdivision_t();
+
+public:
+	virtual enum datumsubcodes_t datumSubcode() const;
+
+public:
+	virtual void setDatum(enum datumsubcodes_t datumSubcode);
+
+public:
+	inline operator int() const
+		{ return int(m_value); }
+
+public:
+	virtual int toDatumSubcode() const;
+
+private:
+	enum datumsubcodes_t m_value;
+};
+
 NAVI_EXTERN_CLASS(class, PositionFix_t)
 {
 public:
@@ -394,6 +454,30 @@ public:
 
 private:
 	enum modeind_t m_value;
+};
+
+NAVI_EXTERN_CLASS(class, GsaSwitchMode_t)
+{
+public:
+	static GsaSwitchMode_t fromSwitchModeCode(int code);
+
+public:
+	enum switchmodes_t
+		{ Unknown, Manual, Automatic };
+
+public:
+	GsaSwitchMode_t(enum GsaSwitchMode_t::switchmodes_t mode = Unknown);
+	virtual ~GsaSwitchMode_t();
+
+public:
+	inline operator int() const
+		{ return int(m_value); }
+
+public:
+	virtual int toSwitchModeCode() const;
+
+private:
+	enum switchmodes_t m_value;
 };
 
 NAVI_EXTERN_CLASS(class, Message_t)

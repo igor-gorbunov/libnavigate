@@ -493,5 +493,102 @@ Message_t::~Message_t() { }
 const MessageType_t & Message_t::type() const
 	{ return m_type; }
 
+Datum_t Datum_t::fromDatumCode(int code)
+{
+	switch (code)
+	{
+	case navi_WGS84: return WGS84;
+	case navi_WGS72: return WGS72;
+	case navi_SGS85: return SGS85;
+	case navi_PE90: return PE90;
+	case navi_UserDefined: return UserDefined;
+	default:
+		return Unknown;
+	}
+}
+
+Datum_t::Datum_t(enum Datum_t::datums_t datum)
+	{ m_value = datum; }
+
+Datum_t::~Datum_t() { }
+
+enum Datum_t::datums_t Datum_t::datum() const
+	{ return m_value; }
+
+void Datum_t::setDatum(enum Datum_t::datums_t datum)
+	{ m_value = datum; }
+
+int Datum_t::toDatumCode() const
+{
+	switch (m_value)
+	{
+	case WGS84: return navi_WGS84;
+	case WGS72: return navi_WGS72;
+	case SGS85: return navi_SGS85;
+	case PE90: return navi_PE90;
+	case UserDefined: return navi_UserDefined;
+	default:
+		return -1;
+	}
+}
+
+DatumSubdivision_t DatumSubdivision_t::fromDatumSubcode(int subcode)
+{
+	switch (subcode)
+	{
+	case navi_Null:
+	default:
+		return Unknown;
+	}
+}
+
+DatumSubdivision_t::DatumSubdivision_t(enum datumsubcodes_t datumsubcode)
+	{ m_value = datumsubcode; }
+
+DatumSubdivision_t::~DatumSubdivision_t() { }
+
+enum DatumSubdivision_t::datumsubcodes_t DatumSubdivision_t::datumSubcode() const
+	{ return m_value; }
+
+void DatumSubdivision_t::setDatum(enum DatumSubdivision_t::datumsubcodes_t datumSubcode)
+	{ m_value = datumSubcode; }
+
+int DatumSubdivision_t::toDatumSubcode() const
+{
+	switch (m_value)
+	{
+	case Unknown:
+	default:
+		return navi_Null;
+	}
+}
+
+GsaSwitchMode_t GsaSwitchMode_t::fromSwitchModeCode(int code)
+{
+	switch (code)
+	{
+	case navi_GsaManual: return Manual;
+	case navi_GsaAutomatic: return Automatic;
+	default:
+		return Unknown;
+	}
+}
+
+GsaSwitchMode_t::GsaSwitchMode_t(enum GsaSwitchMode_t::switchmodes_t mode)
+	{ m_value = mode; }
+
+GsaSwitchMode_t::~GsaSwitchMode_t() { }
+
+int GsaSwitchMode_t::toSwitchModeCode() const
+{
+	switch (m_value)
+	{
+	case Manual: return navi_GsaManual;
+	case Automatic: return navi_GsaAutomatic;
+	default:
+		return -1;
+	}
+}
+
 }
 
