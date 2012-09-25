@@ -292,7 +292,7 @@ enum naviGsaSwitchMode_t
 // Holds UTC time (hours, minutes, seconds and
 // decimal fraction of seconds)
 //
-NAVI_ALIGNED(struct, navi_utc_t)
+NAVI_STRUCT(struct, navi_utc_t)
 {
 	int hour, min;
 	double sec;
@@ -301,7 +301,7 @@ NAVI_ALIGNED(struct, navi_utc_t)
 //
 // Holds UTC date
 //
-NAVI_ALIGNED(struct, navi_date_t)
+NAVI_STRUCT(struct, navi_date_t)
 {
 	int day, month, year;
 };
@@ -320,7 +320,7 @@ enum
 //
 // Holds offset data (x.x,a)
 //
-NAVI_ALIGNED(struct, navi_offset_t)
+NAVI_STRUCT(struct, navi_offset_t)
 {
 	double offset;	// degrees/minutes
 	int sign;		// N/S or E/W
@@ -329,7 +329,7 @@ NAVI_ALIGNED(struct, navi_offset_t)
 //
 // Holds position data
 //
-NAVI_ALIGNED(struct, navi_position_t)
+NAVI_STRUCT(struct, navi_position_t)
 {
 	double latitude;	// degrees
 	int latsign;		// N/S
@@ -340,7 +340,7 @@ NAVI_ALIGNED(struct, navi_position_t)
 //
 // Holds GPS almanac data for one satellite
 //
-NAVI_ALIGNED(struct, navi_gpsalm_t)
+NAVI_STRUCT(struct, navi_gpsalm_t)
 {
 	unsigned vfields;		// valid fields, bitwise or of GPSALM_VALID_xxx
 	unsigned satelliteprn;	// 01 to 32
@@ -375,7 +375,7 @@ NAVI_ALIGNED(struct, navi_gpsalm_t)
 //
 // Holds GLONASS almanac data for one satellite
 //
-NAVI_ALIGNED(struct, navi_gloalm_t)
+NAVI_STRUCT(struct, navi_gloalm_t)
 {
 	unsigned vfields;	// valid fields, bitwise or of GLOALM_VALID_xxx
 	unsigned satslot;	// 01 to 24
@@ -411,7 +411,7 @@ NAVI_ALIGNED(struct, navi_gloalm_t)
 //
 // Holds satellite information for one satellite
 //
-NAVI_ALIGNED(struct, navi_satinfo_t)
+NAVI_STRUCT(struct, navi_satinfo_t)
 {
 	unsigned vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
 	unsigned id;		// satellite ID number
@@ -436,7 +436,7 @@ NAVI_ALIGNED(struct, navi_satinfo_t)
 
 //
 // GPS almanac data
-NAVI_ALIGNED(struct, alm_t)
+NAVI_STRUCT(struct, alm_t)
 {
 	int tid;				// talker id
 	int nmsatellites;		// number of satellites in the almlist array
@@ -517,7 +517,7 @@ NAVI_ALIGNED(struct, alm_t)
 
 //
 // Datum reference
-NAVI_ALIGNED(struct, dtm_t)
+NAVI_STRUCT(struct, dtm_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of DTM_VALID_xxx
@@ -542,7 +542,7 @@ NAVI_ALIGNED(struct, dtm_t)
 
 //
 // GNSS Satellite fault detection
-NAVI_ALIGNED(struct, gbs_t)
+NAVI_STRUCT(struct, gbs_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GBS_VALID_xxx
@@ -566,7 +566,7 @@ NAVI_ALIGNED(struct, gbs_t)
 
 //
 // Global positioning system fix data
-NAVI_ALIGNED(struct, gga_t)
+NAVI_STRUCT(struct, gga_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GGA_VALID_xxx
@@ -597,7 +597,7 @@ NAVI_ALIGNED(struct, gga_t)
 
 //
 // Geographic position, latitude/longitude
-NAVI_ALIGNED(struct, gll_t)
+NAVI_STRUCT(struct, gll_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GLL_VALID_xxx
@@ -612,7 +612,7 @@ NAVI_ALIGNED(struct, gll_t)
 
 //
 // GNSS fix data
-NAVI_ALIGNED(struct, gns_t)
+NAVI_STRUCT(struct, gns_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GNS_VALID_xxx
@@ -639,7 +639,7 @@ NAVI_ALIGNED(struct, gns_t)
 
 //
 // GNSS range residuals
-NAVI_ALIGNED(struct, grs_t)
+NAVI_STRUCT(struct, grs_t)
 {
 	int tid;				// talker id
 	struct navi_utc_t utc;	// UTC time
@@ -657,7 +657,7 @@ NAVI_ALIGNED(struct, grs_t)
 
 //
 // GNSS DOP and active satellites
-NAVI_ALIGNED(struct, gsa_t)
+NAVI_STRUCT(struct, gsa_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GSA_VALID_xxx
@@ -681,7 +681,7 @@ NAVI_ALIGNED(struct, gsa_t)
 
 //
 // GNSS pseudorange noise statistics
-NAVI_ALIGNED(struct, gst_t)
+NAVI_STRUCT(struct, gst_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of GST_VALID_xxx
@@ -703,7 +703,7 @@ NAVI_ALIGNED(struct, gst_t)
 
 //
 // GNSS satellites in view
-NAVI_ALIGNED(struct, gsv_t)
+NAVI_STRUCT(struct, gsv_t)
 {
 	int tid;		// talker id
 	int totalsv;	// total number of satellites in view
@@ -755,7 +755,7 @@ NAVI_ALIGNED(struct, gsv_t)
 
 //
 // GLONASS almanac data
-NAVI_ALIGNED(struct, mla_t)
+NAVI_STRUCT(struct, mla_t)
 {
 	int tid;				// talker id
 	int nmsatellites;		// number of satellites in the almlist array
@@ -806,7 +806,7 @@ NAVI_ALIGNED(struct, mla_t)
 
 //
 // Recommended minimum specific GNSS data
-NAVI_ALIGNED(struct, rmc_t)
+NAVI_STRUCT(struct, rmc_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
@@ -914,7 +914,7 @@ NAVI_ALIGNED(struct, rmc_t)
 
 //
 // Cource over ground and ground speed
-NAVI_ALIGNED(struct, vtg_t)
+NAVI_STRUCT(struct, vtg_t)
 {
 	int tid;			// talker id
 	unsigned vfields;	// valid fields, bitwise or of ValidFields_t
@@ -960,7 +960,7 @@ NAVI_ALIGNED(struct, vtg_t)
 
 //
 // Time and date
-NAVI_ALIGNED(struct, zda_t)
+NAVI_STRUCT(struct, zda_t)
 {
 	int tid;				// talker id
 	unsigned vfields;		// valid fields, bitwise or of ValidFields_t

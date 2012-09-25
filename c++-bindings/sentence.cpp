@@ -276,6 +276,17 @@ PositionFix_t PositionFix_t::fromPosition(const struct navi_position_t *position
 	return PositionFix_t(latitude, longitude);
 }
 
+PositionFix_t::PositionFix_t(double latitude, double longitude)
+	{ m_latitude = latitude; m_longitude = longitude; }
+
+PositionFix_t::~PositionFix_t() { }
+
+double PositionFix_t::latitude() const
+	{ return m_latitude; }
+
+double PositionFix_t::longitude() const
+	{ return m_longitude; }
+
 struct navi_position_t PositionFix_t::toPosition() const
 {
 	struct navi_position_t result;

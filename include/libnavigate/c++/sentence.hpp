@@ -226,17 +226,12 @@ public:
 	static PositionFix_t fromPosition(const struct navi_position_t *position);
 
 public:
-	PositionFix_t(double latitude, double longitude)
-		{ m_latitude = latitude; m_longitude = longitude; }
-
-	virtual ~PositionFix_t() { }
+	PositionFix_t(double latitude, double longitude);
+	virtual ~PositionFix_t();
 
 public:
-	virtual double latitude() const
-		{ return m_latitude; }
-
-	virtual double longitude() const
-		{ return m_longitude; }
+	virtual double latitude() const;
+	virtual double longitude() const;
 
 public:
 	virtual struct navi_position_t toPosition() const;
