@@ -381,7 +381,7 @@ public:
 	};
 
 public:
-	Status_t(enum Status_t::status_t status = Unknown);
+	Status_t(enum status_t status = Unknown);
 	virtual ~Status_t();
 
 public:
@@ -442,7 +442,7 @@ public:
 	static ModeIndicator_t fromModeIndCode(int mi);
 
 public:
-	ModeIndicator_t(enum ModeIndicator_t::modeind_t mi = Unknown);
+	ModeIndicator_t(enum modeind_t mi = Unknown);
 	virtual ~ModeIndicator_t();
 
 public:
@@ -466,7 +466,7 @@ public:
 		{ Unknown, Manual, Automatic };
 
 public:
-	GsaSwitchMode_t(enum GsaSwitchMode_t::switchmodes_t mode = Unknown);
+	GsaSwitchMode_t(enum switchmodes_t mode = Unknown);
 	virtual ~GsaSwitchMode_t();
 
 public:
@@ -478,6 +478,41 @@ public:
 
 private:
 	enum switchmodes_t m_value;
+};
+
+NAVI_EXTERN_CLASS(class, GpsQualityIndicator_t)
+{
+public:
+	static GpsQualityIndicator_t fromQualityCode(int code);
+
+public:
+	enum qualityIndicators_t
+	{
+		Unknown,
+		GpsInvalid,
+		GpsSpsMode,
+		GpsDifferential,
+		GpsPpsMode,
+		GpsFixedRtk,
+		GpsFloatRtk,
+		GpsEstimated,
+		GpsManual,
+		GpsSimulator
+	};
+
+public:
+	GpsQualityIndicator_t(enum qualityIndicators_t mode = Unknown);
+	virtual ~GpsQualityIndicator_t();
+
+public:
+	inline operator int() const
+		{ return int(m_value); }
+
+public:
+	virtual int toQualityCode() const;
+
+private:
+	enum qualityIndicators_t m_value;
 };
 
 NAVI_EXTERN_CLASS(class, Message_t)

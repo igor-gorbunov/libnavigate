@@ -590,5 +590,46 @@ int GsaSwitchMode_t::toSwitchModeCode() const
 	}
 }
 
+GpsQualityIndicator_t GpsQualityIndicator_t::fromQualityCode(int code)
+{
+	switch (code)
+	{
+	case navi_GpsInvalid: return GpsInvalid;
+	case navi_GpsSpsMode: return GpsSpsMode;
+	case navi_GpsDifferential: return GpsDifferential;
+	case navi_GpsPpsMode: return GpsPpsMode;
+	case navi_GpsFixedRtk: return GpsFixedRtk;
+	case navi_GpsFloatRtk: return GpsFloatRtk;
+	case navi_GpsEstimated: return GpsEstimated;
+	case navi_GpsManual: return GpsManual;
+	case navi_GpsSimulator: return GpsSimulator;
+	default:
+		return Unknown;
+	}
+}
+
+GpsQualityIndicator_t::GpsQualityIndicator_t(enum qualityIndicators_t mode)
+	{ m_value = mode; }
+
+GpsQualityIndicator_t::~GpsQualityIndicator_t() { }
+
+int GpsQualityIndicator_t::toQualityCode() const
+{
+	switch (m_value)
+	{
+	case GpsInvalid: return navi_GpsInvalid;
+	case GpsSpsMode: return navi_GpsSpsMode;
+	case GpsDifferential: return navi_GpsDifferential;
+	case GpsPpsMode: return navi_GpsPpsMode;
+	case GpsFixedRtk: return navi_GpsFixedRtk;
+	case GpsFloatRtk: return navi_GpsFloatRtk;
+	case GpsEstimated: return navi_GpsEstimated;
+	case GpsManual: return navi_GpsManual;
+	case GpsSimulator: return navi_GpsSimulator;
+	default:
+		return -1;
+	}
+}
+
 }
 
