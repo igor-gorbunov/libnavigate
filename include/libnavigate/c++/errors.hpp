@@ -29,18 +29,13 @@ public:
 	static NaviError_t fromErrorCode(int errcode);
 
 public:
-	NaviError_t() { m_value = Unknown; }
-
-	NaviError_t(enum NaviError_t::errtype_t initial)
-		{ m_value = initial; }
-
-	NaviError_t(const NaviError_t &right)
-		{ m_value = right.m_value; }
-
-	virtual ~NaviError_t() { }
+	NaviError_t();
+	NaviError_t(enum NaviError_t::errtype_t initial);
+	NaviError_t(const NaviError_t &right);
+	virtual ~NaviError_t();
 
 public:
-	virtual operator int() const
+	inline operator int() const
 		{ return int(m_value); }
 
 private:

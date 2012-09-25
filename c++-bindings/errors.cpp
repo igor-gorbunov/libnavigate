@@ -21,5 +21,16 @@ NaviError_t NaviError_t::fromErrorCode(int errcode)
 	}
 }
 
+NaviError_t::NaviError_t()
+	{ m_value = Unknown; }
+
+NaviError_t::NaviError_t(enum NaviError_t::errtype_t initial)
+	{ m_value = initial; }
+
+NaviError_t::NaviError_t(const NaviError_t &right)
+	{ m_value = right.m_value; }
+
+NaviError_t::~NaviError_t() { }
+
 }
 
