@@ -631,5 +631,29 @@ int GpsQualityIndicator_t::toQualityCode() const
 	}
 }
 
+ModeIndicatorArray_t ModeIndicatorArray_t::fromModeIndicators(const int modeArray[])
+{
+	ModeIndicatorArray_t result;
+
+	for (int i = 0; i < MaxIndicators; i++)
+	{
+		result.m_array[i] = ModeIndicator_t::fromModeIndCode(modeArray[i]);
+	}
+
+	return result;
+}
+
+ModeIndicatorArray_t::ModeIndicatorArray_t() { }
+
+ModeIndicatorArray_t::~ModeIndicatorArray_t() { }
+
+void ModeIndicatorArray_t::toModeIndicators(int modeArray[]) const
+{
+	for (int i = 0; i < MaxIndicators; i++)
+	{
+		modeArray[i] = m_array[i].toModeIndCode();
+	}
+}
+
 }
 

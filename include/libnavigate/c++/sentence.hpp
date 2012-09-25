@@ -515,6 +515,25 @@ private:
 	enum qualityIndicators_t m_value;
 };
 
+NAVI_EXTERN_CLASS(class, ModeIndicatorArray_t)
+{
+public:
+	static const int MaxIndicators = 2;
+
+public:
+	static ModeIndicatorArray_t fromModeIndicators(const int modeArray[]);
+
+public:
+	ModeIndicatorArray_t();
+	virtual ~ModeIndicatorArray_t();
+
+public:
+	virtual void toModeIndicators(int modeArray[]) const;
+
+private:
+	ModeIndicator_t m_array[MaxIndicators];
+};
+
 NAVI_EXTERN_CLASS(class, Message_t)
 {
 public:
