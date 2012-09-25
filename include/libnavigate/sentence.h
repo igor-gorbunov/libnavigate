@@ -392,7 +392,7 @@ NAVI_STRUCT(struct, navi_gloalm_t)
 	unsigned lambda;	// Greenwich longitude of the ascension node
 	unsigned deltai;	// correction to the average value of the inclination angle
 	unsigned tauc_low;	// 12 LSB of system time scale correction
-	unsigned taun;		// cource value of the time scale shift
+	unsigned taun;		// course value of the time scale shift
 };
 
 #define GLOALM_VALID_SATSLOT		0x001

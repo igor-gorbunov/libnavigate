@@ -147,13 +147,13 @@ void Alm_t::setMeanAnomaly(int satIdx, unsigned int value)
 
 void Alm_t::setClockParameter0(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].af0;
+	m_value.almlist[satIdx].af0 = value;
 	m_value.almlist[satIdx].vfields |= GPSALM_VALID_AF0;
 }
 
 void Alm_t::setClockParameter1(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].af1;
+	m_value.almlist[satIdx].af1 = value;
 	m_value.almlist[satIdx].vfields |= GPSALM_VALID_AF1;
 }
 
