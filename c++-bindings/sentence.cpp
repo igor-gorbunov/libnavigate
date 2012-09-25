@@ -167,6 +167,17 @@ MessageType_t MessageType_t::fromSentenceFormatter(int type)
 	}
 }
 
+MessageType_t::MessageType_t()
+	{ m_value = Unknown; }
+
+MessageType_t::MessageType_t(enum MessageType_t::msgtype_t initial)
+	{ m_value = initial; }
+
+MessageType_t::MessageType_t(const MessageType_t &right)
+	{ m_value = right.m_value; }
+
+MessageType_t::~MessageType_t() { }
+
 TalkerId_t TalkerId_t::fromTalkerIdCode(int tid)
 {
 	switch (tid)
@@ -269,6 +280,17 @@ int TalkerId_t::toTalkerIdCode() const
 	}
 }
 
+TalkerId_t::TalkerId_t()
+	{ m_value = Unknown; }
+
+TalkerId_t::TalkerId_t(enum TalkerId_t::talkerid_t initial)
+	{ m_value = initial; }
+
+TalkerId_t::TalkerId_t(const TalkerId_t &right)
+	{ m_value = right.m_value; }
+
+TalkerId_t::~TalkerId_t() { }
+
 PositionFix_t PositionFix_t::fromPosition(const struct navi_position_t *position)
 {
 	double latitude, longitude;
@@ -316,6 +338,11 @@ int Status_t::toStatusCode() const
 	}
 }
 
+Status_t::Status_t(enum Status_t::status_t status)
+	{ m_value = status; }
+
+Status_t::~Status_t() { }
+
 ModeIndicator_t ModeIndicator_t::fromModeIndCode(int mi)
 {
 	switch (mi)
@@ -352,6 +379,11 @@ int ModeIndicator_t::toModeIndCode() const
 	}
 }
 
+ModeIndicator_t::ModeIndicator_t(enum ModeIndicator_t::modeind_t mi)
+	{ m_value = mi; }
+
+ModeIndicator_t::~ModeIndicator_t() { }
+
 struct navi_date_t Date_t::toDate() const
 {
 	struct navi_date_t result;
@@ -362,6 +394,60 @@ struct navi_date_t Date_t::toDate() const
 
 	return result;
 }
+
+Utc_t::Utc_t(int hh, int mm, double ss)
+	{ m_hours = hh; m_minutes = mm; m_seconds = ss; }
+
+Utc_t::~Utc_t() { }
+
+int Utc_t::hours() const
+	{ return m_hours; }
+
+int Utc_t::minutes() const
+	{ return m_minutes; }
+
+double Utc_t::seconds() const
+	{ return m_seconds; }
+
+Date_t Date_t::fromDate(const struct navi_date_t *date)
+	{ return Date_t(date->year, date->month, date->day); }
+
+Date_t::Date_t(int yy, int mm, int dd)
+	{ m_year = yy; m_month = mm; m_day = dd; }
+
+Date_t::~Date_t() { }
+
+int Date_t::year() const
+	{ return m_year; }
+
+int Date_t::month() const
+	{ return m_month; }
+
+int Date_t::day() const
+	{ return m_day; }
+
+Offset_t Offset_t::fromOffset(const struct navi_offset_t *offset)
+	{ return Offset_t(offset->offset, quarterFromCode(offset->sign)); }
+
+Offset_t::Offset_t(double offset, enum quarters_t quarter)
+{
+	m_offset = offset;
+	m_quarter = quarter;
+}
+
+Offset_t::~Offset_t() { }
+
+double Offset_t::offset() const
+	{ return m_offset; }
+
+enum Offset_t::quarters_t Offset_t::quarter() const
+	{ return m_quarter; }
+
+void Offset_t::setOffset(double offset)
+	{ m_offset = offset; }
+
+void Offset_t::setQuarter(enum Offset_t::quarters_t quarter)
+	{ m_quarter = quarter; }
 
 enum Offset_t::quarters_t Offset_t::quarterFromCode(int quarter)
 {
@@ -398,6 +484,14 @@ struct navi_offset_t Offset_t::toOffset() const
 
 	return result;
 }
+
+Message_t::Message_t(const MessageType_t &type)
+	{ m_type = type; }
+
+Message_t::~Message_t() { }
+
+const MessageType_t & Message_t::type() const
+	{ return m_type; }
 
 }
 

@@ -95,18 +95,15 @@ public:
 	static MessageType_t fromSentenceFormatter(int type);
 
 public:
-	MessageType_t() { m_value = Unknown; }
+	MessageType_t();
+	MessageType_t(enum MessageType_t::msgtype_t initial);
+	MessageType_t(const MessageType_t &right);
 
-	MessageType_t(enum MessageType_t::msgtype_t initial)
-		 { m_value = initial; }
-
-	MessageType_t(const MessageType_t &right)
-		 { m_value = right.m_value; }
-
-	virtual ~MessageType_t() { }
+	virtual ~MessageType_t();
 
 public:
-	virtual operator int() const { return int(m_value); }
+	inline operator int() const
+		{ return int(m_value); }
 
 public:
 	virtual int toSentenceFormatter() const;
@@ -198,19 +195,14 @@ public:
 	static TalkerId_t fromTalkerIdCode(int tid);
 
 public:
-	TalkerId_t()
-		{ m_value = Unknown; }
+	TalkerId_t();
+	TalkerId_t(enum TalkerId_t::talkerid_t initial);
+	TalkerId_t(const TalkerId_t &right);
 
-	TalkerId_t(enum TalkerId_t::talkerid_t initial)
-		{ m_value = initial; }
-
-	TalkerId_t(const TalkerId_t &right)
-		{ m_value = right.m_value; }
-
-	virtual ~TalkerId_t() { }
+	virtual ~TalkerId_t();
 
 public:
-	operator int() const
+	inline operator int() const
 		{ return int(m_value); }
 
 public:
@@ -244,20 +236,13 @@ private:
 NAVI_EXTERN_CLASS(class, Utc_t)
 {
 public:
-	Utc_t(int hh, int mm, double ss)
-		{ m_hours = hh; m_minutes = mm; m_seconds = ss; }
-
-	virtual ~Utc_t() { }
+	Utc_t(int hh, int mm, double ss);
+	virtual ~Utc_t();
 
 public:
-	virtual int hours() const
-		{ return m_hours; }
-
-	virtual int minutes() const
-		{ return m_minutes; }
-
-	virtual double seconds() const
-		{ return m_seconds; }
+	virtual int hours() const;
+	virtual int minutes() const;
+	virtual double seconds() const;
 
 private:
 	int m_hours;
@@ -268,24 +253,16 @@ private:
 NAVI_EXTERN_CLASS(class, Date_t)
 {
 public:
-	static Date_t fromDate(const struct navi_date_t *date)
-		{ return Date_t(date->year, date->month, date->day); }
+	static Date_t fromDate(const struct navi_date_t *date);
 
 public:
-	Date_t(int yy, int mm, int dd)
-		{ m_year = yy; m_month = mm; m_day = dd; }
-
-	virtual ~Date_t() { }
+	Date_t(int yy, int mm, int dd);
+	virtual ~Date_t();
 
 public:
-	virtual int year() const
-		{ return m_year; }
-
-	virtual int month() const
-		{ return m_month; }
-
-	virtual int day() const
-		{ return m_day; }
+	virtual int year() const;
+	virtual int month() const;
+	virtual int day() const;
 
 public:
 	virtual struct navi_date_t toDate() const;
@@ -305,34 +282,22 @@ public:
 	};
 
 public:
-	static Offset_t fromOffset(const struct navi_offset_t *offset)
-		{ return Offset_t(offset->offset, quarterFromCode(offset->sign)); }
+	static Offset_t fromOffset(const struct navi_offset_t *offset);
 
 	static enum quarters_t quarterFromCode(int quarter);
 	static int quarterToCode(enum quarters_t quarter);
 
 public:
-	Offset_t(double offset, enum quarters_t quarter)
-		{
-			m_offset = offset;
-			m_quarter = quarter;
-		}
-
-	virtual ~Offset_t() { }
+	Offset_t(double offset, enum quarters_t quarter);
+	virtual ~Offset_t();
 
 public:
-	virtual double offset() const
-		{ return m_offset; }
-
-	virtual enum quarters_t quarter() const
-		{ return m_quarter; }
+	virtual double offset() const;
+	virtual enum quarters_t quarter() const;
 
 public:
-	virtual void setOffset(double offset)
-		{ m_offset = offset; }
-
-	virtual void setQuarter(enum quarters_t quarter)
-		{ m_quarter = quarter; }
+	virtual void setOffset(double offset);
+	virtual void setQuarter(enum quarters_t quarter);
 
 public:
 	virtual struct navi_offset_t toOffset() const;
@@ -356,13 +321,11 @@ public:
 	};
 
 public:
-	Status_t(enum Status_t::status_t status = Unknown)
-		{ m_value = status; }
-
-	virtual ~Status_t() { }
+	Status_t(enum Status_t::status_t status = Unknown);
+	virtual ~Status_t();
 
 public:
-	operator int() const
+	inline operator int() const
 		{ return int(m_value); }
 
 public:
@@ -419,13 +382,11 @@ public:
 	static ModeIndicator_t fromModeIndCode(int mi);
 
 public:
-	ModeIndicator_t(enum ModeIndicator_t::modeind_t mi = Unknown)
-		{ m_value = mi; }
-
-	virtual ~ModeIndicator_t() { }
+	ModeIndicator_t(enum ModeIndicator_t::modeind_t mi = Unknown);
+	virtual ~ModeIndicator_t();
 
 public:
-	operator int() const
+	inline operator int() const
 		{ return int(m_value); }
 
 public:
@@ -438,15 +399,13 @@ private:
 NAVI_EXTERN_CLASS(class, Message_t)
 {
 public:
-	Message_t(const MessageType_t &type)
-		{ m_type = type; }
-
-	virtual ~Message_t() { }
+	Message_t(const MessageType_t &type);
+	virtual ~Message_t();
 
 public:
-	virtual const MessageType_t &type() const
-		{ return m_type; }
+	virtual const MessageType_t &type() const;
 
+public:
 	virtual void clearMessage() = 0;
 
 public:
