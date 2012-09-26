@@ -731,14 +731,14 @@ int main(void)
 
 	// GSV
 	gsv.tid = navi_GL;
-	gsv.totalsv = gsv.nmsatellites = 9;
+	gsv.nmsatellites = 9;
 
-	gsv.info[0].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH;
+	gsv.info[0].vfields = SATINFO_VALID_ORIENTATION;
 	gsv.info[0].id = 4;
 	gsv.info[0].elevation = 12;
 	gsv.info[0].azimuth = 0;
 
-	gsv.info[1].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH |
+	gsv.info[1].vfields = SATINFO_VALID_ORIENTATION |
 		SATINFO_VALID_SNR;
 	gsv.info[1].id = 5;
 	gsv.info[1].elevation = 18;
@@ -748,7 +748,7 @@ int main(void)
 	gsv.info[2].vfields = 0;
 	gsv.info[2].id = 14;
 
-	gsv.info[3].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH |
+	gsv.info[3].vfields = SATINFO_VALID_ORIENTATION |
 		SATINFO_VALID_SNR;
 	gsv.info[3].id = 18;
 	gsv.info[3].elevation = 12;
@@ -1018,14 +1018,14 @@ int main(void)
 						navi_talkerid_str(gsv->tid), gsv->tid);
 					printf("\tTotal nm of messages: %i\n", gsv->totalnm);
 					printf("\tMessage number: %i\n", gsv->msgnm);
-					printf("\tTotal satellites in view: %i\n", gsv->totalsv);
+					printf("\tTotal satellites in view: %i\n", gsv->nmsatellites);
 
 					for (i = 0; i < gsv->nmsatellites; i++)
 					{
 						printf("\tSatellite id: %i\n", gsv->info[i].id);
-						if (gsv->info[i].vfields & SATINFO_VALID_ELEVATION)
+						if (gsv->info[i].vfields & SATINFO_VALID_ORIENTATION)
 							printf("\t\tElevation: %i\n", gsv->info[i].elevation);
-						if (gsv->info[i].vfields & SATINFO_VALID_AZIMUTH)
+						if (gsv->info[i].vfields & SATINFO_VALID_ORIENTATION)
 							printf("\t\tAzimuth: %i\n", gsv->info[i].azimuth);
 						if (gsv->info[i].vfields & SATINFO_VALID_SNR)
 							printf("\t\tSNR: %i\n", gsv->info[i].snr);

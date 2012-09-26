@@ -38,7 +38,7 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 	const char *tid = NULL, *sfmt = NULL;
 	char csstr[3];
 
-	char totalnm[2], msgnm[2], totalsv[4], id[4][4], elevation[4][4],
+	char totalnm[2], msgnm[2], nmsatellites[4], id[4][4], elevation[4][4],
 		azimuth[4][4], snr[4][4];
 	char bytes[4];
 
@@ -53,13 +53,13 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 		(void)navi_split_integer(nmoffullmsg, bytes, 1, 10);
 	(void)navi_print_decfield(bytes, 1, totalnm, sizeof(totalnm));
 
-	(void)navi_split_integer(msg->totalsv, bytes, 2, 10);
-	(void)navi_print_decfield(bytes, 2, totalsv, sizeof(totalsv));
+	(void)navi_split_integer(msg->nmsatellites, bytes, 2, 10);
+	(void)navi_print_decfield(bytes, 2, nmsatellites, sizeof(nmsatellites));
 
 	for (i = 0; i < nmoffullmsg; i++)
 	{	// compose all the messages, where all four satellites are used
 		msglength = strlen(totalnm);
-		msglength += strlen(totalsv);
+		msglength += strlen(nmsatellites);
 
 		(void)navi_split_integer(i + 1, bytes, 1, 10);
 		msglength += navi_print_decfield(bytes, 1, msgnm, sizeof(msgnm));
@@ -71,12 +71,12 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 
 			(void)navi_split_integer(msg->info[i * 4 + j].elevation, bytes, 2, 10);
 			msglength += navi_print_decfield(bytes,
-				msg->info[i * 4 + j].vfields & SATINFO_VALID_ELEVATION ? 2 : 0,
+				msg->info[i * 4 + j].vfields & SATINFO_VALID_ORIENTATION ? 2 : 0,
 				elevation[j], sizeof(elevation[0]));
 
 			(void)navi_split_integer(msg->info[i * 4 + j].azimuth, bytes, 3, 10);
 			msglength += navi_print_decfield(bytes,
-				msg->info[i * 4 + j].vfields & SATINFO_VALID_AZIMUTH ? 3 : 0,
+				msg->info[i * 4 + j].vfields & SATINFO_VALID_ORIENTATION ? 3 : 0,
 				azimuth[j], sizeof(azimuth[0]));
 
 			(void)navi_split_integer(msg->info[i * 4 + j].snr, bytes, 2, 10);
@@ -93,7 +93,7 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 
 		msglength = snprintf(buffer + total, maxsize - total,
 			"$%s%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s*",
-			tid, sfmt, totalnm, msgnm, totalsv, id[0], elevation[0], azimuth[0],
+			tid, sfmt, totalnm, msgnm, nmsatellites, id[0], elevation[0], azimuth[0],
 			snr[0], id[1], elevation[1], azimuth[1], snr[1], id[2], elevation[2],
 			azimuth[2], snr[2], id[3], elevation[3], azimuth[3], snr[3]);
 
@@ -107,7 +107,7 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 	if (msg->nmsatellites % 4)
 	{	// compose the last message
 		msglength = strlen(totalnm);
-		msglength += strlen(totalsv);
+		msglength += strlen(nmsatellites);
 
 		(void)navi_split_integer(i + 1, bytes, 1, 10);
 		msglength += navi_print_decfield(bytes, 1, msgnm, sizeof(msgnm));
@@ -123,7 +123,7 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 		strcat(buffer, ",");
 		strcat(buffer, msgnm);
 		strcat(buffer, ",");
-		strcat(buffer, totalsv);
+		strcat(buffer, nmsatellites);
 
 		msglength += 2;
 		
@@ -139,7 +139,7 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 
 			(void)navi_split_integer(msg->info[i * 4 + j].elevation, bytes, 2, 10);
 			msglength += navi_print_decfield(bytes,
-				msg->info[i * 4 + j].vfields & SATINFO_VALID_ELEVATION ? 2 : 0,
+				msg->info[i * 4 + j].vfields & SATINFO_VALID_ORIENTATION ? 2 : 0,
 				elevation[j], sizeof(elevation[0]));
 
 			strcat(buffer, ",");
@@ -148,7 +148,7 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 
 			(void)navi_split_integer(msg->info[i * 4 + j].azimuth, bytes, 3, 10);
 			msglength += navi_print_decfield(bytes,
-				msg->info[i * 4 + j].vfields & SATINFO_VALID_AZIMUTH ? 3 : 0,
+				msg->info[i * 4 + j].vfields & SATINFO_VALID_ORIENTATION ? 3 : 0,
 				azimuth[j], sizeof(azimuth[0]));
 
 			strcat(buffer, ",");
@@ -201,7 +201,7 @@ int navi_parse_gsv(struct gsv_t *msg, char *buffer)
 		msg->msgnm = (int)round(d);
 	i += nmread;
 
-	msg->totalsv = 0;
+	msg->nmsatellites = 0;
 	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
@@ -209,7 +209,7 @@ int navi_parse_gsv(struct gsv_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->totalsv = navi_compose_integer(bytes, 2, 10);
+		msg->nmsatellites = navi_compose_integer(bytes, 2, 10);
 	}
 	i += nmread;
 
@@ -240,7 +240,7 @@ int navi_parse_gsv(struct gsv_t *msg, char *buffer)
 		else
 		{
 			msg->info[j].elevation = (int)round(d);
-			msg->info[j].vfields |= SATINFO_VALID_ELEVATION;
+			msg->info[j].vfields |= SATINFO_VALID_ORIENTATION;
 		}
 		i += nmread;
 
@@ -252,7 +252,7 @@ int navi_parse_gsv(struct gsv_t *msg, char *buffer)
 		else
 		{
 			msg->info[j].azimuth = (int)round(d);
-			msg->info[j].vfields |= SATINFO_VALID_AZIMUTH;
+			msg->info[j].vfields |= SATINFO_VALID_ORIENTATION;
 		}
 		i += nmread;
 

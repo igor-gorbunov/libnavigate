@@ -33,8 +33,8 @@ public:
 	virtual void setMessageNumber(int value);
 
 	virtual void setSatelliteId(int satIdx, unsigned int value);
-	virtual void setElevation(int satIdx, unsigned int value);
-	virtual void setAzimuth(int satIdx, unsigned int value);
+	virtual void setOrientation(int satIdx, unsigned int elevation,
+			unsigned int azimuth);
 	virtual void setSnratio(int satIdx, unsigned int value);
 
 public:
