@@ -72,16 +72,12 @@ void Gsv_t::setSatelliteId(int satIdx, unsigned int value)
 	m_value.info[satIdx].id = value;
 }
 
-void Gsv_t::setElevation(int satIdx, unsigned int value)
+void Gsv_t::setOrientation(int satIdx, unsigned int elevation,
+	unsigned int azimuth)
 {
-	m_value.info[satIdx].elevation = value;
-	m_value.info[satIdx].vfields |= SATINFO_VALID_ELEVATION;
-}
-
-void Gsv_t::setAzimuth(int satIdx, unsigned int value)
-{
-	m_value.info[satIdx].azimuth = value;
-	m_value.info[satIdx].vfields |= SATINFO_VALID_AZIMUTH;
+	m_value.info[satIdx].elevation = elevation;
+	m_value.info[satIdx].azimuth = azimuth;
+	m_value.info[satIdx].vfields |= SATINFO_VALID_ORIENTATION;
 }
 
 void Gsv_t::setSnratio(int satIdx, unsigned int value)

@@ -424,9 +424,8 @@ struct navi_satinfo_t
 	unsigned snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
 };
 
-#define SATINFO_VALID_ELEVATION		0x1
-#define SATINFO_VALID_AZIMUTH		0x2
-#define SATINFO_VALID_SNR			0x4
+#define SATINFO_VALID_ORIENTATION	0x1
+#define SATINFO_VALID_SNR			0x2
 
 //
 // Waypoint arrival alarm
@@ -719,9 +718,8 @@ struct gst_t
 // GNSS satellites in view
 struct gsv_t
 {
-	int tid;		// talker id
-	int totalsv;	// total number of satellites in view
-	int nmsatellites;				// number of satellites in info array
+	int tid;			// talker id
+	int nmsatellites;	// total number of satellites in view
 	struct navi_satinfo_t info[36];	// satellite info array
 	int totalnm;	// total number of messages (filled during parsing)
 	int msgnm;		// number of received message
