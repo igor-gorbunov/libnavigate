@@ -371,9 +371,9 @@ const char *navi_status_str(int status)
 {
 	switch (status)
 	{
-	case navi_DataValid:
+	case navi_status_A:
 		return "A";
-	case navi_DataInvalid:
+	case navi_status_V:
 		return "V";
 	default:
 		return NULL;
@@ -600,16 +600,16 @@ int navi_print_miarray(const int mi[], int miquant, char *buffer)
 //
 const char *navi_sentencefmt_str(navi_approved_fmt_t fmt)
 {
-	assert((fmt >= 0) && (fmt <= navi_ZTG));
+	assert((fmt >= navi_AAM) && (fmt <= navi_ZTG));
 	return navi_fmtlist[fmt];
 }
 
 //
 //	navi_create_talkerid
 //
-const char *navi_talkerid_str(int tid)
+const char *navi_talkerid_str(navi_talkerid_t tid)
 {
-	assert((tid >= 0) && (tid <= navi_P));
+	assert((tid >= navi_AG) && (tid <= navi_P));
 	return navi_tidlist[tid];
 }
 
@@ -665,3 +665,44 @@ int navi_print_decfield(const char bytes[], int fieldwidth,
 	return navi_print_fixedfield(bytes, fieldwidth, 10, buffer, maxsize);
 }
 
+//
+// navi_print_character_field
+//
+navierr_status_t navi_print_character_field(const char *from, char *to, int maxsize)
+{
+	int i, j, srclen;
+	char bytes[2];
+
+	assert(from != NULL);
+	assert(to != NULL);
+	assert(maxsize > 0);
+
+	srclen = strlen(from);
+
+	for (i = j = 0; i < srclen; i++)
+	{
+		switch (navi_get_character_type(from[i]))
+		{
+		case navi_char_Valid:
+			if (j >= maxsize - 1)
+				return navi_Error;
+
+			to[j++] = from[i];
+			break;
+		default:
+			if (j >= maxsize - 4)
+				return navi_Error;
+
+			navi_split_integer(from[i], bytes, 2, 16);
+
+			to[j++] = '^';
+			to[j++] = bytes[0];
+			to[j++] = bytes[1];
+			break;
+		}
+	}
+
+	to[j++] = '\0';
+
+	return navi_Ok;
+}

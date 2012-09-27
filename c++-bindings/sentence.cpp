@@ -320,8 +320,8 @@ Status_t Status_t::fromStatusCode(int status)
 {
 	switch (status)
 	{
-	case navi_DataValid: return DataValid;
-	case navi_DataInvalid: return DataInvalid;
+	case navi_status_A: return DataValid;
+	case navi_status_V: return DataInvalid;
 	default:
 		return Unknown;
 	}
@@ -331,8 +331,8 @@ int Status_t::toStatusCode() const
 {
 	switch (m_value)
 	{
-	case DataValid: return navi_DataValid;
-	case DataInvalid: return navi_DataInvalid;
+	case DataValid: return navi_status_A;
+	case DataInvalid: return navi_status_V;
 	default:
 		return -1;
 	}

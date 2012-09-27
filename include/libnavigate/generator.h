@@ -21,6 +21,7 @@
 #define INCLUDE_navi_generator_h
 
 #include "generic.h"
+#include "errors.h"
 #include "sentence.h"
 
 NAVI_BEGIN_DECL
@@ -39,7 +40,7 @@ NAVI_EXTERN(int) navi_create_msg(int type, const void *msg, char *buffer,
 
 //
 // Returns the string representation of talker identifier
-NAVI_EXTERN(const char *) navi_talkerid_str(int tid);
+NAVI_EXTERN(const char *) navi_talkerid_str(navi_talkerid_t tid);
 
 //
 // Returns the string representation of approved sentence
@@ -116,6 +117,12 @@ NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
 // and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
 NAVI_EXTERN(int) navi_set_position(double latitude, double longitude,
 		struct navi_position_t *out);
+
+//
+// Fills a buffer with valid characters from the given string,
+// translating reserved characters to triples '^xx'.
+// Returns navi_Error, if the conversion is not possible
+NAVI_EXTERN(navierr_status_t) navi_print_character_field(const char *from, char *to, int maxsize);
 
 NAVI_END_DECL
 

@@ -113,12 +113,10 @@ enum _navi_approved_fmt_t
 	navi_ZTG	// UTC and time to destination waypoint
 };
 
-typedef int navi_approved_fmt_t;
-
 //
 // Talker Identifier Mnemonics
 //
-enum
+enum _navi_talkerid_t
 {
 	// Heading/track controller (autopilot)
 	navi_AG,	// general
@@ -214,13 +212,17 @@ enum
 };
 
 //
-// Status of PVT solution
+// Status
 //
-enum
+enum _navi_status_t
 {
-	navi_DataValid = 0,		// A = data valid
-	navi_DataInvalid = 1	// V = data invalid
+	navi_status_V,	// data not valid
+	navi_status_A	// data valid
 };
+
+typedef int navi_approved_fmt_t;
+typedef int navi_talkerid_t;
+typedef int navi_status_t;
 
 //
 // Positioning system Mode Indicator
@@ -426,10 +428,20 @@ struct navi_satinfo_t
 #define SATINFO_VALID_AZIMUTH		0x2
 #define SATINFO_VALID_SNR			0x4
 
-//	// Waypoint arrival alarm
-//	struct aam_t
-//	{
-//	};
+//
+// Waypoint arrival alarm
+struct aam_t
+{
+	navi_talkerid_t tid;	// talker identifier
+	navi_status_t circle;	// arrival circle status
+							// A = arrival circle entered
+							// V = not entered
+	navi_status_t perp;		// perpendicular status
+							// A = perpendicular passed at waypoint
+							// V = not passed
+	double radius;			// arrival circle radius, nautical miles
+	char wpid[60];			// waypoint id
+};
 
 //	// Acknowledgement alarm
 //	struct ack_t

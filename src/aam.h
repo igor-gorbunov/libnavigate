@@ -1,5 +1,5 @@
 /*
- * errors.c - library error status utilities
+ * aam.h - generator and parser of AAM message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,16 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef INCLUDE_navi_aam_h
+#define INCLUDE_navi_aam_h
+
 #include <libnavigate/errors.h>
+#include <libnavigate/sentence.h>
 
-navi_error_t g_navi_error = { navi_Undefined };
+NAVI_BEGIN_DECL
 
-const navi_error_t *navierr_get_last(void)
-{
-	return &g_navi_error;
-}
+//
+// Initializes AAM sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *aam, navi_talkerid_t tid);
 
-void navierr_set_last(navierr_class_t errclass)
-{
-	g_navi_error.errclass = errclass;
-}
+NAVI_END_DECL
+
+#endif // INCLUDE_navi_aam_h

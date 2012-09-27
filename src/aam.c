@@ -1,5 +1,5 @@
 /*
- * errors.c - library error status utilities
+ * aam.c - generator and parser of AAM message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,16 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/errors.h>
+#include "aam.h"
 
-navi_error_t g_navi_error = { navi_Undefined };
+#include <assert.h>
+#include <string.h>
 
-const navi_error_t *navierr_get_last(void)
+//
+// navi_init_aam
+//
+navierr_status_t navi_init_aam(struct aam_t *aam, navi_talkerid_t tid)
 {
-	return &g_navi_error;
-}
+	assert(aam != NULL);
 
-void navierr_set_last(navierr_class_t errclass)
-{
-	g_navi_error.errclass = errclass;
+	aam->tid = tid;
+	aam->circle = navi_status_V;
+	aam->perp = navi_status_V;
+	aam->radius = 0.;
+	memset(aam->wpid, 0, sizeof(aam->wpid));
+
+	return navi_Ok;
 }

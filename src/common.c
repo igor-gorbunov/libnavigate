@@ -54,7 +54,7 @@ int navi_parse_status(char *buffer, int *status, int *nmread)
 	c = buffer[i++];
 	if ((c == 'A') || (c == 'V'))
 	{
-		*status = (c == 'A') ? navi_DataValid : navi_DataInvalid;
+		*status = (c == 'A') ? navi_status_A : navi_status_V;
 		c = buffer[i++];
 		if ((c != ',') && (c != '*'))
 		{

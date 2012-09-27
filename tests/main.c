@@ -113,7 +113,7 @@ int main(void)
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18.4;
-	gll.status = navi_DataValid;
+	gll.status = navi_status_A;
 	gll.mi = navi_Autonomous;
 
 	result = navi_create_msg(navi_GLL, &gll, buffer + msglength,
@@ -168,7 +168,7 @@ int main(void)
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39.98;
-	rmc.status = navi_DataInvalid;
+	rmc.status = navi_status_V;
 	rmc.fix.latitude = 74.64772882;
 	rmc.fix.latsign = navi_South;
 	rmc.fix.longitude = 132.0000333;
