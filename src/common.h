@@ -1,3 +1,22 @@
+/*
+ * common.h - common utilities for generator and parser
+ *
+ * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef INCLUDE_navi_common_h
 #define INCLUDE_navi_common_h
 
@@ -24,7 +43,31 @@ NAVI_BEGIN_DECL
 
 
 //
-// Removes trailing zeroes of a floating point zeroes
+// Transmitted data consists of ASCII characters.
+// There are several groups of characters.
+enum _navi_char_type_t
+{
+	// these characters shall not be transmitted at any time
+	navi_char_Undefined = -1,
+
+	// these characters are used for specific formatting
+	// purposes and shall not be used in data fields
+	navi_char_Reserved = 0,
+
+	// this set consists of all printable ASCII characters,
+	// except those marked as reserved
+	navi_char_Valid = 1
+};
+
+typedef int navi_char_type_t;
+
+//
+// Checks and returns the type of given character
+navi_char_type_t navi_get_character_type(int c);
+
+//
+// Removes trailing zeroes in a variable length value
+// string representation up to and including decimal point
 // Returns the remaining string length
 int remove_trailing_zeroes(char *buffer, int length);
 

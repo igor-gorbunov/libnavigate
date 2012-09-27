@@ -43,7 +43,7 @@ NAVI_EXTERN(const char *) navi_talkerid_str(int tid);
 
 //
 // Returns the string representation of approved sentence
-NAVI_EXTERN(const char *) navi_sentencefmt_str(int fmt);
+NAVI_EXTERN(const char *) navi_sentencefmt_str(navi_approved_fmt_t fmt);
 
 //
 // Returns the string representation of geodetic datum

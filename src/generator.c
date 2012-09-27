@@ -598,7 +598,7 @@ int navi_print_miarray(const int mi[], int miquant, char *buffer)
 //
 // navi_sentencefmt_str
 //
-const char *navi_sentencefmt_str(int fmt)
+const char *navi_sentencefmt_str(navi_approved_fmt_t fmt)
 {
 	assert((fmt >= 0) && (fmt <= navi_ZTG));
 	return navi_fmtlist[fmt];

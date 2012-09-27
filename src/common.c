@@ -334,6 +334,20 @@ int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
 	return navi_Ok;
 }
 
+//
+// navi_get_character_type
+//
+navi_char_type_t navi_get_character_type(int c)
+{
+	if ((c < 0x20) || (c > 0x7f))
+		return navi_char_Undefined;
+	else if ((c == 0x21) || (c == 0x24) || (c == 0x2a) || (c == 0x2c) ||
+		(c == 0x5c) || (c == 0x5e) || (c == 0x7e) || (c == 0x7f))
+		return navi_char_Reserved;
+	else
+		return navi_char_Valid;
+}
+
 const char *navi_fmtlist[] =
 {
 	"AAM", "ACK", "ALM", "ALR", "APB", "BEC", "BOD", "BWC", "BWR",
