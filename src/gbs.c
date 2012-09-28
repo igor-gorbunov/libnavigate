@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gbs.h"
-#include "common.h"
+#include "libnavigate/gbs.h"
+#include "libnavigate/common.h"
 
 #include <navigate.h>
 #include <stdio.h>

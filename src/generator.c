@@ -17,9 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <navigate.h>
-#include "common.h"
-
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,22 +24,27 @@
 #include <assert.h>
 #include <locale.h>
 
+#include "libnavigate/errors.h"
+#include "libnavigate/config.h"
+#include "libnavigate/generator.h"
+#include "libnavigate/common.h"
+
 #ifndef NO_GENERATOR
 
-#include "alm.h"
-#include "dtm.h"
-#include "gbs.h"
-#include "gga.h"
-#include "gll.h"
-#include "gns.h"
-#include "grs.h"
-#include "gsa.h"
-#include "gst.h"
-#include "gsv.h"
-#include "mla.h"
-#include "rmc.h"
-#include "vtg.h"
-#include "zda.h"
+#include "libnavigate/alm.h"
+#include "libnavigate/dtm.h"
+#include "libnavigate/gbs.h"
+#include "libnavigate/gga.h"
+#include "libnavigate/gll.h"
+#include "libnavigate/gns.h"
+#include "libnavigate/grs.h"
+#include "libnavigate/gsa.h"
+#include "libnavigate/gst.h"
+#include "libnavigate/gsv.h"
+#include "libnavigate/mla.h"
+#include "libnavigate/rmc.h"
+#include "libnavigate/vtg.h"
+#include "libnavigate/zda.h"
 
 #endif // NO_GENERATOR
 

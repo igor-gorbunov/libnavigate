@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "common.h"
-#include <libnavigate/generator.h>
-#include <libnavigate/errors.h>
+#include "libnavigate/common.h"
+#include "libnavigate/errors.h"
 
 #include <stdio.h>
 #include <stdlib.h>

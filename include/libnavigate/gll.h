@@ -1,5 +1,5 @@
 /*
- * aam.c - generator and parser of AAM message
+ * gll.h - generator and parser of GLL message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,23 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/aam.h"
+#ifndef INCLUDE_navi_gll_h
+#define INCLUDE_navi_gll_h
 
-#include <assert.h>
-#include <string.h>
+#include <libnavigate/generic.h>
+#include <libnavigate/sentence.h>
 
 //
-// navi_init_aam
+// GLL - Geographic position - latitude/longitude
+// Latitude and longitude of vessel position, time of
+// position fix and status.
+// $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh<cr><lf>
 //
-navierr_status_t navi_init_aam(struct aam_t *aam, navi_talkerid_t tid)
-{
-	assert(aam != NULL);
 
-	aam->tid = tid;
-	aam->circle = navi_status_V;
-	aam->perp = navi_status_V;
-	aam->radius = 0.;
-	memset(aam->wpid, 0, sizeof(aam->wpid));
+NAVI_BEGIN_DECL
 
-	return navi_Ok;
-}
+int navi_create_gll(const struct gll_t *msg, char *buffer,
+		int maxsize, int *nmwritten);
+
+int navi_parse_gll(struct gll_t *msg, char *buffer);
+
+NAVI_END_DECL
+
+#endif // INCLUDE_navi_gll_h

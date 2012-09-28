@@ -1,5 +1,5 @@
 /*
- * aam.c - generator and parser of AAM message
+ * gga.h - generator and parser of GGA message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,23 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/aam.h"
+#ifndef INCLUDE_navi_gga_h
+#define INCLUDE_navi_gga_h
 
-#include <assert.h>
-#include <string.h>
+#include <libnavigate/generic.h>
+#include <libnavigate/sentence.h>
 
 //
-// navi_init_aam
+// GGA - Global positioning system (GPS) fix data
+// Time, position and fix-related data for a GPS receiver.
+// $--GGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh<cr><lf>
 //
-navierr_status_t navi_init_aam(struct aam_t *aam, navi_talkerid_t tid)
-{
-	assert(aam != NULL);
 
-	aam->tid = tid;
-	aam->circle = navi_status_V;
-	aam->perp = navi_status_V;
-	aam->radius = 0.;
-	memset(aam->wpid, 0, sizeof(aam->wpid));
+NAVI_BEGIN_DECL
 
-	return navi_Ok;
-}
+int navi_create_gga(const struct gga_t *msg, char *buffer,
+		int maxsize, int *nmwritten);
+
+int navi_parse_gga(struct gga_t *msg, char *buffer);
+
+NAVI_END_DECL
+
+#endif // INCLUDE_navi_gga_h
+

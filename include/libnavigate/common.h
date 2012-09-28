@@ -71,10 +71,6 @@ navi_char_type_t navi_get_character_type(int c);
 // Returns the remaining string length
 int remove_trailing_zeroes(char *buffer, int length);
 
-#ifdef WIN32
-extern double round(double x);
-#endif // WIN32
-
 //
 // Print fixed length field with given radix
 extern int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
@@ -91,6 +87,16 @@ extern int navi_split_integer(unsigned int value, char bytes[], int width, int r
 //
 // Returns the combined value
 extern unsigned int navi_compose_integer(char bytes[], int width, int radix);
+
+//
+// Calculates the checksum of a message between the '$' and
+// '*' characters. Returns both string and binary representation.
+// Either csstr or cs may be NULL, if the return value is not
+// used.
+//
+// @returns 0 if parsed successfully, or navi_Error in the case of an error
+//
+NAVI_EXTERN(int) navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs);
 
 //
 // Talker IDs list

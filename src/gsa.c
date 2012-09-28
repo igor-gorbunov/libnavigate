@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gsa.h"
-#include "common.h"
+#include "libnavigate/gsa.h"
+#include "libnavigate/common.h"
 
 #include <navigate.h>
 #include <stdio.h>

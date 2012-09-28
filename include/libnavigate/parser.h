@@ -159,16 +159,6 @@ NAVI_EXTERN(int) navi_parse_date(char *buffer, struct navi_date_t *date, int *nm
 NAVI_EXTERN(int) navi_parse_localzone(char *buffer, int *offset, int *nmread);
 
 //
-// Calculates the checksum of a message between the '$' and
-// '*' characters. Returns both string and binary representation.
-// Either csstr or cs may be NULL, if the return value is not
-// used.
-//
-// @returns 0 if parsed successfully, or navi_Error in the case of an error
-//
-NAVI_EXTERN(int) navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs);
-
-//
 // Determines the talker id and sentence formatter
 NAVI_EXTERN(int) navi_parse_address(char *buffer, int *tid, int *msgtype);
 

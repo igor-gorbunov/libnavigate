@@ -17,16 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "zda.h"
-#include "common.h"
+#include "libnavigate/zda.h"
+#include "libnavigate/generator.h"
+#include "libnavigate/parser.h"
 
-#include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+
+	#define snprintf	_snprintf
+
+	extern double round(double x);
+
 #endif // MSVC_VER
 
 #ifndef NO_GENERATOR

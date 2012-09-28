@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vtg.h"
-#include "common.h"
+#include "libnavigate/vtg.h"
+#include "libnavigate/common.h"
+#include "libnavigate/generator.h"
+#include "libnavigate/parser.h"
 
-#include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 

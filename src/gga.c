@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gga.h"
-#include "common.h"
+#include "libnavigate/gga.h"
+#include "libnavigate/common.h"
 
 #include <navigate.h>
 #include <stdio.h>
@@ -26,7 +26,11 @@
 #include <math.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+
+	#define snprintf	_snprintf
+
+	extern double round(double x);
+
 #endif // MSVC_VER
 
 #ifndef NO_GENERATOR
