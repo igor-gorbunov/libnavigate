@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/aam.h"
-#include "libnavigate/generator.h"
-#include "libnavigate/parser.h"
+#include <libnavigate/aam.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
 #include <assert.h>
 #include <string.h>

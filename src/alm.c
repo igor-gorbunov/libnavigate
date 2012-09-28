@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/alm.h"
-#include "libnavigate/common.h"
+#include <libnavigate/alm.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
@@ -35,8 +35,8 @@
 
 #ifndef NO_GENERATOR
 
-int navi_create_alm(const struct alm_t *msg, char *buffer,
-		int maxsize, int *nmwritten)
+navierr_status_t navi_create_alm(const struct alm_t *msg, char *buffer,
+	int maxsize, int *nmwritten)
 {
 	int i, msglength, total = 0;
 	const char *tid = NULL, *sfmt = NULL;
@@ -144,7 +144,7 @@ int navi_create_alm(const struct alm_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_alm(struct alm_t *msg, char *buffer)
+navierr_status_t navi_parse_alm(struct alm_t *msg, char *buffer)
 {
 	int i = 0, nmread;
 	double d;

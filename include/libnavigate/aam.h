@@ -23,8 +23,6 @@
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
-NAVI_BEGIN_DECL
-
 //
 // AAM - Waypoint arrival alarm
 //
@@ -45,6 +43,8 @@ struct aam_t
 	double radius;			// arrival circle radius, nautical miles
 	char wpid[60];			// waypoint id
 };
+
+NAVI_BEGIN_DECL
 
 //
 // Initializes AAM sentence structure with default values

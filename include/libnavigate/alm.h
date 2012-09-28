@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_alm_h
 #define INCLUDE_navi_alm_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -31,12 +31,30 @@
 // $--ALM,x.x,x.x,xx,x.x,hh,hhhh,hh,hhhh,hhhh,hhhhhh,hhhhhh,hhhhhh,hhhhhh,hhh,hhh*hh<cr><lf>
 //
 
+#define ALM_MAX_SATELLITES		32
+
+struct alm_t
+{
+	navi_talkerid_t tid;	// talker id
+	int nmsatellites;		// number of satellites in the almlist array
+
+	// almanacs of GPS satellites
+	struct navi_gpsalm_t almlist[ALM_MAX_SATELLITES];
+
+	int totalnm;	// total number of messages (filled during parsing)
+	int msgnm;		// number of received message
+};
+
 NAVI_BEGIN_DECL
 
-int navi_create_alm(const struct alm_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Creates ALM message
+NAVI_EXTERN(navierr_status_t) navi_create_alm(const struct alm_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
 
-int navi_parse_alm(struct alm_t *msg, char *buffer);
+//
+// Parses AAM message
+NAVI_EXTERN(navierr_status_t) navi_parse_alm(struct alm_t *msg, char *buffer);
 
 NAVI_END_DECL
 

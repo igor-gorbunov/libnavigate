@@ -432,17 +432,6 @@ struct navi_satinfo_t
 //	{
 //	};
 
-//
-// GPS almanac data
-struct alm_t
-{
-	int tid;				// talker id
-	int nmsatellites;		// number of satellites in the almlist array
-	struct navi_gpsalm_t almlist[32];	// almanacs of GPS satellites
-	int totalnm;	// total number of messages (filled during parsing)
-	int msgnm;		// number of received message
-};
-
 //	// Set alarm state
 //	struct alr_t
 //	{

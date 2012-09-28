@@ -5,6 +5,7 @@
 #include <libnavigate/errors.h>
 
 #include <libnavigate/aam.h>
+#include <libnavigate/alm.h>
 
 #include <libnavigate/generator.h>
 #include <libnavigate/parser.h>

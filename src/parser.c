@@ -24,26 +24,26 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "libnavigate/parser.h"
-#include "libnavigate/common.h"
+#include <libnavigate/parser.h>
+#include <libnavigate/common.h>
 
 #ifndef NO_PARSER
 
-#include "libnavigate/aam.h"
-#include "libnavigate/alm.h"
-#include "libnavigate/dtm.h"
-#include "libnavigate/gbs.h"
-#include "libnavigate/gga.h"
-#include "libnavigate/gll.h"
-#include "libnavigate/gns.h"
-#include "libnavigate/grs.h"
-#include "libnavigate/gsa.h"
-#include "libnavigate/gst.h"
-#include "libnavigate/gsv.h"
-#include "libnavigate/mla.h"
-#include "libnavigate/rmc.h"
-#include "libnavigate/vtg.h"
-#include "libnavigate/zda.h"
+#include <libnavigate/aam.h>
+#include <libnavigate/alm.h>
+#include <libnavigate/dtm.h>
+#include <libnavigate/gbs.h>
+#include <libnavigate/gga.h>
+#include <libnavigate/gll.h>
+#include <libnavigate/gns.h>
+#include <libnavigate/grs.h>
+#include <libnavigate/gsa.h>
+#include <libnavigate/gst.h>
+#include <libnavigate/gsv.h>
+#include <libnavigate/mla.h>
+#include <libnavigate/rmc.h>
+#include <libnavigate/vtg.h>
+#include <libnavigate/zda.h>
 
 #endif // NO_PARSER
 
