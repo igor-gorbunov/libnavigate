@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "libnavigate/errors.h"
 #include "libnavigate/parser.h"
 #include "libnavigate/common.h"
 
@@ -48,11 +47,9 @@
 #endif // NO_PARSER
 
 //
-// navi_parse_msg
+// IEC message parser
 //
-
-int navi_parse_msg(char *buffer, int maxsize, int msgsize,
-	void *msg, int *msgtype, int *nmread)
+navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *msg, int *msgtype, int *nmread)
 {
 
 #ifndef NO_PARSER

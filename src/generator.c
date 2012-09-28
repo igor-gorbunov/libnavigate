@@ -17,14 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <assert.h>
 #include <locale.h>
 
-#include "libnavigate/errors.h"
 #include "libnavigate/config.h"
 #include "libnavigate/generator.h"
 #include "libnavigate/common.h"
@@ -49,10 +47,13 @@
 #endif // NO_GENERATOR
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#define snprintf	_snprintf
 #endif // MSVC_VER
 
-int navi_create_msg(int type, const void *msg, char *buffer, int maxsize, int *nmwritten)
+//
+// IEC message generator
+//
+navierr_status_t navi_create_msg(int type, const void *msg, char *buffer, int maxsize, int *nmwritten)
 {
 
 #ifndef NO_GENERATOR

@@ -21,6 +21,7 @@
 #define INCLUDE_navi_parser_h
 
 #include "generic.h"
+#include "errors.h"
 #include "sentence.h"
 
 NAVI_BEGIN_DECL
@@ -34,8 +35,8 @@ NAVI_BEGIN_DECL
 // parsed characters is put to nmread.
 // Returns the analysis status
 //
-NAVI_EXTERN(int) navi_parse_msg(char *buffer, int maxsize, int msgsize,
-		void *msg, int *msgtype, int *nmread);
+NAVI_EXTERN(navierr_status_t) navi_parse_msg(char *buffer, int maxsize,
+		int msgsize, void *msg, int *msgtype, int *nmread);
 
 //
 // Parses offset field in the form of 'x.x,a | ,'.
