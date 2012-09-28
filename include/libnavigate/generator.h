@@ -36,7 +36,7 @@ NAVI_BEGIN_DECL
 // Call navierr_get_last() to get the error description
 //
 NAVI_EXTERN(navierr_status_t) navi_create_msg(int type, const void *msg,
-		char *buffer, int maxsize, int *nmwritten);
+	char *buffer, int maxsize, int *nmwritten);
 
 //
 // Returns the string representation of talker identifier
@@ -74,33 +74,33 @@ NAVI_EXTERN(const char *) navi_gsamode_str(int mode, int notnull);
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_position_fix(const struct navi_position_t *fix,
-		char *buffer, int maxsize, int notnull);
+	char *buffer, int maxsize, int notnull);
 
 //
 // Prints variable numbers
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_number(double value, char *buffer,
-		int maxsize, int notnull);
+	int maxsize, int notnull);
 
 //
 // Prints fixed length hexadecimal numbers, MSB on the left.
 // If fieldwidth equals 0, the field is considered to be null.
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_hexfield(const char bytes[], int fieldwidth,
-		char *buffer, int maxsize);
+	char *buffer, int maxsize);
 
 //
 // Prints fixed length decimal numbers
 // If fieldwidth equals 0, the field is considered to be null.
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_decfield(const char bytes[], int fieldwidth,
-		char *buffer, int maxsize);
+	char *buffer, int maxsize);
 
 //
 // Prints UTC time
 // Returns the number of printed characters
 NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
-		int maxsize, int notnull);
+	int maxsize, int notnull);
 
 //
 // Prints array of mode indicators
@@ -116,13 +116,14 @@ NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
 // [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
 // and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
 NAVI_EXTERN(int) navi_set_position(double latitude, double longitude,
-		struct navi_position_t *out);
+	struct navi_position_t *out);
 
 //
 // Fills a buffer with valid characters from the given string,
 // translating reserved characters to triples '^xx'.
 // Returns navi_Error, if the conversion is not possible
-NAVI_EXTERN(navierr_status_t) navi_print_character_field(const char *from, char *to, int maxsize);
+NAVI_EXTERN(navierr_status_t) navi_print_character_field(const char *from,
+	char *to, int maxsize);
 
 NAVI_END_DECL
 

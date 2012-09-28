@@ -29,6 +29,7 @@
 
 #ifndef NO_PARSER
 
+#include "libnavigate/aam.h"
 #include "libnavigate/alm.h"
 #include "libnavigate/dtm.h"
 #include "libnavigate/gbs.h"
@@ -115,6 +116,13 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 	switch (*msgtype)
 	{
 	case navi_AAM:
+		if (msgsize < sizeof(struct aam_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_aam((struct aam_t *)msg, tid);
+		return navi_parse_aam((struct aam_t *)msg, buffer + som + 7);
 	case navi_ACK:
 		break;
 	case navi_ALM:
@@ -1482,3 +1490,54 @@ int navi_parse_gsamode(char *buffer, int *mode, int *nmread)
 	return result;
 }
 
+//
+// Parses a buffer with valid characters from the given string
+navierr_status_t navi_parse_character_field(const char *from, char *to, int maxsize, int *nmread)
+{
+	int i, j, c;
+	char bytes[2];
+
+	assert(from != NULL);
+	assert(to != NULL);
+	assert(maxsize > 0);
+	assert(nmread != NULL);
+
+	for (i = j = 0; i < NAVI_SENTENCE_MAXSIZE; i++)
+	{
+		c = from[i];
+
+		if ((c == ',') || (c == '*'))
+		{
+			break;
+		}
+		else if (c == '^')
+		{
+			c = from[++i];
+			if (c >= '0' && c <= '9')
+				bytes[0] = (char)(c - '0');
+			else if (c >= 'A' && c <= 'F')
+				bytes[0] = (char)(c - 'A' + 10);
+			else
+				bytes[0] = (char)(c - 'a' + 10);
+
+			c = from[++i];
+			if (c >= '0' && c <= '9')
+				bytes[1] = (char)(c - '0');
+			else if (c >= 'A' && c <= 'F')
+				bytes[1] = (char)(c - 'A' + 10);
+			else
+				bytes[1] = (char)(c - 'a' + 10);
+
+			to[j++] = (char)navi_compose_integer(bytes, 2, 16);
+		}
+		else
+		{
+			to[j++] = (char)c;
+		}
+	}
+
+	to[j] = '\0';
+	*nmread = i + 1;
+
+	return navi_Ok;
+}

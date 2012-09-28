@@ -36,7 +36,7 @@ NAVI_BEGIN_DECL
 // Returns the analysis status
 //
 NAVI_EXTERN(navierr_status_t) navi_parse_msg(char *buffer, int maxsize,
-		int msgsize, void *msg, int *msgtype, int *nmread);
+	int msgsize, void *msg, int *msgtype, int *nmread);
 
 //
 // Parses offset field in the form of 'x.x,a | ,'.
@@ -49,7 +49,7 @@ NAVI_EXTERN(navierr_status_t) navi_parse_msg(char *buffer, int maxsize,
 // navierr_get_last() to check the error
 //
 NAVI_EXTERN(int) navi_parse_offset(char *buffer,
-		struct navi_offset_t *offset, int *nmread);
+	struct navi_offset_t *offset, int *nmread);
 
 //
 // Parses position fix in the form of 'llll.ll,a,yyyyy.yy,a | ,,,'.
@@ -58,7 +58,7 @@ NAVI_EXTERN(int) navi_parse_offset(char *buffer,
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
 NAVI_EXTERN(int) navi_parse_position_fix(char *buffer,
-		struct navi_position_t *fix, int *nmread);
+	struct navi_position_t *fix, int *nmread);
 
 //
 // Parses UTC time in the form of 'hhmmss.ss' of null field.
@@ -66,8 +66,7 @@ NAVI_EXTERN(int) navi_parse_position_fix(char *buffer,
 //
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
-NAVI_EXTERN(int) navi_parse_utc(char *buffer, struct navi_utc_t *utc,
-		int *nmread);
+NAVI_EXTERN(int) navi_parse_utc(char *buffer, struct navi_utc_t *utc, int *nmread);
 
 //
 // Parses status in the form of 'A | V'. Shall not be null field.
@@ -108,7 +107,7 @@ NAVI_EXTERN(int) navi_parse_number(char *buffer, double *parsed, int *nmread);
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
 NAVI_EXTERN(int) navi_parse_hexfield(char *buffer, int fieldwidth,
-		char bytes[], int *nmread);
+	char bytes[], int *nmread);
 
 //
 // Parses fixed length decimal field: 'xx-'.
@@ -117,7 +116,7 @@ NAVI_EXTERN(int) navi_parse_hexfield(char *buffer, int fieldwidth,
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
 NAVI_EXTERN(int) navi_parse_decfield(char *buffer, int fieldwidth,
-		char bytes[], int *nmread);
+	char bytes[], int *nmread);
 
 //
 // Parses datum field in the form of 'ccc'
@@ -177,7 +176,14 @@ NAVI_EXTERN(int) navi_parse_sentencefmt(char *buffer, int *nmread);
 // Output latitude is in the range of [-pi, +pi].
 // Output longitude in the range of [0, +2pi].
 NAVI_EXTERN(int) navi_get_position(const struct navi_position_t *in,
-		double *latitude, double *longitude);
+	double *latitude, double *longitude);
+
+//
+// Parses a buffer with valid characters from the given string,
+// translating triples '^xx' to reserved characters.
+// Returns navi_Error, if the conversion is not possible
+NAVI_EXTERN(navierr_status_t) navi_parse_character_field(const char *from,
+	char *to, int maxsize, int *nmread);
 
 NAVI_END_DECL
 

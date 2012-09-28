@@ -3,6 +3,9 @@
 
 #include <libnavigate/config.h>
 #include <libnavigate/errors.h>
+
+#include <libnavigate/aam.h>
+
 #include <libnavigate/generator.h>
 #include <libnavigate/parser.h>
 

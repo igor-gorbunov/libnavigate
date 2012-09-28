@@ -30,6 +30,7 @@ int main(void)
 	int remain;
 
 	char buffer[1024];
+	struct aam_t aam;
 	struct alm_t alm;
 	struct dtm_t dtm;
 	struct gbs_t gbs;
@@ -786,6 +787,25 @@ int main(void)
 		printf("Composition of GSV failed (%d)\n", result);
 	}
 
+	// AAM
+	navi_init_aam(&aam, navi_GL);
+	aam.circle = navi_status_A;
+	aam.perp = navi_status_V;
+	aam.radius = 10.1;
+	strcpy(aam.wpid, "St. Petersburg, Russia");
+
+	result = navi_create_msg(navi_AAM, &aam, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of AAM failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -1032,6 +1052,18 @@ int main(void)
 					}
 				}
 				break;
+			case navi_AAM:
+				{
+					struct aam_t *aam = (struct aam_t *)parsedbuffer;
+
+					printf("Received AAM:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(aam->tid), aam->tid);
+					printf("\tStatus of circle: %s\n", aam->circle == navi_status_A ? "entered" : "not entered");
+					printf("\tStatus of perpendicular: %s\n", aam->perp == navi_status_A ? "passed" : "not passed");
+					printf("\tArrival circle radius: %f nautical miles\n", aam->radius);
+					printf("\tWaypoint ID: %s\n", aam->wpid);
+				}
+				break;
 			default:
 				break;
 			}
@@ -1069,6 +1101,7 @@ int main(void)
 		}
 	} while (!finished);
 
+	printf("sizeof struct aam_t = %u\n", sizeof(struct aam_t));
 	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
 	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
 	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));

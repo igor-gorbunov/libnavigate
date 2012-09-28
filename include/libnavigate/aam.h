@@ -26,8 +26,38 @@
 NAVI_BEGIN_DECL
 
 //
+// AAM - Waypoint arrival alarm
+//
+// Status of arrival (entering the arrival circle, or passing the perpendicular
+// of the course line) at waypoint c--c.
+// $--AAM,A,A,x.x,N,c--c*hh<cr><lf>
+//
+
+struct aam_t
+{
+	navi_talkerid_t tid;	// talker identifier
+	navi_status_t circle;	// arrival circle status
+							// A = arrival circle entered
+							// V = not entered
+	navi_status_t perp;		// perpendicular status
+							// A = perpendicular passed at waypoint
+							// V = not passed
+	double radius;			// arrival circle radius, nautical miles
+	char wpid[60];			// waypoint id
+};
+
+//
 // Initializes AAM sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *aam, navi_talkerid_t tid);
+
+//
+// Creates AAM message
+NAVI_EXTERN(navierr_status_t) navi_create_aam(const struct aam_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses AAM message
+NAVI_EXTERN(navierr_status_t) navi_parse_aam(struct aam_t *msg, char *buffer);
 
 NAVI_END_DECL
 

@@ -427,21 +427,6 @@ struct navi_satinfo_t
 #define SATINFO_VALID_ORIENTATION	0x1
 #define SATINFO_VALID_SNR			0x2
 
-//
-// Waypoint arrival alarm
-struct aam_t
-{
-	navi_talkerid_t tid;	// talker identifier
-	navi_status_t circle;	// arrival circle status
-							// A = arrival circle entered
-							// V = not entered
-	navi_status_t perp;		// perpendicular status
-							// A = perpendicular passed at waypoint
-							// V = not passed
-	double radius;			// arrival circle radius, nautical miles
-	char wpid[60];			// waypoint id
-};
-
 //	// Acknowledgement alarm
 //	struct ack_t
 //	{

@@ -29,6 +29,7 @@
 
 #ifndef NO_GENERATOR
 
+#include "libnavigate/aam.h"
 #include "libnavigate/alm.h"
 #include "libnavigate/dtm.h"
 #include "libnavigate/gbs.h"
@@ -70,6 +71,15 @@ navierr_status_t navi_create_msg(int type, const void *msg, char *buffer, int ma
 	switch (type)
 	{
 	case navi_AAM:
+		{
+			const struct aam_t *paam = (const struct aam_t *)msg;
+			tid = navi_talkerid_str(paam->tid);
+			sfmt = navi_sentencefmt_str(navi_AAM);
+
+			if (navi_create_aam(paam, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ACK:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
@@ -699,13 +709,13 @@ navierr_status_t navi_print_character_field(const char *from, char *to, int maxs
 			navi_split_integer(from[i], bytes, 2, 16);
 
 			to[j++] = '^';
-			to[j++] = bytes[0];
-			to[j++] = bytes[1];
+			to[j++] = bytes[0] < 10 ? bytes[0] + '0' : bytes[0] - 10 + 'A';
+			to[j++] = bytes[1] < 10 ? bytes[1] + '0' : bytes[1] - 10 + 'A';
 			break;
 		}
 	}
 
-	to[j++] = '\0';
+	to[j] = '\0';
 
 	return navi_Ok;
 }
