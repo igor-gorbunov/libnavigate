@@ -38,7 +38,10 @@ NAVI_BEGIN_DECL
 //
 enum _navi_approved_fmt_t
 {
-	navi_AAM,	// waypoint arrival alarm
+	// Unknown or undefined sentence formatter
+	navi_approvedfmt_Unknown = -1,
+
+	navi_AAM = 0,	// waypoint arrival alarm
 	navi_ACK,	// acknowledgement alarm
 	navi_ALM,	// GPS almanac data
 	navi_ALR,	// set alarm state
@@ -118,9 +121,12 @@ enum _navi_approved_fmt_t
 //
 enum _navi_talkerid_t
 {
+	// Unknown or undefined talker id
+	navi_talkerid_Unknown = -1,
+
 	// Heading/track controller (autopilot)
-	navi_AG,	// general
-	navi_AP,	// magnetic
+	navi_AG = 0,	// general
+	navi_AP,		// magnetic
 	// Automatic identification system
 	navi_AI,
 	// Communications:
@@ -216,8 +222,8 @@ enum
 //
 enum _navi_status_t
 {
-	navi_status_V,	// data not valid
-	navi_status_A	// data valid
+	navi_status_V = 0,	// data not valid
+	navi_status_A		// data valid
 };
 
 typedef int navi_approved_fmt_t;

@@ -39,7 +39,7 @@
 //
 // navi_parse_status
 //
-int navi_parse_status(char *buffer, int *status, int *nmread)
+navierr_status_t navi_parse_status(char *buffer, int *status, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -91,7 +91,7 @@ int navi_parse_status(char *buffer, int *status, int *nmread)
 //
 // navi_parse_modeindicator
 //
-int navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
+navierr_status_t navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -195,7 +195,7 @@ int remove_trailing_zeroes(char *buffer, int length)
 //
 // navi_set_position
 //
-int navi_set_position(double latitude, double longitude,
+navierr_status_t navi_set_position(double latitude, double longitude,
 	struct navi_position_t *out)
 {
 	assert((latitude >= -M_PI) && (latitude <= M_PI));
@@ -235,7 +235,7 @@ int navi_set_position(double latitude, double longitude,
 //
 // navi_get_position
 //
-int navi_get_position(const struct navi_position_t *in, double *latitude,
+navierr_status_t navi_get_position(const struct navi_position_t *in, double *latitude,
 	double *longitude)
 {
 	double d;

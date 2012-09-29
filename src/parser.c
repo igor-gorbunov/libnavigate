@@ -335,7 +335,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 #define PARSE_OFFSET_SIGN		3
 #define PARSE_OFFSET_FINI		4
 
-int navi_parse_offset(char *buffer, struct navi_offset_t *offset,
+navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset,
 		int *nmread)
 {
 
@@ -489,7 +489,7 @@ _Exit:
 #define PARSE_POSITION_NULLFIELD		7
 #define PARSE_POSITION_FINI				8
 
-int navi_parse_position_fix(char *buffer, struct navi_position_t *fix,
+navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *fix,
 	int *nmread)
 {
 
@@ -759,7 +759,7 @@ _Exit:
 #define PARSE_UTC_INTEGRAL		1
 #define PARSE_UTC_FRACTION		2
 
-int navi_parse_utc(char *buffer, struct navi_utc_t *utc, int *nmread)
+navierr_status_t navi_parse_utc(char *buffer, struct navi_utc_t *utc, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -910,7 +910,7 @@ _Exit:
 #define PARSE_NUMBER_INTEGRAL		1
 #define PARSE_NUMBER_FRACTION		2
 
-int navi_parse_number(char *buffer, double *parsed, int *nmread)
+navierr_status_t navi_parse_number(char *buffer, double *parsed, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -1025,7 +1025,7 @@ _Exit:
 //
 // navi_parse_datum
 //
-int navi_parse_datum(char *buffer, int *datum, int *nmread)
+navierr_status_t navi_parse_datum(char *buffer, int *datum, int *nmread)
 {
 	int error = 0;
 
@@ -1074,7 +1074,7 @@ int navi_parse_datum(char *buffer, int *datum, int *nmread)
 //
 // navi_parse_datumsub
 //
-int navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
+navierr_status_t navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
 {
 	if (strncmp(",", buffer, 1) == 0)
 	{
@@ -1096,7 +1096,7 @@ int navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
 //
 // Parses mode navi_parse_miarray array
 //
-int navi_parse_miarray(char *buffer, int mi[], int *misize, int *nmread)
+navierr_status_t navi_parse_miarray(char *buffer, int mi[], int *misize, int *nmread)
 {
 	int i = 0, c, error = 0;
 
@@ -1170,7 +1170,7 @@ _Exit:
 //
 // navi_parse_date
 //
-int navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
+navierr_status_t navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
 {
 	int i, c;
 
@@ -1234,7 +1234,7 @@ int navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
 #define PARSE_LOCALZONE_MINUTES		2
 #define PARSE_LOCALZONE_FINI		3
 
-int navi_parse_localzone(char *buffer, int *offset, int *nmread)
+navierr_status_t navi_parse_localzone(char *buffer, int *offset, int *nmread)
 {
 	int state = PARSE_LOCALZONE_INIT, i = 0, error = 0;
 	int c, s = 1, h = 0, m = 0;
@@ -1343,7 +1343,7 @@ int navi_parse_address(char *buffer, int *tid, int *msgtype)
 }
 
 // Looks up Talker ID
-int navi_parse_talkerid(char *buffer, int *nmread)
+navi_talkerid_t navi_parse_talkerid(char *buffer, int *nmread)
 {
 	int i;
 
@@ -1361,11 +1361,11 @@ int navi_parse_talkerid(char *buffer, int *nmread)
 			return i;
 	}
 
-	return -1;
+	return navi_talkerid_Unknown;
 }
 
 // Looks up sentence formatter
-int navi_parse_sentencefmt(char *buffer, int *nmread)
+navi_approved_fmt_t navi_parse_sentencefmt(char *buffer, int *nmread)
 {
 	int i;
 
@@ -1377,13 +1377,13 @@ int navi_parse_sentencefmt(char *buffer, int *nmread)
 			return i;
 	}
 
-	return -1;
+	return navi_approvedfmt_Unknown;
 }
 
 //
 // navi_parse_hexfield
 //
-int navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+navierr_status_t navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
 {
 	int result = navi_Ok, i = 0, c;
 
@@ -1428,7 +1428,7 @@ _Exit:
 //
 // navi_parse_decfield
 //
-int navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+navierr_status_t navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
 {
 	int result = navi_Ok, i = 0, c;
 
@@ -1468,7 +1468,7 @@ _Exit:
 //
 // navi_parse_gsamode
 //
-int navi_parse_gsamode(char *buffer, int *mode, int *nmread)
+navierr_status_t navi_parse_gsamode(char *buffer, int *mode, int *nmread)
 {
 	int result = navi_Ok, c, i = 0;
 

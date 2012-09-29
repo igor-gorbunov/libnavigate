@@ -115,7 +115,7 @@ NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
 // The longitude is provided in the range of [-pi, +2pi) and result is within
 // [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
 // and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
-NAVI_EXTERN(int) navi_set_position(double latitude, double longitude,
+NAVI_EXTERN(navierr_status_t) navi_set_position(double latitude, double longitude,
 	struct navi_position_t *out);
 
 //
