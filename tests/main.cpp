@@ -114,6 +114,22 @@ int main(void)
 	{
 	}
 
+	Aam_t aam(TalkerId_t::GP);
+	aam.setCircleStatus(Status_t::DataValid);
+	aam.setPerpendicularStatus(Status_t::DataInvalid);
+	aam.setWaypointRadius(10.1);
+	aam.setWaypointId("St. Petersburg, Russia");
+
+	try
+	{
+		nmwritten = navi.CreateMessage(aam, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 

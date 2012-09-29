@@ -1,7 +1,21 @@
 #ifndef INCLUDE_navigateplusplus
 #define INCLUDE_navigateplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include "libnavigate/c++/aam.hpp"
+#include "libnavigate/c++/alm.hpp"
+#include "libnavigate/c++/dtm.hpp"
+#include "libnavigate/c++/gbs.hpp"
+#include "libnavigate/c++/gga.hpp"
+#include "libnavigate/c++/gll.hpp"
+#include "libnavigate/c++/gns.hpp"
+#include "libnavigate/c++/grs.hpp"
+#include "libnavigate/c++/gsa.hpp"
+#include "libnavigate/c++/gst.hpp"
+#include "libnavigate/c++/gsv.hpp"
+#include "libnavigate/c++/mla.hpp"
+#include "libnavigate/c++/rmc.hpp"
+#include "libnavigate/c++/vtg.hpp"
+#include "libnavigate/c++/zda.hpp"
 
 namespace libnavigate
 {
