@@ -30,6 +30,7 @@
 #ifndef NO_PARSER
 
 #include <libnavigate/aam.h>
+#include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
@@ -50,7 +51,8 @@
 //
 // IEC message parser
 //
-navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *msg, int *msgtype, int *nmread)
+navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *msg,
+	navi_talkerid_t *msgtype, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -124,7 +126,13 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 		navi_init_aam((struct aam_t *)msg, tid);
 		return navi_parse_aam((struct aam_t *)msg, buffer + som + 7);
 	case navi_ACK:
-		break;
+		if (msgsize < sizeof(struct ack_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_ack((struct ack_t *)msg, tid);
+		return navi_parse_ack((struct ack_t *)msg, buffer + som + 7);
 	case navi_ALM:
 		if (msgsize < sizeof(struct alm_t))
 		{

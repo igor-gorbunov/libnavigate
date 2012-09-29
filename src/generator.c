@@ -30,6 +30,7 @@
 #ifndef NO_GENERATOR
 
 #include <libnavigate/aam.h>
+#include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
@@ -54,7 +55,8 @@
 //
 // IEC message generator
 //
-navierr_status_t navi_create_msg(int type, const void *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_msg(navi_talkerid_t type, const void *msg,
+	char *buffer, int maxsize, int *nmwritten)
 {
 
 #ifndef NO_GENERATOR
@@ -81,8 +83,15 @@ navierr_status_t navi_create_msg(int type, const void *msg, char *buffer, int ma
 		}
 		break;
 	case navi_ACK:
-		navierr_set_last(navi_NotImplemented);
-		return navi_Error;
+		{
+			const struct ack_t *pack = (const struct ack_t *)msg;
+			tid = navi_talkerid_str(pack->tid);
+			sfmt = navi_sentencefmt_str(navi_ACK);
+
+			if (navi_create_ack(pack, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ALM:
 		return navi_create_alm((const struct alm_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ALR:
