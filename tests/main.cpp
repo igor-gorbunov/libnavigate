@@ -9,13 +9,11 @@ int main(void)
 	int msglength = 0, nmwritten = 0;
 
 	char buffer[1024];
-	Alm_t alm;
-	Gll_t gll;
-	Rmc_t rmc;
 
 	int remain = sizeof(buffer);
 
 	// GLL
+	Gll_t gll;
 	gll.setTalkerId(TalkerId_t::GN);
 	gll.setPositionFix(PositionFix_t(0.02, 0.00000000999));
 	gll.setUtc(Utc_t(4, 34, 18.4));
@@ -33,6 +31,7 @@ int main(void)
 	}
 
 	// ALM
+	Alm_t alm;
 	alm.setTalkerId(TalkerId_t::GP);
 	alm.setNmOfSatellites(3);
 
@@ -77,6 +76,7 @@ int main(void)
 	}
 
 	// RMC
+	Rmc_t rmc;
 	rmc.setTalkerId(TalkerId_t::GN);
 	rmc.setStatus(Status_t::DataInvalid);
 	rmc.setModeIndicator(ModeIndicator_t::Estimated);
@@ -114,6 +114,7 @@ int main(void)
 	{
 	}
 
+	// AAM
 	Aam_t aam(TalkerId_t::GP);
 	aam.setCircleStatus(Status_t::DataValid);
 	aam.setPerpendicularStatus(Status_t::DataInvalid);
@@ -123,6 +124,20 @@ int main(void)
 	try
 	{
 		nmwritten = navi.CreateMessage(aam, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
+	// ACK
+	Ack_t ack(TalkerId_t::GP);
+	ack.setAlarmId(7);
+
+	try
+	{
+		nmwritten = navi.CreateMessage(ack, buffer + msglength, remain);
 		msglength += nmwritten;
 		remain -= nmwritten;
 	}

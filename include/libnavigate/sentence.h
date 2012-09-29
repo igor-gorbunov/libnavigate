@@ -427,11 +427,6 @@ struct navi_satinfo_t
 #define SATINFO_VALID_ORIENTATION	0x1
 #define SATINFO_VALID_SNR			0x2
 
-//	// Acknowledgement alarm
-//	struct ack_t
-//	{
-//	};
-
 //	// Set alarm state
 //	struct alr_t
 //	{

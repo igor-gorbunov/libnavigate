@@ -31,6 +31,7 @@ int main(void)
 
 	char buffer[1024];
 	struct aam_t aam;
+	struct ack_t ack;
 	struct alm_t alm;
 	struct dtm_t dtm;
 	struct gbs_t gbs;
@@ -806,6 +807,22 @@ int main(void)
 		printf("Composition of AAM failed (%d)\n", result);
 	}
 
+	// ACK
+	navi_init_ack(&ack, navi_GL);
+	ack.alarmid = 846;
+
+	result = navi_create_msg(navi_ACK, &ack, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of ACK failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -1064,6 +1081,15 @@ int main(void)
 					printf("\tWaypoint ID: %s\n", aam->wpid);
 				}
 				break;
+			case navi_ACK:
+				{
+					struct ack_t *ack = (struct ack_t *)parsedbuffer;
+
+					printf("Received ACK:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(ack->tid), ack->tid);
+					printf("\tLocal alarm identifier: %i\n", ack->alarmid);
+				}
+				break;
 			default:
 				break;
 			}
@@ -1102,6 +1128,7 @@ int main(void)
 	} while (!finished);
 
 	printf("sizeof struct aam_t = %u\n", sizeof(struct aam_t));
+	printf("sizeof struct ack_t = %u\n", sizeof(struct ack_t));
 	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
 	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
 	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));
