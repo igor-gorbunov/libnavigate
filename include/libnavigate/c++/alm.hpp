@@ -30,7 +30,7 @@ namespace libnavigate
 NAVI_EXTERN_CLASS(class, Alm_t) : public Message_t
 {
 public:
-	static const int MaxSatellites = 32;
+	static const int MaxSatellites = ALM_MAX_SATELLITES;
 
 public:
 	Alm_t(const TalkerId_t &tid = TalkerId_t::Unknown);

@@ -348,41 +348,6 @@ struct navi_position_t
 };
 
 //
-// Holds GPS almanac data for one satellite
-//
-struct navi_gpsalm_t
-{
-	unsigned vfields;		// valid fields, bitwise or of GPSALM_VALID_xxx
-	unsigned satelliteprn;	// 01 to 32
-	unsigned gpsweek;		// 0 to 9999
-	unsigned svhealth;		// SV health
-	unsigned e;				// eccentricity
-	unsigned toa;			// almanac reference time
-	unsigned sigmai;		// inclination angle
-	unsigned omegadot;		// rate of right ascension
-	unsigned sqrtsemiaxis;	// root of semi-major axis
-	unsigned omega;			// argument of perigee
-	unsigned omega0;		// longitude of ascension node
-	unsigned m0;			// mean anomaly
-	unsigned af0;			// clock parameter
-	unsigned af1;			// clock parameter
-};
-
-#define GPSALM_VALID_SATELLITEPRN		0x0001
-#define GPSALM_VALID_GPSWEEK			0x0002
-#define GPSALM_VALID_SVHEALTH			0x0004
-#define GPSALM_VALID_E					0x0008
-#define GPSALM_VALID_TOA				0x0010
-#define GPSALM_VALID_SIGMAI				0x0020
-#define GPSALM_VALID_OMEGADOT			0x0040
-#define GPSALM_VALID_SQRTSEMIAXIS		0x0080
-#define GPSALM_VALID_OMEGA				0x0100
-#define GPSALM_VALID_OMEGA0				0x0200
-#define GPSALM_VALID_M0					0x0400
-#define GPSALM_VALID_AF0				0x0800
-#define GPSALM_VALID_AF1				0x1000
-
-//
 // Holds GLONASS almanac data for one satellite
 //
 struct navi_gloalm_t

@@ -24,13 +24,7 @@ namespace libnavigate
 
 Alm_t::Alm_t(const TalkerId_t &tid) : Message_t(MessageType_t::ALM)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.nmsatellites = 0;
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		m_value.almlist[i].vfields = 0;
-	}
-	m_value.totalnm = m_value.msgnm = 0;
+	navi_init_alm(&m_value, tid.toTalkerIdCode());
 }
 
 Alm_t::~Alm_t() { }
@@ -178,11 +172,7 @@ void Alm_t::setClockParameter1(int satIdx, unsigned int value)
 
 void Alm_t::clearMessage()
 {
-	m_value.nmsatellites = 0;
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		m_value.almlist[i].vfields = 0;
-	}
+	navi_init_alm(&m_value, TalkerId_t::Unknown);
 }
 
 Alm_t::operator const void *() const

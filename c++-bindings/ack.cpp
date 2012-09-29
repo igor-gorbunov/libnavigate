@@ -24,7 +24,7 @@ namespace libnavigate
 
 Ack_t::Ack_t(const TalkerId_t &tid) : Message_t(MessageType_t::ACK)
 {
-	navi_init_ack(&m_value, tid);
+	navi_init_ack(&m_value, tid.toTalkerIdCode());
 }
 
 Ack_t::~Ack_t() { }

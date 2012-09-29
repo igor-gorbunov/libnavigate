@@ -31,15 +31,15 @@
 
 //
 // Initializes AAM sentence structure with default values
-navierr_status_t navi_init_aam(struct aam_t *aam, navi_talkerid_t tid)
+navierr_status_t navi_init_aam(struct aam_t *msg, navi_talkerid_t tid)
 {
-	assert(aam != NULL);
+	assert(msg != NULL);
 
-	aam->tid = tid;
-	aam->circle = navi_status_V;
-	aam->perp = navi_status_V;
-	aam->radius = 0.0;
-	memset(aam->wpid, 0, sizeof(aam->wpid));
+	msg->tid = tid;
+	msg->circle = navi_status_V;
+	msg->perp = navi_status_V;
+	msg->radius = 0.0;
+	memset(msg->wpid, 0, sizeof(msg->wpid));
 
 	return navi_Ok;
 }

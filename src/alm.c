@@ -24,10 +24,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+navierr_status_t navi_init_alm(struct alm_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->totalnm = msg->msgnm = 0;
+	msg->nmsatellites = 0;
+	memset(msg->almlist, 0, sizeof(msg->almlist));
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 

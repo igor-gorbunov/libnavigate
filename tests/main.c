@@ -1,5 +1,5 @@
 /*
- * entry.c - IEC messages generating/parsing tests and usage examples.
+ * main.c - IEC messages generating/parsing tests and usage examples.
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *

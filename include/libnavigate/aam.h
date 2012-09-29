@@ -48,7 +48,7 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes AAM sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *aam, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *msg, navi_talkerid_t tid);
 
 //
 // Creates AAM message

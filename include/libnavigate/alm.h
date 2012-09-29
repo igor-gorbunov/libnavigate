@@ -33,6 +33,56 @@
 
 #define ALM_MAX_SATELLITES		32
 
+//
+// Holds GPS almanac data for one satellite
+struct navi_gpsalm_t
+{
+	// valid fields, bitwise or of GPSALM_VALID_xxx
+	unsigned int vfields;
+	// 01 to 32
+	unsigned int satelliteprn;
+	// 0 to 9999
+	unsigned int gpsweek;
+	// SV health
+	unsigned int svhealth;
+	// eccentricity
+	unsigned int e;
+	// almanac reference time
+	unsigned int toa;
+	// inclination angle
+	unsigned int sigmai;
+	// rate of right ascension
+	unsigned int omegadot;
+	// root of semi-major axis
+	unsigned int sqrtsemiaxis;
+	// argument of perigee
+	unsigned int omega;
+	// longitude of ascension node
+	unsigned int omega0;
+	// mean anomaly
+	unsigned int m0;
+	// clock parameter
+	unsigned int af0;
+	// clock parameter
+	unsigned int af1;
+};
+
+#define GPSALM_VALID_SATELLITEPRN		0x0001
+#define GPSALM_VALID_GPSWEEK			0x0002
+#define GPSALM_VALID_SVHEALTH			0x0004
+#define GPSALM_VALID_E					0x0008
+#define GPSALM_VALID_TOA				0x0010
+#define GPSALM_VALID_SIGMAI				0x0020
+#define GPSALM_VALID_OMEGADOT			0x0040
+#define GPSALM_VALID_SQRTSEMIAXIS		0x0080
+#define GPSALM_VALID_OMEGA				0x0100
+#define GPSALM_VALID_OMEGA0				0x0200
+#define GPSALM_VALID_M0					0x0400
+#define GPSALM_VALID_AF0				0x0800
+#define GPSALM_VALID_AF1				0x1000
+
+//
+// Holder of information for all the almanacs
 struct alm_t
 {
 	navi_talkerid_t tid;	// talker id
@@ -48,12 +98,16 @@ struct alm_t
 NAVI_BEGIN_DECL
 
 //
+// Initializes ALM sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_alm(struct alm_t *msg, navi_talkerid_t tid);
+
+//
 // Creates ALM message
 NAVI_EXTERN(navierr_status_t) navi_create_alm(const struct alm_t *msg, char *buffer,
 	int maxsize, int *nmwritten);
 
 //
-// Parses AAM message
+// Parses ALM message
 NAVI_EXTERN(navierr_status_t) navi_parse_alm(struct alm_t *msg, char *buffer);
 
 NAVI_END_DECL

@@ -24,7 +24,7 @@ namespace libnavigate
 
 Aam_t::Aam_t(const TalkerId_t &tid) : Message_t(MessageType_t::AAM)
 {
-	navi_init_aam(&m_value, tid);
+	navi_init_aam(&m_value, tid.toTalkerIdCode());
 }
 
 Aam_t::~Aam_t() { }
