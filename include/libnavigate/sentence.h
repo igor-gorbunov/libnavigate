@@ -299,8 +299,7 @@ enum naviGsaSwitchMode_t
 };
 
 //
-// Holds UTC time (hours, minutes, seconds and
-// decimal fraction of seconds)
+// Holds UTC time (hours, minutes and seconds)
 //
 struct navi_utc_t
 {
@@ -398,13 +397,8 @@ struct navi_satinfo_t
 #define SATINFO_VALID_ORIENTATION	0x1
 #define SATINFO_VALID_SNR			0x2
 
-//	// Set alarm state
-//	struct alr_t
-//	{
-//	};
-
 //	// Heading/track controller (Autopilot) sentence B
-//	struct alr_t
+//	struct apb_t
 //	{
 //	};
 

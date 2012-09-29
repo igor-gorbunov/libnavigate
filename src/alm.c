@@ -159,8 +159,6 @@ navierr_status_t navi_parse_alm(struct alm_t *msg, char *buffer)
 	double d;
 	char bytes[8];
 
-	msg->almlist[0].vfields = 0;
-
 	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
 		return navi_Error;
 	else

@@ -33,6 +33,7 @@ int main(void)
 	struct aam_t aam;
 	struct ack_t ack;
 	struct alm_t alm;
+	struct alr_t alr;
 	struct dtm_t dtm;
 	struct gbs_t gbs;
 	struct gga_t gga;
@@ -823,6 +824,45 @@ int main(void)
 		printf("Composition of ACK failed (%d)\n", result);
 	}
 
+	// ALR
+	navi_init_alr(&alr, navi_GL);
+	navi_init_utc(12, 8, 13, &alr.utc);
+	alr.alarmid = 846;
+	alr.condition = navi_status_A;
+	alr.ackstate = navi_status_V;
+
+	result = navi_create_msg(navi_ALR, &alr, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of ALR failed (%d)\n", result);
+	}
+
+	// ALR
+	navi_init_alr(&alr, navi_GL);
+	navi_init_utc(16, 12, 0, &alr.utc);
+	alr.alarmid = 7;
+	alr.condition = navi_status_V;
+	alr.ackstate = navi_status_V;
+	strcpy(alr.description, "Captain, take your pills.");
+
+	result = navi_create_msg(navi_ALR, &alr, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of ALR failed (%d)\n", result);
+	}
+
 	printf("msglength = %d\n", msglength);
 	printf("message = '%s'\n", buffer);
 
@@ -1090,6 +1130,25 @@ int main(void)
 					printf("\tLocal alarm identifier: %i\n", ack->alarmid);
 				}
 				break;
+			case navi_ALR:
+				{
+					struct alr_t *alr = (struct alr_t *)parsedbuffer;
+
+					printf("Received ALR:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(alr->tid), alr->tid);
+					printf("\tutc = %02u:%02u:%06.3f\n", alr->utc.hour,
+						alr->utc.min, alr->utc.sec);
+					printf("\tLocal alarm identifier: %i\n", alr->alarmid);
+					printf("\tCondition of alarm: %s\n", alr->condition == navi_status_A ?
+						"threshold exceeded" : "not exceeded");
+					printf("\tAcknowledge state: %s\n", alr->ackstate == navi_status_A ?
+						"acknowledged" : "unacknowledged");
+					if (strlen(alr->description) > 0)
+					{
+						printf("\tAlarm's description: %s\n", alr->description);
+					}
+				}
+				break;
 			default:
 				break;
 			}
@@ -1130,6 +1189,7 @@ int main(void)
 	printf("sizeof struct aam_t = %u\n", sizeof(struct aam_t));
 	printf("sizeof struct ack_t = %u\n", sizeof(struct ack_t));
 	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
+	printf("sizeof struct alr_t = %u\n", sizeof(struct alr_t));
 	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
 	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));
 	printf("sizeof struct gga_t = %u\n", sizeof(struct gga_t));

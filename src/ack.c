@@ -32,12 +32,12 @@
 
 //
 // Initializes ACK sentence structure with default values
-navierr_status_t navi_init_ack(struct ack_t *ack, navi_talkerid_t tid)
+navierr_status_t navi_init_ack(struct ack_t *msg, navi_talkerid_t tid)
 {
-	assert(ack != NULL);
+	assert(msg != NULL);
 
-	ack->tid = tid;
-	ack->alarmid = 0;
+	msg->tid = tid;
+	msg->alarmid = 0;
 
 	return navi_Ok;
 }

@@ -83,35 +83,35 @@ navierr_status_t navi_parse_aam(struct aam_t *msg, char *buffer)
 	if (navi_parse_status(buffer + i, &msg->circle, &nmread) != 0)
 	{
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_status(buffer + i, &msg->perp, &nmread) != 0)
 	{
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->radius, &nmread) != 0)
 	{
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_character_field(buffer + i, tmp, sizeof(tmp), &nmread) != 0)
 	{
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_character_field(buffer + i, msg->wpid, sizeof(msg->wpid), &nmread) != 0)
 	{
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 
 	return navi_Ok;

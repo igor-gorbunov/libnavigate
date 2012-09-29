@@ -32,6 +32,7 @@
 #include <libnavigate/aam.h>
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
+#include <libnavigate/alr.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -51,6 +52,14 @@
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Talker IDs list
+extern const char *navi_tidlist[];
+
+//
+// Approved sentence formatters list
+extern const char *navi_fmtlist[];
 
 //
 // IEC message generator
@@ -95,6 +104,15 @@ navierr_status_t navi_create_msg(navi_talkerid_t type, const void *msg,
 	case navi_ALM:
 		return navi_create_alm((const struct alm_t *)msg, buffer, maxsize, nmwritten);
 	case navi_ALR:
+		{
+			const struct alr_t *palr = (const struct alr_t *)msg;
+			tid = navi_talkerid_str(palr->tid);
+			sfmt = navi_sentencefmt_str(navi_ALR);
+
+			if (navi_create_alr(palr, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_APB:
 	case navi_BEC:
 	case navi_BOD:

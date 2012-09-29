@@ -1,5 +1,5 @@
 /*
- * ack.h - generator and parser of ACK message
+ * alr.h - generator and parser of ALR message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,40 +17,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_ack_h
-#define INCLUDE_navi_ack_h
+#ifndef INCLUDE_navi_alr_h
+#define INCLUDE_navi_alr_h
 
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
-// ACK - Acknowledge alarm
+// ALR - Set alarm state
 //
-// Acknowledge device alarm.
-// $--ACK,xxx*hh<cr><lf>
+// Local alarm condition and status.
+// $--ALR,hhmmss.ss,xxx,A,A,c--c*hh<cr><lf>
 //
 
-struct ack_t
+struct alr_t
 {
 	navi_talkerid_t tid;	// talker identifier
+	struct navi_utc_t utc;	// time of alarm condition change
 	int alarmid;			// local alarm number
+	navi_status_t condition;	// alarm condition
+							// A = threshold exceeded
+							// V = not exceeded
+	navi_status_t ackstate;		// alarm's acknowledge state
+							// A = acknowledged
+							// V = unacknowledged
+	char description[60];	// alarm's description text
 };
 
 NAVI_BEGIN_DECL
 
 //
-// Initializes ACK sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_ack(struct ack_t *msg, navi_talkerid_t tid);
+// Initializes ALR sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_alr(struct alr_t *msg, navi_talkerid_t tid);
 
 //
-// Creates ACK message
-NAVI_EXTERN(navierr_status_t) navi_create_ack(const struct ack_t *msg, char *buffer,
+// Creates ALR message
+NAVI_EXTERN(navierr_status_t) navi_create_alr(const struct alr_t *msg, char *buffer,
 	int maxsize, int *nmwritten);
 
 //
-// Parses ACK message
-NAVI_EXTERN(navierr_status_t) navi_parse_ack(struct ack_t *msg, char *buffer);
+// Parses ALR message
+NAVI_EXTERN(navierr_status_t) navi_parse_alr(struct alr_t *msg, char *buffer);
 
 NAVI_END_DECL
 
-#endif // INCLUDE_navi_ack_h
+#endif // INCLUDE_navi_alr_h

@@ -32,6 +32,7 @@
 #include <libnavigate/aam.h>
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
+#include <libnavigate/alr.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -47,6 +48,14 @@
 #include <libnavigate/zda.h>
 
 #endif // NO_PARSER
+
+//
+// Talker IDs list
+extern const char *navi_tidlist[];
+
+//
+// Approved sentence formatters list
+extern const char *navi_fmtlist[];
 
 //
 // IEC message parser
@@ -142,6 +151,13 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 		navi_init_alm((struct alm_t *)msg, tid);
 		return navi_parse_alm((struct alm_t *)msg, buffer + som + 7);
 	case navi_ALR:
+		if (msgsize < sizeof(struct alr_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_alr((struct alr_t *)msg, tid);
+		return navi_parse_alr((struct alr_t *)msg, buffer + som + 7);
 	case navi_APB:
 	case navi_BEC:
 	case navi_BOD:

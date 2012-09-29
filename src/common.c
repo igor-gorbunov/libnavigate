@@ -298,7 +298,7 @@ unsigned int navi_compose_integer(char bytes[], int width, int radix)
 //
 // navi_checksum
 //
-int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
+navierr_status_t navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
 {
 	int i;
 	unsigned ucs = 0;
@@ -345,6 +345,19 @@ navi_char_type_t navi_get_character_type(int c)
 		return navi_char_Reserved;
 	else
 		return navi_char_Valid;
+}
+
+//
+// Fills utc structure with given values
+navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc)
+{
+	assert(utc != NULL);
+
+	utc->hour = hh;
+	utc->min = mm;
+	utc->sec = ss;
+
+	return navi_Ok;
 }
 
 const char *navi_fmtlist[] =

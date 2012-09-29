@@ -21,6 +21,7 @@
 #define INCLUDE_navi_common_h
 
 #include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 NAVI_BEGIN_DECL
@@ -63,7 +64,12 @@ typedef int navi_char_type_t;
 
 //
 // Checks and returns the type of given character
-navi_char_type_t navi_get_character_type(int c);
+NAVI_EXTERN(navi_char_type_t) navi_get_character_type(int c);
+
+//
+// Fills utc structure with given values
+NAVI_EXTERN(navierr_status_t) navi_init_utc(int hh, int mm, double ss,
+	struct navi_utc_t *utc);
 
 //
 // Removes trailing zeroes in a variable length value
@@ -96,15 +102,8 @@ extern unsigned int navi_compose_integer(char bytes[], int width, int radix);
 //
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
-NAVI_EXTERN(int) navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs);
-
-//
-// Talker IDs list
-extern const char *navi_tidlist[];
-
-//
-// Approved sentence formatters list
-extern const char *navi_fmtlist[];
+NAVI_EXTERN(navierr_status_t) navi_checksum(char *msg, int maxsize,
+	char *csstr, unsigned *cs);
 
 NAVI_END_DECL
 
