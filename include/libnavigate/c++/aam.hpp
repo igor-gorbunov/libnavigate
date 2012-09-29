@@ -28,13 +28,14 @@ namespace libnavigate
 
 #include <libnavigate/aam.h>
 
-NAVI_EXTERN_CLASS(class, Aam_t) : public Message_t
+NAVI_EXTERN_CLASS(Aam_t) : public Message_t
 {
 public:
 	static const int MaxWaypointIdSize = 60;
 
 public:
 	Aam_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Aam_t(const Message_t &msg);
 	virtual ~Aam_t();
 
 public:
@@ -57,11 +58,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct aam_t m_value;
+	virtual operator const struct aam_t *() const;
+	virtual operator struct aam_t *();
 };
 
 }

@@ -25,7 +25,7 @@
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(class, Gbs_t) : public Message_t
+NAVI_EXTERN_CLASS(Gbs_t) : public Message_t
 {
 public:
 	Gbs_t(const TalkerId_t &tid = TalkerId_t::Unknown);

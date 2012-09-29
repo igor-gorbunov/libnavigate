@@ -1,9 +1,29 @@
+#include <libnavigate/c++/errors.hpp>
 #include <libnavigate/c++/sentence.hpp>
+#include <string.h>
 
 namespace libnavigate
 {
 
-int MessageType_t::toSentenceFormatter() const
+#include <libnavigate/aam.h>
+#include <libnavigate/ack.h>
+#include <libnavigate/alm.h>
+#include <libnavigate/alr.h>
+#include <libnavigate/dtm.h>
+#include <libnavigate/gbs.h>
+#include <libnavigate/gga.h>
+#include <libnavigate/gll.h>
+#include <libnavigate/gns.h>
+#include <libnavigate/grs.h>
+#include <libnavigate/gsa.h>
+#include <libnavigate/gst.h>
+#include <libnavigate/gsv.h>
+#include <libnavigate/mla.h>
+#include <libnavigate/rmc.h>
+#include <libnavigate/vtg.h>
+#include <libnavigate/zda.h>
+
+navi_approved_fmt_t MessageType_t::toSentenceFormatter() const
 {
 	switch (m_value)
 	{
@@ -81,11 +101,11 @@ int MessageType_t::toSentenceFormatter() const
 	case ZFO: return navi_ZFO;
 	case ZTG: return navi_ZTG;
 	default:
-		return -1;
+		return navi_approvedfmt_Unknown;
 	}
 }
 
-MessageType_t MessageType_t::fromSentenceFormatter(int type)
+MessageType_t MessageType_t::fromSentenceFormatter(navi_approved_fmt_t type)
 {
 	switch (type)
 	{
@@ -178,7 +198,7 @@ MessageType_t::MessageType_t(const MessageType_t &right)
 
 MessageType_t::~MessageType_t() { }
 
-TalkerId_t TalkerId_t::fromTalkerIdCode(int tid)
+TalkerId_t TalkerId_t::fromTalkerIdCode(navi_talkerid_t tid)
 {
 	switch (tid)
 	{
@@ -229,7 +249,7 @@ TalkerId_t TalkerId_t::fromTalkerIdCode(int tid)
 	}
 }
 
-int TalkerId_t::toTalkerIdCode() const
+navi_talkerid_t TalkerId_t::toTalkerIdCode() const
 {
 	switch (m_value)
 	{
@@ -276,7 +296,7 @@ int TalkerId_t::toTalkerIdCode() const
 	case WI: return navi_WI;
 	case P: return navi_P;
 	default:
-		return -1;
+		return navi_talkerid_Unknown;
 	}
 }
 
@@ -500,12 +520,198 @@ struct navi_offset_t Offset_t::toOffset() const
 }
 
 Message_t::Message_t(const MessageType_t &type)
-	{ m_type = type; }
+{
+	m_type = MessageType_t::Unknown;
+	m_data = 0;
+	m_size = 0;
 
-Message_t::~Message_t() { }
+	setType(type);
+}
+
+Message_t::Message_t(const MessageType_t &type, const void *data)
+{
+	m_type = MessageType_t::Unknown;
+	m_data = 0;
+	m_size = 0;
+
+	setType(type);
+	memcpy(m_data, data, m_size);
+}
+
+Message_t::Message_t(const Message_t &right)
+{
+	m_type = MessageType_t::Unknown;
+	m_data = 0;
+	m_size = 0;
+
+	setType(right.type());
+	memcpy(m_data, right, m_size);
+}
+
+Message_t::~Message_t()
+{
+	clearMessage();
+}
 
 const MessageType_t & Message_t::type() const
 	{ return m_type; }
+
+void Message_t::setType(const MessageType_t &type)
+{
+	clearMessage();
+
+	m_type = type;
+
+	switch (m_type)
+	{
+	case MessageType_t::AAM:
+		m_data = new struct aam_t;
+		m_size = sizeof(struct aam_t);
+		break;
+	case MessageType_t::ACK:
+		m_data = new struct ack_t;
+		m_size = sizeof(struct ack_t);
+		break;
+	case MessageType_t::ALM:
+		m_data = new struct alm_t;
+		m_size = sizeof(struct alm_t);
+		break;
+	case MessageType_t::ALR:
+		m_data = new struct alr_t;
+		m_size = sizeof(struct alr_t);
+		break;
+	case MessageType_t::APB:
+	case MessageType_t::BEC:
+	case MessageType_t::BOD:
+	case MessageType_t::BWC:
+	case MessageType_t::BWR:
+	case MessageType_t::BWW:
+	case MessageType_t::DBT:
+	case MessageType_t::DCN:
+	case MessageType_t::DPT:
+	case MessageType_t::DSC:
+	case MessageType_t::DSE:
+	case MessageType_t::DSI:
+	case MessageType_t::DSR:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::DTM:
+		m_data = new struct dtm_t;
+		m_size = sizeof(struct dtm_t);
+		break;
+	case MessageType_t::FSI:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::GBS:
+		m_data = new struct gbs_t;
+		m_size = sizeof(struct gbs_t);
+		break;
+	case MessageType_t::GGA:
+		m_data = new struct gga_t;
+		m_size = sizeof(struct gga_t);
+		break;
+	case MessageType_t::GLC:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::GLL:
+		m_data = new struct gll_t;
+		m_size = sizeof(struct gll_t);
+		break;
+	case MessageType_t::GNS:
+		m_data = new struct gns_t;
+		m_size = sizeof(struct gns_t);
+		break;
+	case MessageType_t::GRS:
+		m_data = new struct grs_t;
+		m_size = sizeof(struct grs_t);
+		break;
+	case MessageType_t::GSA:
+		m_data = new struct gsa_t;
+		m_size = sizeof(struct gsa_t);
+		break;
+	case MessageType_t::GST:
+		m_data = new struct gst_t;
+		m_size = sizeof(struct gst_t);
+		break;
+	case MessageType_t::GSV:
+		m_data = new struct gsv_t;
+		m_size = sizeof(struct gsv_t);
+		break;
+	case MessageType_t::HDG:
+	case MessageType_t::HDT:
+	case MessageType_t::HMR:
+	case MessageType_t::HMS:
+	case MessageType_t::HSC:
+	case MessageType_t::HTC:
+	case MessageType_t::HTD:
+	case MessageType_t::LCD:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::MLA:
+		m_data = new struct mla_t;
+		m_size = sizeof(struct mla_t);
+		break;
+	case MessageType_t::MSK:
+	case MessageType_t::MSS:
+	case MessageType_t::MTW:
+	case MessageType_t::MWD:
+	case MessageType_t::MWV:
+	case MessageType_t::OSD:
+	case MessageType_t::RMA:
+	case MessageType_t::RMB:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::RMC:
+		m_data = new struct rmc_t;
+		m_size = sizeof(struct rmc_t);
+		break;
+	case MessageType_t::ROT:
+	case MessageType_t::RPM:
+	case MessageType_t::RSA:
+	case MessageType_t::RSD:
+	case MessageType_t::RTE:
+	case MessageType_t::SFI:
+	case MessageType_t::STN:
+	case MessageType_t::TLB:
+	case MessageType_t::TLL:
+	case MessageType_t::TTM:
+	case MessageType_t::TXT:
+	case MessageType_t::VBW:
+	case MessageType_t::VDR:
+	case MessageType_t::VHW:
+	case MessageType_t::VLW:
+	case MessageType_t::VPW:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::VTG:
+		m_data = new struct vtg_t;
+		m_size = sizeof(struct vtg_t);
+		break;
+	case MessageType_t::WCV:
+	case MessageType_t::WNC:
+	case MessageType_t::WPL:
+	case MessageType_t::XDR:
+	case MessageType_t::XTE:
+	case MessageType_t::XTR:
+		throw NaviError_t::NotImplemented;
+	case MessageType_t::ZDA:
+		m_data = new struct zda_t;
+		m_size = sizeof(struct zda_t);
+		break;
+	case MessageType_t::ZDL:
+	case MessageType_t::ZFO:
+	case MessageType_t::ZTG:
+		throw NaviError_t::NotImplemented;
+	default:
+		m_data = 0;
+		m_size = 0;
+		break;
+	}
+}
+
+void Message_t::clearMessage()
+{
+	if (m_data)
+		delete m_data;
+
+	m_data = 0;
+	m_size = 0;
+	m_type = MessageType_t::Unknown;
+}
 
 Datum_t Datum_t::fromDatumCode(int code)
 {

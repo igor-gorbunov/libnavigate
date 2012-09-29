@@ -28,7 +28,7 @@ namespace libnavigate
 
 #include <libnavigate/alr.h>
 
-NAVI_EXTERN_CLASS(class, Alr_t) : public Message_t
+NAVI_EXTERN_CLASS(Alr_t) : public Message_t
 {
 public:
 	Alr_t(const TalkerId_t &tid = TalkerId_t::Unknown);

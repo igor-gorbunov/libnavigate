@@ -10,7 +10,7 @@ namespace libnavigate
 #include "libnavigate/generator.h"
 #include "libnavigate/parser.h"
 
-NAVI_EXTERN_CLASS(class, MessageType_t)
+NAVI_EXTERN_CLASS(MessageType_t)
 {
 public:
 	enum msgtype_t
@@ -92,7 +92,7 @@ public:
 	};
 
 public:
-	static MessageType_t fromSentenceFormatter(int type);
+	static MessageType_t fromSentenceFormatter(navi_approved_fmt_t type);
 
 public:
 	MessageType_t();
@@ -106,13 +106,13 @@ public:
 		{ return int(m_value); }
 
 public:
-	virtual int toSentenceFormatter() const;
+	virtual navi_approved_fmt_t toSentenceFormatter() const;
 
 private:
 	enum msgtype_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, TalkerId_t)
+NAVI_EXTERN_CLASS(TalkerId_t)
 {
 public:
 	enum talkerid_t
@@ -192,7 +192,7 @@ public:
 	};
 
 public:
-	static TalkerId_t fromTalkerIdCode(int tid);
+	static TalkerId_t fromTalkerIdCode(navi_talkerid_t tid);
 
 public:
 	TalkerId_t();
@@ -206,13 +206,13 @@ public:
 		{ return int(m_value); }
 
 public:
-	virtual int toTalkerIdCode() const;
+	virtual navi_talkerid_t toTalkerIdCode() const;
 
 private:
 	enum talkerid_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, Datum_t)
+NAVI_EXTERN_CLASS(Datum_t)
 {
 public:
 	static Datum_t fromDatumCode(int code);
@@ -242,7 +242,7 @@ private:
 	enum datums_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, DatumSubdivision_t)
+NAVI_EXTERN_CLASS(DatumSubdivision_t)
 {
 public:
 	static DatumSubdivision_t fromDatumSubcode(int subcode);
@@ -272,7 +272,7 @@ private:
 	enum datumsubcodes_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, PositionFix_t)
+NAVI_EXTERN_CLASS(PositionFix_t)
 {
 public:
 	static PositionFix_t fromPosition(const struct navi_position_t *position);
@@ -293,7 +293,7 @@ private:
 	double m_longitude;
 };
 
-NAVI_EXTERN_CLASS(class, Utc_t)
+NAVI_EXTERN_CLASS(Utc_t)
 {
 public:
 	static Utc_t fromUtcStruct(const struct navi_utc_t &utc);
@@ -316,7 +316,7 @@ private:
 	double m_seconds;
 };
 
-NAVI_EXTERN_CLASS(class, Date_t)
+NAVI_EXTERN_CLASS(Date_t)
 {
 public:
 	static Date_t fromDate(const struct navi_date_t *date);
@@ -339,7 +339,7 @@ private:
 	int m_day;
 };
 
-NAVI_EXTERN_CLASS(class, Offset_t)
+NAVI_EXTERN_CLASS(Offset_t)
 {
 public:
 	enum quarters_t
@@ -373,7 +373,7 @@ private:
 	enum quarters_t m_quarter;
 };
 
-NAVI_EXTERN_CLASS(class, Status_t)
+NAVI_EXTERN_CLASS(Status_t)
 {
 public:
 	static Status_t fromStatusCode(int status);
@@ -401,7 +401,7 @@ private:
 	enum status_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, ModeIndicator_t)
+NAVI_EXTERN_CLASS(ModeIndicator_t)
 {
 public:
 	enum modeind_t
@@ -462,7 +462,7 @@ private:
 	enum modeind_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, GsaSwitchMode_t)
+NAVI_EXTERN_CLASS(GsaSwitchMode_t)
 {
 public:
 	static GsaSwitchMode_t fromSwitchModeCode(int code);
@@ -486,7 +486,7 @@ private:
 	enum switchmodes_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, GpsQualityIndicator_t)
+NAVI_EXTERN_CLASS(GpsQualityIndicator_t)
 {
 public:
 	static GpsQualityIndicator_t fromQualityCode(int code);
@@ -521,7 +521,7 @@ private:
 	enum qualityIndicators_t m_value;
 };
 
-NAVI_EXTERN_CLASS(class, ModeIndicatorArray_t)
+NAVI_EXTERN_CLASS(ModeIndicatorArray_t)
 {
 public:
 	static const int MaxIndicators = 2;
@@ -540,27 +540,36 @@ private:
 	ModeIndicator_t m_array[MaxIndicators];
 };
 
-NAVI_EXTERN_CLASS(class, Message_t)
+NAVI_EXTERN_CLASS(Message_t)
 {
 public:
 	Message_t(const MessageType_t &type);
+	Message_t(const MessageType_t &type, const void *data);
+	Message_t(const Message_t &right);
 	virtual ~Message_t();
 
 public:
 	virtual const MessageType_t &type() const;
 
 public:
-	virtual void clearMessage() = 0;
+	virtual void setType(const MessageType_t &type);
 
 public:
-	virtual operator const void *() const = 0;
-	virtual operator void *() = 0;
+	virtual void clearMessage();
+
+public:
+	virtual operator const void *() const
+		{ return (const void *)m_data; }
+
+	virtual operator void *()
+		{ return m_data; }
 
 private:
 	MessageType_t m_type;
+	int m_size;
+	void *m_data;
 };
 
 }
 
 #endif // INCLUDE_navi_sentenceplusplus
-

@@ -8,7 +8,7 @@ namespace libnavigate
 
 #include <libnavigate/errors.h>
 
-NAVI_EXTERN_CLASS(class, NaviError_t)
+NAVI_EXTERN_CLASS(NaviError_t)
 {
 public:
 	enum errtype_t

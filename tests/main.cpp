@@ -204,22 +204,54 @@ int main(void)
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 
-	//int nmread = 0;
-	//Message_t 
+	int i = 0, nmread = 0;
+	remain = sizeof(buffer);
 
-	//try
-	//{
-	//	nmread = navi.ParseMessage(0, 0, 0, mtype, 0);
-	//}
-	//catch (NaviError_t e)
-	//{
-	//	switch (e)
-	//	{
-	//	case NaviError_t::NotImplemented:
-	//		std::cout << "Method not implemented\n";
-	//		break;
-	//	}
-	//}
+	while (remain > 0)
+	{
+		try
+		{
+			Message_t msg = navi.ParseMessage(buffer + i, remain, &nmread);
+			i += nmread;
+			remain -= nmread;
+
+			switch (msg.type())
+			{
+			//case MessageType_t::ALR:
+			//	{
+			//		Alr_t alr(msg);
+			//		std::cout << "ALR message\n";
+			//		std::cout << "\tDescription: " << alr.description().c_str() << "\n";
+			//	}
+			//	break;
+			case MessageType_t::AAM:
+				{
+					Aam_t aam(msg);
+					std::cout << "AAM message\n";
+					std::cout << "\tDescription: " << aam.waypointId().c_str() << "\n";
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		catch (NaviError_t e)
+		{
+			switch (e)
+			{
+			case NaviError_t::NotImplemented:
+				std::cout << "Method not implemented\n";
+				break;
+			case NaviError_t::NoValidMessage:
+				std::cout << "Buffer empty\n";
+				remain = 0;
+				break;
+			default:
+				std::cout << "Exception\n";
+				break;
+			}
+		}
+	}
 
 	return 0;
 }

@@ -28,7 +28,7 @@ namespace libnavigate
 
 #include <libnavigate/ack.h>
 
-NAVI_EXTERN_CLASS(class, Ack_t) : public Message_t
+NAVI_EXTERN_CLASS(Ack_t) : public Message_t
 {
 public:
 	Ack_t(const TalkerId_t &tid = TalkerId_t::Unknown);

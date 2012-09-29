@@ -27,7 +27,7 @@ namespace libnavigate
 
 #include <libnavigate/alm.h>
 
-NAVI_EXTERN_CLASS(class, Alm_t) : public Message_t
+NAVI_EXTERN_CLASS(Alm_t) : public Message_t
 {
 public:
 	static const int MaxSatellites = ALM_MAX_SATELLITES;

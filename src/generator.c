@@ -64,7 +64,7 @@ extern const char *navi_fmtlist[];
 //
 // IEC message generator
 //
-navierr_status_t navi_create_msg(navi_talkerid_t type, const void *msg,
+navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 	char *buffer, int maxsize, int *nmwritten)
 {
 

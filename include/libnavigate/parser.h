@@ -36,7 +36,7 @@ NAVI_BEGIN_DECL
 // Returns the analysis status
 //
 NAVI_EXTERN(navierr_status_t) navi_parse_msg(char *buffer, int maxsize,
-	int msgsize, void *msg, navi_talkerid_t *msgtype, int *nmread);
+	int msgsize, void *msg, navi_approved_fmt_t *msgtype, int *nmread);
 
 //
 // Parses offset field in the form of 'x.x,a | ,'.

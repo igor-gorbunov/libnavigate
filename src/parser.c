@@ -61,7 +61,7 @@ extern const char *navi_fmtlist[];
 // IEC message parser
 //
 navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *msg,
-	navi_talkerid_t *msgtype, int *nmread)
+	navi_approved_fmt_t *msgtype, int *nmread)
 {
 
 #ifndef NO_PARSER

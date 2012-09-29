@@ -25,7 +25,7 @@
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(class, Gsa_t) : public Message_t
+NAVI_EXTERN_CLASS(Gsa_t) : public Message_t
 {
 public:
 	static const int MaxSatellites = 12;
