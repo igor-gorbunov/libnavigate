@@ -48,7 +48,7 @@
 #endif // NO_GENERATOR
 
 #ifdef _MSC_VER
-	#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
 //
