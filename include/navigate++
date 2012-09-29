@@ -1,8 +1,8 @@
 #ifndef INCLUDE_navi_navigateplusplus
 #define INCLUDE_navi_navigateplusplus
 
-#include "libnavigate/c++/errors.hpp"
-#include "libnavigate/c++/navigate.hpp"
+#include <libnavigate/c++/errors.hpp>
+#include <libnavigate/c++/navigate.hpp>
 
 #endif // INCLUDE_navi_navigateplusplus
 

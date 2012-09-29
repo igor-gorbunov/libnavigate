@@ -165,6 +165,42 @@ int main(void)
 	{
 	}
 
+	// ALR
+	Alr_t alr(TalkerId_t::GL);
+	alr.setUtc(Utc_t(12, 8, 13));
+	alr.setAlarmId(846);
+	alr.setCondition(Status_t::DataValid);
+	alr.setAcknowledgeState(Status_t::DataInvalid);
+
+	try
+	{
+		nmwritten = navi.CreateMessage(alr, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
+	// ALR
+	alr.clearMessage();
+	alr.setTalkerId(TalkerId_t::GL);
+	alr.setUtc(Utc_t(16, 12, 0));
+	alr.setAlarmId(7);
+	alr.setCondition(Status_t::DataInvalid);
+	alr.setAcknowledgeState(Status_t::DataInvalid);
+	alr.setDescription(std::string("Captain, take your pills."));
+
+	try
+	{
+		nmwritten = navi.CreateMessage(alr, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 

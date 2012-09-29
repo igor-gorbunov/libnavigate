@@ -409,6 +409,20 @@ int Utc_t::minutes() const
 double Utc_t::seconds() const
 	{ return m_seconds; }
 
+Utc_t Utc_t::fromUtcStruct(const struct navi_utc_t &utc)
+	{ return Utc_t(utc.hour, utc.min, utc.sec); }
+
+struct navi_utc_t Utc_t::toUtcStruct() const
+{
+	struct navi_utc_t s;
+
+	s.hour = hours();
+	s.min = minutes();
+	s.sec = seconds();
+
+	return s;
+}
+
 Date_t Date_t::fromDate(const struct navi_date_t *date)
 	{ return Date_t(date->year, date->month, date->day); }
 

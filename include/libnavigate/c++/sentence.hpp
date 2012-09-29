@@ -296,6 +296,9 @@ private:
 NAVI_EXTERN_CLASS(class, Utc_t)
 {
 public:
+	static Utc_t fromUtcStruct(const struct navi_utc_t &utc);
+
+public:
 	Utc_t(int hh, int mm, double ss);
 	virtual ~Utc_t();
 
@@ -303,6 +306,9 @@ public:
 	virtual int hours() const;
 	virtual int minutes() const;
 	virtual double seconds() const;
+
+public:
+	struct navi_utc_t toUtcStruct() const;
 
 private:
 	int m_hours;

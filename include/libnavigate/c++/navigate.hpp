@@ -4,6 +4,7 @@
 #include <libnavigate/c++/aam.hpp>
 #include <libnavigate/c++/ack.hpp>
 #include <libnavigate/c++/alm.hpp>
+#include <libnavigate/c++/alr.hpp>
 #include <libnavigate/c++/dtm.hpp>
 #include <libnavigate/c++/gbs.hpp>
 #include <libnavigate/c++/gga.hpp>
