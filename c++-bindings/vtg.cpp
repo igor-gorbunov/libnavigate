@@ -24,60 +24,68 @@ namespace libnavigate
 
 Vtg_t::Vtg_t(const TalkerId_t &tid) : Message_t(MessageType_t::VTG)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.vfields = 0;
+	((struct vtg_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct vtg_t *)(*this))->vfields = 0;
 }
+
+Vtg_t::Vtg_t(const Message_t &msg) : Message_t(msg) { }
 
 Vtg_t::~Vtg_t() { }
 
 TalkerId_t Vtg_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct vtg_t *)(*this))->tid); }
 
 void Vtg_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct vtg_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Vtg_t::clearMessage()
-	{ m_value.vfields = 0; }
-
-Vtg_t::operator const void *() const
-	{ return (const void *)&m_value; }
-
-Vtg_t::operator void *()
-	{ return &m_value; }
+	{ ((struct vtg_t *)(*this))->vfields = 0; }
 
 double Vtg_t::courseTrue() const
-	{ return m_value.courseTrue; }
+	{ return ((const struct vtg_t *)(*this))->courseTrue; }
 
 double Vtg_t::courseMagnetic() const
-	{ return m_value.courseMagn; }
+	{ return ((const struct vtg_t *)(*this))->courseMagn; }
 
 double Vtg_t::speed() const
-	{ return m_value.speed; }
+	{ return ((const struct vtg_t *)(*this))->speed; }
 
 ModeIndicator_t Vtg_t::modeIndicator() const
-	{ return ModeIndicator_t::fromModeIndCode(m_value.mi); }
+	{ return ModeIndicator_t::fromModeIndCode(((const struct vtg_t *)(*this))->mi); }
 
 void Vtg_t::setCourseTrue(double value)
 {
-	m_value.courseTrue = value;
-	m_value.vfields |= VTG_VALID_COURSETRUE;
+	((struct vtg_t *)(*this))->courseTrue = value;
+	((struct vtg_t *)(*this))->vfields |= VTG_VALID_COURSETRUE;
 }
 
 void Vtg_t::setCourseMagnetic(double value)
 {
-	m_value.courseMagn = value;
-	m_value.vfields |= VTG_VALID_COURSEMAGN;
+	((struct vtg_t *)(*this))->courseMagn = value;
+	((struct vtg_t *)(*this))->vfields |= VTG_VALID_COURSEMAGN;
 }
 
 void Vtg_t::setSpeed(double value)
 {
-	m_value.speed = value;
-	m_value.vfields |= VTG_VALID_SPEED;
+	((struct vtg_t *)(*this))->speed = value;
+	((struct vtg_t *)(*this))->vfields |= VTG_VALID_SPEED;
 }
 
 void Vtg_t::setModeIndicator(const ModeIndicator_t &mi)
 {
-	m_value.mi = mi.toModeIndCode();
+	((struct vtg_t *)(*this))->mi = mi.toModeIndCode();
+}
+
+Vtg_t::operator const struct vtg_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct vtg_t *)p;
+}
+
+Vtg_t::operator struct vtg_t *()
+{
+	void *p = (void *)(*this);
+	return (struct vtg_t *)p;
 }
 
 }
