@@ -32,6 +32,7 @@ NAVI_EXTERN_CLASS(Alr_t) : public Message_t
 {
 public:
 	Alr_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Alr_t(const Message_t &msg);
 	virtual ~Alr_t();
 
 public:
@@ -56,11 +57,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct alr_t m_value;
+	virtual operator const struct alr_t *() const;
+	virtual operator struct alr_t *();
 };
 
 }

@@ -24,58 +24,69 @@ namespace libnavigate
 
 Alr_t::Alr_t(const TalkerId_t &tid) : Message_t(MessageType_t::ALR)
 {
-	navi_init_alr(&m_value, tid.toTalkerIdCode());
+	navi_init_alr((struct alr_t *)(*this), tid.toTalkerIdCode());
 }
+
+Alr_t::Alr_t(const Message_t &msg) : Message_t(msg) { }
 
 Alr_t::~Alr_t() { }
 
 TalkerId_t Alr_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct alr_t *)(*this))->tid); }
 
 void Alr_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct alr_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Alr_t::clearMessage()
 {
-	navi_init_alr(&m_value, TalkerId_t::Unknown);
+	navi_init_alr((struct alr_t *)(*this), TalkerId_t::Unknown);
 }
 
-Alr_t::operator const void *() const
-	{ return (const void *)&m_value; }
+Alr_t::operator const struct alr_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct alr_t *)p;
+}
 
-Alr_t::operator void *()
-	{ return &m_value; }
+Alr_t::operator struct alr_t *()
+{
+	void *p = (void *)(*this);
+	return (struct alr_t *)p;
+}
 
 Utc_t Alr_t::utc() const
-	{ return Utc_t::fromUtcStruct(m_value.utc); }
+	{ return Utc_t::fromUtcStruct(((const struct alr_t *)(*this))->utc); }
 
 int Alr_t::alarmId() const
-	{ return m_value.alarmid; }
+	{ return ((const struct alr_t *)(*this))->alarmid; }
 
 Status_t Alr_t::condition() const
-	{ return Status_t::fromStatusCode(m_value.condition); }
+	{ return Status_t::fromStatusCode(((const struct alr_t *)(*this))->condition); }
 
 Status_t Alr_t::acknowledgeState() const
-	{ return Status_t::fromStatusCode(m_value.ackstate); }
+	{ return Status_t::fromStatusCode(((const struct alr_t *)(*this))->ackstate); }
 
 std::string Alr_t::description() const
-	{ return std::string(m_value.description); }
+	{ return std::string(((const struct alr_t *)(*this))->description); }
 
 void Alr_t::setUtc(const Utc_t &value)
 {
-	m_value.utc = value.toUtcStruct();
+	((struct alr_t *)(*this))->utc = value.toUtcStruct();
 }
 
 void Alr_t::setAlarmId(int value)
-	{ m_value.alarmid = value; }
+	{ ((struct alr_t *)(*this))->alarmid = value; }
 
 void Alr_t::setCondition(const Status_t &value)
-	{ m_value.condition = value.toStatusCode(); }
+	{ ((struct alr_t *)(*this))->condition = value.toStatusCode(); }
 
 void Alr_t::setAcknowledgeState(const Status_t &value)
-	{ m_value.ackstate = value.toStatusCode(); }
+	{ ((struct alr_t *)(*this))->ackstate = value.toStatusCode(); }
 
 void Alr_t::setDescription(const std::string &value)
-	{ strncpy(m_value.description, value.c_str(), sizeof(m_value.description)); }
+{
+	strncpy(((struct alr_t *)(*this))->description, value.c_str(),
+		sizeof(((const struct alr_t *)(*this))->description));
+}
 
 }

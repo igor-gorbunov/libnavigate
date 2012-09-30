@@ -237,13 +237,13 @@ int main(void)
 					std::cout << "ALM message\n";
 				}
 				break;
-			//case MessageType_t::ALR:
-			//	{
-			//		Alr_t alr(msg);
-			//		std::cout << "ALR message\n";
-			//		std::cout << "\tDescription: " << alr.description().c_str() << "\n";
-			//	}
-			//	break;
+			case MessageType_t::ALR:
+				{
+					Alr_t alr(msg);
+					std::cout << "ALR message\n";
+					std::cout << "\tDescription: " << alr.description().c_str() << "\n";
+				}
+				break;
 			default:
 				break;
 			}
