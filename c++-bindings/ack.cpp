@@ -24,36 +24,44 @@ namespace libnavigate
 
 Ack_t::Ack_t(const TalkerId_t &tid) : Message_t(MessageType_t::ACK)
 {
-	navi_init_ack(&m_value, tid.toTalkerIdCode());
+	navi_init_ack((struct ack_t *)(*this), tid.toTalkerIdCode());
 }
+
+Ack_t::Ack_t(const Message_t &msg) : Message_t(msg) { }
 
 Ack_t::~Ack_t() { }
 
 TalkerId_t Ack_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct ack_t *)(*this))->tid); }
 
 void Ack_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct ack_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Ack_t::clearMessage()
 {
-	navi_init_ack(&m_value, TalkerId_t::Unknown);
+	navi_init_ack((struct ack_t *)(*this), TalkerId_t::Unknown);
 }
 
-Ack_t::operator const void *() const
-	{ return (const void *)&m_value; }
+Ack_t::operator const struct ack_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct ack_t *)p;
+}
 
-Ack_t::operator void *()
-	{ return &m_value; }
+Ack_t::operator struct ack_t *()
+{
+	void *p = (void *)(*this);
+	return (struct ack_t *)p;
+}
 
 int Ack_t::alarmId() const
 {
-	return m_value.alarmid;
+	return ((const struct ack_t *)(*this))->alarmid;
 }
 
 void Ack_t::setAlarmId(int value)
 {
-	m_value.alarmid = value;
+	((struct ack_t *)(*this))->alarmid = value;
 }
 
 }

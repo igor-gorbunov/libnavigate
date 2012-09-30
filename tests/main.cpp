@@ -217,13 +217,13 @@ int main(void)
 
 			switch (msg.type())
 			{
-			//case MessageType_t::ALR:
-			//	{
-			//		Alr_t alr(msg);
-			//		std::cout << "ALR message\n";
-			//		std::cout << "\tDescription: " << alr.description().c_str() << "\n";
-			//	}
-			//	break;
+			case MessageType_t::ACK:
+				{
+					Ack_t ack(msg);
+					std::cout << "ACK message\n";
+					std::cout << "\tLocal alarm number: " << ack.alarmId() << "\n";
+				}
+				break;
 			case MessageType_t::AAM:
 				{
 					Aam_t aam(msg);
@@ -231,6 +231,13 @@ int main(void)
 					std::cout << "\tDescription: " << aam.waypointId().c_str() << "\n";
 				}
 				break;
+			//case MessageType_t::ALR:
+			//	{
+			//		Alr_t alr(msg);
+			//		std::cout << "ALR message\n";
+			//		std::cout << "\tDescription: " << alr.description().c_str() << "\n";
+			//	}
+			//	break;
 			default:
 				break;
 			}
