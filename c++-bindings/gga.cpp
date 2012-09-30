@@ -24,105 +24,113 @@ namespace libnavigate
 
 Gga_t::Gga_t(const TalkerId_t &tid) : Message_t(MessageType_t::GGA)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.vfields = 0;
+	((struct gga_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct gga_t *)(*this))->vfields = 0;
 }
+
+Gga_t::Gga_t(const Message_t &msg) : Message_t(msg) { }
 
 Gga_t::~Gga_t() { }
 
 TalkerId_t Gga_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct gga_t *)(*this))->tid); }
 
 Utc_t Gga_t::utc() const
-	{ return Utc_t(m_value.utc.hour, m_value.utc.min, m_value.utc.sec); }
+	{ return Utc_t(((const struct gga_t *)(*this))->utc.hour, ((const struct gga_t *)(*this))->utc.min, ((const struct gga_t *)(*this))->utc.sec); }
 
 PositionFix_t Gga_t::positionFix() const
-	{ return PositionFix_t::fromPosition(&m_value.fix); }
+	{ return PositionFix_t::fromPosition(&((const struct gga_t *)(*this))->fix); }
 
 GpsQualityIndicator_t Gga_t::qualityIndicator() const
-	{ return GpsQualityIndicator_t::fromQualityCode(m_value.gpsindicator); }
+	{ return GpsQualityIndicator_t::fromQualityCode(((const struct gga_t *)(*this))->gpsindicator); }
 
 int Gga_t::nmOfSatellites() const
-	{ return m_value.nmsatellites; }
+	{ return ((const struct gga_t *)(*this))->nmsatellites; }
 
 double Gga_t::hdop() const
-	{ return m_value.hdop; }
+	{ return ((const struct gga_t *)(*this))->hdop; }
 
 double Gga_t::antennaAltitude() const
-	{ return m_value.antaltitude; }
+	{ return ((const struct gga_t *)(*this))->antaltitude; }
 
 double Gga_t::geoidalSeparation() const
-	{ return m_value.geoidalsep; }
+	{ return ((const struct gga_t *)(*this))->geoidalsep; }
 
 int Gga_t::ageOfDiffData() const
-	{ return m_value.diffage; }
+	{ return ((const struct gga_t *)(*this))->diffage; }
 
 int Gga_t::diffReferenceStationId() const
-	{ return m_value.id; }
+	{ return ((const struct gga_t *)(*this))->id; }
 
 void Gga_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct gga_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gga_t::setUtc(const Utc_t &utc)
 {
-	m_value.utc.hour = utc.hours();
-	m_value.utc.min = utc.minutes();
-	m_value.utc.sec = utc.seconds();
-	m_value.vfields |= GGA_VALID_UTC;
+	((struct gga_t *)(*this))->utc.hour = utc.hours();
+	((struct gga_t *)(*this))->utc.min = utc.minutes();
+	((struct gga_t *)(*this))->utc.sec = utc.seconds();
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_UTC;
 }
 
 void Gga_t::setPositionFix(const PositionFix_t &fix)
 {
-	m_value.fix = fix.toPosition();
-	m_value.vfields |= GGA_VALID_FIX;
+	((struct gga_t *)(*this))->fix = fix.toPosition();
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_FIX;
 }
 
 void Gga_t::setQualityIndicator(const GpsQualityIndicator_t &qi)
-	{ m_value.gpsindicator = qi.toQualityCode(); }
+	{ ((struct gga_t *)(*this))->gpsindicator = qi.toQualityCode(); }
 
 void Gga_t::setNmOfSatellites(int value)
 {
-	m_value.nmsatellites = value;
-	m_value.vfields |= GGA_VALID_NMSATELLITES;
+	((struct gga_t *)(*this))->nmsatellites = value;
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_NMSATELLITES;
 }
 
 void Gga_t::setHdop(double value)
 {
-	m_value.hdop = value;
-	m_value.vfields |= GGA_VALID_HDOP;
+	((struct gga_t *)(*this))->hdop = value;
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_HDOP;
 }
 
 void Gga_t::setAntennaAltitude(double value)
 {
-	m_value.antaltitude = value;
-	m_value.vfields |= GGA_VALID_ANTALTITUDE;
+	((struct gga_t *)(*this))->antaltitude = value;
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_ANTALTITUDE;
 }
 
 void Gga_t::setGeoidalSeparation(double value)
 {
-	m_value.geoidalsep = value;
-	m_value.vfields |= GGA_VALID_GEOIDALSEP;
+	((struct gga_t *)(*this))->geoidalsep = value;
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_GEOIDALSEP;
 }
 
 void Gga_t::setAgeOfDiffData(int value)
 {
-	m_value.diffage = value;
-	m_value.vfields |= GGA_VALID_DIFFAGE;
+	((struct gga_t *)(*this))->diffage = value;
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_DIFFAGE;
 }
 
 void Gga_t::setDiffReferenceStationId(int value)
 {
-	m_value.id = value;
-	m_value.vfields |= GGA_VALID_ID;
+	((struct gga_t *)(*this))->id = value;
+	((struct gga_t *)(*this))->vfields |= GGA_VALID_ID;
 }
 
 void Gga_t::clearMessage()
-	{ m_value.vfields = 0; }
+	{ ((struct gga_t *)(*this))->vfields = 0; }
 
-Gga_t::operator const void *() const
-	{ return (const void *)&m_value; }
+Gga_t::operator const struct gga_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct gga_t *)p;
+}
 
-Gga_t::operator void *()
-	{ return &m_value; }
+Gga_t::operator struct gga_t *()
+{
+	void *p = (void *)(*this);
+	return (struct gga_t *)p;
+}
 
 }

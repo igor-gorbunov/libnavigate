@@ -29,6 +29,7 @@ NAVI_EXTERN_CLASS(Gga_t) : public Message_t
 {
 public:
 	Gga_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Gga_t(const Message_t &msg);
 	virtual ~Gga_t();
 
 public:
@@ -59,11 +60,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct gga_t m_value;
+	virtual operator const struct gga_t *() const;
+	virtual operator struct gga_t *();
 };
 
 }

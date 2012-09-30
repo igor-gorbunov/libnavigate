@@ -252,7 +252,13 @@ int main(void)
 				break;
 			case MessageType_t::GBS:
 				{
-					Dtm_t dtm(msg);
+					Gbs_t gbs(msg);
+					std::cout << "DTM message\n";
+				}
+				break;
+			case MessageType_t::GGA:
+				{
+					Gga_t gga(msg);
 					std::cout << "DTM message\n";
 				}
 				break;
