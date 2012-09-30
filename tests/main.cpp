@@ -250,6 +250,12 @@ int main(void)
 					std::cout << "DTM message\n";
 				}
 				break;
+			case MessageType_t::GBS:
+				{
+					Dtm_t dtm(msg);
+					std::cout << "DTM message\n";
+				}
+				break;
 			default:
 				break;
 			}
