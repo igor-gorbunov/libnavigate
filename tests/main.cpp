@@ -286,6 +286,12 @@ int main(void)
 					std::cout << "GSA message\n";
 				}
 				break;
+			case MessageType_t::GST:
+				{
+					Gst_t gst(msg);
+					std::cout << "GST message\n";
+				}
+				break;
 			case MessageType_t::RMC:
 				{
 					Rmc_t rmc(msg);
