@@ -231,6 +231,12 @@ int main(void)
 					std::cout << "\tDescription: " << aam.waypointId().c_str() << "\n";
 				}
 				break;
+			case MessageType_t::ALM:
+				{
+					Alm_t alm(msg);
+					std::cout << "ALM message\n";
+				}
+				break;
 			//case MessageType_t::ALR:
 			//	{
 			//		Alr_t alr(msg);

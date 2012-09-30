@@ -34,6 +34,7 @@ public:
 
 public:
 	Alm_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Alm_t(const Message_t &msg);
 	virtual ~Alm_t();
 
 public:
@@ -80,11 +81,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct alm_t m_value;
+	virtual operator const struct alm_t *() const;
+	virtual operator struct alm_t *();
 };
 
 }
