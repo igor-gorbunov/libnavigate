@@ -24,94 +24,109 @@ namespace libnavigate
 
 Rmc_t::Rmc_t(const TalkerId_t &tid) : Message_t(MessageType_t::RMC)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.vfields = 0;
+	((struct rmc_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct rmc_t *)(*this))->vfields = 0;
 }
+
+Rmc_t::Rmc_t(const Message_t &msg) : Message_t(msg) { }
 
 Rmc_t::~Rmc_t() { }
 
 TalkerId_t Rmc_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct rmc_t *)(*this))->tid); }
 
 Utc_t Rmc_t::utc() const
-	{ return Utc_t(m_value.utc.hour, m_value.utc.min, m_value.utc.sec); }
+{
+	return Utc_t(((const struct rmc_t *)(*this))->utc.hour,
+		((const struct rmc_t *)(*this))->utc.min,
+		((const struct rmc_t *)(*this))->utc.sec);
+}
 
 Status_t Rmc_t::status() const
-	{ return Status_t::fromStatusCode(m_value.status); }
+	{ return Status_t::fromStatusCode(((const struct rmc_t *)(*this))->status); }
 
 PositionFix_t Rmc_t::positionFix() const
-	{ return PositionFix_t::fromPosition(&m_value.fix); }
+	{ return PositionFix_t::fromPosition(&((const struct rmc_t *)(*this))->fix); }
 
 double Rmc_t::speed() const
-	{ return m_value.speed; }
+	{ return ((const struct rmc_t *)(*this))->speed; }
 
 double Rmc_t::course() const
-	{ return m_value.courseTrue; }
+	{ return ((const struct rmc_t *)(*this))->courseTrue; }
 
 Date_t Rmc_t::date() const
-	{ return Date_t(m_value.date.year, m_value.date.month, m_value.date.day); }
+{
+	return Date_t(((const struct rmc_t *)(*this))->date.year,
+		((const struct rmc_t *)(*this))->date.month,
+		((const struct rmc_t *)(*this))->date.day);
+}
 
 Offset_t Rmc_t::magneticVariation() const
-	{ return Offset_t::fromOffset(&m_value.magnetic); }
+	{ return Offset_t::fromOffset(&((const struct rmc_t *)(*this))->magnetic); }
 
 ModeIndicator_t Rmc_t::modeIndicator() const
-	{ return ModeIndicator_t::fromModeIndCode(m_value.mi); }
+	{ return ModeIndicator_t::fromModeIndCode(((const struct rmc_t *)(*this))->mi); }
 
 void Rmc_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct rmc_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Rmc_t::setUtc(const Utc_t &utc)
 {
-	m_value.utc.hour = utc.hours();
-	m_value.utc.min = utc.minutes();
-	m_value.utc.sec = utc.seconds();
-	m_value.vfields |= RMC_VALID_UTC;
+	((struct rmc_t *)(*this))->utc.hour = utc.hours();
+	((struct rmc_t *)(*this))->utc.min = utc.minutes();
+	((struct rmc_t *)(*this))->utc.sec = utc.seconds();
+	((struct rmc_t *)(*this))->vfields |= RMC_VALID_UTC;
 }
 
 void Rmc_t::setStatus(const Status_t &status)
-	{ m_value.status = status.toStatusCode(); }
+	{ ((struct rmc_t *)(*this))->status = status.toStatusCode(); }
 
 void Rmc_t::setPositionFix(const PositionFix_t &fix)
 {
-	m_value.fix = fix.toPosition();
-	m_value.vfields |= RMC_VALID_POSITION_FIX;
+	((struct rmc_t *)(*this))->fix = fix.toPosition();
+	((struct rmc_t *)(*this))->vfields |= RMC_VALID_POSITION_FIX;
 }
 
 void Rmc_t::setSpeed(double value)
 {
-	m_value.speed = value;
-	m_value.vfields |= RMC_VALID_SPEED;
+	((struct rmc_t *)(*this))->speed = value;
+	((struct rmc_t *)(*this))->vfields |= RMC_VALID_SPEED;
 }
 
 void Rmc_t::setCourse(double value)
 {
-	m_value.courseTrue = value;
-	m_value.vfields |= RMC_VALID_COURSETRUE;
+	((struct rmc_t *)(*this))->courseTrue = value;
+	((struct rmc_t *)(*this))->vfields |= RMC_VALID_COURSETRUE;
 }
 
 void Rmc_t::setDate(const Date_t &date)
 {
-	m_value.date = date.toDate();
-	m_value.vfields |= RMC_VALID_DATE;
+	((struct rmc_t *)(*this))->date = date.toDate();
+	((struct rmc_t *)(*this))->vfields |= RMC_VALID_DATE;
 }
 
 void Rmc_t::setMagneticVariation(const Offset_t &offset)
 {
-	m_value.magnetic = offset.toOffset();
-	m_value.vfields |= RMC_VALID_MAGNVARIATION;
+	((struct rmc_t *)(*this))->magnetic = offset.toOffset();
+	((struct rmc_t *)(*this))->vfields |= RMC_VALID_MAGNVARIATION;
 }
 
 void Rmc_t::setModeIndicator(const ModeIndicator_t &mi)
-	{ m_value.mi = mi.toModeIndCode(); }
+	{ ((struct rmc_t *)(*this))->mi = mi.toModeIndCode(); }
 
 void Rmc_t::clearMessage()
-	{ m_value.vfields = 0; }
+	{ ((struct rmc_t *)(*this))->vfields = 0; }
 
-Rmc_t::operator const void *() const
-	{ return (const void *)&m_value; }
-
-Rmc_t::operator void *()
-	{ return &m_value; }
-
+Rmc_t::operator const struct rmc_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct rmc_t *)p;
 }
 
+Rmc_t::operator struct rmc_t *()
+{
+	void *p = (void *)(*this);
+	return (struct rmc_t *)p;
+}
+
+}

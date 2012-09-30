@@ -29,6 +29,7 @@ NAVI_EXTERN_CLASS(Rmc_t) : public Message_t
 {
 public:
 	Rmc_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Rmc_t(const Message_t &msg);
 	virtual ~Rmc_t();
 
 public:
@@ -57,11 +58,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct rmc_t m_value;
+	virtual operator const struct rmc_t *() const;
+	virtual operator struct rmc_t *();
 };
 
 }
