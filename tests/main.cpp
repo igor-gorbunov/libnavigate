@@ -253,13 +253,19 @@ int main(void)
 			case MessageType_t::GBS:
 				{
 					Gbs_t gbs(msg);
-					std::cout << "DTM message\n";
+					std::cout << "GBS message\n";
 				}
 				break;
 			case MessageType_t::GGA:
 				{
 					Gga_t gga(msg);
-					std::cout << "DTM message\n";
+					std::cout << "GGA message\n";
+				}
+				break;
+			case MessageType_t::GLL:
+				{
+					Gll_t gll(msg);
+					std::cout << "GLL message\n";
 				}
 				break;
 			default:

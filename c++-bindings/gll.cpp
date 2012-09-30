@@ -24,58 +24,65 @@ namespace libnavigate
 
 Gll_t::Gll_t(const TalkerId_t &tid) : Message_t(MessageType_t::GLL)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.vfields = 0;
+	((struct gll_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct gll_t *)(*this))->vfields = 0;
 }
+
+Gll_t::Gll_t(const Message_t &msg) : Message_t(msg) { }
 
 Gll_t::~Gll_t() { }
 
 TalkerId_t Gll_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct gll_t *)(*this))->tid); }
 
 PositionFix_t Gll_t::positionFix() const
-	{ return PositionFix_t::fromPosition(&m_value.fix); }
+	{ return PositionFix_t::fromPosition(&((const struct gll_t *)(*this))->fix); }
 
 Utc_t Gll_t::utc() const
-	{ return Utc_t(m_value.utc.hour, m_value.utc.min, m_value.utc.sec); }
+	{ return Utc_t(((const struct gll_t *)(*this))->utc.hour, ((const struct gll_t *)(*this))->utc.min, ((const struct gll_t *)(*this))->utc.sec); }
 
 Status_t Gll_t::status() const
-	{ return Status_t::fromStatusCode(m_value.status); }
+	{ return Status_t::fromStatusCode(((const struct gll_t *)(*this))->status); }
 
 ModeIndicator_t Gll_t::modeIndicator() const
-	{ return ModeIndicator_t::fromModeIndCode(m_value.mi); }
+	{ return ModeIndicator_t::fromModeIndCode(((const struct gll_t *)(*this))->mi); }
 
 void Gll_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct gll_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gll_t::setPositionFix(const PositionFix_t &fix)
 {
-	m_value.fix = fix.toPosition();
-	m_value.vfields |= GLL_VALID_POSITION_FIX;
+	((struct gll_t *)(*this))->fix = fix.toPosition();
+	((struct gll_t *)(*this))->vfields |= GLL_VALID_POSITION_FIX;
 }
 
 void Gll_t::setUtc(const Utc_t &utc)
 {
-	m_value.utc.hour = utc.hours();
-	m_value.utc.min = utc.minutes();
-	m_value.utc.sec = utc.seconds();
-	m_value.vfields |= GLL_VALID_UTC;
+	((struct gll_t *)(*this))->utc.hour = utc.hours();
+	((struct gll_t *)(*this))->utc.min = utc.minutes();
+	((struct gll_t *)(*this))->utc.sec = utc.seconds();
+	((struct gll_t *)(*this))->vfields |= GLL_VALID_UTC;
 }
 
 void Gll_t::setStatus(const Status_t &status)
-	{ m_value.status = status.toStatusCode(); }
+	{ ((struct gll_t *)(*this))->status = status.toStatusCode(); }
 
 void Gll_t::setModeIndicator(const ModeIndicator_t &mi)
-	{ m_value.mi = mi.toModeIndCode(); }
+	{ ((struct gll_t *)(*this))->mi = mi.toModeIndCode(); }
 
 void Gll_t::clearMessage()
-	{ m_value.vfields = 0; }
+	{ ((struct gll_t *)(*this))->vfields = 0; }
 
-Gll_t::operator const void *() const
-	{ return (const void *)&m_value; }
-
-Gll_t::operator void *()
-	{ return &m_value; }
-
+Gll_t::operator const struct gll_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct gll_t *)p;
 }
 
+Gll_t::operator struct gll_t *()
+{
+	void *p = (void *)(*this);
+	return (struct gll_t *)p;
+}
+
+}
