@@ -280,6 +280,12 @@ int main(void)
 					std::cout << "GRS message\n";
 				}
 				break;
+			case MessageType_t::GSA:
+				{
+					Gsa_t gsa(msg);
+					std::cout << "GSA message\n";
+				}
+				break;
 			case MessageType_t::VTG:
 				{
 					Vtg_t vtg(msg);

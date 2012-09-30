@@ -32,6 +32,7 @@ public:
 
 public:
 	Gsa_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Gsa_t(const Message_t &msg);
 	virtual ~Gsa_t();
 
 public:
@@ -58,11 +59,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct gsa_t m_value;
+	virtual operator const struct gsa_t *() const;
+	virtual operator struct gsa_t *();
 };
 
 }
