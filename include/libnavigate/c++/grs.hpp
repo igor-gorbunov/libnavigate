@@ -32,6 +32,7 @@ public:
 
 public:
 	Grs_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Grs_t(const Message_t &msg);
 	virtual ~Grs_t();
 
 public:
@@ -50,11 +51,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct grs_t m_value;
+	virtual operator const struct grs_t *() const;
+	virtual operator struct grs_t *();
 };
 
 }

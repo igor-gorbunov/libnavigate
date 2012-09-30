@@ -274,6 +274,12 @@ int main(void)
 					std::cout << "GNS message\n";
 				}
 				break;
+			case MessageType_t::GRS:
+				{
+					Grs_t grs(msg);
+					std::cout << "GRS message\n";
+				}
+				break;
 			case MessageType_t::ZDA:
 				{
 					Zda_t zda(msg);

@@ -24,59 +24,71 @@ namespace libnavigate
 
 Grs_t::Grs_t(const TalkerId_t &tid) : Message_t(MessageType_t::GRS)
 {
-	m_value.tid = tid.toTalkerIdCode();
+	((struct grs_t *)(*this))->tid = tid.toTalkerIdCode();
 
 	for (int i = 0; i < MaxSatellites; i++)
 	{
-		m_value.residuals[i].notnull = 0;
+		((struct grs_t *)(*this))->residuals[i].notnull = 0;
 	}
 }
+
+Grs_t::Grs_t(const Message_t &msg) : Message_t(msg) { }
 
 Grs_t::~Grs_t() { }
 
 TalkerId_t Grs_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct grs_t *)(*this))->tid); }
 
 Utc_t Grs_t::utc() const
-	{ return Utc_t(m_value.utc.hour, m_value.utc.min, m_value.utc.sec); }
+{
+	return Utc_t(((const struct grs_t *)(*this))->utc.hour,
+		((const struct grs_t *)(*this))->utc.min,
+		((const struct grs_t *)(*this))->utc.sec);
+}
 
 int Grs_t::mode() const
-	{ return m_value.mode; }
+	{ return ((const struct grs_t *)(*this))->mode; }
 
 double Grs_t::residual(int satIdx) const
-	{ return m_value.residuals[satIdx].residual; }
+	{ return ((const struct grs_t *)(*this))->residuals[satIdx].residual; }
 
 void Grs_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct grs_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Grs_t::setUtc(const Utc_t &utc)
 {
-	m_value.utc.hour = utc.hours();
-	m_value.utc.min = utc.minutes();
-	m_value.utc.sec = utc.seconds();
+	((struct grs_t *)(*this))->utc.hour = utc.hours();
+	((struct grs_t *)(*this))->utc.min = utc.minutes();
+	((struct grs_t *)(*this))->utc.sec = utc.seconds();
 }
 
 void Grs_t::setMode(int mode)
-	{ m_value.mode = mode; }
+	{ ((struct grs_t *)(*this))->mode = mode; }
 
 void Grs_t::setResidual(int satIdx, double value)
 {
-	m_value.residuals[satIdx].notnull = 1;
-	m_value.residuals[satIdx].residual = value;
+	((struct grs_t *)(*this))->residuals[satIdx].notnull = 1;
+	((struct grs_t *)(*this))->residuals[satIdx].residual = value;
 }
 
 void Grs_t::clearMessage()
 {
 	for (int i = 0; i < MaxSatellites; i++)
 	{
-		m_value.residuals[i].notnull = 0;
+		((struct grs_t *)(*this))->residuals[i].notnull = 0;
 	}
 }
 
-Grs_t::operator const void *() const
-	{ return (const void *)&m_value; }
+Grs_t::operator const struct grs_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct grs_t *)p;
+}
 
-Grs_t::operator void *()
-	{ return &m_value; }
+Grs_t::operator struct grs_t *()
+{
+	void *p = (void *)(*this);
+	return (struct grs_t *)p;
+}
 
 }
