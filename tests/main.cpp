@@ -268,6 +268,12 @@ int main(void)
 					std::cout << "GLL message\n";
 				}
 				break;
+			case MessageType_t::GNS:
+				{
+					Gns_t gns(msg);
+					std::cout << "GNS message\n";
+				}
+				break;
 			default:
 				break;
 			}
