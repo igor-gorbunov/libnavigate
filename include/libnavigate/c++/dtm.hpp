@@ -29,6 +29,7 @@ NAVI_EXTERN_CLASS(Dtm_t) : public Message_t
 {
 public:
 	Dtm_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Dtm_t(const Message_t &msg);
 	virtual ~Dtm_t();
 
 public:
@@ -56,11 +57,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct dtm_t m_value;
+	virtual operator const struct dtm_t *() const;
+	virtual operator struct dtm_t *();
 };
 
 }

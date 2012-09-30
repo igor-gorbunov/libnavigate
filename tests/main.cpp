@@ -244,6 +244,12 @@ int main(void)
 					std::cout << "\tDescription: " << alr.description().c_str() << "\n";
 				}
 				break;
+			case MessageType_t::DTM:
+				{
+					Dtm_t dtm(msg);
+					std::cout << "DTM message\n";
+				}
+				break;
 			default:
 				break;
 			}

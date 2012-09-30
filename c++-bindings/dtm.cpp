@@ -24,79 +24,87 @@ namespace libnavigate
 
 Dtm_t::Dtm_t(const TalkerId_t &tid) : Message_t(MessageType_t::DTM)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.vfields = 0;
+	((struct dtm_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct dtm_t *)(*this))->vfields = 0;
 }
+
+Dtm_t::Dtm_t(const Message_t &msg) : Message_t(msg) { }
 
 Dtm_t::~Dtm_t() { }
 
 TalkerId_t Dtm_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct dtm_t *)(*this))->tid); }
 
 Datum_t Dtm_t::localDatum() const
-	{ return Datum_t::fromDatumCode(m_value.locdatum); }
+	{ return Datum_t::fromDatumCode(((const struct dtm_t *)(*this))->locdatum); }
 
 DatumSubdivision_t Dtm_t::datumSubdivision() const
-	{ return DatumSubdivision_t::fromDatumSubcode(m_value.locdatumsub); }
+	{ return DatumSubdivision_t::fromDatumSubcode(((const struct dtm_t *)(*this))->locdatumsub); }
 
 Offset_t Dtm_t::latitudeOffset() const
-	{ return Offset_t::fromOffset(&m_value.latofs); }
+	{ return Offset_t::fromOffset(&((const struct dtm_t *)(*this))->latofs); }
 
 Offset_t Dtm_t::longitudeOffset() const
-	{ return Offset_t::fromOffset(&m_value.lonofs); }
+	{ return Offset_t::fromOffset(&((const struct dtm_t *)(*this))->lonofs); }
 
 double Dtm_t::altitudeOffset() const
-	{ return m_value.altoffset; }
+	{ return ((const struct dtm_t *)(*this))->altoffset; }
 
 Datum_t Dtm_t::referenceDatum() const
-	{ return Datum_t::fromDatumCode(m_value.refdatum); }
+	{ return Datum_t::fromDatumCode(((const struct dtm_t *)(*this))->refdatum); }
 
 void Dtm_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct dtm_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Dtm_t::setLocalDatum(const Datum_t &datum)
 {
-	m_value.locdatum = datum.toDatumCode();
-	m_value.vfields |= DTM_VALID_LOCALDATUM;
+	((struct dtm_t *)(*this))->locdatum = datum.toDatumCode();
+	((struct dtm_t *)(*this))->vfields |= DTM_VALID_LOCALDATUM;
 }
 
 void Dtm_t::setDatumSubdivision(const DatumSubdivision_t &datumSubdivision)
 {
-	m_value.locdatumsub = datumSubdivision.toDatumSubcode();
-	m_value.vfields |= DTM_VALID_LOCALDATUMSUB;
+	((struct dtm_t *)(*this))->locdatumsub = datumSubdivision.toDatumSubcode();
+	((struct dtm_t *)(*this))->vfields |= DTM_VALID_LOCALDATUMSUB;
 }
 
 void Dtm_t::setLatitudeOffset(const Offset_t &offset)
 {
-	m_value.latofs = offset.toOffset();
-	m_value.vfields |= DTM_VALID_OFFSET;
+	((struct dtm_t *)(*this))->latofs = offset.toOffset();
+	((struct dtm_t *)(*this))->vfields |= DTM_VALID_OFFSET;
 }
 
 void Dtm_t::setLongitudeOffset(const Offset_t &offset)
 {
-	m_value.lonofs = offset.toOffset();
-	m_value.vfields |= DTM_VALID_OFFSET;
+	((struct dtm_t *)(*this))->lonofs = offset.toOffset();
+	((struct dtm_t *)(*this))->vfields |= DTM_VALID_OFFSET;
 }
 
 void Dtm_t::setAltitudeOffset(double offset)
 {
-	m_value.altoffset = offset;
-	m_value.vfields |= DTM_VALID_ALTOFFSET;
+	((struct dtm_t *)(*this))->altoffset = offset;
+	((struct dtm_t *)(*this))->vfields |= DTM_VALID_ALTOFFSET;
 }
 
 void Dtm_t::setReferenceDatum(const Datum_t &datum)
 {
-	m_value.refdatum = datum.toDatumCode();
-	m_value.vfields |= DTM_VALID_REFDATUM;
+	((struct dtm_t *)(*this))->refdatum = datum.toDatumCode();
+	((struct dtm_t *)(*this))->vfields |= DTM_VALID_REFDATUM;
 }
 
 void Dtm_t::clearMessage()
-	{ m_value.vfields = 0; }
+	{ ((struct dtm_t *)(*this))->vfields = 0; }
 
-Dtm_t::operator const void *() const
-	{ return (const void *)&m_value; }
+Dtm_t::operator const struct dtm_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct dtm_t *)p;
+}
 
-Dtm_t::operator void *()
-	{ return &m_value; }
+Dtm_t::operator struct dtm_t *()
+{
+	void *p = (void *)(*this);
+	return (struct dtm_t *)p;
+}
 
 }
