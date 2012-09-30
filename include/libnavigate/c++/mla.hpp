@@ -32,6 +32,7 @@ public:
 
 public:
 	Mla_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Mla_t(const Message_t &msg);
 	virtual ~Mla_t();
 
 public:
@@ -78,11 +79,8 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct mla_t m_value;
+	virtual operator const struct mla_t *() const;
+	virtual operator struct mla_t *();
 };
 
 }

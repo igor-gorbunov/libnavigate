@@ -24,172 +24,179 @@ namespace libnavigate
 
 Mla_t::Mla_t(const TalkerId_t &tid) : Message_t(MessageType_t::MLA)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.nmsatellites = 0;
+	((struct mla_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct mla_t *)(*this))->nmsatellites = 0;
 	for (int i = 0; i < MaxSatellites; i++)
 	{
-		m_value.almlist[i].vfields = 0;
+		((struct mla_t *)(*this))->almlist[i].vfields = 0;
 	}
-	m_value.totalnm = m_value.msgnm = 0;
+	((struct mla_t *)(*this))->totalnm = ((struct mla_t *)(*this))->msgnm = 0;
 }
+
+Mla_t::Mla_t(const Message_t &msg) : Message_t(msg) { }
 
 Mla_t::~Mla_t() { }
 
 TalkerId_t Mla_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct mla_t *)(*this))->tid); }
 
 int Mla_t::nmOfSatellites() const
-	{ return m_value.nmsatellites; }
+	{ return ((const struct mla_t *)(*this))->nmsatellites; }
 
 int Mla_t::totalNmOfMessages() const
-	{ return m_value.totalnm; }
+	{ return ((const struct mla_t *)(*this))->totalnm; }
 
 int Mla_t::messageNumber() const
-	{ return m_value.msgnm; }
+	{ return ((const struct mla_t *)(*this))->msgnm; }
 
 unsigned int Mla_t::satelliteSlot(int satIdx) const
-	{ return m_value.almlist[satIdx].satslot; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].satslot; }
 
 unsigned int Mla_t::dayCount(int satIdx) const
-	{ return m_value.almlist[satIdx].daycount; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].daycount; }
 
 unsigned int Mla_t::svHealth(int satIdx) const
-	{ return m_value.almlist[satIdx].svhealth; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].svhealth; }
 
 unsigned int Mla_t::eccentricity(int satIdx) const
-	{ return m_value.almlist[satIdx].e; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].e; }
 
 unsigned int Mla_t::rateOfChangeOfDraconicTime(int satIdx) const
-	{ return m_value.almlist[satIdx].dot; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].dot; }
 
 unsigned int Mla_t::argumentOfPerigee(int satIdx) const
-	{ return m_value.almlist[satIdx].omega; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].omega; }
 
 unsigned int Mla_t::systemTimescaleCorrection_High(int satIdx) const
-	{ return m_value.almlist[satIdx].tauc_high; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].tauc_high; }
 
 unsigned int Mla_t::correctionToDraconicTime(int satIdx) const
-	{ return m_value.almlist[satIdx].deltat; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].deltat; }
 
 unsigned int Mla_t::timeOfAscensionNode(int satIdx) const
-	{ return m_value.almlist[satIdx].t; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].t; }
 
 unsigned int Mla_t::longitudeOfAscensionNode(int satIdx) const
-	{ return m_value.almlist[satIdx].lambda; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].lambda; }
 
 unsigned int Mla_t::correctionToInclinationAngle(int satIdx) const
-	{ return m_value.almlist[satIdx].deltai; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].deltai; }
 
 unsigned int Mla_t::systemTimescaleCorrection_Low(int satIdx) const
-	{ return m_value.almlist[satIdx].tauc_low; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].tauc_low; }
 
 unsigned int Mla_t::courseValueOfTimescaleShift(int satIdx) const
-	{ return m_value.almlist[satIdx].taun; }
+	{ return ((const struct mla_t *)(*this))->almlist[satIdx].taun; }
 
 void Mla_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct mla_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Mla_t::setNmOfSatellites(int value)
-	{ m_value.nmsatellites = value; }
+	{ ((struct mla_t *)(*this))->nmsatellites = value; }
 
 void Mla_t::setTotalNmOfMessages(int value)
-	{ m_value.totalnm = value; }
+	{ ((struct mla_t *)(*this))->totalnm = value; }
 
 void Mla_t::setMessageNumber(int value)
-	{ m_value.msgnm = value; }
+	{ ((struct mla_t *)(*this))->msgnm = value; }
 
 void Mla_t::setSatelliteSlot(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].satslot = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_SATSLOT;
+	((struct mla_t *)(*this))->almlist[satIdx].satslot = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_SATSLOT;
 }
 
 void Mla_t::setDayCount(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].daycount = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_DAYCOUNT;
+	((struct mla_t *)(*this))->almlist[satIdx].daycount = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DAYCOUNT;
 }
 
 void Mla_t::setSvHealth(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].svhealth = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_SVHEALTH;
+	((struct mla_t *)(*this))->almlist[satIdx].svhealth = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_SVHEALTH;
 }
 
 void Mla_t::setEccentricity(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].e = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_E;
+	((struct mla_t *)(*this))->almlist[satIdx].e = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_E;
 }
 
 void Mla_t::setRateOfChangeOfDraconicTime(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].dot = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_DOT;
+	((struct mla_t *)(*this))->almlist[satIdx].dot = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DOT;
 }
 
 void Mla_t::setArgumentOfPerigee(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].omega = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_OMEGA;
+	((struct mla_t *)(*this))->almlist[satIdx].omega = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_OMEGA;
 }
 
 void Mla_t::setSystemTimescaleCorrection_High(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].tauc_high = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_TAUC;
+	((struct mla_t *)(*this))->almlist[satIdx].tauc_high = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUC;
 }
 
 void Mla_t::setCorrectionToDraconicTime(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].deltat = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_DELTAT;
+	((struct mla_t *)(*this))->almlist[satIdx].deltat = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DELTAT;
 }
 
 void Mla_t::setTimeOfAscensionNode(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].t = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_T;
+	((struct mla_t *)(*this))->almlist[satIdx].t = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_T;
 }
 
 void Mla_t::setLongitudeOfAscensionNode(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].lambda = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_LAMBDA;
+	((struct mla_t *)(*this))->almlist[satIdx].lambda = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_LAMBDA;
 }
 
 void Mla_t::setCorrectionToInclinationAngle(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].deltai = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_DELTAI;
+	((struct mla_t *)(*this))->almlist[satIdx].deltai = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DELTAI;
 }
 
 void Mla_t::setSystemTimescaleCorrection_Low(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].tauc_low = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_TAUC;
+	((struct mla_t *)(*this))->almlist[satIdx].tauc_low = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUC;
 }
 
 void Mla_t::setCourseValueOfTimescaleShift(int satIdx, unsigned int value)
 {
-	m_value.almlist[satIdx].taun = value;
-	m_value.almlist[satIdx].vfields |= GLOALM_VALID_TAUN;
+	((struct mla_t *)(*this))->almlist[satIdx].taun = value;
+	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUN;
 }
 
 void Mla_t::clearMessage()
 {
-	m_value.nmsatellites = 0;
+	((struct mla_t *)(*this))->nmsatellites = 0;
 	for (int i = 0; i < MaxSatellites; i++)
 	{
-		m_value.almlist[i].vfields = 0;
+		((struct mla_t *)(*this))->almlist[i].vfields = 0;
 	}
 }
 
-Mla_t::operator const void *() const
-	{ return (const void *)&m_value; }
-
-Mla_t::operator void *()
-	{ return &m_value; }
-
+Mla_t::operator const struct mla_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct mla_t *)p;
 }
 
+Mla_t::operator struct mla_t *()
+{
+	void *p = (void *)(*this);
+	return (struct mla_t *)p;
+}
+
+}

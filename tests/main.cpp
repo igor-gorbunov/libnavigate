@@ -292,6 +292,12 @@ int main(void)
 					std::cout << "GST message\n";
 				}
 				break;
+			case MessageType_t::MLA:
+				{
+					Mla_t mla(msg);
+					std::cout << "MLA message\n";
+				}
+				break;
 			case MessageType_t::RMC:
 				{
 					Rmc_t rmc(msg);
