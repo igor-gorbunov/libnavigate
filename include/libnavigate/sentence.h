@@ -828,11 +828,6 @@ struct rmc_t
 //	{
 //	};
 
-//	// Text transmission
-//	struct txt_t
-//	{
-//	};
-
 //	// Dual ground/water speed
 //	struct vbw_t
 //	{

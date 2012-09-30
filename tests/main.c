@@ -45,6 +45,7 @@ int main(void)
 	struct gsv_t gsv;
 	struct mla_t mla;
 	struct rmc_t rmc;
+	struct txt_t txt;
 	struct vtg_t vtg;
 	struct zda_t zda;
 
@@ -863,9 +864,6 @@ int main(void)
 		printf("Composition of ALR failed (%d)\n", result);
 	}
 
-	printf("msglength = %d\n", msglength);
-	printf("message = '%s'\n", buffer);
-
 	finished = 0;
 	parsed = 0;
 	nmread = 0;
@@ -1186,6 +1184,94 @@ int main(void)
 		}
 	} while (!finished);
 
+	msglength = 0;
+	remain = sizeof(buffer);
+
+	// TXT
+	navi_init_txt(&txt, navi_GP);
+	txt.textid = 25;
+	strcpy(txt.textmsg, "DR MODE - ANTENNA FAULT!");
+
+	result = navi_create_msg(navi_TXT, &txt, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of TXT failed (%d)\n", result);
+	}
+
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", buffer);
+
+	finished = 0;
+	parsed = 0;
+	nmread = 0;
+
+	do
+	{
+		while ((result = navi_parse_msg(buffer + parsed, sizeof(buffer) - parsed,
+			sizeof(parsedbuffer), parsedbuffer, &msgtype, &nmread)) == navi_Ok)
+		{
+			parsed += nmread;
+
+			switch (msgtype)
+			{
+			case navi_TXT:
+				{
+					struct txt_t *txt = (struct txt_t *)parsedbuffer;
+
+					printf("Received TXT:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(txt->tid), txt->tid);
+					printf("\tTotal nm of messages: %i\n", txt->totalnm);
+					printf("\tMessage number: %i\n", txt->msgnm);
+					printf("\tText identifier: %i\n", txt->textid);
+					if (strlen(txt->textmsg) > 0)
+					{
+						printf("\tText message: %s\n", txt->textmsg);
+					}
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+		lasterr = navierr_get_last();
+
+		if (lasterr->errclass == navi_CrcEror)
+		{
+			printf("CRC error\n");
+			parsed += nmread;	// advance to parse next message
+		}
+		else if (lasterr->errclass == navi_MsgNotSupported)
+		{
+			parsed += nmread;	// advance to parse next message
+
+			switch (msgtype)
+			{
+			case navi_ALM:
+				printf("Could not parse ALM\n");
+				break;
+			default:
+				break;
+			}
+		}
+		else if (lasterr->errclass == navi_NoValidMessage)
+		{
+			printf("Buffer emptied (%d)\n", lasterr->errclass);
+			finished = 1;
+		}
+		else
+		{
+			printf("Parsing result = %d\n", lasterr->errclass);
+			finished = 1;
+		}
+	} while (!finished);
+
 	printf("sizeof struct aam_t = %Iu\n", sizeof(struct aam_t));
 	printf("sizeof struct ack_t = %Iu\n", sizeof(struct ack_t));
 	printf("sizeof struct alm_t = %Iu\n", sizeof(struct alm_t));
@@ -1201,6 +1287,7 @@ int main(void)
 	printf("sizeof struct gsv_t = %Iu\n", sizeof(struct gsv_t));
 	printf("sizeof struct mla_t = %Iu\n", sizeof(struct mla_t));
 	printf("sizeof struct rmc_t = %Iu\n", sizeof(struct rmc_t));
+	printf("sizeof struct txt_t = %Iu\n", sizeof(struct txt_t));
 	printf("sizeof struct vtg_t = %Iu\n", sizeof(struct vtg_t));
 	printf("sizeof struct zda_t = %Iu\n", sizeof(struct zda_t));
 

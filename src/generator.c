@@ -44,6 +44,7 @@
 #include <libnavigate/gsv.h>
 #include <libnavigate/mla.h>
 #include <libnavigate/rmc.h>
+#include <libnavigate/txt.h>
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>
 
@@ -258,7 +259,18 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 	case navi_TLB:
 	case navi_TLL:
 	case navi_TTM:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_TXT:
+		{
+			const struct txt_t *ptxt = (const struct txt_t *)msg;
+			tid = navi_talkerid_str(ptxt->tid);
+			sfmt = navi_sentencefmt_str(navi_TXT);
+
+			if (navi_create_txt(ptxt, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_VBW:
 	case navi_VDR:
 	case navi_VHW:

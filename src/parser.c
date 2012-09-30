@@ -44,6 +44,7 @@
 #include <libnavigate/gsv.h>
 #include <libnavigate/mla.h>
 #include <libnavigate/rmc.h>
+#include <libnavigate/txt.h>
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>
 
@@ -292,7 +293,15 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 	case navi_TLB:
 	case navi_TLL:
 	case navi_TTM:
+		break;
 	case navi_TXT:
+		if (msgsize < sizeof(struct txt_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_txt((struct txt_t *)msg, tid);
+		return navi_parse_txt((struct txt_t *)msg, buffer + som + 7);
 	case navi_VBW:
 	case navi_VDR:
 	case navi_VHW:
