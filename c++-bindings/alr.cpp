@@ -18,6 +18,7 @@
  */
 
 #include <libnavigate/c++/alr.hpp>
+#include <string.h>
 
 namespace libnavigate
 {

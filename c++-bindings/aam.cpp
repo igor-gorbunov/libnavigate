@@ -18,6 +18,7 @@
  */
 
 #include <libnavigate/c++/aam.hpp>
+#include <string.h>
 
 namespace libnavigate
 {

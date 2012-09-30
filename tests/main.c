@@ -1186,23 +1186,23 @@ int main(void)
 		}
 	} while (!finished);
 
-	printf("sizeof struct aam_t = %u\n", sizeof(struct aam_t));
-	printf("sizeof struct ack_t = %u\n", sizeof(struct ack_t));
-	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
-	printf("sizeof struct alr_t = %u\n", sizeof(struct alr_t));
-	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
-	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));
-	printf("sizeof struct gga_t = %u\n", sizeof(struct gga_t));
-	printf("sizeof struct gll_t = %u\n", sizeof(struct gll_t));
-	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
-	printf("sizeof struct grs_t = %u\n", sizeof(struct grs_t));
-	printf("sizeof struct gsa_t = %u\n", sizeof(struct gsa_t));
-	printf("sizeof struct gst_t = %u\n", sizeof(struct gst_t));
-	printf("sizeof struct gsv_t = %u\n", sizeof(struct gsv_t));
-	printf("sizeof struct mla_t = %u\n", sizeof(struct mla_t));
-	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
-	printf("sizeof struct vtg_t = %u\n", sizeof(struct vtg_t));
-	printf("sizeof struct zda_t = %u\n", sizeof(struct zda_t));
+	printf("sizeof struct aam_t = %zd\n", sizeof(struct aam_t));
+	printf("sizeof struct ack_t = %zd\n", sizeof(struct ack_t));
+	printf("sizeof struct alm_t = %zd\n", sizeof(struct alm_t));
+	printf("sizeof struct alr_t = %zd\n", sizeof(struct alr_t));
+	printf("sizeof struct dtm_t = %zd\n", sizeof(struct dtm_t));
+	printf("sizeof struct gbs_t = %zd\n", sizeof(struct gbs_t));
+	printf("sizeof struct gga_t = %zd\n", sizeof(struct gga_t));
+	printf("sizeof struct gll_t = %zd\n", sizeof(struct gll_t));
+	printf("sizeof struct gns_t = %zd\n", sizeof(struct gns_t));
+	printf("sizeof struct grs_t = %zd\n", sizeof(struct grs_t));
+	printf("sizeof struct gsa_t = %zd\n", sizeof(struct gsa_t));
+	printf("sizeof struct gst_t = %zd\n", sizeof(struct gst_t));
+	printf("sizeof struct gsv_t = %zd\n", sizeof(struct gsv_t));
+	printf("sizeof struct mla_t = %zd\n", sizeof(struct mla_t));
+	printf("sizeof struct rmc_t = %zd\n", sizeof(struct rmc_t));
+	printf("sizeof struct vtg_t = %zd\n", sizeof(struct vtg_t));
+	printf("sizeof struct zda_t = %zd\n", sizeof(struct zda_t));
 
 	return 0;
 }
