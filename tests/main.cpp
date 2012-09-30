@@ -292,6 +292,12 @@ int main(void)
 					std::cout << "GST message\n";
 				}
 				break;
+			case MessageType_t::GSV:
+				{
+					Gsv_t gsv(msg);
+					std::cout << "GSV message\n";
+				}
+				break;
 			case MessageType_t::MLA:
 				{
 					Mla_t mla(msg);

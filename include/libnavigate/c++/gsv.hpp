@@ -32,6 +32,7 @@ public:
 
 public:
 	Gsv_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Gsv_t(const Message_t &msg);
 	virtual ~Gsv_t();
 
 public:
@@ -60,14 +61,10 @@ public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const void *() const;
-	virtual operator void *();
-
-private:
-	struct gsv_t m_value;
+	virtual operator const struct gsv_t *() const;
+	virtual operator struct gsv_t *();
 };
 
 }
 
 #endif // INCLUDE_navi_gsvplusplus
-

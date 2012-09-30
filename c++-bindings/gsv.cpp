@@ -24,85 +24,93 @@ namespace libnavigate
 
 Gsv_t::Gsv_t(const TalkerId_t &tid) : Message_t(MessageType_t::GSV)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.nmsatellites = 0;
+	((struct gsv_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct gsv_t *)(*this))->nmsatellites = 0;
 	for (int i = 0; i < MaxSatellites; i++)
 	{
-		m_value.info[i].vfields = 0;
+		((struct gsv_t *)(*this))->info[i].vfields = 0;
 	}
-	m_value.totalnm = m_value.msgnm = 0;
+	((struct gsv_t *)(*this))->totalnm = ((struct gsv_t *)(*this))->msgnm = 0;
 }
+
+Gsv_t::Gsv_t(const Message_t &msg) : Message_t(msg) { }
 
 Gsv_t::~Gsv_t() { }
 
 TalkerId_t Gsv_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct gsv_t *)(*this))->tid); }
 
 void Gsv_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct gsv_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gsv_t::clearMessage()
 {
-	m_value.nmsatellites = 0;
+	((struct gsv_t *)(*this))->nmsatellites = 0;
 	for (int i = 0; i < MaxSatellites; i++)
 	{
-		m_value.info[i].vfields = 0;
+		((struct gsv_t *)(*this))->info[i].vfields = 0;
 	}
 }
 
-Gsv_t::operator const void *() const
-	{ return (const void *)&m_value; }
-
-Gsv_t::operator void *()
-	{ return &m_value; }
-
 int Gsv_t::nmOfSatellites() const
-	{ return m_value.nmsatellites; }
+	{ return ((const struct gsv_t *)(*this))->nmsatellites; }
 
 int Gsv_t::totalNmOfMessages() const
-	{ return m_value.totalnm; }
+	{ return ((const struct gsv_t *)(*this))->totalnm; }
 
 int Gsv_t::messageNumber() const
-	{ return m_value.msgnm; }
+	{ return ((const struct gsv_t *)(*this))->msgnm; }
 
 void Gsv_t::setNmOfSatellites(int value)
-	{ m_value.nmsatellites = value; }
+	{ ((struct gsv_t *)(*this))->nmsatellites = value; }
 
 void Gsv_t::setTotalNmOfMessages(int value)
-	{ m_value.totalnm = value; }
+	{ ((struct gsv_t *)(*this))->totalnm = value; }
 
 void Gsv_t::setMessageNumber(int value)
-	{ m_value.msgnm = value; }
+	{ ((struct gsv_t *)(*this))->msgnm = value; }
 
 unsigned int Gsv_t::satelliteId(int satIdx) const
-	{ return m_value.info[satIdx].id; }
+	{ return ((const struct gsv_t *)(*this))->info[satIdx].id; }
 
 unsigned int Gsv_t::elevation(int satIdx) const
-	{ return m_value.info[satIdx].elevation; }
+	{ return ((const struct gsv_t *)(*this))->info[satIdx].elevation; }
 
 unsigned int Gsv_t::azimuth(int satIdx) const
-	{ return m_value.info[satIdx].azimuth; }
+	{ return ((const struct gsv_t *)(*this))->info[satIdx].azimuth; }
 
 unsigned int Gsv_t::snratio(int satIdx) const
-	{ return m_value.info[satIdx].snr; }
+	{ return ((const struct gsv_t *)(*this))->info[satIdx].snr; }
 
 void Gsv_t::setSatelliteId(int satIdx, unsigned int value)
 {
-	m_value.info[satIdx].id = value;
+	((struct gsv_t *)(*this))->info[satIdx].id = value;
 }
 
 void Gsv_t::setOrientation(int satIdx, unsigned int elevation,
 	unsigned int azimuth)
 {
-	m_value.info[satIdx].elevation = elevation;
-	m_value.info[satIdx].azimuth = azimuth;
-	m_value.info[satIdx].vfields |= SATINFO_VALID_ORIENTATION;
+	((struct gsv_t *)(*this))->info[satIdx].elevation = elevation;
+	((struct gsv_t *)(*this))->info[satIdx].azimuth = azimuth;
+	((struct gsv_t *)(*this))->info[satIdx].vfields |= SATINFO_VALID_ORIENTATION;
 }
 
 void Gsv_t::setSnratio(int satIdx, unsigned int value)
 {
-	m_value.info[satIdx].snr = value;
-	m_value.info[satIdx].vfields |= SATINFO_VALID_SNR;
+	((struct gsv_t *)(*this))->info[satIdx].snr = value;
+	((struct gsv_t *)(*this))->info[satIdx].vfields |= SATINFO_VALID_SNR;
+}
+
+Gsv_t::operator const struct gsv_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct gsv_t *)p;
+}
+
+Gsv_t::operator struct gsv_t *()
+{
+	void *p = (void *)(*this);
+	return (struct gsv_t *)p;
 }
 
 }
