@@ -24,54 +24,70 @@ namespace libnavigate
 
 Zda_t::Zda_t(const TalkerId_t &tid) : Message_t(MessageType_t::ZDA)
 {
-	m_value.tid = tid.toTalkerIdCode();
-	m_value.vfields = 0;
+	((struct zda_t *)(*this))->tid = tid.toTalkerIdCode();
+	((struct zda_t *)(*this))->vfields = 0;
 }
+
+Zda_t::Zda_t(const Message_t &msg) : Message_t(msg) { }
 
 Zda_t::~Zda_t() { }
 
 TalkerId_t Zda_t::talkerId() const
-	{ return TalkerId_t::fromTalkerIdCode(m_value.tid); }
+	{ return TalkerId_t::fromTalkerIdCode(((const struct zda_t *)(*this))->tid); }
 
 Utc_t Zda_t::utc() const
-	{ return Utc_t(m_value.utc.hour, m_value.utc.min, m_value.utc.sec); }
+{
+	return Utc_t(((const struct zda_t *)(*this))->utc.hour,
+		((const struct zda_t *)(*this))->utc.min,
+		((const struct zda_t *)(*this))->utc.sec);
+}
 
 Date_t Zda_t::date() const
-	{ return Date_t(m_value.date.year, m_value.date.month, m_value.date.day); }
+{
+	return Date_t(((const struct zda_t *)(*this))->date.year,
+		((const struct zda_t *)(*this))->date.month,
+		((const struct zda_t *)(*this))->date.day);
+}
 
 int Zda_t::localZoneOffset() const
-	{ return m_value.lzoffset; }
+	{ return ((const struct zda_t *)(*this))->lzoffset; }
 
 void Zda_t::setTalkerId(const TalkerId_t &tid)
-	{ m_value.tid = tid.toTalkerIdCode(); }
+	{ ((struct zda_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Zda_t::setUtc(const Utc_t &utc)
 {
-	m_value.utc.hour = utc.hours();
-	m_value.utc.min = utc.minutes();
-	m_value.utc.sec = utc.seconds();
-	m_value.vfields |= ZDA_VALID_UTC;
+	((struct zda_t *)(*this))->utc.hour = utc.hours();
+	((struct zda_t *)(*this))->utc.min = utc.minutes();
+	((struct zda_t *)(*this))->utc.sec = utc.seconds();
+	((struct zda_t *)(*this))->vfields |= ZDA_VALID_UTC;
 }
 
 void Zda_t::setDate(const Date_t &date)
 {
-	m_value.date = date.toDate();
-	m_value.vfields |= ZDA_VALID_DAY | ZDA_VALID_MONTH | ZDA_VALID_YEAR;
+	((struct zda_t *)(*this))->date = date.toDate();
+	((struct zda_t *)(*this))->vfields |= ZDA_VALID_DAY | ZDA_VALID_MONTH | ZDA_VALID_YEAR;
 }
 
 void Zda_t::setLocalZoneOffset(int value)
 {
-	m_value.lzoffset = value;
-	m_value.vfields |= ZDA_VALID_LOCALZONE;
+	((struct zda_t *)(*this))->lzoffset = value;
+	((struct zda_t *)(*this))->vfields |= ZDA_VALID_LOCALZONE;
 }
 
 void Zda_t::clearMessage()
-	{ m_value.vfields = 0; }
+	{ ((struct zda_t *)(*this))->vfields = 0; }
 
-Zda_t::operator const void *() const
-	{ return (const void *)&m_value; }
+Zda_t::operator const struct zda_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct zda_t *)p;
+}
 
-Zda_t::operator void *()
-	{ return &m_value; }
+Zda_t::operator struct zda_t *()
+{
+	void *p = (void *)(*this);
+	return (struct zda_t *)p;
+}
 
 }
