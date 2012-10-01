@@ -23,10 +23,7 @@ namespace libnavigate
 {
 
 Gll_t::Gll_t(const TalkerId_t &tid) : Message_t(MessageType_t::GLL)
-{
-	((struct gll_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct gll_t *)(*this))->vfields = 0;
-}
+	{ navi_init_gll((struct gll_t *)(*this), tid.toTalkerIdCode()); }
 
 Gll_t::Gll_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -39,7 +36,7 @@ PositionFix_t Gll_t::positionFix() const
 	{ return PositionFix_t::fromPosition(&((const struct gll_t *)(*this))->fix); }
 
 Utc_t Gll_t::utc() const
-	{ return Utc_t(((const struct gll_t *)(*this))->utc.hour, ((const struct gll_t *)(*this))->utc.min, ((const struct gll_t *)(*this))->utc.sec); }
+	{ return Utc_t::fromUtcStruct(((const struct gll_t *)(*this))->utc); }
 
 Status_t Gll_t::status() const
 	{ return Status_t::fromStatusCode(((const struct gll_t *)(*this))->status); }
@@ -58,9 +55,7 @@ void Gll_t::setPositionFix(const PositionFix_t &fix)
 
 void Gll_t::setUtc(const Utc_t &utc)
 {
-	((struct gll_t *)(*this))->utc.hour = utc.hours();
-	((struct gll_t *)(*this))->utc.min = utc.minutes();
-	((struct gll_t *)(*this))->utc.sec = utc.seconds();
+	((struct gll_t *)(*this))->utc = utc.toUtcStruct();
 	((struct gll_t *)(*this))->vfields |= GLL_VALID_UTC;
 }
 
@@ -70,8 +65,18 @@ void Gll_t::setStatus(const Status_t &status)
 void Gll_t::setModeIndicator(const ModeIndicator_t &mi)
 	{ ((struct gll_t *)(*this))->mi = mi.toModeIndCode(); }
 
+bool Gll_t::isPositionValid() const
+{
+	return (((const struct gll_t *)(*this))->vfields & GLL_VALID_POSITION_FIX) != 0 ? true : false;
+}
+
+bool Gll_t::isUtcValid() const
+{
+	return (((const struct gll_t *)(*this))->vfields & GLL_VALID_UTC) != 0 ? true : false;
+}
+
 void Gll_t::clearMessage()
-	{ ((struct gll_t *)(*this))->vfields = 0; }
+	{ navi_init_gll((struct gll_t *)(*this), navi_talkerid_Unknown); }
 
 Gll_t::operator const struct gll_t *() const
 {

@@ -36,6 +36,12 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isPositionValid() const;
+	virtual bool isUtcValid() const;
+
+public:
 	virtual PositionFix_t positionFix() const;
 	virtual Utc_t utc() const;
 	virtual Status_t status() const;
@@ -43,6 +49,7 @@ public:
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setPositionFix(const PositionFix_t &fix);
 	virtual void setUtc(const Utc_t &utc);
 	virtual void setStatus(const Status_t &status);
@@ -59,4 +66,3 @@ public:
 }
 
 #endif // INCLUDE_navi_gllplusplus
-
