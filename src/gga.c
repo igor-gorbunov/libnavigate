@@ -17,21 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/gga.h"
-#include "libnavigate/common.h"
+#include <libnavigate/gga.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
+//
+// Initializes GGA sentence structure with default values
+navierr_status_t navi_init_gga(struct gga_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_position_from_degrees(0.0, 0.0, &msg->fix);
+	msg->gpsindicator = navi_gps_Invalid;
+	msg->nmsatellites = 0;
+	msg->hdop = 0.0;
+	msg->antaltitude = 0.0;
+	msg->geoidalsep = 0.0;
+	msg->diffage = 0;
+	msg->id = 0;
+
+	return navi_Ok;
+}
+
 #ifndef NO_GENERATOR
 
-int navi_create_gga(const struct gga_t *msg, char *buffer,
+//
+// Creates GGA message
+navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;
@@ -80,7 +104,9 @@ int navi_create_gga(const struct gga_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gga(struct gga_t *msg, char *buffer)
+//
+// Parses GGA message
+navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 {
 	int i = 0, nmread;
 	double d;

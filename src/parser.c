@@ -189,7 +189,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gbs_t *)msg)->tid = tid;
+		navi_init_gbs((struct gbs_t *)msg, tid);
 		return navi_parse_gbs((struct gbs_t *)msg, buffer + som + 7);
 	case navi_GGA:
 		if (msgsize < sizeof(struct gga_t))
@@ -197,7 +197,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gga_t *)msg)->tid = tid;
+		navi_init_gga((struct gga_t *)msg, tid);
 		return navi_parse_gga((struct gga_t *)msg, buffer + som + 7);
 	case navi_GLC:
 		break;

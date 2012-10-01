@@ -813,15 +813,15 @@ GpsQualityIndicator_t GpsQualityIndicator_t::fromQualityCode(int code)
 {
 	switch (code)
 	{
-	case navi_GpsInvalid: return GpsInvalid;
-	case navi_GpsSpsMode: return GpsSpsMode;
-	case navi_GpsDifferential: return GpsDifferential;
-	case navi_GpsPpsMode: return GpsPpsMode;
-	case navi_GpsFixedRtk: return GpsFixedRtk;
-	case navi_GpsFloatRtk: return GpsFloatRtk;
-	case navi_GpsEstimated: return GpsEstimated;
-	case navi_GpsManual: return GpsManual;
-	case navi_GpsSimulator: return GpsSimulator;
+	case navi_gps_Invalid: return GpsInvalid;
+	case navi_gps_SpsMode: return GpsSpsMode;
+	case navi_gps_Differential: return GpsDifferential;
+	case navi_gps_PpsMode: return GpsPpsMode;
+	case navi_gps_FixedRtk: return GpsFixedRtk;
+	case navi_gps_FloatRtk: return GpsFloatRtk;
+	case navi_gps_Estimated: return GpsEstimated;
+	case navi_gps_Manual: return GpsManual;
+	case navi_gps_Simulator: return GpsSimulator;
 	default:
 		return Unknown;
 	}
@@ -836,15 +836,15 @@ int GpsQualityIndicator_t::toQualityCode() const
 {
 	switch (m_value)
 	{
-	case GpsInvalid: return navi_GpsInvalid;
-	case GpsSpsMode: return navi_GpsSpsMode;
-	case GpsDifferential: return navi_GpsDifferential;
-	case GpsPpsMode: return navi_GpsPpsMode;
-	case GpsFixedRtk: return navi_GpsFixedRtk;
-	case GpsFloatRtk: return navi_GpsFloatRtk;
-	case GpsEstimated: return navi_GpsEstimated;
-	case GpsManual: return navi_GpsManual;
-	case GpsSimulator: return navi_GpsSimulator;
+	case GpsInvalid: return navi_gps_Invalid;
+	case GpsSpsMode: return navi_gps_SpsMode;
+	case GpsDifferential: return navi_gps_Differential;
+	case GpsPpsMode: return navi_gps_PpsMode;
+	case GpsFixedRtk: return navi_gps_FixedRtk;
+	case GpsFloatRtk: return navi_gps_FloatRtk;
+	case GpsEstimated: return navi_gps_Estimated;
+	case GpsManual: return navi_gps_Manual;
+	case GpsSimulator: return navi_gps_Simulator;
 	default:
 		return -1;
 	}

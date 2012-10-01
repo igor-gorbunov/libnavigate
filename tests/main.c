@@ -529,7 +529,7 @@ int main(void)
 	gga.fix.latsign = navi_South;
 	gga.fix.longitude = 112.01;
 	gga.fix.lonsign = navi_West;
-	gga.gpsindicator = navi_GpsDifferential;
+	gga.gpsindicator = navi_gps_Differential;
 	gga.nmsatellites = 8;
 	gga.hdop = 1.0;
 	gga.antaltitude = 8.1;

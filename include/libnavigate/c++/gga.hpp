@@ -20,10 +20,12 @@
 #ifndef INCLUDE_navi_ggaplusplus
 #define INCLUDE_navi_ggaplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
 
 namespace libnavigate
 {
+
+#include <libnavigate/gga.h>
 
 NAVI_EXTERN_CLASS(Gga_t) : public Message_t
 {
