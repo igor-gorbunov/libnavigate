@@ -60,8 +60,7 @@ int main(void)
 
 	// ZDA
 	zda.tid = navi_GL;
-	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DAY | ZDA_VALID_MONTH |
-		ZDA_VALID_YEAR | ZDA_VALID_LOCALZONE;
+	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
 	zda.utc.hour = 8;
 	zda.utc.min = 12;
 	zda.utc.sec = 38.56;
@@ -373,12 +372,9 @@ int main(void)
 					if (zda->vfields & ZDA_VALID_UTC)
 						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour,
 							zda->utc.min, zda->utc.sec);
-					if (zda->vfields & ZDA_VALID_DAY)
-						printf("\tday = %d\n", zda->date.day);
-					if (zda->vfields & ZDA_VALID_MONTH)
-						printf("\tmonth = %d\n", zda->date.month);
-					if (zda->vfields & ZDA_VALID_YEAR)
-						printf("\tyear = %d\n", zda->date.year);
+					if (zda->vfields & ZDA_VALID_DATE)
+						printf("\tdate = %04d-%02d-%02d\n", zda->date.year, zda->date.month,
+							zda->date.day);
 					if (zda->vfields & ZDA_VALID_LOCALZONE)
 						printf("\tlocal zone offset = %d\n", zda->lzoffset);
 				}

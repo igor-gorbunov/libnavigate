@@ -38,11 +38,9 @@ struct zda_t
 	int lzoffset;			// Local zone offset in minutes
 };
 
-#define ZDA_VALID_UTC			0x01
-#define ZDA_VALID_DAY			0x02
-#define ZDA_VALID_MONTH			0x04
-#define ZDA_VALID_YEAR			0x08
-#define ZDA_VALID_LOCALZONE		0x10
+#define ZDA_VALID_UTC			0x1
+#define ZDA_VALID_DATE			0x2
+#define ZDA_VALID_LOCALZONE		0x4
 
 NAVI_BEGIN_DECL
 

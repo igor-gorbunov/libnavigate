@@ -57,7 +57,7 @@ void Zda_t::setUtc(const Utc_t &utc)
 void Zda_t::setDate(const Date_t &date)
 {
 	((struct zda_t *)(*this))->date = date.toDateStruct();
-	((struct zda_t *)(*this))->vfields |= ZDA_VALID_DAY | ZDA_VALID_MONTH | ZDA_VALID_YEAR;
+	((struct zda_t *)(*this))->vfields |= ZDA_VALID_DATE;
 }
 
 void Zda_t::setLocalZoneOffset(int value)
