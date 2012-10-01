@@ -17,22 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/mla.h"
-#include "libnavigate/common.h"
+#include <libnavigate/mla.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
+//
+// Initializes MLA sentence structure with default values
+navierr_status_t navi_init_mla(struct mla_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->totalnm = msg->msgnm = 0;
+	msg->nmsatellites = 0;
+	memset(msg->almlist, 0, sizeof(msg->almlist));
+
+	return navi_Ok;
+}
+
 #ifndef NO_GENERATOR
 
-int navi_create_mla(const struct mla_t *msg, char *buffer,
-		int maxsize, int *nmwritten)
+navierr_status_t navi_create_mla(const struct mla_t *msg, char *buffer,
+	int maxsize, int *nmwritten)
 {
 	int i, msglength, total = 0;
 	const char *tid = NULL, *sfmt = NULL;
@@ -140,7 +155,7 @@ int navi_create_mla(const struct mla_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_mla(struct mla_t *msg, char *buffer)
+navierr_status_t navi_parse_mla(struct mla_t *msg, char *buffer)
 {
 	int i = 0, nmread;
 	double d;
@@ -320,4 +335,3 @@ int navi_parse_mla(struct mla_t *msg, char *buffer)
 }
 
 #endif // NO_PARSER
-

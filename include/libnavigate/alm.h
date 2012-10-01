@@ -113,4 +113,3 @@ NAVI_EXTERN(navierr_status_t) navi_parse_alm(struct alm_t *msg, char *buffer);
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_alm_h
-

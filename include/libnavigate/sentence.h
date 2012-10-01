@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_sentence_h
 #define INCLUDE_navi_sentence_h
 
-#include "generic.h"
+#include <libnavigate/generic.h>
 
 NAVI_BEGIN_DECL
 
@@ -357,42 +357,6 @@ struct navi_position_t
 };
 
 //
-// Holds GLONASS almanac data for one satellite
-//
-struct navi_gloalm_t
-{
-	unsigned vfields;	// valid fields, bitwise or of GLOALM_VALID_xxx
-	unsigned satslot;	// 01 to 24
-	unsigned daycount;	// calendar day count within the four-year period,
-						// beginning with the previous leap year
-	unsigned svhealth;	// generalized health and carrier frequency number
-	unsigned e;			// eccentricity
-	unsigned dot;		// rate of change of the draconic circling time
-	unsigned omega;		// argument of perigee
-	unsigned tauc_high;	// 16 MSB of system time scale correction
-	unsigned deltat;	// correction to the average value of the
-						// draconic circling time
-	unsigned t;			// time of the ascension node almanac reference time
-	unsigned lambda;	// Greenwich longitude of the ascension node
-	unsigned deltai;	// correction to the average value of the inclination angle
-	unsigned tauc_low;	// 12 LSB of system time scale correction
-	unsigned taun;		// course value of the time scale shift
-};
-
-#define GLOALM_VALID_SATSLOT		0x001
-#define GLOALM_VALID_DAYCOUNT		0x002
-#define GLOALM_VALID_SVHEALTH		0x004
-#define GLOALM_VALID_E				0x008
-#define GLOALM_VALID_DOT			0x010
-#define GLOALM_VALID_OMEGA			0x020
-#define GLOALM_VALID_TAUC			0x040
-#define GLOALM_VALID_DELTAT			0x080
-#define GLOALM_VALID_T				0x100
-#define GLOALM_VALID_LAMBDA			0x200
-#define GLOALM_VALID_DELTAI			0x400
-#define GLOALM_VALID_TAUN			0x800
-
-//
 // Holds satellite information for one satellite
 //
 struct navi_satinfo_t
@@ -708,17 +672,6 @@ struct gsv_t
 //	struct lcd_t
 //	{
 //	};
-
-//
-// GLONASS almanac data
-struct mla_t
-{
-	int tid;				// talker id
-	int nmsatellites;		// number of satellites in the almlist array
-	struct navi_gloalm_t almlist[32];	// almanacs of GLONASS satellites
-	int totalnm;	// total number of messages (filled during parsing)
-	int msgnm;		// number of received message
-};
 
 //	// MKS receiver interface
 //	struct msk_t

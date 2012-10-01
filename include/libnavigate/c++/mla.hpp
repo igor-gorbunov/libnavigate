@@ -20,12 +20,14 @@
 #ifndef INCLUDE_navi_mlaplusplus
 #define INCLUDE_navi_mlaplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Mla_t) : public Message_t
+#include <libnavigate/mla.h>
+
+	NAVI_EXTERN_CLASS(Mla_t) : public Message_t
 {
 public:
 	static const int MaxSatellites = 32;
