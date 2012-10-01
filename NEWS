@@ -1,3 +1,8 @@
+2012-10-01  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Implemented generation/parsing of AAM, ACK, ALR and
+	  TXT sentences
+
 2012-09-21  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* Implemented generation/parsing of ALM, GBS, GGA, GRS, GSA,

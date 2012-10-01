@@ -4,7 +4,6 @@ Library versions roadmap:
 
 	v0.3:
 	* add C++ bindings to the library
-	* implement generation/parsing of AAM, ACK, ALR and TXT sentences
 	* implement building RPM package of libnavigate
 
 	v0.4:
