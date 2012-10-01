@@ -36,6 +36,16 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isExpectedErrorValid() const;
+	virtual bool isExpectedAltitudeErrorValid() const;
+	virtual bool isFailedIdValid() const;
+	virtual bool isProbabilityValid() const;
+	virtual bool isEstimateValid() const;
+	virtual bool isStandardDeviationValid() const;
+
+public:
 	virtual Utc_t utc() const;
 	virtual double expErrInLatitude() const;
 	virtual double expErrInLongitude() const;
@@ -47,6 +57,7 @@ public:
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setUtc(const Utc_t &utc);
 	virtual void setExpErrInLatitude(double value);
 	virtual void setExpErrInLongitude(double value);
