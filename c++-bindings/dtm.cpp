@@ -23,10 +23,7 @@ namespace libnavigate
 {
 
 Dtm_t::Dtm_t(const TalkerId_t &tid) : Message_t(MessageType_t::DTM)
-{
-	((struct dtm_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct dtm_t *)(*this))->vfields = 0;
-}
+	{ navi_init_dtm((struct dtm_t *)(*this), tid.toTalkerIdCode()); }
 
 Dtm_t::Dtm_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -92,8 +89,33 @@ void Dtm_t::setReferenceDatum(const Datum_t &datum)
 	((struct dtm_t *)(*this))->vfields |= DTM_VALID_REFDATUM;
 }
 
+bool Dtm_t::isLocalDatumValid() const
+{
+	return (((const struct dtm_t *)(*this))->vfields & DTM_VALID_LOCALDATUM) != 0 ? true : false;
+}
+
+bool Dtm_t::isLocalDatumSubdivisionValid() const
+{
+	return (((const struct dtm_t *)(*this))->vfields & DTM_VALID_LOCALDATUMSUB) != 0 ? true : false;
+}
+
+bool Dtm_t::isOffsetValid() const
+{
+	return (((const struct dtm_t *)(*this))->vfields & DTM_VALID_OFFSET) != 0 ? true : false;
+}
+
+bool Dtm_t::isAltitudeOffsetValid() const
+{
+	return (((const struct dtm_t *)(*this))->vfields & DTM_VALID_ALTOFFSET) != 0 ? true : false;
+}
+
+bool Dtm_t::isReferenceDatumValid() const
+{
+	return (((const struct dtm_t *)(*this))->vfields & DTM_VALID_REFDATUM) != 0 ? true : false;
+}
+
 void Dtm_t::clearMessage()
-	{ ((struct dtm_t *)(*this))->vfields = 0; }
+	{ navi_init_dtm((struct dtm_t *)(*this), navi_talkerid_Unknown); }
 
 Dtm_t::operator const struct dtm_t *() const
 {

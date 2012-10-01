@@ -37,6 +37,14 @@ public:
 public:
 	virtual TalkerId_t talkerId() const;
 
+public:
+	virtual bool isLocalDatumValid() const;
+	virtual bool isLocalDatumSubdivisionValid() const;
+	virtual bool isOffsetValid() const;
+	virtual bool isAltitudeOffsetValid() const;
+	virtual bool isReferenceDatumValid() const;
+
+public:
 	virtual Datum_t localDatum() const;
 	virtual DatumSubdivision_t datumSubdivision() const;
 	virtual Offset_t latitudeOffset() const;
@@ -66,4 +74,3 @@ public:
 }
 
 #endif // INCLUDE_navi_dtmplusplus
-
