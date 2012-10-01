@@ -179,7 +179,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct dtm_t *)msg)->tid = tid;
+		navi_init_dtm((struct dtm_t *)msg, tid);
 		return navi_parse_dtm((struct dtm_t *)msg, buffer + som + 7);
 	case navi_FSI:
 		break;
@@ -1104,7 +1104,7 @@ navierr_status_t navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
 	if (strncmp(",", buffer, 1) == 0)
 	{
 		*nmread = 1;
-		*datumsub = navi_Null;
+		*datumsub = navi_datumsub_NULL;
 
 		navierr_set_last(navi_NullField);
 		return navi_Error;

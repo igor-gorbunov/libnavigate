@@ -755,7 +755,7 @@ DatumSubdivision_t DatumSubdivision_t::fromDatumSubcode(int subcode)
 {
 	switch (subcode)
 	{
-	case navi_Null:
+	case navi_datumsub_NULL:
 	default:
 		return Unknown;
 	}
@@ -778,7 +778,7 @@ int DatumSubdivision_t::toDatumSubcode() const
 	{
 	case Unknown:
 	default:
-		return navi_Null;
+		return navi_datumsub_NULL;
 	}
 }
 

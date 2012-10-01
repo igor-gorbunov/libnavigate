@@ -353,7 +353,7 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 const char *navi_datum_str(int datum, int notnull)
 {
 	if (!notnull)
-		datum = navi_Null;
+		datum = navi_datum_NULL;
 
 	switch (datum)
 	{
@@ -367,7 +367,7 @@ const char *navi_datum_str(int datum, int notnull)
 		return "P90";
 	case navi_UserDefined:
 		return "999";
-	case navi_Null:
+	case navi_datum_NULL:
 		return "";
 	default:
 		return NULL;
@@ -380,11 +380,11 @@ const char *navi_datum_str(int datum, int notnull)
 const char *navi_datumsubdiv_str(int datumsub, int notnull)
 {
 	if (!notnull)
-		datumsub = navi_Null;
+		datumsub = navi_datumsub_NULL;
 
 	switch (datumsub)
 	{
-	case navi_Null:
+	case navi_datumsub_NULL:
 		return "";
 	default:
 		return NULL;
@@ -397,7 +397,7 @@ const char *navi_datumsubdiv_str(int datumsub, int notnull)
 const char *navi_fixsign_str(int fixsign, int notnull)
 {
 	if (!notnull)
-		fixsign = navi_Null;
+		fixsign = navi_offsetsign_NULL;
 
 	switch (fixsign)
 	{
@@ -409,7 +409,7 @@ const char *navi_fixsign_str(int fixsign, int notnull)
 		return "E";
 	case navi_West:
 		return "W";
-	case navi_Null:
+	case navi_offsetsign_NULL:
 		return "";
 	default:
 		return NULL;

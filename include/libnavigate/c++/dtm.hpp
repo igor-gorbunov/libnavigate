@@ -25,7 +25,9 @@
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Dtm_t) : public Message_t
+#include <libnavigate/dtm.h>
+
+	NAVI_EXTERN_CLASS(Dtm_t) : public Message_t
 {
 public:
 	Dtm_t(const TalkerId_t &tid = TalkerId_t::Unknown);

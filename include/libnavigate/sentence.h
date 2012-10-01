@@ -204,22 +204,35 @@ typedef int navi_talkerid_t;
 //
 // Local/reference datums
 //
-enum
+enum _navi_datum_t
 {
+	// Unknown or undefined datum
+	navi_datum_NULL = -1,
+
+	// WGS-84
 	navi_WGS84,
+	// WGS-72
 	navi_WGS72,
+	// SGS-85
 	navi_SGS85,
+	// PE-90
 	navi_PE90,
+	// User defined datum
 	navi_UserDefined
 };
+
+typedef int navi_datum_t;
 
 //
 // Local datum subdivision (from IHO Publication S-60, App. B and C)
 //
-enum
+enum _navi_datum_subdivision_t
 {
-	navi_Null = -1	// unefined or unsupported local datum
+	// unefined or unsupported local datum
+	navi_datumsub_NULL = -1
 };
+
+typedef int navi_datum_subdivision_t;
 
 //
 // Status
@@ -327,10 +340,17 @@ struct navi_date_t
 //
 enum _navi_offset_sign_t
 {
-	navi_North,		// N
-	navi_South,		// S
-	navi_East,		// E
-	navi_West		// W
+	// null field
+	navi_offsetsign_NULL = - 1,
+
+	// North
+	navi_North,
+	// South
+	navi_South,
+	// East
+	navi_East,
+	// West
+	navi_West
 };
 
 typedef int navi_offset_sign_t;
@@ -435,26 +455,6 @@ struct navi_satinfo_t
 //	struct dsr_t
 //	{
 //	};
-
-//
-// Datum reference
-struct dtm_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of DTM_VALID_xxx
-	int locdatum;			// local datum
-	int locdatumsub;		// local datum subdivision code
-	struct navi_offset_t latofs;	// latitude offset, min, N/S
-	struct navi_offset_t lonofs;	// longitude offset, min, E/W
-	double altoffset;		// altitude offset, m
-	int refdatum;			// reference datum
-};
-
-#define DTM_VALID_LOCALDATUM		0x01
-#define DTM_VALID_LOCALDATUMSUB		0x02
-#define DTM_VALID_OFFSET			0x04
-#define DTM_VALID_ALTOFFSET			0x08
-#define DTM_VALID_REFDATUM			0x10
 
 //	// Frequency set information
 //	struct fsi_t
