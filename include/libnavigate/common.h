@@ -72,6 +72,11 @@ NAVI_EXTERN(navierr_status_t) navi_init_utc(int hh, int mm, double ss,
 	struct navi_utc_t *utc);
 
 //
+// Fills date structure with given values
+NAVI_EXTERN(navierr_status_t) navi_init_date(int yy, int mm, int dd,
+	struct navi_date_t *date);
+
+	//
 // Removes trailing zeroes in a variable length value
 // string representation up to and including decimal point
 // Returns the remaining string length

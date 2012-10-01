@@ -360,6 +360,19 @@ navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc
 	return navi_Ok;
 }
 
+//
+// Fills date structure with given values
+navierr_status_t navi_init_date(int yy, int mm, int dd, struct navi_date_t *date)
+{
+	assert(date != NULL);
+
+	date->year = yy;
+	date->month = mm;
+	date->day = dd;
+
+	return navi_Ok;
+}
+
 const char *navi_fmtlist[] =
 {
 	"AAM", "ACK", "ALM", "ALR", "APB", "BEC", "BOD", "BWC", "BWR",

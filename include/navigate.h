@@ -10,6 +10,7 @@
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
 #include <libnavigate/txt.h>
+#include <libnavigate/zda.h>
 
 #include <libnavigate/generator.h>
 #include <libnavigate/parser.h>

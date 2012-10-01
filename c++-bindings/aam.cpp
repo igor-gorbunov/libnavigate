@@ -40,7 +40,7 @@ void Aam_t::setTalkerId(const TalkerId_t &tid)
 
 void Aam_t::clearMessage()
 {
-	navi_init_aam((struct aam_t *)(*this), TalkerId_t::Unknown);
+	navi_init_aam((struct aam_t *)(*this), navi_talkerid_Unknown);
 }
 
 Aam_t::operator const struct aam_t *() const

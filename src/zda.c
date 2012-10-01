@@ -17,21 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/zda.h"
-#include "libnavigate/generator.h"
-#include "libnavigate/parser.h"
+#include <libnavigate/zda.h>
+#include <libnavigate/common.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
+//
+// Initializes ZDA sentence structure with default values
+navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_date(2000, 1, 1, &msg->date);
+	msg->lzoffset = 0;
+
+	return navi_Ok;
+}
+
 #ifndef NO_GENERATOR
 
-int navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	int msglength;
 	char utc[32], day[3], month[3], year[5], lzhours[4], lzmins[3];
@@ -79,7 +96,7 @@ int navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmw
 
 #ifndef NO_PARSER
 
-int navi_parse_zda(struct zda_t *msg, char *buffer)
+navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 {
 	int i = 0, nmread;
 	double d;

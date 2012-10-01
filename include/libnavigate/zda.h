@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_zda_h
 #define INCLUDE_navi_zda_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -29,12 +29,35 @@
 // $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<cr><lf>
 //
 
+struct zda_t
+{
+	navi_talkerid_t tid;	// talker id
+	unsigned int vfields;	// valid fields, bitwise or of ZDA_VALID_xx
+	struct navi_utc_t utc;	// UTC time
+	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
+	int lzoffset;			// Local zone offset in minutes
+};
+
+#define ZDA_VALID_UTC			0x01
+#define ZDA_VALID_DAY			0x02
+#define ZDA_VALID_MONTH			0x04
+#define ZDA_VALID_YEAR			0x08
+#define ZDA_VALID_LOCALZONE		0x10
+
 NAVI_BEGIN_DECL
 
-int navi_create_zda(const struct zda_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes ZDA sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_zda(struct zda_t *msg, navi_talkerid_t tid);
 
-int navi_parse_zda(struct zda_t *msg, char *buffer);
+//
+// Creates ZDA message
+NAVI_EXTERN(navierr_status_t) navi_create_zda(const struct zda_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses AAM message
+NAVI_EXTERN(navierr_status_t) navi_parse_zda(struct zda_t *msg, char *buffer);
 
 NAVI_END_DECL
 

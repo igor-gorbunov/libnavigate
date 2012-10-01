@@ -899,23 +899,6 @@ struct vtg_t
 //	{
 //	};
 
-//
-// Time and date
-struct zda_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of ValidFields_t
-	struct navi_utc_t utc;	// UTC time
-	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
-	int lzoffset;			// Local zone offset in minutes
-};
-
-#define ZDA_VALID_UTC			0x01
-#define ZDA_VALID_DAY			0x02
-#define ZDA_VALID_MONTH			0x04
-#define ZDA_VALID_YEAR			0x08
-#define ZDA_VALID_LOCALZONE		0x10
-
 //	// Time and distance to variable point
 //	struct zdl_t
 //	{

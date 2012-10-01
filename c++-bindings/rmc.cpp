@@ -101,7 +101,7 @@ void Rmc_t::setCourse(double value)
 
 void Rmc_t::setDate(const Date_t &date)
 {
-	((struct rmc_t *)(*this))->date = date.toDate();
+	((struct rmc_t *)(*this))->date = date.toDateStruct();
 	((struct rmc_t *)(*this))->vfields |= RMC_VALID_DATE;
 }
 

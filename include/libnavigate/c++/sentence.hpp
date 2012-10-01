@@ -319,7 +319,7 @@ private:
 NAVI_EXTERN_CLASS(Date_t)
 {
 public:
-	static Date_t fromDate(const struct navi_date_t *date);
+	static Date_t fromDateStruct(const struct navi_date_t &date);
 
 public:
 	Date_t(int yy, int mm, int dd);
@@ -331,7 +331,7 @@ public:
 	virtual int day() const;
 
 public:
-	virtual struct navi_date_t toDate() const;
+	virtual struct navi_date_t toDateStruct() const;
 
 private:
 	int m_year;

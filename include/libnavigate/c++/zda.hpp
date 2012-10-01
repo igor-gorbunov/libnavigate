@@ -25,6 +25,8 @@
 namespace libnavigate
 {
 
+#include <libnavigate/zda.h>
+
 NAVI_EXTERN_CLASS(Zda_t) : public Message_t
 {
 public:

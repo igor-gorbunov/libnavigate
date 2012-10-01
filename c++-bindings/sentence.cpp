@@ -24,6 +24,8 @@ namespace libnavigate
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>
 
+#include <libnavigate/common.h>
+
 navi_approved_fmt_t MessageType_t::toSentenceFormatter() const
 {
 	switch (m_value)
@@ -405,17 +407,6 @@ ModeIndicator_t::ModeIndicator_t(enum ModeIndicator_t::modeind_t mi)
 
 ModeIndicator_t::~ModeIndicator_t() { }
 
-struct navi_date_t Date_t::toDate() const
-{
-	struct navi_date_t result;
-
-	result.year = m_year;
-	result.month = m_month;
-	result.day = m_day;
-
-	return result;
-}
-
 Utc_t::Utc_t(int hh, int mm, double ss)
 	{ m_hours = hh; m_minutes = mm; m_seconds = ss; }
 
@@ -436,16 +427,9 @@ Utc_t Utc_t::fromUtcStruct(const struct navi_utc_t &utc)
 struct navi_utc_t Utc_t::toUtcStruct() const
 {
 	struct navi_utc_t s;
-
-	s.hour = hours();
-	s.min = minutes();
-	s.sec = seconds();
-
+	navi_init_utc(hours(), minutes(), seconds(), &s);
 	return s;
 }
-
-Date_t Date_t::fromDate(const struct navi_date_t *date)
-	{ return Date_t(date->year, date->month, date->day); }
 
 Date_t::Date_t(int yy, int mm, int dd)
 	{ m_year = yy; m_month = mm; m_day = dd; }
@@ -460,6 +444,16 @@ int Date_t::month() const
 
 int Date_t::day() const
 	{ return m_day; }
+
+Date_t Date_t::fromDateStruct(const struct navi_date_t &date)
+	{ return Date_t(date.year, date.month, date.day); }
+
+struct navi_date_t Date_t::toDateStruct() const
+{
+	struct navi_date_t s;
+	navi_init_date(year(), month(), day(), &s);
+	return s;
+}
 
 Offset_t Offset_t::fromOffset(const struct navi_offset_t *offset)
 	{ return Offset_t(offset->offset, quarterFromCode(offset->sign)); }

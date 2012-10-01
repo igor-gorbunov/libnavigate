@@ -22,11 +22,10 @@
 namespace libnavigate
 {
 
+#include <libnavigate/common.h>
+
 Zda_t::Zda_t(const TalkerId_t &tid) : Message_t(MessageType_t::ZDA)
-{
-	((struct zda_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct zda_t *)(*this))->vfields = 0;
-}
+	{ navi_init_zda((struct zda_t *)(*this), tid.toTalkerIdCode()); }
 
 Zda_t::Zda_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -37,17 +36,11 @@ TalkerId_t Zda_t::talkerId() const
 
 Utc_t Zda_t::utc() const
 {
-	return Utc_t(((const struct zda_t *)(*this))->utc.hour,
-		((const struct zda_t *)(*this))->utc.min,
-		((const struct zda_t *)(*this))->utc.sec);
+	return Utc_t::fromUtcStruct(((const struct zda_t *)(*this))->utc);
 }
 
 Date_t Zda_t::date() const
-{
-	return Date_t(((const struct zda_t *)(*this))->date.year,
-		((const struct zda_t *)(*this))->date.month,
-		((const struct zda_t *)(*this))->date.day);
-}
+	{ return Date_t::fromDateStruct(((const struct zda_t *)(*this))->date); }
 
 int Zda_t::localZoneOffset() const
 	{ return ((const struct zda_t *)(*this))->lzoffset; }
@@ -57,15 +50,13 @@ void Zda_t::setTalkerId(const TalkerId_t &tid)
 
 void Zda_t::setUtc(const Utc_t &utc)
 {
-	((struct zda_t *)(*this))->utc.hour = utc.hours();
-	((struct zda_t *)(*this))->utc.min = utc.minutes();
-	((struct zda_t *)(*this))->utc.sec = utc.seconds();
+	((struct zda_t *)(*this))->utc = utc.toUtcStruct();
 	((struct zda_t *)(*this))->vfields |= ZDA_VALID_UTC;
 }
 
 void Zda_t::setDate(const Date_t &date)
 {
-	((struct zda_t *)(*this))->date = date.toDate();
+	((struct zda_t *)(*this))->date = date.toDateStruct();
 	((struct zda_t *)(*this))->vfields |= ZDA_VALID_DAY | ZDA_VALID_MONTH | ZDA_VALID_YEAR;
 }
 
@@ -76,7 +67,7 @@ void Zda_t::setLocalZoneOffset(int value)
 }
 
 void Zda_t::clearMessage()
-	{ ((struct zda_t *)(*this))->vfields = 0; }
+	{ navi_init_zda((struct zda_t *)(*this), navi_talkerid_Unknown); }
 
 Zda_t::operator const struct zda_t *() const
 {
