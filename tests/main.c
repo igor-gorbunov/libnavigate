@@ -142,7 +142,7 @@ int main(void)
 	gns.fix.lonsign = navi_East;
 	gns.mi[0] = navi_Autonomous;
 	gns.mi[1] = navi_Differential;
-	gns.totalsats = 4;
+	gns.nmsatellites = 4;
 	gns.hdop = 2.3;
 	gns.antaltitude = 2.003;
 	gns.geoidalsep = 18.2;
@@ -302,7 +302,7 @@ int main(void)
 							navi_fixsign_str(gns->fix.lonsign, 1), gns->fix.lonsign);
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
 					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
-						printf("\tsatellites = %d\n", gns->totalsats);
+						printf("\tsatellites = %d\n", gns->nmsatellites);
 					if (gns->vfields & GNS_VALID_HDOP)
 						printf("\thdop = %.12f\n", gns->hdop);
 					if (gns->vfields & GNS_VALID_ANTENNAALTITUDE)

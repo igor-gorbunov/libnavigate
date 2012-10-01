@@ -215,7 +215,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gns_t *)msg)->tid = tid;
+		navi_init_gns((struct gns_t *)msg, tid);
 		return navi_parse_gns((struct gns_t *)msg, buffer + som + 7);
 	case navi_GRS:
 		if (msgsize < sizeof(struct grs_t))

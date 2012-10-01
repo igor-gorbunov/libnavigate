@@ -45,7 +45,7 @@ ModeIndicatorArray_t Gns_t::modeIndicatorArray() const
 	{ return ModeIndicatorArray_t::fromModeIndicators(((const struct gns_t *)(*this))->mi); }
 
 int Gns_t::nmOfSatellites() const
-	{ return ((const struct gns_t *)(*this))->totalsats; }
+	{ return ((const struct gns_t *)(*this))->nmsatellites; }
 
 double Gns_t::hdop() const
 	{ return ((const struct gns_t *)(*this))->hdop; }
@@ -84,7 +84,7 @@ void Gns_t::setModeIndicatorArray(const ModeIndicatorArray_t &modeArray)
 
 void Gns_t::setNmOfSatellites(int value)
 {
-	((struct gns_t *)(*this))->totalsats = value;
+	((struct gns_t *)(*this))->nmsatellites = value;
 	((struct gns_t *)(*this))->vfields |= GNS_VALID_TOTALNMOFSATELLITES;
 }
 

@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_gns_h
 #define INCLUDE_navi_gns_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -29,12 +29,47 @@
 // $--GNS,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
 //
 
+#define GNS_MODEINDICATOR_SIZE		2
+
+struct gns_t
+{
+	navi_talkerid_t tid;	// talker id
+	unsigned int vfields;	// valid fields, bitwise or of GNS_VALID_xxx
+	struct navi_utc_t utc;		// UTC time
+	struct navi_position_t fix;	// latitude, longitude fix
+	int mi[GNS_MODEINDICATOR_SIZE];		// GPS, GLONASS
+	int nmsatellites;		// Total number of satellites in use, 00-99
+	double hdop;			// Horizontal Dilution of Precision
+	double antaltitude;		// Antenna altitude, m, re:mean-sea-level (geoid)
+	double geoidalsep;		// Geoidal separation, m
+	int diffage;			// Age of differential data, seconds
+	int id;					// Differential reference station ID, 1-1023
+};
+
+#define GNS_VALID_UTC					0x001
+#define GNS_VALID_POSITION_FIX			0x002
+#define GNS_VALID_MODEINDICATOR			0x004
+#define GNS_VALID_TOTALNMOFSATELLITES	0x008
+#define GNS_VALID_HDOP					0x010
+#define GNS_VALID_ANTENNAALTITUDE		0x020
+#define GNS_VALID_GEOIDALSEP			0x040
+#define GNS_VALID_AGEOFDIFFDATA			0x080
+#define GNS_VALID_DIFFREFSTATIONID		0x100
+
 NAVI_BEGIN_DECL
 
-int navi_create_gns(const struct gns_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes GNS sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_gns(struct gns_t *msg, navi_talkerid_t tid);
 
-int navi_parse_gns(struct gns_t *msg, char *buffer);
+//
+// Creates GNS message
+NAVI_EXTERN(navierr_status_t) navi_create_gns(const struct gns_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses GNS message
+NAVI_EXTERN(navierr_status_t) navi_parse_gns(struct gns_t *msg, char *buffer);
 
 NAVI_END_DECL
 

@@ -469,33 +469,6 @@ struct navi_satinfo_t
 //	};
 
 //
-// GNSS fix data
-struct gns_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of GNS_VALID_xxx
-	struct navi_utc_t utc;		// UTC time
-	struct navi_position_t fix;	// latitude, longitude fix
-	int mi[2];				// GPS, GLONASS
-	int totalsats;			// Total number of satellites in use, 00-99
-	double hdop;			// Horizontal Dilution of Precision
-	double antaltitude;		// Antenna altitude, m, re:mean-sea-level (geoid)
-	double geoidalsep;		// Geoidal separation, m
-	int diffage;			// Age of differential data, seconds
-	int id;					// Differential reference station ID, 1-1023
-};
-
-#define GNS_VALID_UTC					0x001
-#define GNS_VALID_POSITION_FIX			0x002
-#define GNS_VALID_MODEINDICATOR			0x004
-#define GNS_VALID_TOTALNMOFSATELLITES	0x008
-#define GNS_VALID_HDOP					0x010
-#define GNS_VALID_ANTENNAALTITUDE		0x020
-#define GNS_VALID_GEOIDALSEP			0x040
-#define GNS_VALID_AGEOFDIFFDATA			0x080
-#define GNS_VALID_DIFFREFSTATIONID		0x100
-
-//
 // GNSS range residuals
 struct grs_t
 {

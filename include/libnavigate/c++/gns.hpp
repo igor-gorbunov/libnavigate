@@ -20,10 +20,12 @@
 #ifndef INCLUDE_navi_gnsplusplus
 #define INCLUDE_navi_gnsplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
 
 namespace libnavigate
 {
+
+#include <libnavigate/gns.h>
 
 NAVI_EXTERN_CLASS(Gns_t) : public Message_t
 {
