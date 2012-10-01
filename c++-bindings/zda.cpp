@@ -66,6 +66,21 @@ void Zda_t::setLocalZoneOffset(int value)
 	((struct zda_t *)(*this))->vfields |= ZDA_VALID_LOCALZONE;
 }
 
+bool Zda_t::isUtcValid() const
+{
+	return (((const struct zda_t *)(*this))->vfields & ZDA_VALID_UTC) != 0 ? true : false;
+}
+
+bool Zda_t::isDateValid() const
+{
+	return (((const struct zda_t *)(*this))->vfields & ZDA_VALID_DATE) != 0 ? true : false;
+}
+
+bool Zda_t::isLocalZoneOffsetValid() const
+{
+	return (((const struct zda_t *)(*this))->vfields & ZDA_VALID_LOCALZONE) != 0 ? true : false;
+}
+
 void Zda_t::clearMessage()
 	{ navi_init_zda((struct zda_t *)(*this), navi_talkerid_Unknown); }
 

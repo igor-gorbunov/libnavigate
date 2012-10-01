@@ -216,6 +216,23 @@ int main(void)
 	{
 	}
 
+	// ZDA
+	Zda_t zda(TalkerId_t::GP);
+	zda.setUtc(Utc_t(8, 12, 38.56));
+	zda.setDate(Date_t(1982, 5, 25));
+	zda.setLocalZoneOffset(-240);
+
+	try
+	{
+		nmwritten = navi.CreateMessage(zda, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t)
+	{
+		std::cout << "Could not generate ZDA sentence.\n";
+	}
+
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 
@@ -341,7 +358,13 @@ int main(void)
 			case MessageType_t::ZDA:
 				{
 					Zda_t zda(msg);
-					std::cout << "ZDA message\n";
+					std::cout << "ZDA message: Talker Id = " << zda.talkerId().toTalkerIdCode() << "\n";
+					if (zda.isUtcValid())
+						std::cout << "\tUTC: " << zda.utc().hours() << ":" << zda.utc().minutes() << ":" << zda.utc().seconds() << "\n";
+					if (zda.isDateValid())
+						std::cout << "\tDate: " << zda.date().year() << "-" << zda.date().month() << "-" << zda.date().day() << "\n";
+					if (zda.isLocalZoneOffsetValid())
+						std::cout << "\tLocal zone offset: " << zda.localZoneOffset() << "\n";
 				}
 				break;
 			default:

@@ -36,12 +36,20 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isUtcValid() const;
+	virtual bool isDateValid() const;
+	virtual bool isLocalZoneOffsetValid() const;
+
+public:
 	virtual Utc_t utc() const;
 	virtual Date_t date() const;
 	virtual int localZoneOffset() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setUtc(const Utc_t &utc);
 	virtual void setDate(const Date_t &date);
 	virtual void setLocalZoneOffset(int value);
