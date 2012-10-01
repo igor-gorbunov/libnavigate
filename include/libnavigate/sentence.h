@@ -462,30 +462,6 @@ struct navi_satinfo_t
 //	};
 
 //
-// GNSS Satellite fault detection
-struct gbs_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of GBS_VALID_xxx
-	struct navi_utc_t utc;	// UTC time
-	double experrlat;		// expected error in latitude
-	double experrlon;		// expected error in longitude
-	double experralt;		// expected error in altitude
-	int id;					// ID number of most likely failed satellite
-	double probability;		// probability of missed detection for most likely
-							// failed satellite
-	double estimate;		// estimate of bias on most likely failed satellite
-	double deviation;		// standard deviation of bias estimate
-};
-
-#define GBS_VALID_EXPERRLATLON	0x01
-#define GBS_VALID_EXPERRALT		0x02
-#define GBS_VALID_ID			0x04
-#define GBS_VALID_PROBABILITY	0x08
-#define GBS_VALID_ESTIMATE		0x10
-#define GBS_VALID_DEVIATION		0x20
-
-//
 // Global positioning system fix data
 struct gga_t
 {

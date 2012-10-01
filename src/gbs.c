@@ -17,20 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/gbs.h"
-#include "libnavigate/common.h"
+#include <libnavigate/gbs.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
+//
+// Initializes GBS sentence structure with default values
+navierr_status_t navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+
+	msg->experrlat = 0.0;
+	msg->experrlon = 0.0;
+	msg->experralt = 0.0;
+	msg->id = 0;
+	msg->probability = 0.0;
+	msg->estimate = 0.0;
+	msg->deviation = 0.0;
+
+	return navi_Ok;
+}
+
 #ifndef NO_GENERATOR
 
-int navi_create_gbs(const struct gbs_t *msg, char *buffer,
+//
+// Creates GBS message
+navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer,
 	int maxsize, int *nmwritten)
 {
 	int msglength;
@@ -73,7 +97,9 @@ int navi_create_gbs(const struct gbs_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gbs(struct gbs_t *msg, char *buffer)
+//
+// Parses GBS message
+navierr_status_t navi_parse_gbs(struct gbs_t *msg, char *buffer)
 {
 	int i = 0, nmread;
 	char bytes[4];
@@ -173,4 +199,3 @@ int navi_parse_gbs(struct gbs_t *msg, char *buffer)
 }
 
 #endif // NO_PARSER
-

@@ -10,6 +10,7 @@
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
 #include <libnavigate/dtm.h>
+#include <libnavigate/gbs.h>
 #include <libnavigate/mla.h>
 #include <libnavigate/rmc.h>
 #include <libnavigate/txt.h>

@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_gbs_h
 #define INCLUDE_navi_gbs_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -29,14 +29,43 @@
 // $--GBS,hhmmss.ss,x.x,x.x,x.x,xx,x.x,x.x,x.x*hh<cr><lf>
 //
 
+struct gbs_t
+{
+	navi_talkerid_t tid;	// talker id
+	unsigned int vfields;	// valid fields, bitwise or of GBS_VALID_xxx
+	struct navi_utc_t utc;	// UTC time
+	double experrlat;		// expected error in latitude
+	double experrlon;		// expected error in longitude
+	double experralt;		// expected error in altitude
+	int id;					// ID number of most likely failed satellite
+	double probability;		// probability of missed detection for most likely
+							// failed satellite
+	double estimate;		// estimate of bias on most likely failed satellite
+	double deviation;		// standard deviation of bias estimate
+};
+
+#define GBS_VALID_EXPERRLATLON	0x01
+#define GBS_VALID_EXPERRALT		0x02
+#define GBS_VALID_ID			0x04
+#define GBS_VALID_PROBABILITY	0x08
+#define GBS_VALID_ESTIMATE		0x10
+#define GBS_VALID_DEVIATION		0x20
+
 NAVI_BEGIN_DECL
 
-int navi_create_gbs(const struct gbs_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes GBS sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid);
 
-int navi_parse_gbs(struct gbs_t *msg, char *buffer);
+//
+// Creates GBS message
+NAVI_EXTERN(navierr_status_t) navi_create_gbs(const struct gbs_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses GBS message
+NAVI_EXTERN(navierr_status_t) navi_parse_gbs(struct gbs_t *msg, char *buffer);
 
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_gbs_h
-
