@@ -23,10 +23,7 @@ namespace libnavigate
 {
 
 Gga_t::Gga_t(const TalkerId_t &tid) : Message_t(MessageType_t::GGA)
-{
-	((struct gga_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct gga_t *)(*this))->vfields = 0;
-}
+	{ navi_init_gga((struct gga_t *)(*this), tid.toTalkerIdCode()); }
 
 Gga_t::Gga_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -36,7 +33,7 @@ TalkerId_t Gga_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct gga_t *)(*this))->tid); }
 
 Utc_t Gga_t::utc() const
-	{ return Utc_t(((const struct gga_t *)(*this))->utc.hour, ((const struct gga_t *)(*this))->utc.min, ((const struct gga_t *)(*this))->utc.sec); }
+	{ return Utc_t::fromUtcStruct(((const struct gga_t *)(*this))->utc); }
 
 PositionFix_t Gga_t::positionFix() const
 	{ return PositionFix_t::fromPosition(&((const struct gga_t *)(*this))->fix); }
@@ -67,9 +64,7 @@ void Gga_t::setTalkerId(const TalkerId_t &tid)
 
 void Gga_t::setUtc(const Utc_t &utc)
 {
-	((struct gga_t *)(*this))->utc.hour = utc.hours();
-	((struct gga_t *)(*this))->utc.min = utc.minutes();
-	((struct gga_t *)(*this))->utc.sec = utc.seconds();
+	((struct gga_t *)(*this))->utc = utc.toUtcStruct();
 	((struct gga_t *)(*this))->vfields |= GGA_VALID_UTC;
 }
 
@@ -118,8 +113,48 @@ void Gga_t::setDiffReferenceStationId(int value)
 	((struct gga_t *)(*this))->vfields |= GGA_VALID_ID;
 }
 
+bool Gga_t::isUtcValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_UTC) != 0 ? true : false;
+}
+
+bool Gga_t::isPositionValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_FIX) != 0 ? true : false;
+}
+
+bool Gga_t::isNmSatellitesValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_NMSATELLITES) != 0 ? true : false;
+}
+
+bool Gga_t::isHdopValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_HDOP) != 0 ? true : false;
+}
+
+bool Gga_t::isAntennaAltitudeValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_ANTALTITUDE) != 0 ? true : false;
+}
+
+bool Gga_t::isGeoidalSeparationValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_GEOIDALSEP) != 0 ? true : false;
+}
+
+bool Gga_t::isDifferentialAgeValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_DIFFAGE) != 0 ? true : false;
+}
+
+bool Gga_t::isStationIdValid() const
+{
+	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_ID) != 0 ? true : false;
+}
+
 void Gga_t::clearMessage()
-	{ ((struct gga_t *)(*this))->vfields = 0; }
+	{ navi_init_gga((struct gga_t *)(*this), navi_talkerid_Unknown); }
 
 Gga_t::operator const struct gga_t *() const
 {

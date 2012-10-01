@@ -36,6 +36,18 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isUtcValid() const;
+	virtual bool isPositionValid() const;
+	virtual bool isNmSatellitesValid() const;
+	virtual bool isHdopValid() const;
+	virtual bool isAntennaAltitudeValid() const;
+	virtual bool isGeoidalSeparationValid() const;
+	virtual bool isDifferentialAgeValid() const;
+	virtual bool isStationIdValid() const;
+
+public:
 	virtual Utc_t utc() const;
 	virtual PositionFix_t positionFix() const;
 	virtual GpsQualityIndicator_t qualityIndicator() const;
@@ -48,6 +60,7 @@ public:
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setUtc(const Utc_t &utc);
 	virtual void setPositionFix(const PositionFix_t &fix);
 	virtual void setQualityIndicator(const GpsQualityIndicator_t &qi);
@@ -69,4 +82,3 @@ public:
 }
 
 #endif // INCLUDE_navi_ggaplusplus
-

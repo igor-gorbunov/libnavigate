@@ -35,9 +35,7 @@ TalkerId_t Zda_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct zda_t *)(*this))->tid); }
 
 Utc_t Zda_t::utc() const
-{
-	return Utc_t::fromUtcStruct(((const struct zda_t *)(*this))->utc);
-}
+	{ return Utc_t::fromUtcStruct(((const struct zda_t *)(*this))->utc); }
 
 Date_t Zda_t::date() const
 	{ return Date_t::fromDateStruct(((const struct zda_t *)(*this))->date); }
