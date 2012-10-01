@@ -37,6 +37,12 @@ public:
 public:
 	virtual TalkerId_t talkerId() const;
 
+public:
+	virtual bool isCourseTrueValid() const;
+	virtual bool isCourseMagneticValid() const;
+	virtual bool isSpeedValid() const;
+
+public:
 	virtual double courseTrue() const;
 	virtual double courseMagnetic() const;
 	virtual double speed() const;

@@ -349,12 +349,6 @@ int main(void)
 					std::cout << "Message text: " << txt.textMessage() << "\n";
 				}
 				break;
-			case MessageType_t::VTG:
-				{
-					Vtg_t vtg(msg);
-					std::cout << "VTG message\n";
-				}
-				break;
 			case MessageType_t::ZDA:
 				{
 					Zda_t zda(msg);
@@ -365,6 +359,78 @@ int main(void)
 						std::cout << "\tDate: " << zda.date().year() << "-" << zda.date().month() << "-" << zda.date().day() << "\n";
 					if (zda.isLocalZoneOffsetValid())
 						std::cout << "\tLocal zone offset: " << zda.localZoneOffset() << "\n";
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		catch (NaviError_t e)
+		{
+			switch (e)
+			{
+			case NaviError_t::NotImplemented:
+				std::cout << "Method not implemented\n";
+				break;
+			case NaviError_t::NoValidMessage:
+				std::cout << "Buffer empty\n";
+				remain = 0;
+				break;
+			default:
+				std::cout << "Exception\n";
+				break;
+			}
+		}
+	}
+
+	msglength = 0, nmwritten = 0;
+	remain = sizeof(buffer);
+
+	// VTG
+	Vtg_t vtg(TalkerId_t::VW);
+	vtg.setCourseTrue(1.2);
+	vtg.setCourseMagnetic(1.68);
+	vtg.setSpeed(2.40);
+	vtg.setModeIndicator(ModeIndicator_t::Autonomous);
+
+	try
+	{
+		nmwritten = navi.CreateMessage(vtg, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t)
+	{
+		std::cout << "Could not generate VTG sentence.\n";
+	}
+
+	std::cout << "msglength = " << msglength << "\n";
+	std::cout << "message = '" << buffer << "'\n";
+
+	i = 0, nmread = 0;
+	remain = sizeof(buffer);
+
+	while (remain > 0)
+	{
+		try
+		{
+			Message_t msg = navi.ParseMessage(buffer + i, remain, &nmread);
+			i += nmread;
+			remain -= nmread;
+
+			switch (msg.type())
+			{
+			case MessageType_t::VTG:
+				{
+					Vtg_t vtg(msg);
+					std::cout << "VTG message: Talker Id = " << vtg.talkerId().toTalkerIdCode() << "\n";
+					if (vtg.isCourseTrueValid())
+						std::cout << "\tCourse, true: " << vtg.courseTrue() << "\n";
+					if (vtg.isCourseMagneticValid())
+						std::cout << "\tCourse, magnetic: " << vtg.courseMagnetic() << "\n";
+					if (vtg.isSpeedValid())
+						std::cout << "\tSpeed, m/s: " << vtg.speed() << "\n";
+					std::cout << "\tMode indicator: " << vtg.modeIndicator().toModeIndCode() << "\n";
 				}
 				break;
 			default:

@@ -23,10 +23,7 @@ namespace libnavigate
 {
 
 Vtg_t::Vtg_t(const TalkerId_t &tid) : Message_t(MessageType_t::VTG)
-{
-	((struct vtg_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct vtg_t *)(*this))->vfields = 0;
-}
+	{ navi_init_vtg((struct vtg_t *)(*this), tid.toTalkerIdCode()); }
 
 Vtg_t::Vtg_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -39,7 +36,7 @@ void Vtg_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct vtg_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Vtg_t::clearMessage()
-	{ ((struct vtg_t *)(*this))->vfields = 0; }
+	{ navi_init_vtg((struct vtg_t *)(*this), navi_talkerid_Unknown); }
 
 double Vtg_t::courseTrue() const
 	{ return ((const struct vtg_t *)(*this))->courseTrue; }
@@ -74,6 +71,21 @@ void Vtg_t::setSpeed(double value)
 void Vtg_t::setModeIndicator(const ModeIndicator_t &mi)
 {
 	((struct vtg_t *)(*this))->mi = mi.toModeIndCode();
+}
+
+bool Vtg_t::isCourseTrueValid() const
+{
+	return (((const struct vtg_t *)(*this))->vfields & VTG_VALID_COURSETRUE) != 0 ? true : false;
+}
+
+bool Vtg_t::isCourseMagneticValid() const
+{
+	return (((const struct vtg_t *)(*this))->vfields & VTG_VALID_COURSEMAGN) != 0 ? true : false;
+}
+
+bool Vtg_t::isSpeedValid() const
+{
+	return (((const struct vtg_t *)(*this))->vfields & VTG_VALID_SPEED) != 0 ? true : false;
 }
 
 Vtg_t::operator const struct vtg_t *() const
