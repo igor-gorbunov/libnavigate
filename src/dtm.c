@@ -42,11 +42,11 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 		msg->vfields & DTM_VALID_LOCALDATUM));
 	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->locdatumsub,
 		msg->vfields & DTM_VALID_LOCALDATUMSUB));
-	msglength += navi_print_number(msg->latofs.offset, latofs,
+	msglength += navi_print_number(msg->latofs.offset * 60., latofs,
 		sizeof(latofs), msg->vfields & DTM_VALID_OFFSET);
 	msglength += strlen(latsign = navi_fixsign_str(msg->latofs.sign,
 		msg->vfields & DTM_VALID_OFFSET));
-	msglength += navi_print_number(msg->lonofs.offset, lonofs,
+	msglength += navi_print_number(msg->lonofs.offset * 60., lonofs,
 		sizeof(lonofs), msg->vfields & DTM_VALID_OFFSET);
 	msglength += strlen(lonsign = navi_fixsign_str(msg->lonofs.sign,
 		msg->vfields & DTM_VALID_OFFSET));
@@ -105,6 +105,7 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	}
 	else
 	{
+		msg->latofs.offset /= 60.0;
 		msg->vfields |= DTM_VALID_OFFSET;
 	}
 	i += nmread;
@@ -116,6 +117,7 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	}
 	else
 	{
+		msg->lonofs.offset /= 60.0;
 		msg->vfields |= DTM_VALID_OFFSET;
 	}
 	i += nmread;

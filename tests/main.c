@@ -83,9 +83,9 @@ int main(void)
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_OFFSET |
 		DTM_VALID_ALTOFFSET | DTM_VALID_REFDATUM;
 	dtm.locdatum = navi_UserDefined;
-	dtm.latofs.offset = 2.4366;
+	dtm.latofs.offset = 0.2366;
 	dtm.latofs.sign = navi_North;
-	dtm.lonofs.offset = 3.81825;
+	dtm.lonofs.offset = 0.31825;
 	dtm.lonofs.sign = navi_West;
 	dtm.altoffset = 3.446;
 	dtm.refdatum = navi_WGS84;

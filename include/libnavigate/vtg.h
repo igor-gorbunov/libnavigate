@@ -49,7 +49,7 @@ NAVI_BEGIN_DECL
 NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t tid);
 
 //
-// Creates ZDA message
+// Creates VTG message
 NAVI_EXTERN(navierr_status_t) navi_create_vtg(const struct vtg_t *msg, char *buffer,
 	int maxsize, int *nmwritten);
 

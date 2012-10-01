@@ -116,6 +116,8 @@ enum _navi_approved_fmt_t
 	navi_ZTG	// UTC and time to destination waypoint
 };
 
+typedef int navi_approved_fmt_t;
+
 //
 // Talker Identifier Mnemonics
 //
@@ -197,6 +199,8 @@ enum _navi_talkerid_t
 	navi_P
 };
 
+typedef int navi_talkerid_t;
+
 //
 // Local/reference datums
 //
@@ -222,9 +226,14 @@ enum
 //
 enum _navi_status_t
 {
-	navi_status_V = 0,	// data not valid
-	navi_status_A		// data valid
+	// Data not valid
+	navi_status_V = 0,
+
+	// Data valid
+	navi_status_A
 };
+
+typedef int navi_status_t;
 
 //
 // Positioning system Mode Indicator
@@ -267,9 +276,6 @@ enum _navi_modeindicator_t
 	navi_FloatRTK = 8
 };
 
-typedef int navi_approved_fmt_t;
-typedef int navi_talkerid_t;
-typedef int navi_status_t;
 typedef int navi_modeindicator_t;
 
 //
@@ -319,7 +325,7 @@ struct navi_date_t
 //
 // Offset sign (N/S, E/W)
 //
-enum
+enum _navi_offset_sign_t
 {
 	navi_North,		// N
 	navi_South,		// S
@@ -327,13 +333,15 @@ enum
 	navi_West		// W
 };
 
+typedef int navi_offset_sign_t;
+
 //
-// Holds offset data (x.x,a)
+// Holds offset data
 //
 struct navi_offset_t
 {
-	double offset;	// degrees/minutes
-	int sign;		// N/S or E/W
+	double offset;				// degrees
+	navi_offset_sign_t sign;	// N/S or E/W
 };
 
 //
@@ -341,10 +349,11 @@ struct navi_offset_t
 //
 struct navi_position_t
 {
-	double latitude;	// degrees
-	int latsign;		// N/S
-	double longitude;	// degrees
-	int lonsign;		// E/W
+	double latitude;				// degrees
+	navi_offset_sign_t latsign;		// N/S
+
+	double longitude;				// degrees
+	navi_offset_sign_t lonsign;		// E/W
 };
 
 //
@@ -750,29 +759,6 @@ struct mla_t
 //	struct rmb_t
 //	{
 //	};
-
-//
-// Recommended minimum specific GNSS data
-struct rmc_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of RMC_VALID_xxx
-	struct navi_utc_t utc;	// UTC time
-	int status;				// status
-	struct navi_position_t fix;	// latitude, longitude fix
-	double speed;				// Speed over ground, knots
-	double courseTrue;			// Course over ground, degrees true
-	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
-	struct navi_offset_t magnetic;	// Magnetic variation, degrees,E/W
-	int mi;						// mode indicator
-};
-
-#define RMC_VALID_UTC				0x01
-#define RMC_VALID_POSITION_FIX		0x02
-#define RMC_VALID_SPEED				0x04
-#define RMC_VALID_COURSETRUE		0x08
-#define RMC_VALID_DATE				0x10
-#define RMC_VALID_MAGNVARIATION		0x20
 
 //	// Rate of turn
 //	struct rot_t

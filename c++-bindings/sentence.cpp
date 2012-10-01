@@ -335,7 +335,7 @@ double PositionFix_t::longitude() const
 struct navi_position_t PositionFix_t::toPosition() const
 {
 	struct navi_position_t result;
-	navi_set_position(latitude(), longitude(), &result);
+	navi_init_position_from_degrees(latitude(), longitude(), &result);
 	return result;
 }
 

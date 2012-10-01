@@ -9,6 +9,7 @@
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
+#include <libnavigate/rmc.h>
 #include <libnavigate/txt.h>
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>

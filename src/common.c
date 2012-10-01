@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/common.h"
-#include "libnavigate/errors.h"
+#include <libnavigate/errors.h>
+#include <libnavigate/common.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -193,41 +193,105 @@ int remove_trailing_zeroes(char *buffer, int length)
 }
 
 //
-// navi_set_position
-//
-navierr_status_t navi_set_position(double latitude, double longitude,
-	struct navi_position_t *out)
+// Fills position fix structure with given values in degrees.
+navierr_status_t navi_init_position_from_degrees(double latitude,
+	double longitude, struct navi_position_t *fix)
 {
-	assert((latitude >= -M_PI) && (latitude <= M_PI));
-	assert((longitude >= -M_PI) && (longitude < 2. * M_PI));
-	assert(out != NULL);
+	assert((latitude >= -90.0) && (latitude <= +90.0));
+	assert((longitude >= -180.0) && (longitude < +2. * 180.0));
+	assert(fix != NULL);
 
 	if (latitude >= 0.)
 	{
-		out->latitude = latitude * 180. / M_PI;
-		out->latsign = navi_North;
+		fix->latitude = latitude;
+		fix->latsign = navi_North;
 	}
 	else
 	{
-		out->latitude = fabs(latitude) * 180. / M_PI;
-		out->latsign = navi_South;
+		fix->latitude = fabs(latitude);
+		fix->latsign = navi_South;
+	}
+
+	if ((longitude >= 0.) && (longitude < +90.0))
+	{
+		fix->longitude = longitude;
+		fix->lonsign = navi_East;
+	}
+	else if (longitude >= +90.0)
+	{
+		fix->longitude = longitude - 90.0;
+		fix->lonsign = navi_West;
+	}
+	else
+	{
+		fix->latitude = fabs(latitude);
+		fix->latsign = navi_West;
+	}
+
+	return navi_Ok;
+}
+
+//
+// Fills position fix structure with given values in radians.
+navierr_status_t navi_init_position_from_radians(double latitude,
+	double longitude, struct navi_position_t *fix)
+{
+	assert((latitude >= -M_PI) && (latitude <= +M_PI));
+	assert((longitude >= -M_PI) && (longitude < +2. * M_PI));
+	assert(fix != NULL);
+
+	if (latitude >= 0.)
+	{
+		fix->latitude = latitude * 180. / M_PI;
+		fix->latsign = navi_North;
+	}
+	else
+	{
+		fix->latitude = fabs(latitude) * 180. / M_PI;
+		fix->latsign = navi_South;
 	}
 
 	if ((longitude >= 0.) && (longitude < M_PI))
 	{
-		out->longitude = longitude * 180. / M_PI;
-		out->lonsign = navi_East;
+		fix->longitude = longitude * 180. / M_PI;
+		fix->lonsign = navi_East;
 	}
 	else if (longitude >= M_PI)
 	{
-		out->longitude = (longitude - M_PI) * 180. / M_PI;
-		out->lonsign = navi_West;
+		fix->longitude = (longitude - M_PI) * 180. / M_PI;
+		fix->lonsign = navi_West;
 	}
 	else
 	{
-		out->latitude = fabs(latitude) * 180. / M_PI;
-		out->latsign = navi_West;
+		fix->latitude = fabs(latitude) * 180. / M_PI;
+		fix->latsign = navi_West;
 	}
+
+	return navi_Ok;
+}
+
+//
+// Fills offset structure with given values in degrees.
+navierr_status_t navi_init_offset_from_degrees(double offset,
+	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+{
+	assert(ofs != NULL);
+
+	ofs->offset = fabs(offset);
+	ofs->sign = sign;
+
+	return navi_Ok;
+}
+
+//
+// Fills position fix structure with given values in radians.
+navierr_status_t navi_init_offset_from_radians(double offset,
+	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+{
+	assert(ofs != NULL);
+
+	ofs->offset = fabs(offset) * 180. / M_PI;
+	ofs->sign = sign;
 
 	return navi_Ok;
 }

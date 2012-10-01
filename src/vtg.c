@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/vtg.h"
-#include "libnavigate/common.h"
-#include "libnavigate/generator.h"
-#include "libnavigate/parser.h"
+#include <libnavigate/vtg.h>
+#include <libnavigate/common.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -49,7 +49,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 #ifndef NO_GENERATOR
 
 //
-// Creates ZDA message
+// Creates VTG message
 navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, int maxsize,
 	int *nmwritten)
 {

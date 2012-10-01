@@ -20,7 +20,6 @@
 #ifndef INCLUDE_navi_common_h
 #define INCLUDE_navi_common_h
 
-#include <libnavigate/generic.h>
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
@@ -76,7 +75,37 @@ NAVI_EXTERN(navierr_status_t) navi_init_utc(int hh, int mm, double ss,
 NAVI_EXTERN(navierr_status_t) navi_init_date(int yy, int mm, int dd,
 	struct navi_date_t *date);
 
-	//
+//
+// Fills position fix structure with given values in degrees.
+// Latitude is provided in the range of [-pi/2, +pi/2] and the result is within
+// [90°S, 90°N].
+// The longitude is provided in the range of [-pi, +2pi) and result is within
+// [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
+// and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
+NAVI_EXTERN(navierr_status_t) navi_init_position_from_degrees(double latitude,
+	double longitude, struct navi_position_t *fix);
+
+//
+// Fills position fix structure with given values in radians.
+// Latitude is provided in the range of [-pi/2, +pi/2] and the result is within
+// [90°S, 90°N].
+// The longitude is provided in the range of [-pi, +2pi) and result is within
+// [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
+// and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
+NAVI_EXTERN(navierr_status_t) navi_init_position_from_radians(double latitude,
+	double longitude, struct navi_position_t *fix);
+
+//
+// Fills offset structure with given values in degrees.
+NAVI_EXTERN(navierr_status_t) navi_init_offset_from_degrees(double offset,
+	navi_offset_sign_t sign, struct navi_offset_t *ofs);
+
+//
+// Fills position fix structure with given values in radians.
+NAVI_EXTERN(navierr_status_t) navi_init_offset_from_radians(double offset,
+	navi_offset_sign_t sign, struct navi_offset_t *ofs);
+
+//
 // Removes trailing zeroes in a variable length value
 // string representation up to and including decimal point
 // Returns the remaining string length
