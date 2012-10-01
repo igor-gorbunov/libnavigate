@@ -117,6 +117,10 @@ int main(void)
 	}
 
 	rmc.clearMessage();
+	rmc.setTalkerId(TalkerId_t::GN);
+	rmc.setStatus(Status_t::DataInvalid);
+	rmc.setModeIndicator(ModeIndicator_t::Estimated);
+
 	rmc.setUtc(Utc_t(9, 19, 39.98));
 	rmc.setDate(Date_t(2012, 3, 18));
 	rmc.setSpeed(1.03553);
@@ -339,13 +343,27 @@ int main(void)
 			case MessageType_t::RMC:
 				{
 					Rmc_t rmc(msg);
-					std::cout << "RMC message\n";
+					std::cout << "RMC message: Talker Id = " << rmc.talkerId().toTalkerIdCode() << "\n";
+					if (rmc.isUtcValid())
+						std::cout << "\tUTC: " << rmc.utc().hours() << ":" << rmc.utc().minutes() << ":" << rmc.utc().seconds() << "\n";
+					std::cout << "\tStatus: " << rmc.status().toStatusCode() << "\n";
+					if (rmc.isPositionValid())
+						std::cout << "\tPosition: " << rmc.positionFix().latitude() << ", " << rmc.positionFix().longitude() << "\n";
+					if (rmc.isSpeedValid())
+						std::cout << "\tSpeed: " << rmc.speed() << "\n";
+					if (rmc.isCourseValid())
+						std::cout << "\tCourse: " << rmc.course() << "\n";
+					if (rmc.isDateValid())
+						std::cout << "\tDate: " << rmc.date().year() << "-" << rmc.date().month() << "-" << rmc.date().day() << "\n";
+					if (rmc.isMagneticVariationValid())
+						std::cout << "\tMagnetic variation: " << rmc.magneticVariation().offset() << " " << rmc.magneticVariation().quarter() << "\n";
+					std::cout << "\tMode indicator: " << rmc.modeIndicator().toModeIndCode() << "\n";
 				}
 				break;
 			case MessageType_t::TXT:
 				{
 					Txt_t txt(msg);
-					std::cout << "TXT message\n";
+					std::cout << "TXT message: Talker Id = " << txt.talkerId().toTalkerIdCode() << "\n";
 					std::cout << "Message text: " << txt.textMessage() << "\n";
 				}
 				break;

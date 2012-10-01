@@ -36,6 +36,16 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isUtcValid() const;
+	virtual bool isPositionValid() const;
+	virtual bool isSpeedValid() const;
+	virtual bool isCourseValid() const;
+	virtual bool isDateValid() const;
+	virtual bool isMagneticVariationValid() const;
+
+public:
 	virtual Utc_t utc() const;
 	virtual Status_t status() const;
 	virtual PositionFix_t positionFix() const;
@@ -47,6 +57,7 @@ public:
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setUtc(const Utc_t &utc);
 	virtual void setStatus(const Status_t &status);
 	virtual void setPositionFix(const PositionFix_t &fix);
@@ -67,4 +78,3 @@ public:
 }
 
 #endif // INCLUDE_navi_rmcplusplus
-

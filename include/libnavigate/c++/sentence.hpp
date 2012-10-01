@@ -1,14 +1,14 @@
 #ifndef INCLUDE_navi_sentenceplusplus
 #define INCLUDE_navi_sentenceplusplus
 
-#include "libnavigate/c++/generic.hpp"
+#include <libnavigate/c++/generic.hpp>
 
 namespace libnavigate
 {
 
-#include "libnavigate/sentence.h"
-#include "libnavigate/generator.h"
-#include "libnavigate/parser.h"
+#include <libnavigate/sentence.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
 NAVI_EXTERN_CLASS(MessageType_t)
 {

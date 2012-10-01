@@ -23,10 +23,7 @@ namespace libnavigate
 {
 
 Rmc_t::Rmc_t(const TalkerId_t &tid) : Message_t(MessageType_t::RMC)
-{
-	((struct rmc_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct rmc_t *)(*this))->vfields = 0;
-}
+	{ navi_init_rmc((struct rmc_t *)(*this), tid.toTalkerIdCode()); }
 
 Rmc_t::Rmc_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -114,8 +111,38 @@ void Rmc_t::setMagneticVariation(const Offset_t &offset)
 void Rmc_t::setModeIndicator(const ModeIndicator_t &mi)
 	{ ((struct rmc_t *)(*this))->mi = mi.toModeIndCode(); }
 
+bool Rmc_t::isUtcValid() const
+{
+	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_UTC) != 0 ? true : false;
+}
+
+bool Rmc_t::isPositionValid() const
+{
+	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_POSITION_FIX) != 0 ? true : false;
+}
+
+bool Rmc_t::isSpeedValid() const
+{
+	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_SPEED) != 0 ? true : false;
+}
+
+bool Rmc_t::isCourseValid() const
+{
+	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_COURSETRUE) != 0 ? true : false;
+}
+
+bool Rmc_t::isDateValid() const
+{
+	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_DATE) != 0 ? true : false;
+}
+
+bool Rmc_t::isMagneticVariationValid() const
+{
+	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_MAGNVARIATION) != 0 ? true : false;
+}
+
 void Rmc_t::clearMessage()
-	{ ((struct rmc_t *)(*this))->vfields = 0; }
+	{ navi_init_rmc((struct rmc_t *)(*this), navi_talkerid_Unknown); }
 
 Rmc_t::operator const struct rmc_t *() const
 {
