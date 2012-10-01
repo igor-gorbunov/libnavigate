@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_zdaplusplus
 #define INCLUDE_navi_zdaplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
 
 namespace libnavigate
 {

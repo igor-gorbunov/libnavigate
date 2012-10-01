@@ -329,7 +329,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct zda_t *)msg)->tid = tid;
+		navi_init_zda((struct zda_t *)msg, tid);
 		return navi_parse_zda((struct zda_t *)msg, buffer + som + 7);
 	case navi_ZDL:
 	case navi_ZFO:

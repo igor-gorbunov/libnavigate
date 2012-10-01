@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_vtg_h
 #define INCLUDE_navi_vtg_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -28,13 +28,34 @@
 // The actual course and speed relative to the ground.
 // $--VTG,x.x,T,x.x,M,x.x,N,x.x,K,a*hh<cr><lf>
 //
+struct vtg_t
+{
+	navi_talkerid_t tid;	// talker id
+	unsigned int vfields;	// valid fields, bitwise or of ValidFields_t
+	double courseTrue;	// Course over ground, degrees true
+	double courseMagn;	// Course over ground, degrees magnetic
+	double speed;		// Speed over ground, m/s
+	navi_modeindicator_t mi;	// Mode indicator
+};
+
+#define VTG_VALID_COURSETRUE	0x1
+#define VTG_VALID_COURSEMAGN	0x2
+#define VTG_VALID_SPEED			0x4
 
 NAVI_BEGIN_DECL
 
-int navi_create_vtg(const struct vtg_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes VTG sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t tid);
 
-int navi_parse_vtg(struct vtg_t *msg, char *buffer);
+//
+// Creates ZDA message
+NAVI_EXTERN(navierr_status_t) navi_create_vtg(const struct vtg_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses VTG message
+NAVI_EXTERN(navierr_status_t) navi_parse_vtg(struct vtg_t *msg, char *buffer);
 
 NAVI_END_DECL
 

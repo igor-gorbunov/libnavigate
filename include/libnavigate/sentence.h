@@ -226,14 +226,10 @@ enum _navi_status_t
 	navi_status_A		// data valid
 };
 
-typedef int navi_approved_fmt_t;
-typedef int navi_talkerid_t;
-typedef int navi_status_t;
-
 //
 // Positioning system Mode Indicator
 //
-enum
+enum _navi_modeindicator_t
 {
 	// Satellite system used in non-differential
 	// mode in position fix (A)
@@ -270,6 +266,11 @@ enum
 	// Kinematic mode with floating integers (F)
 	navi_FloatRTK = 8
 };
+
+typedef int navi_approved_fmt_t;
+typedef int navi_talkerid_t;
+typedef int navi_status_t;
+typedef int navi_modeindicator_t;
 
 //
 // GPS quality indicator
@@ -852,22 +853,6 @@ struct rmc_t
 //	struct vpw_t
 //	{
 //	};
-
-//
-// Cource over ground and ground speed
-struct vtg_t
-{
-	int tid;			// talker id
-	unsigned vfields;	// valid fields, bitwise or of ValidFields_t
-	double courseTrue;	// Course over ground, degrees true
-	double courseMagn;	// Course over ground, degrees magnetic
-	double speed;		// Speed over ground, m/s
-	int mi;				// Mode indicator
-};
-
-#define VTG_VALID_COURSETRUE	0x01
-#define VTG_VALID_COURSEMAGN	0x02
-#define VTG_VALID_SPEED			0x04
 
 //	// Waypoint closure velocity
 //	struct wcv_t

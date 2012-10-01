@@ -54,7 +54,7 @@ NAVI_EXTERN(navierr_status_t) navi_create_zda(const struct zda_t *msg, char *buf
 	int maxsize, int *nmwritten);
 
 //
-// Parses AAM message
+// Parses ZDA message
 NAVI_EXTERN(navierr_status_t) navi_parse_zda(struct zda_t *msg, char *buffer);
 
 NAVI_END_DECL

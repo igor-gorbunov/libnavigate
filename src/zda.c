@@ -48,6 +48,8 @@ navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
 
 #ifndef NO_GENERATOR
 
+//
+// Creates ZDA message
 navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	int msglength;
@@ -96,6 +98,8 @@ navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, int maxs
 
 #ifndef NO_PARSER
 
+//
+// Parses ZDA message
 navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 {
 	int i = 0, nmread;

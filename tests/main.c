@@ -59,14 +59,10 @@ int main(void)
 	remain = sizeof(buffer);
 
 	// ZDA
-	zda.tid = navi_GL;
+	navi_init_zda(&zda, navi_GL);
 	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
-	zda.utc.hour = 8;
-	zda.utc.min = 12;
-	zda.utc.sec = 38.56;
-	zda.date.day = 25;
-	zda.date.month = 5;
-	zda.date.year = 1982;
+	navi_init_utc(8, 12, 38.56, &zda.utc);
+	navi_init_date(1982, 5, 25, &zda.date);
 	zda.lzoffset = -240;
 
 	nmwritten = 0;
@@ -212,7 +208,7 @@ int main(void)
 	}
 
 	// VTG
-	vtg.tid = navi_VW;
+	navi_init_vtg(&vtg, navi_VW);
 	vtg.vfields = VTG_VALID_COURSETRUE | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;
