@@ -469,21 +469,6 @@ struct navi_satinfo_t
 //	};
 
 //
-// Geographic position, latitude/longitude
-struct gll_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of GLL_VALID_xxx
-	struct navi_position_t fix;	// latitude, longitude fix
-	struct navi_utc_t utc;	// UTC time
-	int status;		// status
-	int mi;			// mode indicator
-};
-
-#define GLL_VALID_POSITION_FIX		0x01
-#define GLL_VALID_UTC				0x02
-
-//
 // GNSS fix data
 struct gns_t
 {

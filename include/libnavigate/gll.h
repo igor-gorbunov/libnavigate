@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_gll_h
 #define INCLUDE_navi_gll_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -30,12 +30,33 @@
 // $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh<cr><lf>
 //
 
+struct gll_t
+{
+	navi_talkerid_t tid;		// talker id
+	unsigned int vfields;		// valid fields, bitwise or of GLL_VALID_xxx
+	struct navi_position_t fix;	// latitude, longitude fix
+	struct navi_utc_t utc;		// UTC time
+	navi_status_t status;		// status
+	navi_modeindicator_t mi;	// mode indicator
+};
+
+#define GLL_VALID_POSITION_FIX		0x1
+#define GLL_VALID_UTC				0x2
+
 NAVI_BEGIN_DECL
 
-int navi_create_gll(const struct gll_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes GLL sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_gll(struct gll_t *msg, navi_talkerid_t tid);
 
-int navi_parse_gll(struct gll_t *msg, char *buffer);
+//
+// Creates GLL message
+NAVI_EXTERN(navierr_status_t) navi_create_gll(const struct gll_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses GLL message
+NAVI_EXTERN(navierr_status_t) navi_parse_gll(struct gll_t *msg, char *buffer);
 
 NAVI_END_DECL
 
