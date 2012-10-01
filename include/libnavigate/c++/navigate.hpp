@@ -16,6 +16,7 @@
 #include <libnavigate/c++/gsv.hpp>
 #include <libnavigate/c++/mla.hpp>
 #include <libnavigate/c++/rmc.hpp>
+#include <libnavigate/c++/txt.hpp>
 #include <libnavigate/c++/vtg.hpp>
 #include <libnavigate/c++/zda.hpp>
 

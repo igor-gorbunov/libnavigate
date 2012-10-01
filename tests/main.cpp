@@ -201,6 +201,21 @@ int main(void)
 	{
 	}
 
+	// TXT
+	Txt_t txt(TalkerId_t::GP);
+	txt.setTextId(25);
+	txt.setTextMessage("DR MODE - ANTENNA FAULT!");
+
+	try
+	{
+		nmwritten = navi.CreateMessage(txt, buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 
@@ -308,6 +323,13 @@ int main(void)
 				{
 					Rmc_t rmc(msg);
 					std::cout << "RMC message\n";
+				}
+				break;
+			case MessageType_t::TXT:
+				{
+					Txt_t txt(msg);
+					std::cout << "TXT message\n";
+					std::cout << "Message text: " << txt.textMessage() << "\n";
 				}
 				break;
 			case MessageType_t::VTG:

@@ -20,6 +20,7 @@ namespace libnavigate
 #include <libnavigate/gsv.h>
 #include <libnavigate/mla.h>
 #include <libnavigate/rmc.h>
+#include <libnavigate/txt.h>
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>
 
@@ -670,7 +671,11 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::TLB:
 	case MessageType_t::TLL:
 	case MessageType_t::TTM:
+		throw NaviError_t::NotImplemented;
 	case MessageType_t::TXT:
+		m_data = new struct txt_t;
+		m_size = sizeof(struct txt_t);
+		break;
 	case MessageType_t::VBW:
 	case MessageType_t::VDR:
 	case MessageType_t::VHW:
