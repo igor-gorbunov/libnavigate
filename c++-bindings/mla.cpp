@@ -23,15 +23,7 @@ namespace libnavigate
 {
 
 Mla_t::Mla_t(const TalkerId_t &tid) : Message_t(MessageType_t::MLA)
-{
-	((struct mla_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct mla_t *)(*this))->nmsatellites = 0;
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct mla_t *)(*this))->almlist[i].vfields = 0;
-	}
-	((struct mla_t *)(*this))->totalnm = ((struct mla_t *)(*this))->msgnm = 0;
-}
+	{ navi_init_mla((struct mla_t *)(*this), tid.toTalkerIdCode()); }
 
 Mla_t::Mla_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -178,14 +170,68 @@ void Mla_t::setCourseValueOfTimescaleShift(int satIdx, unsigned int value)
 	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUN;
 }
 
-void Mla_t::clearMessage()
+bool Mla_t::isSatelliteSlotValid(int satIdx) const
 {
-	((struct mla_t *)(*this))->nmsatellites = 0;
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct mla_t *)(*this))->almlist[i].vfields = 0;
-	}
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_SATSLOT) != 0 ? true : false;
 }
+
+bool Mla_t::isDayCountValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DAYCOUNT) != 0 ? true : false;
+}
+
+bool Mla_t::isSvHealthValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_SVHEALTH) != 0 ? true : false;
+}
+
+bool Mla_t::isEccentricityValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_E) != 0 ? true : false;
+}
+
+bool Mla_t::isRateOfChangeOfDraconicTimeValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DOT) != 0 ? true : false;
+}
+
+bool Mla_t::isArgumentOfPerigeeValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_OMEGA) != 0 ? true : false;
+}
+
+bool Mla_t::isSystemTimescaleCorrectionValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_TAUC) != 0 ? true : false;
+}
+
+bool Mla_t::isCorrectionToDraconicTimeValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DELTAT) != 0 ? true : false;
+}
+
+bool Mla_t::isTimeOfAscensionNodeValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_T) != 0 ? true : false;
+}
+
+bool Mla_t::isLongitudeOfAscensionNodeValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_LAMBDA) != 0 ? true : false;
+}
+
+bool Mla_t::isCorrectionToInclinationAngleValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DELTAI) != 0 ? true : false;
+}
+
+bool Mla_t::isCourseValueOfTimescaleShiftValid(int satIdx) const
+{
+	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_TAUN) != 0 ? true : false;
+}
+
+void Mla_t::clearMessage()
+	{ navi_init_mla((struct mla_t *)(*this), navi_talkerid_Unknown); }
 
 Mla_t::operator const struct mla_t *() const
 {

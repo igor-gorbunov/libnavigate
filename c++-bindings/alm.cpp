@@ -23,9 +23,7 @@ namespace libnavigate
 {
 
 Alm_t::Alm_t(const TalkerId_t &tid) : Message_t(MessageType_t::ALM)
-{
-	navi_init_alm((struct alm_t *)(*this), tid.toTalkerIdCode());
-}
+	{ navi_init_alm((struct alm_t *)(*this), tid.toTalkerIdCode()); }
 
 Alm_t::Alm_t(const Message_t &msg) : Message_t(msg) { }
 

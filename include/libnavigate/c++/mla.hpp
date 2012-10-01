@@ -43,6 +43,22 @@ public:
 	virtual int totalNmOfMessages() const;
 	virtual int messageNumber() const;
 
+public:
+	virtual bool isSatelliteSlotValid(int satIdx) const;
+	virtual bool isDayCountValid(int satIdx) const;
+	virtual bool isSvHealthValid(int satIdx) const;
+	virtual bool isEccentricityValid(int satIdx) const;
+	virtual bool isRateOfChangeOfDraconicTimeValid(int satIdx) const;
+	virtual bool isArgumentOfPerigeeValid(int satIdx) const;
+	virtual bool isSystemTimescaleCorrectionValid(int satIdx) const;
+	virtual bool isCorrectionToDraconicTimeValid(int satIdx) const;
+	virtual bool isTimeOfAscensionNodeValid(int satIdx) const;
+	virtual bool isLongitudeOfAscensionNodeValid(int satIdx) const;
+	virtual bool isCorrectionToInclinationAngleValid(int satIdx) const;
+	virtual bool isCourseValueOfTimescaleShiftValid(int satIdx) const;
+
+public:
+
 	virtual unsigned int satelliteSlot(int satIdx) const;
 	virtual unsigned int dayCount(int satIdx) const;
 	virtual unsigned int svHealth(int satIdx) const;
