@@ -382,21 +382,6 @@ struct navi_position_t
 	navi_offset_sign_t lonsign;		// E/W
 };
 
-//
-// Holds satellite information for one satellite
-//
-struct navi_satinfo_t
-{
-	unsigned vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
-	unsigned id;		// satellite ID number
-	unsigned elevation;	// degrees 00-90
-	unsigned azimuth;	// degrees true, 000-359
-	unsigned snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
-};
-
-#define SATINFO_VALID_ORIENTATION	0x1
-#define SATINFO_VALID_SNR			0x2
-
 //	// Heading/track controller (Autopilot) sentence B
 //	struct apb_t
 //	{
@@ -471,17 +456,6 @@ struct navi_satinfo_t
 //	struct glc_t
 //	{
 //	};
-
-//
-// GNSS satellites in view
-struct gsv_t
-{
-	int tid;			// talker id
-	int nmsatellites;	// total number of satellites in view
-	struct navi_satinfo_t info[36];	// satellite info array
-	int totalnm;	// total number of messages (filled during parsing)
-	int msgnm;		// number of received message
-};
 
 //	// Heading, deviation and variation
 //	struct hdg_t

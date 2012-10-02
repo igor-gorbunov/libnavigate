@@ -17,22 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/gsv.h"
-#include "libnavigate/common.h"
+#include <libnavigate/gsv.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
+//
+// Initializes GSV sentence structure with default values
+navierr_status_t navi_init_gsv(struct gsv_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->nmsatellites = 0;
+	memset(msg->info, 0, sizeof(msg->info));
+	msg->totalnm = msg->msgnm = 1;
+
+	return navi_Ok;
+}
+
 #ifndef NO_GENERATOR
 
-int navi_create_gsv(const struct gsv_t *msg, char *buffer,
-		int maxsize, int *nmwritten)
+//
+// Creates GSV message
+navierr_status_t navi_create_gsv(const struct gsv_t *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	int i, j, msglength, total = 0, nmoffullmsg;
 	const char *tid = NULL, *sfmt = NULL;
@@ -183,7 +199,9 @@ int navi_create_gsv(const struct gsv_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gsv(struct gsv_t *msg, char *buffer)
+//
+// Parses GSV message
+navierr_status_t navi_parse_gsv(struct gsv_t *msg, char *buffer)
 {
 	int i = 0, j, nmread;
 	double d;
@@ -276,4 +294,3 @@ int navi_parse_gsv(struct gsv_t *msg, char *buffer)
 }
 
 #endif // NO_PARSER
-

@@ -17,6 +17,7 @@
 #include <libnavigate/grs.h>
 #include <libnavigate/gsa.h>
 #include <libnavigate/gst.h>
+#include <libnavigate/gsv.h>
 #include <libnavigate/mla.h>
 #include <libnavigate/rmc.h>
 #include <libnavigate/txt.h>

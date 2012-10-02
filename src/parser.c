@@ -247,7 +247,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gsv_t *)msg)->tid = tid;
+		navi_init_gsv((struct gsv_t *)msg, tid);
 		return navi_parse_gsv((struct gsv_t *)msg, buffer + som + 7);
 	case navi_HDG:
 	case navi_HDT:

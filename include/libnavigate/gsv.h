@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_gsv_h
 #define INCLUDE_navi_gsv_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -31,14 +31,46 @@
 // $--GSV,x,x,xx,xx,xx,xxx,xx......,xx,xx,xxx,xx*hh<cr><lf>
 //
 
+#define GSV_MAX_SATELLITES		36
+//
+// Holds satellite information for one satellite
+//
+struct navi_satinfo_t
+{
+	unsigned int vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
+	unsigned int id;		// satellite ID number
+	unsigned int elevation;	// degrees 00-90
+	unsigned int azimuth;	// degrees true, 000-359
+	unsigned int snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+};
+
+#define SATINFO_VALID_ORIENTATION	0x1
+#define SATINFO_VALID_SNR			0x2
+
+struct gsv_t
+{
+	navi_talkerid_t tid;	// talker id
+	int nmsatellites;		// total number of satellites in view
+	struct navi_satinfo_t info[GSV_MAX_SATELLITES];	// satellite info array
+	int totalnm;	// total number of messages (filled during parsing)
+	int msgnm;		// number of received message
+};
+
 NAVI_BEGIN_DECL
 
-int navi_create_gsv(const struct gsv_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes GSV sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_gsv(struct gsv_t *msg, navi_talkerid_t tid);
 
-int navi_parse_gsv(struct gsv_t *msg, char *buffer);
+//
+// Creates GSV message
+NAVI_EXTERN(navierr_status_t) navi_create_gsv(const struct gsv_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses GSV message
+NAVI_EXTERN(navierr_status_t) navi_parse_gsv(struct gsv_t *msg, char *buffer);
 
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_gsv_h
-
