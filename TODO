@@ -3,7 +3,6 @@ libnavigate --- TODO
 Library versions roadmap:
 
 	v0.3:
-	* add C++ bindings to the library
 	* implement building RPM package of libnavigate
 
 	v0.4:

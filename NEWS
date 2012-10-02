@@ -1,3 +1,7 @@
+2012-10-02  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Added C++ bindings to the library
+	
 2012-10-01  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* Implemented generation/parsing of AAM, ACK, ALR and
