@@ -48,7 +48,8 @@ navierr_status_t navi_init_mla(struct mla_t *msg, navi_talkerid_t tid)
 
 navierr_status_t navi_create_mla(const struct mla_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	size_t i, msglength, total = 0;
+	int i;
+	size_t msglength, total = 0;
 	const char *tid = NULL, *sfmt = NULL;
 	char csstr[3];
 
@@ -64,7 +65,7 @@ navierr_status_t navi_create_mla(const struct mla_t *msg, char *buffer, size_t m
 	{
 		msglength = navi_print_number(msg->nmsatellites, totalnm,
 			sizeof(totalnm), 1);
-		msglength += navi_print_number((double)(i + 1), msgnm, sizeof(msgnm), 1);
+		msglength += navi_print_number(i + 1, msgnm, sizeof(msgnm), 1);
 
 		(void)navi_split_integer(msg->almlist[i].satslot, bytes, 2, 10);
 		msglength += navi_print_decfield(bytes,
