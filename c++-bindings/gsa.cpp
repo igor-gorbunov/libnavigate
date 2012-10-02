@@ -23,15 +23,7 @@ namespace libnavigate
 {
 
 Gsa_t::Gsa_t(const TalkerId_t &tid) : Message_t(MessageType_t::GSA)
-{
-	((struct gsa_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct gsa_t *)(*this))->vfields = 0;
-
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct gsa_t *)(*this))->satellites[i].notnull = 0;
-	}
-}
+	{ navi_init_gsa((struct gsa_t *)(*this), tid.toTalkerIdCode()); }
 
 Gsa_t::Gsa_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -97,15 +89,38 @@ void Gsa_t::setVdop(double value)
 	((struct gsa_t *)(*this))->vfields |= GSA_VALID_VDOP;
 }
 
-void Gsa_t::clearMessage()
+bool Gsa_t::isSwitchModeValid() const
 {
-	((struct gsa_t *)(*this))->vfields = 0;
-
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct gsa_t *)(*this))->satellites[i].notnull = 0;
-	}
+	return (((const struct gsa_t *)(*this))->vfields & GSA_VALID_SWITCHMODE) != 0 ? true : false;
 }
+
+bool Gsa_t::isFixModeValid() const
+{
+	return (((const struct gsa_t *)(*this))->vfields & GSA_VALID_FIXMODE) != 0 ? true : false;
+}
+
+bool Gsa_t::isSatelliteIdValid(int satIdx) const
+{
+	return ((const struct gsa_t *)(*this))->satellites[satIdx].notnull != 0 ? true : false;
+}
+
+bool Gsa_t::isPdopValid() const
+{
+	return (((const struct gsa_t *)(*this))->vfields & GSA_VALID_PDOP) != 0 ? true : false;
+}
+
+bool Gsa_t::isHdopValid() const
+{
+	return (((const struct gsa_t *)(*this))->vfields & GSA_VALID_HDOP) != 0 ? true : false;
+}
+
+bool Gsa_t::isVdopValid() const
+{
+	return (((const struct gsa_t *)(*this))->vfields & GSA_VALID_VDOP) != 0 ? true : false;
+}
+
+void Gsa_t::clearMessage()
+	{ navi_init_gsa((struct gsa_t *)(*this), navi_talkerid_Unknown); }
 
 Gsa_t::operator const struct gsa_t *() const
 {
