@@ -33,11 +33,7 @@ TalkerId_t Rmc_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct rmc_t *)(*this))->tid); }
 
 Utc_t Rmc_t::utc() const
-{
-	return Utc_t(((const struct rmc_t *)(*this))->utc.hour,
-		((const struct rmc_t *)(*this))->utc.min,
-		((const struct rmc_t *)(*this))->utc.sec);
-}
+	{ return Utc_t::fromUtcStruct(((const struct rmc_t *)(*this))->utc); }
 
 Status_t Rmc_t::status() const
 	{ return Status_t::fromStatusCode(((const struct rmc_t *)(*this))->status); }
@@ -52,11 +48,7 @@ double Rmc_t::course() const
 	{ return ((const struct rmc_t *)(*this))->courseTrue; }
 
 Date_t Rmc_t::date() const
-{
-	return Date_t(((const struct rmc_t *)(*this))->date.year,
-		((const struct rmc_t *)(*this))->date.month,
-		((const struct rmc_t *)(*this))->date.day);
-}
+	{ return Date_t::fromDateStruct(((const struct rmc_t *)(*this))->date); }
 
 Offset_t Rmc_t::magneticVariation() const
 	{ return Offset_t::fromOffset(&((const struct rmc_t *)(*this))->magnetic); }
@@ -69,9 +61,7 @@ void Rmc_t::setTalkerId(const TalkerId_t &tid)
 
 void Rmc_t::setUtc(const Utc_t &utc)
 {
-	((struct rmc_t *)(*this))->utc.hour = utc.hours();
-	((struct rmc_t *)(*this))->utc.min = utc.minutes();
-	((struct rmc_t *)(*this))->utc.sec = utc.seconds();
+	((struct rmc_t *)(*this))->utc = utc.toUtcStruct();
 	((struct rmc_t *)(*this))->vfields |= RMC_VALID_UTC;
 }
 
