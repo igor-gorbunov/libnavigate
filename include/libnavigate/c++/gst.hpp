@@ -20,10 +20,12 @@
 #ifndef INCLUDE_navi_gstplusplus
 #define INCLUDE_navi_gstplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
 
 namespace libnavigate
 {
+
+#include <libnavigate/gst.h>
 
 NAVI_EXTERN_CLASS(Gst_t) : public Message_t
 {

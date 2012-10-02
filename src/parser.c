@@ -239,7 +239,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gst_t *)msg)->tid = tid;
+		navi_init_gst((struct gst_t *)msg, tid);
 		return navi_parse_gst((struct gst_t *)msg, buffer + som + 7);
 	case navi_GSV:
 		if (msgsize < sizeof(struct gsv_t))

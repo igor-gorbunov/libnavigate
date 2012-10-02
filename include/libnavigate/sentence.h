@@ -473,28 +473,6 @@ struct navi_satinfo_t
 //	};
 
 //
-// GNSS pseudorange noise statistics
-struct gst_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of GST_VALID_xxx
-	struct navi_utc_t utc;	// UTC time
-	double rms;			// RMS value of the standard deviation
-	double devmajor;	// Standard deviation of semi-major axis of error ellipse, m
-	double devminor;	// Standard deviation of semi-minor axis of error ellipse, m
-	double orientmajor;	// Orientation of semi-major axis of error ellipse,
-						// degrees from true north
-	double devlaterr;	// Standard deviation of latitude error, m
-	double devlonerr;	// Standard deviation of longitude error, m
-	double devalterr;	// Standard deviation of altitude error, m
-};
-
-#define GST_VALID_RMS				0x1
-#define GST_VALID_STDDEVELLIPSE		0x2
-#define GST_VALID_DEVLATLONERR		0x4
-#define GST_VALID_DEVALTERR			0x8
-
-//
 // GNSS satellites in view
 struct gsv_t
 {

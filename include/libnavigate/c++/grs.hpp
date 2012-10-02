@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_grsplusplus
 #define INCLUDE_navi_grsplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
 
 namespace libnavigate
 {
