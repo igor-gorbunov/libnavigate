@@ -23,14 +23,7 @@ namespace libnavigate
 {
 
 Grs_t::Grs_t(const TalkerId_t &tid) : Message_t(MessageType_t::GRS)
-{
-	((struct grs_t *)(*this))->tid = tid.toTalkerIdCode();
-
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct grs_t *)(*this))->residuals[i].notnull = 0;
-	}
-}
+	{ navi_init_grs((struct grs_t *)(*this), tid.toTalkerIdCode()); }
 
 Grs_t::Grs_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -40,11 +33,7 @@ TalkerId_t Grs_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct grs_t *)(*this))->tid); }
 
 Utc_t Grs_t::utc() const
-{
-	return Utc_t(((const struct grs_t *)(*this))->utc.hour,
-		((const struct grs_t *)(*this))->utc.min,
-		((const struct grs_t *)(*this))->utc.sec);
-}
+	{ return Utc_t::fromUtcStruct(((const struct grs_t *)(*this))->utc); }
 
 int Grs_t::mode() const
 	{ return ((const struct grs_t *)(*this))->mode; }
@@ -56,11 +45,7 @@ void Grs_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct grs_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Grs_t::setUtc(const Utc_t &utc)
-{
-	((struct grs_t *)(*this))->utc.hour = utc.hours();
-	((struct grs_t *)(*this))->utc.min = utc.minutes();
-	((struct grs_t *)(*this))->utc.sec = utc.seconds();
-}
+	{ ((struct grs_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Grs_t::setMode(int mode)
 	{ ((struct grs_t *)(*this))->mode = mode; }
@@ -71,13 +56,13 @@ void Grs_t::setResidual(int satIdx, double value)
 	((struct grs_t *)(*this))->residuals[satIdx].residual = value;
 }
 
-void Grs_t::clearMessage()
+bool Grs_t::isResidualValid(int satIdx) const
 {
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct grs_t *)(*this))->residuals[i].notnull = 0;
-	}
+	return ((const struct grs_t *)(*this))->residuals[satIdx].notnull != 0 ? true : false;
 }
+
+void Grs_t::clearMessage()
+	{ navi_init_grs((struct grs_t *)(*this), navi_talkerid_Unknown); }
 
 Grs_t::operator const struct grs_t *() const
 {

@@ -30,7 +30,7 @@ namespace libnavigate
 NAVI_EXTERN_CLASS(Grs_t) : public Message_t
 {
 public:
-	static const int MaxSatellites = 12;
+	static const int MaxSatellites = GRS_MAX_SATELLITES;
 
 public:
 	Grs_t(const TalkerId_t &tid = TalkerId_t::Unknown);
@@ -39,12 +39,18 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isResidualValid(int satIdx) const;
+
+public:
 	virtual Utc_t utc() const;
 	virtual int mode() const;
 	virtual double residual(int satIdx) const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setUtc(const Utc_t &utc);
 	virtual void setMode(int mode);
 	virtual void setResidual(int satIdx, double value);
@@ -60,4 +66,3 @@ public:
 }
 
 #endif // INCLUDE_navi_grsplusplus
-

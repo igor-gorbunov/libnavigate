@@ -38,23 +38,6 @@ TalkerId_t Aam_t::talkerId() const
 void Aam_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct aam_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
-void Aam_t::clearMessage()
-{
-	navi_init_aam((struct aam_t *)(*this), navi_talkerid_Unknown);
-}
-
-Aam_t::operator const struct aam_t *() const
-{
-	const void *p = (const void *)(*this);
-	return (const struct aam_t *)p;
-}
-
-Aam_t::operator struct aam_t *()
-{
-	void *p = (void *)(*this);
-	return (struct aam_t *)p;
-}
-
 Status_t Aam_t::circleStatus() const
 {
 	return Status_t::fromStatusCode(((const struct aam_t *)(*this))->circle);
@@ -82,5 +65,20 @@ void Aam_t::setWaypointRadius(double value)
 
 void Aam_t::setWaypointId(const std::string &value)
 	{ strncpy(((struct aam_t *)(*this))->wpid, value.c_str(), sizeof(((struct aam_t *)(*this))->wpid)); }
+
+void Aam_t::clearMessage()
+	{ navi_init_aam((struct aam_t *)(*this), navi_talkerid_Unknown); }
+
+Aam_t::operator const struct aam_t *() const
+{
+	const void *p = (const void *)(*this);
+	return (const struct aam_t *)p;
+}
+
+Aam_t::operator struct aam_t *()
+{
+	void *p = (void *)(*this);
+	return (struct aam_t *)p;
+}
 
 }
