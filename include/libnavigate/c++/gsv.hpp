@@ -30,7 +30,7 @@ namespace libnavigate
 	NAVI_EXTERN_CLASS(Gsv_t) : public Message_t
 {
 public:
-	static const int MaxSatellites = 36;
+	static const int MaxSatellites = GSV_MAX_SATELLITES;
 
 public:
 	Gsv_t(const TalkerId_t &tid = TalkerId_t::Unknown);
@@ -39,6 +39,12 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
+
+public:
+	virtual bool isOrientationValid(int satIdx) const;
+	virtual bool isSnrValid(int satIdx) const;
+
+public:
 	virtual int nmOfSatellites() const;
 	virtual int totalNmOfMessages() const;
 	virtual int messageNumber() const;
@@ -50,6 +56,7 @@ public:
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
+
 	virtual void setNmOfSatellites(int value);
 	virtual void setTotalNmOfMessages(int value);
 	virtual void setMessageNumber(int value);

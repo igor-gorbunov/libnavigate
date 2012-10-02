@@ -23,15 +23,7 @@ namespace libnavigate
 {
 
 Gsv_t::Gsv_t(const TalkerId_t &tid) : Message_t(MessageType_t::GSV)
-{
-	((struct gsv_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct gsv_t *)(*this))->nmsatellites = 0;
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct gsv_t *)(*this))->info[i].vfields = 0;
-	}
-	((struct gsv_t *)(*this))->totalnm = ((struct gsv_t *)(*this))->msgnm = 0;
-}
+	{ navi_init_gsv((struct gsv_t *)(*this), tid.toTalkerIdCode()); }
 
 Gsv_t::Gsv_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -42,15 +34,6 @@ TalkerId_t Gsv_t::talkerId() const
 
 void Gsv_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct gsv_t *)(*this))->tid = tid.toTalkerIdCode(); }
-
-void Gsv_t::clearMessage()
-{
-	((struct gsv_t *)(*this))->nmsatellites = 0;
-	for (int i = 0; i < MaxSatellites; i++)
-	{
-		((struct gsv_t *)(*this))->info[i].vfields = 0;
-	}
-}
 
 int Gsv_t::nmOfSatellites() const
 	{ return ((const struct gsv_t *)(*this))->nmsatellites; }
@@ -100,6 +83,19 @@ void Gsv_t::setSnratio(int satIdx, unsigned int value)
 	((struct gsv_t *)(*this))->info[satIdx].snr = value;
 	((struct gsv_t *)(*this))->info[satIdx].vfields |= SATINFO_VALID_SNR;
 }
+
+bool Gsv_t::isOrientationValid(int satIdx) const
+{
+	return (((const struct gsv_t *)(*this))->info[satIdx].vfields & SATINFO_VALID_ORIENTATION) != 0 ? true : false;
+}
+
+bool Gsv_t::isSnrValid(int satIdx) const
+{
+	return (((const struct gsv_t *)(*this))->info[satIdx].vfields & SATINFO_VALID_SNR) != 0 ? true : false;
+}
+
+void Gsv_t::clearMessage()
+	{ navi_init_gsv((struct gsv_t *)(*this), navi_talkerid_Unknown); }
 
 Gsv_t::operator const struct gsv_t *() const
 {
