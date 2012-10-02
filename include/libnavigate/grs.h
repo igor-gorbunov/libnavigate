@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_grs_h
 #define INCLUDE_navi_grs_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -29,14 +29,39 @@
 // $--GRS,hhmmss.ss,x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
 //
 
+#define GRS_MAX_SATELLITES	12
+
+struct grs_t
+{
+	navi_talkerid_t tid;	// talker id
+	struct navi_utc_t utc;	// UTC time
+	int mode;				// Mode:
+							// 0 = residuals were used to calculate the position
+							// given in the matching GGA or GNS sentence
+							// 1 = residuals were recomputed after the GGA or GNS
+							// position was computed
+	struct
+	{
+		int notnull;		// 0 = null field, 1 = not null
+		double residual;	// residual for given satellite ID
+	} residuals[GRS_MAX_SATELLITES];	// range residuals array
+};
+
 NAVI_BEGIN_DECL
 
-int navi_create_grs(const struct grs_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes GRS sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_grs(struct grs_t *msg, navi_talkerid_t tid);
 
-int navi_parse_grs(struct grs_t *msg, char *buffer);
+//
+// Creates GRS message
+NAVI_EXTERN(navierr_status_t) navi_create_grs(const struct grs_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses GRS message
+NAVI_EXTERN(navierr_status_t) navi_parse_grs(struct grs_t *msg, char *buffer);
 
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_grs_h
-

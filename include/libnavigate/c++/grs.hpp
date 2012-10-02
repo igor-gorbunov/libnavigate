@@ -25,6 +25,8 @@
 namespace libnavigate
 {
 
+#include <libnavigate/grs.h>
+
 NAVI_EXTERN_CLASS(Grs_t) : public Message_t
 {
 public:
