@@ -44,8 +44,7 @@ navierr_status_t navi_init_ack(struct ack_t *msg, navi_talkerid_t tid)
 
 //
 // Creates ACK message
-navierr_status_t navi_create_ack(const struct ack_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_ack(const struct ack_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
 	char bytes[4], alarmid[4];
 
@@ -60,13 +59,13 @@ navierr_status_t navi_create_ack(const struct ack_t *msg, char *buffer,
 // Parses ACK message
 navierr_status_t navi_parse_ack(struct ack_t *msg, char *buffer)
 {
-	int nmread;
+	size_t nmread;
 	char bytes[4];
 
-	if (navi_parse_decfield(buffer, 3, bytes, &nmread) != 0)
+	if (navi_parse_decfield(buffer, 3, bytes, &nmread) != navi_Ok)
 	{
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 
 	msg->alarmid = navi_compose_integer(bytes, 3, 10);

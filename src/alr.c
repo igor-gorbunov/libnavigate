@@ -48,10 +48,9 @@ navierr_status_t navi_init_alr(struct alr_t *msg, navi_talkerid_t tid)
 
 //
 // Creates ALR message
-navierr_status_t navi_create_alr(const struct alr_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_alr(const struct alr_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *condition, *ackstate;
 	char bytes[4];
@@ -85,7 +84,7 @@ navierr_status_t navi_create_alr(const struct alr_t *msg, char *buffer,
 // Parses ALR message
 navierr_status_t navi_parse_alr(struct alr_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	char bytes[4];
 
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)

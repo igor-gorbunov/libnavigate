@@ -105,7 +105,7 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 	*nmread = eom + 1;
 
 	// Check that the message is not broken
-	if (navi_checksum(buffer + som, maxsize - (som + eom), NULL, &ucs) < 0)
+	if (navi_checksum(buffer + som, maxsize - (som + eom), NULL, &ucs) != navi_Ok)
 	{
 		navierr_set_last(navi_InvalidMessage);
 		return navi_Error;
@@ -1122,7 +1122,7 @@ navierr_status_t navi_parse_datumsub(char *buffer, navi_datum_subdivision_t *dat
 //
 // Parses mode navi_parse_miarray array
 //
-navierr_status_t navi_parse_miarray(char *buffer, navi_modeindicator_t mi[], int *misize, size_t *nmread)
+navierr_status_t navi_parse_miarray(char *buffer, navi_modeindicator_t mi[], size_t *misize, size_t *nmread)
 {
 	int i = 0, c, error = 0;
 

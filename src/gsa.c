@@ -50,9 +50,9 @@ navierr_status_t navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GSA message
-navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength, i;
+	size_t msglength, i;
 
 	const char *swmode;
 	char bytes[2];
@@ -101,7 +101,7 @@ navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, int maxs
 // Parses GSA message
 navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 {
-	int i = 0, j, nmread;
+	size_t i = 0, j, nmread;
 	char bytes[2];
 
 	msg->vfields = 0;

@@ -51,9 +51,9 @@ navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
 
 //
 // Creates DTM message
-navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *ldatum, *rdatum, *datumsd, *latsign, *lonsign;
 	char latofs[32], lonofs[32], altofs[32];
@@ -94,7 +94,7 @@ navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, int maxs
 // Parses DTM message
 navierr_status_t navi_parse_dtm(struct dtm_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 

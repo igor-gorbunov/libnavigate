@@ -109,19 +109,19 @@ NAVI_EXTERN(navierr_status_t) navi_init_offset_from_radians(double offset,
 // Removes trailing zeroes in a variable length value
 // string representation up to and including decimal point
 // Returns the remaining string length
-int remove_trailing_zeroes(char *buffer, int length);
+NAVI_EXTERN(size_t) remove_trailing_zeroes(char *buffer, size_t length);
 
 //
 // Splits an integer into array of digits. Radix may be 10 or 16.
 // Most significant digit is put at bytes[0]
-extern int navi_split_integer(unsigned int value, char bytes[], int width, int radix);
+NAVI_EXTERN(navierr_status_t) navi_split_integer(unsigned int value, char bytes[], int width, int radix);
 
 //
 // Composes an integer from array of digits. Radix may be 10 or 16.
 // Most significant digit is taken from bytes[0]
 //
 // Returns the combined value
-extern unsigned int navi_compose_integer(char bytes[], int width, int radix);
+NAVI_EXTERN(unsigned int) navi_compose_integer(char bytes[], int width, int radix);
 
 //
 // Calculates the checksum of a message between the '$' and
@@ -131,8 +131,8 @@ extern unsigned int navi_compose_integer(char bytes[], int width, int radix);
 //
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
-NAVI_EXTERN(navierr_status_t) navi_checksum(char *msg, int maxsize,
-	char *csstr, unsigned *cs);
+NAVI_EXTERN(navierr_status_t) navi_checksum(char *msg, size_t maxsize,
+	char *csstr, unsigned int *cs);
 
 NAVI_END_DECL
 

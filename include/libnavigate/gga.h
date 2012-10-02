@@ -62,7 +62,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_gga(struct gga_t *msg, navi_talkerid_t t
 //
 // Creates GGA message
 NAVI_EXTERN(navierr_status_t) navi_create_gga(const struct gga_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GGA message

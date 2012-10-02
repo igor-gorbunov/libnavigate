@@ -517,7 +517,8 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 {
 	if (notnull)
 	{
-		int nmwritten, precision;
+		int precision;
+		size_t nmwritten;
 		double degrees, fraction;
 
 		const char *s;

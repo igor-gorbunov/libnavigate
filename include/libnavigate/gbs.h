@@ -60,7 +60,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_gbs(struct gbs_t *msg, navi_talkerid_t t
 //
 // Creates GBS message
 NAVI_EXTERN(navierr_status_t) navi_create_gbs(const struct gbs_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GBS message

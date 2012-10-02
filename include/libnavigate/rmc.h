@@ -59,7 +59,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_rmc(struct rmc_t *msg, navi_talkerid_t t
 //
 // Creates RMC message
 NAVI_EXTERN(navierr_status_t) navi_create_rmc(const struct rmc_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses RMC message

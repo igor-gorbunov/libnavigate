@@ -50,9 +50,9 @@ navierr_status_t navi_init_gst(struct gst_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GST message
-navierr_status_t navi_create_gst(const struct gst_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_gst(const struct gst_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char utc[32], rms[16], devmajor[16], devminor[16], orientmajor[16],
 		devlaterr[16], devlonerr[16], devalterr[16];
@@ -92,7 +92,7 @@ navierr_status_t navi_create_gst(const struct gst_t *msg, char *buffer, int maxs
 // Parses GST message
 navierr_status_t navi_parse_gst(struct gst_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 

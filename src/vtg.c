@@ -50,10 +50,9 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 
 //
 // Creates VTG message
-navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, int maxsize,
-	int *nmwritten)
+navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *mi;
 	char ctrue[32], courseT[2], cmagn[32], courseM[2], snots[32],
@@ -97,7 +96,7 @@ navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, int maxs
 // Parses VTG message
 navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	double speedknots, speedkmph;
 
 	msg->vfields = 0;

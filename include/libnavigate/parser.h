@@ -139,7 +139,7 @@ NAVI_EXTERN(navierr_status_t) navi_parse_datumsub(char *buffer, navi_datum_subdi
 //
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
-NAVI_EXTERN(navierr_status_t) navi_parse_miarray(char *buffer, navi_modeindicator_t mi[], int *misize, size_t *nmread);
+NAVI_EXTERN(navierr_status_t) navi_parse_miarray(char *buffer, navi_modeindicator_t mi[], size_t *misize, size_t *nmread);
 
 //
 // Parses date in the form of 'ddmmyy | ddmmyyyy'

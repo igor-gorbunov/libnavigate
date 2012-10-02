@@ -102,7 +102,7 @@ navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, size_t m
 // Parses ZDA message
 navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	double d;
 
 	msg->vfields = 0;

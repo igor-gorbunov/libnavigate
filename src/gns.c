@@ -58,10 +58,9 @@ navierr_status_t navi_init_gns(struct gns_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GNS message
-navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char utc[32], fix[64], mi[3], totalsats[3], hdop[32], antalt[32],
 		geoidsep[32], ddage[32], drsid[32];
@@ -105,7 +104,7 @@ navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer,
 // Parses GNS message
 navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 {
-	int i = 0, j, nmread;
+	size_t i = 0, j, nmread;
 	double d;
 
 	msg->vfields = 0;

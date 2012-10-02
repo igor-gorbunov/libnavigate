@@ -63,7 +63,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_gsa(struct gsa_t *msg, navi_talkerid_t t
 //
 // Creates GSA message
 NAVI_EXTERN(navierr_status_t) navi_create_gsa(const struct gsa_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GSA message

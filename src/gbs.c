@@ -54,10 +54,9 @@ navierr_status_t navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GBS message
-navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char bytes[2];
 	char utc[32], experrlat[32], experrlon[32], experralt[32],
@@ -101,7 +100,7 @@ navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer,
 // Parses GBS message
 navierr_status_t navi_parse_gbs(struct gbs_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	char bytes[4];
 
 	msg->vfields = 0;
@@ -136,7 +135,7 @@ navierr_status_t navi_parse_gbs(struct gbs_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	msg->experralt = 0.;
+	msg->experralt = 0.0;
 	if (navi_parse_number(buffer + i, &msg->experralt, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)

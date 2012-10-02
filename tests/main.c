@@ -26,8 +26,7 @@
 int main(void)
 {
 	int result;
-	size_t msglength, nmwritten, nmread;
-	int remain;
+	size_t msglength, nmwritten, nmread, remain, parsed;
 
 	char buffer[1024];
 	struct aam_t aam;
@@ -50,7 +49,7 @@ int main(void)
 	struct zda_t zda;
 
 	char parsedbuffer[4096];
-	int finished, parsed;
+	int finished;
 	navi_approved_fmt_t msgtype;
 
 	const navi_error_t *lasterr;

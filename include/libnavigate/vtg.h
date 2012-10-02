@@ -51,7 +51,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 //
 // Creates VTG message
 NAVI_EXTERN(navierr_status_t) navi_create_vtg(const struct vtg_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses VTG message

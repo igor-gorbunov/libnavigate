@@ -48,7 +48,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_txt(struct txt_t *msg, navi_talkerid_t t
 //
 // Creates TXT message
 NAVI_EXTERN(navierr_status_t) navi_create_txt(const struct txt_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses TXT message

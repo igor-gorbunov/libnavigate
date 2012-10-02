@@ -60,7 +60,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_dtm(struct dtm_t *msg, navi_talkerid_t t
 //
 // Creates DTM message
 NAVI_EXTERN(navierr_status_t) navi_create_dtm(const struct dtm_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses DTM message

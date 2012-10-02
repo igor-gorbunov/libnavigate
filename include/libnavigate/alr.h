@@ -53,7 +53,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_alr(struct alr_t *msg, navi_talkerid_t t
 //
 // Creates ALR message
 NAVI_EXTERN(navierr_status_t) navi_create_alr(const struct alr_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ALR message

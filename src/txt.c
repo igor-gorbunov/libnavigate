@@ -45,10 +45,9 @@ navierr_status_t navi_init_txt(struct txt_t *msg, navi_talkerid_t tid)
 
 //
 // Creates TXT message
-navierr_status_t navi_create_txt(const struct txt_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_txt(const struct txt_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char bytes[4];
 	char totalnm[4], msgnm[4], textid[4], textmsg[80];
@@ -81,7 +80,7 @@ navierr_status_t navi_create_txt(const struct txt_t *msg, char *buffer,
 // Parses TXT message
 navierr_status_t navi_parse_txt(struct txt_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	char bytes[4];
 
 	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != 0)

@@ -64,7 +64,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_gns(struct gns_t *msg, navi_talkerid_t t
 //
 // Creates GNS message
 NAVI_EXTERN(navierr_status_t) navi_create_gns(const struct gns_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GNS message

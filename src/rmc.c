@@ -54,10 +54,9 @@ navierr_status_t navi_init_rmc(struct rmc_t *msg, navi_talkerid_t tid)
 
 //
 // Creates RMC message
-navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *status, *magsign, *mi;
 	char utc[32], fix[64], snots[32], ctrue[32], day[3],
@@ -103,7 +102,7 @@ navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer,
 // Parses RMC message
 navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 

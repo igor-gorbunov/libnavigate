@@ -45,7 +45,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_ack(struct ack_t *msg, navi_talkerid_t t
 //
 // Creates ACK message
 NAVI_EXTERN(navierr_status_t) navi_create_ack(const struct ack_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ACK message

@@ -52,9 +52,9 @@ navierr_status_t navi_init_grs(struct grs_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GRS message
-navierr_status_t navi_create_grs(const struct grs_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_grs(const struct grs_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength, i;
+	size_t msglength, i;
 
 	char bytes[2];
 	char utc[32], mode[2], residuals[12][32];
@@ -100,7 +100,7 @@ navierr_status_t navi_create_grs(const struct grs_t *msg, char *buffer, int maxs
 // Parses GRS message
 navierr_status_t navi_parse_grs(struct grs_t *msg, char *buffer)
 {
-	int i = 0, j, nmread;
+	size_t i = 0, j, nmread;
 	char bytes[2];
 
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)

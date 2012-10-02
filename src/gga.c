@@ -55,10 +55,9 @@ navierr_status_t navi_init_gga(struct gga_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GGA message
-navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char bytes[4];
 	char utc[32], fix[64], qi[2], nmsats[3], hdop[32], antalt[32],
@@ -108,7 +107,7 @@ navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer,
 // Parses GGA message
 navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	double d;
 	char bytes[4];
 
@@ -214,4 +213,3 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 }
 
 #endif // NO_PARSER
-

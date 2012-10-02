@@ -46,10 +46,9 @@ navierr_status_t navi_init_aam(struct aam_t *msg, navi_talkerid_t tid)
 
 //
 // Creates AAM message
-navierr_status_t navi_create_aam(const struct aam_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_aam(const struct aam_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *circle, *perp;
 	char radius[20], waypointid[80];
@@ -77,7 +76,7 @@ navierr_status_t navi_create_aam(const struct aam_t *msg, char *buffer,
 // Parses AAM message
 navierr_status_t navi_parse_aam(struct aam_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	char tmp[4];
 
 	if (navi_parse_status(buffer + i, &msg->circle, &nmread) != 0)

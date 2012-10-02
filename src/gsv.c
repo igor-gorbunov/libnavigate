@@ -48,9 +48,10 @@ navierr_status_t navi_init_gsv(struct gsv_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GSV message
-navierr_status_t navi_create_gsv(const struct gsv_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_gsv(const struct gsv_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int i, j, msglength, total = 0, nmoffullmsg;
+	int i, j, nmoffullmsg;
+	size_t msglength, total = 0;
 	const char *tid = NULL, *sfmt = NULL;
 	char csstr[3];
 
@@ -203,24 +204,24 @@ navierr_status_t navi_create_gsv(const struct gsv_t *msg, char *buffer, int maxs
 // Parses GSV message
 navierr_status_t navi_parse_gsv(struct gsv_t *msg, char *buffer)
 {
-	int i = 0, j, nmread;
+	size_t i = 0, j, nmread;
 	double d;
 	char bytes[8];
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 		return navi_Error;
 	else
 		msg->totalnm = (int)round(d);
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 		return navi_Error;
 	else
 		msg->msgnm = (int)round(d);
 	i += nmread;
 
 	msg->nmsatellites = 0;
-	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != 0)
+	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;

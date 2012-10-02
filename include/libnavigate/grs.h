@@ -56,7 +56,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_grs(struct grs_t *msg, navi_talkerid_t t
 //
 // Creates GRS message
 NAVI_EXTERN(navierr_status_t) navi_create_grs(const struct grs_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GRS message

@@ -49,10 +49,9 @@ navierr_status_t navi_init_gll(struct gll_t *msg, navi_talkerid_t tid)
 
 //
 // Creates GLL message
-navierr_status_t navi_create_gll(const struct gll_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+navierr_status_t navi_create_gll(const struct gll_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *status, *mi;
 	char fix[64], utc[32];
@@ -81,7 +80,7 @@ navierr_status_t navi_create_gll(const struct gll_t *msg, char *buffer,
 
 navierr_status_t navi_parse_gll(struct gll_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 

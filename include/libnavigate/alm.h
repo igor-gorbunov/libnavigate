@@ -104,7 +104,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_alm(struct alm_t *msg, navi_talkerid_t t
 //
 // Creates ALM message
 NAVI_EXTERN(navierr_status_t) navi_create_alm(const struct alm_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ALM message

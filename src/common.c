@@ -166,9 +166,9 @@ navierr_status_t navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
 //
 // remove_trailing_zeroes
 //
-int remove_trailing_zeroes(char *buffer, int length)
+size_t remove_trailing_zeroes(char *buffer, size_t length)
 {
-	int i;
+	size_t i;
 
 	for (i = length - 1; ; i--)
 	{
@@ -326,7 +326,7 @@ navierr_status_t navi_get_position(const struct navi_position_t *in, double *lat
 //
 // navi_split_integer
 //
-int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
+navierr_status_t navi_split_integer(unsigned int value, char bytes[], int width, int radix)
 {
 	int i;
 
@@ -362,16 +362,16 @@ unsigned int navi_compose_integer(char bytes[], int width, int radix)
 //
 // navi_checksum
 //
-navierr_status_t navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
+navierr_status_t navi_checksum(char *msg, size_t maxsize, char *csstr, unsigned int *cs)
 {
-	int i;
-	unsigned ucs = 0;
+	size_t i;
+	unsigned int ucs = 0;
 
 	assert(msg != NULL);
 	assert(maxsize > 0);
 
 	// Skip up to next character after '$'
-	for (i = 0; msg[i] != '$' && i < maxsize; i++);
+	for (i = 0; msg[i] != '$' && i < maxsize; i++) { }
 
 	if (i >= maxsize)
 	{
@@ -392,7 +392,7 @@ navierr_status_t navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs
 		*cs = ucs;
 
 	if (csstr)
-		snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
+		(void)snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
 
 	return navi_Ok;
 }

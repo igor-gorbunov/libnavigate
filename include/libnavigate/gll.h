@@ -52,7 +52,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_gll(struct gll_t *msg, navi_talkerid_t t
 //
 // Creates GLL message
 NAVI_EXTERN(navierr_status_t) navi_create_gll(const struct gll_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GLL message

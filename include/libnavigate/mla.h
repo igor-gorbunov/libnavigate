@@ -87,7 +87,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_mla(struct mla_t *msg, navi_talkerid_t t
 //
 // Creates MLA message
 NAVI_EXTERN(navierr_status_t) navi_create_mla(const struct mla_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses MLA message
