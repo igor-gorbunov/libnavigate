@@ -36,8 +36,15 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
-	virtual Utc_t utc() const;
 
+public:
+	virtual bool isRmsValid() const;
+	virtual bool isStdDeviationOfEllipseValid() const;
+	virtual bool isStdDeviationOfPositionValid() const;
+	virtual bool isStdDevofAltitudeValid() const;
+
+public:
+	virtual Utc_t utc() const;
 	virtual double rmsOfStandardDeviation() const;
 	virtual double deviationOfSemiMajorAxis() const;
 	virtual double deviationOfSemiMinorAxis() const;
@@ -48,8 +55,8 @@ public:
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
-	virtual void setUtc(const Utc_t &utc);
 
+	virtual void setUtc(const Utc_t &utc);
 	virtual void setRmsOfStandardDeviation(double value);
 	virtual void setDeviationOfSemiMajorAxis(double value);
 	virtual void setDeviationOfSemiMinorAxis(double value);
@@ -69,4 +76,3 @@ public:
 }
 
 #endif // INCLUDE_navi_gstplusplus
-

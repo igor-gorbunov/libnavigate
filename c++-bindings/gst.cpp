@@ -23,10 +23,7 @@ namespace libnavigate
 {
 
 Gst_t::Gst_t(const TalkerId_t &tid) : Message_t(MessageType_t::GST)
-{
-	((struct gst_t *)(*this))->tid = tid.toTalkerIdCode();
-	((struct gst_t *)(*this))->vfields = 0;
-}
+	{ navi_init_gst((struct gst_t *)(*this), tid.toTalkerIdCode()); }
 
 Gst_t::Gst_t(const Message_t &msg) : Message_t(msg) { }
 
@@ -36,11 +33,7 @@ TalkerId_t Gst_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct gst_t *)(*this))->tid); }
 
 Utc_t Gst_t::utc() const
-{
-	return Utc_t(((const struct gst_t *)(*this))->utc.hour,
-		((const struct gst_t *)(*this))->utc.min,
-		((const struct gst_t *)(*this))->utc.sec);
-}
+	{ return Utc_t::fromUtcStruct(((const struct gst_t *)(*this))->utc); }
 
 double Gst_t::rmsOfStandardDeviation() const
 	{ return ((const struct gst_t *)(*this))->rms; }
@@ -67,11 +60,7 @@ void Gst_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct gst_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gst_t::setUtc(const Utc_t &utc)
-{
-	((struct gst_t *)(*this))->utc.hour = utc.hours();
-	((struct gst_t *)(*this))->utc.min = utc.minutes();
-	((struct gst_t *)(*this))->utc.sec = utc.seconds();
-}
+	{ ((struct gst_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Gst_t::setRmsOfStandardDeviation(double value)
 {
@@ -115,8 +104,28 @@ void Gst_t::setDeviationOfAltitudeError(double value)
 	((struct gst_t *)(*this))->vfields |= GST_VALID_DEVALTERR;
 }
 
+bool Gst_t::isRmsValid() const
+{
+	return (((const struct gst_t *)(*this))->vfields & GST_VALID_RMS) != 0 ? true : false;
+}
+
+bool Gst_t::isStdDeviationOfEllipseValid() const
+{
+	return (((const struct gst_t *)(*this))->vfields & GST_VALID_STDDEVELLIPSE) != 0 ? true : false;
+}
+
+bool Gst_t::isStdDeviationOfPositionValid() const
+{
+	return (((const struct gst_t *)(*this))->vfields & GST_VALID_DEVLATLONERR) != 0 ? true : false;
+}
+
+bool Gst_t::isStdDevofAltitudeValid() const
+{
+	return (((const struct gst_t *)(*this))->vfields & GST_VALID_DEVALTERR) != 0 ? true : false;
+}
+
 void Gst_t::clearMessage()
-	{ ((struct gst_t *)(*this))->vfields = 0; }
+	{ navi_init_gst((struct gst_t *)(*this), navi_talkerid_Unknown); }
 
 Gst_t::operator const struct gst_t *() const
 {
