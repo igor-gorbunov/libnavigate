@@ -1,6 +1,7 @@
 #include <libnavigate/c++/errors.hpp>
 #include <libnavigate/c++/sentence.hpp>
 #include <string.h>
+#include <stdlib.h>
 
 namespace libnavigate
 {
@@ -560,19 +561,15 @@ void Message_t::setType(const MessageType_t &type)
 	switch (m_type)
 	{
 	case MessageType_t::AAM:
-		m_data = new struct aam_t;
 		m_size = sizeof(struct aam_t);
 		break;
 	case MessageType_t::ACK:
-		m_data = new struct ack_t;
 		m_size = sizeof(struct ack_t);
 		break;
 	case MessageType_t::ALM:
-		m_data = new struct alm_t;
 		m_size = sizeof(struct alm_t);
 		break;
 	case MessageType_t::ALR:
-		m_data = new struct alr_t;
 		m_size = sizeof(struct alr_t);
 		break;
 	case MessageType_t::APB:
@@ -590,43 +587,34 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::DSR:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::DTM:
-		m_data = new struct dtm_t;
 		m_size = sizeof(struct dtm_t);
 		break;
 	case MessageType_t::FSI:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::GBS:
-		m_data = new struct gbs_t;
 		m_size = sizeof(struct gbs_t);
 		break;
 	case MessageType_t::GGA:
-		m_data = new struct gga_t;
 		m_size = sizeof(struct gga_t);
 		break;
 	case MessageType_t::GLC:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::GLL:
-		m_data = new struct gll_t;
 		m_size = sizeof(struct gll_t);
 		break;
 	case MessageType_t::GNS:
-		m_data = new struct gns_t;
 		m_size = sizeof(struct gns_t);
 		break;
 	case MessageType_t::GRS:
-		m_data = new struct grs_t;
 		m_size = sizeof(struct grs_t);
 		break;
 	case MessageType_t::GSA:
-		m_data = new struct gsa_t;
 		m_size = sizeof(struct gsa_t);
 		break;
 	case MessageType_t::GST:
-		m_data = new struct gst_t;
 		m_size = sizeof(struct gst_t);
 		break;
 	case MessageType_t::GSV:
-		m_data = new struct gsv_t;
 		m_size = sizeof(struct gsv_t);
 		break;
 	case MessageType_t::HDG:
@@ -639,7 +627,6 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::LCD:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::MLA:
-		m_data = new struct mla_t;
 		m_size = sizeof(struct mla_t);
 		break;
 	case MessageType_t::MSK:
@@ -652,7 +639,6 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::RMB:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::RMC:
-		m_data = new struct rmc_t;
 		m_size = sizeof(struct rmc_t);
 		break;
 	case MessageType_t::ROT:
@@ -667,7 +653,6 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::TTM:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::TXT:
-		m_data = new struct txt_t;
 		m_size = sizeof(struct txt_t);
 		break;
 	case MessageType_t::VBW:
@@ -677,7 +662,6 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::VPW:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::VTG:
-		m_data = new struct vtg_t;
 		m_size = sizeof(struct vtg_t);
 		break;
 	case MessageType_t::WCV:
@@ -688,7 +672,6 @@ void Message_t::setType(const MessageType_t &type)
 	case MessageType_t::XTR:
 		throw NaviError_t::NotImplemented;
 	case MessageType_t::ZDA:
-		m_data = new struct zda_t;
 		m_size = sizeof(struct zda_t);
 		break;
 	case MessageType_t::ZDL:
@@ -700,12 +683,15 @@ void Message_t::setType(const MessageType_t &type)
 		m_size = 0;
 		break;
 	}
+
+	if (m_size > 0)
+		m_data = ::malloc(m_size);
 }
 
 void Message_t::clearMessage()
 {
 	if (m_data)
-		delete m_data;
+		::free(m_data);
 
 	m_data = 0;
 	m_size = 0;

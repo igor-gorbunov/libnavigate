@@ -552,9 +552,6 @@ public:
 	virtual const MessageType_t &type() const;
 
 public:
-	virtual void setType(const MessageType_t &type);
-
-public:
 	virtual void clearMessage();
 
 public:
@@ -563,6 +560,9 @@ public:
 
 	virtual operator void *()
 		{ return m_data; }
+
+private:
+	void setType(const MessageType_t &type);
 
 private:
 	MessageType_t m_type;
