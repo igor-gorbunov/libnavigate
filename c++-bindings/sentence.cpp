@@ -786,8 +786,8 @@ GsaSwitchMode_t GsaSwitchMode_t::fromSwitchModeCode(int code)
 {
 	switch (code)
 	{
-	case navi_GsaManual: return Manual;
-	case navi_GsaAutomatic: return Automatic;
+	case navi_gsa_Manual: return Manual;
+	case navi_gsa_Automatic: return Automatic;
 	default:
 		return Unknown;
 	}
@@ -802,8 +802,8 @@ int GsaSwitchMode_t::toSwitchModeCode() const
 {
 	switch (m_value)
 	{
-	case Manual: return navi_GsaManual;
-	case Automatic: return navi_GsaAutomatic;
+	case Manual: return navi_gsa_Manual;
+	case Automatic: return navi_gsa_Automatic;
 	default:
 		return -1;
 	}

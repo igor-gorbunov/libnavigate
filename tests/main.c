@@ -595,7 +595,7 @@ int main(void)
 	memset(&gsa, 0, sizeof(gsa));
 	gsa.tid = navi_GP;
 
-	gsa.switchmode = navi_GsaAutomatic;
+	gsa.swmode = navi_gsa_Automatic;
 	gsa.fixmode = 3;
 
 	gsa.satellites[0].notnull = 1;
@@ -988,7 +988,7 @@ int main(void)
 					printf("Received GSA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gsa->tid), gsa->tid);
 					if (gsa->vfields & GSA_VALID_SWITCHMODE)
-						printf("\tswitchmode = %i\n", gsa->switchmode);
+						printf("\tswitchmode = %i\n", gsa->swmode);
 					if (gsa->vfields & GSA_VALID_FIXMODE)
 						printf("\tfixmode = %i\n", gsa->fixmode);
 					for (i = 0; i < 12; i++)

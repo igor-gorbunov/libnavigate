@@ -25,6 +25,8 @@
 namespace libnavigate
 {
 
+#include <libnavigate/gsa.h>
+
 NAVI_EXTERN_CLASS(Gsa_t) : public Message_t
 {
 public:

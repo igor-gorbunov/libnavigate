@@ -495,9 +495,9 @@ const char *navi_gsamode_str(int mode, int notnull)
 	{
 		switch (mode)
 		{
-		case navi_GsaManual:
+		case navi_gsa_Manual:
 			return "M";
-		case navi_GsaAutomatic:
+		case navi_gsa_Automatic:
 			return "A";
 		default:
 			return NULL;

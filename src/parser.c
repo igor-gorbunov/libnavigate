@@ -231,7 +231,7 @@ navierr_status_t navi_parse_msg(char *buffer, int maxsize, int msgsize, void *ms
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gsa_t *)msg)->tid = tid;
+		navi_init_gsa((struct gsa_t *)msg, tid);
 		return navi_parse_gsa((struct gsa_t *)msg, buffer + som + 7);
 	case navi_GST:
 		if (msgsize < sizeof(struct gst_t))
@@ -1500,11 +1500,11 @@ navierr_status_t navi_parse_gsamode(char *buffer, int *mode, int *nmread)
 	c = buffer[i++];
 	if (c == 'M')
 	{
-		*mode = navi_GsaManual;
+		*mode = navi_gsa_Manual;
 	}
 	else if (c == 'A')
 	{
-		*mode = navi_GsaAutomatic;
+		*mode = navi_gsa_Automatic;
 	}
 	else
 	{

@@ -297,16 +297,16 @@ typedef int navi_modeindicator_t;
 enum _navi_gpsindicator_t
 {
 	navi_gps_Invalid = 0,	// Fix not available or invalid
-	navi_gps_SpsMode = 1,	// GPS SPS mode, fix valid
-	navi_gps_Differential = 2,	// differential GPS, SPS mode, fix valid
-	navi_gps_PpsMode = 3,	// GPS PPS mode, fix valid
-	navi_gps_FixedRtk = 4,	// Real Time Kinematic. Satellite system used in
+	navi_gps_SpsMode,		// GPS SPS mode, fix valid
+	navi_gps_Differential,	// differential GPS, SPS mode, fix valid
+	navi_gps_PpsMode,		// GPS PPS mode, fix valid
+	navi_gps_FixedRtk,		// Real Time Kinematic. Satellite system used in
 							// RTK mode with fixed integers
-	navi_gps_FloatRtk = 5,	// Float RTK. Satellite system used in
+	navi_gps_FloatRtk,		// Float RTK. Satellite system used in
 							// RTK mode with floating integers
-	navi_gps_Estimated = 6,	// Estimated (dead reckoning) mode
-	navi_gps_Manual = 7,		// Manual input mode
-	navi_gps_Simulator = 8	// Simulator mode
+	navi_gps_Estimated,		// Estimated (dead reckoning) mode
+	navi_gps_Manual,		// Manual input mode
+	navi_gps_Simulator		// Simulator mode
 };
 
 typedef int navi_gpsindicator_t;
@@ -314,11 +314,15 @@ typedef int navi_gpsindicator_t;
 //
 // GSA message 2D/3D switching mode
 //
-enum naviGsaSwitchMode_t
+enum _navi_gsaswitchmode_t
 {
-	navi_GsaManual = 0,		// manual, forced to operate in 2D or 3D mode
-	navi_GsaAutomatic = 1	// automatic, allowed to automatically switch 2D/3D
+	navi_gsa_NULL = -1,		// undefined or unknown mode
+
+	navi_gsa_Manual = 0,	// manual, forced to operate in 2D or 3D mode
+	navi_gsa_Automatic		// automatic, allowed to automatically switch 2D/3D
 };
+
+typedef int navi_gsaswitchmode_t;
 
 //
 // Holds UTC time (hours, minutes and seconds)
@@ -467,30 +471,6 @@ struct navi_satinfo_t
 //	struct glc_t
 //	{
 //	};
-
-//
-// GNSS DOP and active satellites
-struct gsa_t
-{
-	int tid;				// talker id
-	unsigned vfields;		// valid fields, bitwise or of GSA_VALID_xxx
-	int switchmode;			// Mode: one of naviGsaSwitchMode_t constants
-	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D
-	struct
-	{
-		int notnull;		// 0 = null field, 1 = not null
-		int id;				// ID number of satellite used in solution
-	} satellites[12];		// satellites ID numbers array
-	double pdop;			// Position dilution of precision
-	double hdop;			// Horizontal dilution of precision
-	double vdop;			// Vertical dilution of precision
-};
-
-#define GSA_VALID_SWITCHMODE	0x01
-#define GSA_VALID_FIXMODE		0x02
-#define GSA_VALID_PDOP			0x04
-#define GSA_VALID_HDOP			0x08
-#define GSA_VALID_VDOP			0x10
 
 //
 // GNSS pseudorange noise statistics

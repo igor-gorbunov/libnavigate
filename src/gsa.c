@@ -17,22 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "libnavigate/gsa.h"
-#include "libnavigate/common.h"
+#include <libnavigate/gsa.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
 	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
+//
+// Initializes GSA sentence structure with default values
+navierr_status_t navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	msg->swmode = navi_gsa_NULL;
+	msg->fixmode = 1;
+	memset(msg->satellites, 0, sizeof(msg->satellites));
+	msg->pdop = msg->hdop = msg->vdop = 0.0;
+
+	return navi_Ok;
+}
+
 #ifndef NO_GENERATOR
 
-int navi_create_gsa(const struct gsa_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates GSA message
+navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, int maxsize, int *nmwritten)
 {
 	int msglength, i;
 
@@ -40,7 +58,7 @@ int navi_create_gsa(const struct gsa_t *msg, char *buffer,
 	char bytes[2];
 	char fixmode[2], satellites[12][4], pdop[16], hdop[16], vdop[16];
 
-	msglength = strlen(swmode = navi_gsamode_str(msg->switchmode,
+	msglength = strlen(swmode = navi_gsamode_str(msg->swmode,
 		msg->vfields & GSA_VALID_SWITCHMODE));
 
 	(void)navi_split_integer(msg->fixmode, bytes, 1, 10);
@@ -79,14 +97,16 @@ int navi_create_gsa(const struct gsa_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gsa(struct gsa_t *msg, char *buffer)
+//
+// Parses GSA message
+navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 {
 	int i = 0, j, nmread;
 	char bytes[2];
 
 	msg->vfields = 0;
 
-	if (navi_parse_gsamode(buffer + i, &msg->switchmode, &nmread) != 0)
+	if (navi_parse_gsamode(buffer + i, &msg->swmode, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -162,4 +182,3 @@ int navi_parse_gsa(struct gsa_t *msg, char *buffer)
 }
 
 #endif // NO_PARSER
-

@@ -41,7 +41,7 @@ TalkerId_t Gsa_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct gsa_t *)(*this))->tid); }
 
 GsaSwitchMode_t Gsa_t::switchMode() const
-	{ return GsaSwitchMode_t::fromSwitchModeCode(((const struct gsa_t *)(*this))->switchmode); }
+	{ return GsaSwitchMode_t::fromSwitchModeCode(((const struct gsa_t *)(*this))->swmode); }
 
 int Gsa_t::fixMode() const
 	{ return ((const struct gsa_t *)(*this))->fixmode; }
@@ -63,7 +63,7 @@ void Gsa_t::setTalkerId(const TalkerId_t &tid)
 
 void Gsa_t::setSwitchMode(const GsaSwitchMode_t &mode)
 {
-	((struct gsa_t *)(*this))->switchmode = mode.toSwitchModeCode();
+	((struct gsa_t *)(*this))->swmode = mode.toSwitchModeCode();
 	((struct gsa_t *)(*this))->vfields |= GSA_VALID_SWITCHMODE;
 }
 

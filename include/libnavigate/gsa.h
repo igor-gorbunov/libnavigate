@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_gsa_h
 #define INCLUDE_navi_gsa_h
 
-#include <libnavigate/generic.h>
+#include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
 //
@@ -30,14 +30,45 @@
 // $--GSA,a,x,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,x.x,x.x,x.x*hh<cr><lf>
 //
 
+#define GSA_MAX_SATELLITES	12
+
+struct gsa_t
+{
+	navi_talkerid_t tid;	// talker id
+	unsigned int vfields;	// valid fields, bitwise or of GSA_VALID_xxx
+	navi_gsaswitchmode_t swmode;	// Mode: Manula or Automatic
+	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D
+	struct
+	{
+		int notnull;		// 0 = null field, 1 = not null
+		int id;				// ID number of satellite used in solution
+	} satellites[GSA_MAX_SATELLITES];	// satellites ID numbers array
+	double pdop;			// Position dilution of precision
+	double hdop;			// Horizontal dilution of precision
+	double vdop;			// Vertical dilution of precision
+};
+
+#define GSA_VALID_SWITCHMODE	0x01
+#define GSA_VALID_FIXMODE		0x02
+#define GSA_VALID_PDOP			0x04
+#define GSA_VALID_HDOP			0x08
+#define GSA_VALID_VDOP			0x10
+
 NAVI_BEGIN_DECL
 
-int navi_create_gsa(const struct gsa_t *msg, char *buffer,
-		int maxsize, int *nmwritten);
+//
+// Initializes GSA sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid);
 
-int navi_parse_gsa(struct gsa_t *msg, char *buffer);
+//
+// Creates GSA message
+NAVI_EXTERN(navierr_status_t) navi_create_gsa(const struct gsa_t *msg, char *buffer,
+	int maxsize, int *nmwritten);
+
+//
+// Parses GSA message
+NAVI_EXTERN(navierr_status_t) navi_parse_gsa(struct gsa_t *msg, char *buffer);
 
 NAVI_END_DECL
 
 #endif // INCLUDE_navi_gsa_h
-
