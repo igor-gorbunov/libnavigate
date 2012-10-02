@@ -21,13 +21,12 @@
 #define INCLUDE_navi_gsvplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/gsv.h>
 
 namespace libnavigate
 {
 
-#include <libnavigate/gsv.h>
-
-	NAVI_EXTERN_CLASS(Gsv_t) : public Message_t
+NAVI_EXTERN_CLASS(Gsv_t) : public Message_t
 {
 public:
 	static const int MaxSatellites = GSV_MAX_SATELLITES;

@@ -18,11 +18,10 @@
  */
 
 #include <libnavigate/c++/zda.hpp>
+#include <libnavigate/common.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/common.h>
 
 Zda_t::Zda_t(const TalkerId_t &tid) : Message_t(MessageType_t::ZDA)
 	{ navi_init_zda((struct zda_t *)(*this), tid.toTalkerIdCode()); }

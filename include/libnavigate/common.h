@@ -112,11 +112,6 @@ NAVI_EXTERN(navierr_status_t) navi_init_offset_from_radians(double offset,
 int remove_trailing_zeroes(char *buffer, int length);
 
 //
-// Print fixed length field with given radix
-extern int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
-	char *buffer, int maxsize);
-
-//
 // Splits an integer into array of digits. Radix may be 10 or 16.
 // Most significant digit is put at bytes[0]
 extern int navi_split_integer(unsigned int value, char bytes[], int width, int radix);

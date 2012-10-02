@@ -21,12 +21,11 @@
 #define INCLUDE_navi_alrplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/alr.h>
 #include <string>
 
 namespace libnavigate
 {
-
-#include <libnavigate/alr.h>
 
 NAVI_EXTERN_CLASS(Alr_t) : public Message_t
 {

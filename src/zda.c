@@ -50,9 +50,9 @@ navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
 
 //
 // Creates ZDA message
-navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmwritten)
+navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 	char utc[32], day[3], month[3], year[5], lzhours[4], lzmins[3];
 
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),

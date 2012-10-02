@@ -21,11 +21,10 @@
 #define INCLUDE_navi_zdaplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/zda.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/zda.h>
 
 NAVI_EXTERN_CLASS(Zda_t) : public Message_t
 {
@@ -65,4 +64,3 @@ public:
 }
 
 #endif // INCLUDE_navi_zdaplusplus
-

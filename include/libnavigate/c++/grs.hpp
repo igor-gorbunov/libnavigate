@@ -21,11 +21,10 @@
 #define INCLUDE_navi_grsplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/grs.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/grs.h>
 
 NAVI_EXTERN_CLASS(Grs_t) : public Message_t
 {

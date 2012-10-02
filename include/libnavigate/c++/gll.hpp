@@ -21,11 +21,10 @@
 #define INCLUDE_navi_gllplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/gll.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/gll.h>
 
 NAVI_EXTERN_CLASS(Gll_t) : public Message_t
 {

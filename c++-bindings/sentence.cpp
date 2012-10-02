@@ -3,9 +3,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-namespace libnavigate
-{
-
 #include <libnavigate/aam.h>
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
@@ -26,6 +23,9 @@ namespace libnavigate
 #include <libnavigate/zda.h>
 
 #include <libnavigate/common.h>
+
+namespace libnavigate
+{
 
 navi_approved_fmt_t MessageType_t::toSentenceFormatter() const
 {

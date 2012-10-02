@@ -66,7 +66,7 @@ extern const char *navi_fmtlist[];
 // IEC message generator
 //
 navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
-	char *buffer, int maxsize, int *nmwritten)
+	char *buffer, size_t maxsize, size_t *nmwritten)
 {
 
 #ifndef NO_GENERATOR
@@ -74,7 +74,7 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 	const char *tid = NULL, *sfmt = NULL;
 	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
 
-	int msglen = 0;
+	size_t msglen = 0;
 
 	assert(msg != NULL);
 	assert(buffer != NULL);
@@ -350,7 +350,7 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 //
 // navi_datum_to_string
 //
-const char *navi_datum_str(int datum, int notnull)
+const char *navi_datum_str(navi_datum_t datum, int notnull)
 {
 	if (!notnull)
 		datum = navi_datum_NULL;
@@ -377,7 +377,7 @@ const char *navi_datum_str(int datum, int notnull)
 //
 // navi_datumsubdiv_str
 //
-const char *navi_datumsubdiv_str(int datumsub, int notnull)
+const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub, int notnull)
 {
 	if (!notnull)
 		datumsub = navi_datumsub_NULL;
@@ -394,7 +394,7 @@ const char *navi_datumsubdiv_str(int datumsub, int notnull)
 //
 // navi_fixsign_str
 //
-const char *navi_fixsign_str(int fixsign, int notnull)
+const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
 {
 	if (!notnull)
 		fixsign = navi_offsetsign_NULL;
@@ -419,7 +419,7 @@ const char *navi_fixsign_str(int fixsign, int notnull)
 //
 // navi_status_str
 //
-const char *navi_status_str(int status)
+const char *navi_status_str(navi_status_t status)
 {
 	switch (status)
 	{
@@ -435,7 +435,7 @@ const char *navi_status_str(int status)
 //
 // navi_modeindicator_str
 //
-const char *navi_modeindicator_str(int mi)
+const char *navi_modeindicator_str(navi_modeindicator_t mi)
 {
 	switch (mi)
 	{
@@ -459,7 +459,7 @@ const char *navi_modeindicator_str(int mi)
 //
 // navi_modeindicator_extended_str
 //
-const char *navi_modeindicator_extended_str(int mi)
+const char *navi_modeindicator_extended_str(navi_modeindicator_t mi)
 {
 	switch (mi)
 	{
@@ -489,7 +489,7 @@ const char *navi_modeindicator_extended_str(int mi)
 //
 // navi_gsamode_str
 //
-const char *navi_gsamode_str(int mode, int notnull)
+const char *navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull)
 {
 	if (notnull)
 	{
@@ -512,8 +512,8 @@ const char *navi_gsamode_str(int mode, int notnull)
 //
 // navi_print_position_fix
 //
-int navi_print_position_fix(const struct navi_position_t *fix,
-	char *buffer, int maxsize, int notnull)
+size_t navi_print_position_fix(const struct navi_position_t *fix,
+	char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -575,7 +575,7 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 //
 // navi_print_number
 //
-int navi_print_number(double value, char *buffer, int maxsize, int notnull)
+size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -599,8 +599,7 @@ int navi_print_number(double value, char *buffer, int maxsize, int notnull)
 //
 // navi_print_utc
 //
-int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
-	int maxsize, int notnull)
+size_t navi_print_utc(const struct navi_utc_t *utc, char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -625,7 +624,7 @@ int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 //
 // navi_print_miarray
 //
-int navi_print_miarray(const int mi[], int miquant, char *buffer)
+size_t navi_print_miarray(const navi_modeindicator_t mi[], int miquant, char *buffer)
 {
 	int i;
 	const char *mistr;
@@ -668,14 +667,13 @@ const char *navi_talkerid_str(navi_talkerid_t tid)
 //
 // navi_print_numfield
 //
-int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
-	char *buffer, int maxsize)
+size_t navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
+	char *buffer, size_t maxsize)
 {
 	int i;
 	char str[4];
 
 	assert(buffer != NULL);
-	assert(maxsize > fieldwidth);
 
 	(void)strncpy(buffer, "", maxsize);
 
@@ -702,8 +700,8 @@ int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
 //
 // navi_print_hexfield
 //
-int navi_print_hexfield(const char bytes[], int fieldwidth,
-	char *buffer, int maxsize)
+size_t navi_print_hexfield(const char bytes[], int fieldwidth,
+	char *buffer, size_t maxsize)
 {
 	return navi_print_fixedfield(bytes, fieldwidth, 16, buffer, maxsize);
 }
@@ -711,8 +709,8 @@ int navi_print_hexfield(const char bytes[], int fieldwidth,
 //
 // navi_print_decfield
 //
-int navi_print_decfield(const char bytes[], int fieldwidth,
-	char *buffer, int maxsize)
+size_t navi_print_decfield(const char bytes[], int fieldwidth,
+	char *buffer, size_t maxsize)
 {
 	return navi_print_fixedfield(bytes, fieldwidth, 10, buffer, maxsize);
 }
@@ -720,9 +718,9 @@ int navi_print_decfield(const char bytes[], int fieldwidth,
 //
 // navi_print_character_field
 //
-navierr_status_t navi_print_character_field(const char *from, char *to, int maxsize)
+navierr_status_t navi_print_character_field(const char *from, char *to, size_t maxsize)
 {
-	int i, j, srclen;
+	size_t i, j, srclen;
 	char bytes[2];
 
 	assert(from != NULL);

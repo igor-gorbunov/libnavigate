@@ -21,11 +21,10 @@
 #define INCLUDE_navi_vtgplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/vtg.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/vtg.h>
 
 NAVI_EXTERN_CLASS(Vtg_t) : public Message_t
 {

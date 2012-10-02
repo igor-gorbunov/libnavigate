@@ -33,4 +33,3 @@ NaviError_t::NaviError_t(const NaviError_t &right)
 NaviError_t::~NaviError_t() { }
 
 }
-

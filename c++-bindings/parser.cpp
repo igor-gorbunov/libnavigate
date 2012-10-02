@@ -4,7 +4,7 @@
 namespace libnavigate
 {
 
-Message_t Navigate_t::ParseMessage(char *buffer, int maxsize, int *nmread)
+Message_t Navigate_t::ParseMessage(char *buffer, size_t maxsize, size_t *nmread)
 {
 	char parsed[2 * 1024];
 	navierr_status_t result;

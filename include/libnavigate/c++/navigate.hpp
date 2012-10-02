@@ -28,11 +28,11 @@ NAVI_EXTERN_CLASS(Navigate_t)
 public:
 	// returns the number of characters written
 	// in case of error throws an exception
-	int CreateMessage(const Message_t &msg, char *buffer, int maxsize);
+	size_t CreateMessage(const Message_t &msg, char *buffer, size_t maxsize);
 
 	// returns the parsed message
 	// in case of error throws an exception
-	Message_t ParseMessage(char *buffer, int maxsize, int *nmread);
+	Message_t ParseMessage(char *buffer, size_t maxsize, size_t *nmread);
 };
 
 }

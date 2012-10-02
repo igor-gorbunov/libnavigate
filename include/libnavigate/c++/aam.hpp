@@ -21,12 +21,11 @@
 #define INCLUDE_navi_aamplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/aam.h>
 #include <string>
 
 namespace libnavigate
 {
-
-#include <libnavigate/aam.h>
 
 NAVI_EXTERN_CLASS(Aam_t) : public Message_t
 {

@@ -20,6 +20,8 @@
 #ifndef INCLUDE_navi_generic_h
 #define INCLUDE_navi_generic_h
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 
 #define NAVI_BEGIN_DECL		extern "C" {

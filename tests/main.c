@@ -26,7 +26,7 @@
 int main(void)
 {
 	int result;
-	int msglength, nmwritten, nmread;
+	size_t msglength, nmwritten, nmread;
 	int remain;
 
 	char buffer[1024];
@@ -51,7 +51,7 @@ int main(void)
 
 	char parsedbuffer[4096];
 	int finished, parsed;
-	int msgtype;
+	navi_approved_fmt_t msgtype;
 
 	const navi_error_t *lasterr;
 
@@ -66,8 +66,7 @@ int main(void)
 	zda.lzoffset = -240;
 
 	nmwritten = 0;
-	result = navi_create_msg(navi_ZDA, &zda, buffer + msglength,
-		remain, &nmwritten);
+	result = navi_create_msg(navi_ZDA, &zda, buffer + msglength, remain, &nmwritten);
 	if (result == navi_Ok)
 	{
 		msglength += nmwritten;

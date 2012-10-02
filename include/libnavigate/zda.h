@@ -51,7 +51,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_zda(struct zda_t *msg, navi_talkerid_t t
 //
 // Creates ZDA message
 NAVI_EXTERN(navierr_status_t) navi_create_zda(const struct zda_t *msg, char *buffer,
-	int maxsize, int *nmwritten);
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ZDA message

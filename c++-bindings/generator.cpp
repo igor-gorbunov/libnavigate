@@ -4,9 +4,9 @@
 namespace libnavigate
 {
 
-int Navigate_t::CreateMessage(const Message_t &msg, char *buffer, int maxsize)
+size_t Navigate_t::CreateMessage(const Message_t &msg, char *buffer, size_t maxsize)
 {
-	int nmwritten;
+	size_t nmwritten;
 
 	if (navi_create_msg(msg.type().toSentenceFormatter(), msg, buffer,
 			maxsize, &nmwritten) != navi_Ok)
@@ -16,4 +16,3 @@ int Navigate_t::CreateMessage(const Message_t &msg, char *buffer, int maxsize)
 }
 
 }
-

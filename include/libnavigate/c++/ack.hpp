@@ -21,12 +21,11 @@
 #define INCLUDE_navi_ackplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/ack.h>
 #include <string>
 
 namespace libnavigate
 {
-
-#include <libnavigate/ack.h>
 
 NAVI_EXTERN_CLASS(Ack_t) : public Message_t
 {

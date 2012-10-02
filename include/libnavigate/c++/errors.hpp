@@ -1,12 +1,11 @@
 #ifndef INCLUDE_navi_errorsplusplus
 #define INCLUDE_navi_errorsplusplus
 
-#include "libnavigate/c++/generic.hpp"
+#include <libnavigate/c++/generic.hpp>
+#include <libnavigate/errors.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/errors.h>
 
 NAVI_EXTERN_CLASS(NaviError_t)
 {
@@ -45,4 +44,3 @@ private:
 }
 
 #endif // INCLUDE_navi_errorsplusplus
-

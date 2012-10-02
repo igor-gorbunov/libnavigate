@@ -21,11 +21,10 @@
 #define INCLUDE_navi_gsaplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/gsa.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/gsa.h>
 
 NAVI_EXTERN_CLASS(Gsa_t) : public Message_t
 {

@@ -26,11 +26,11 @@ using namespace libnavigate;
 int main(void)
 {
 	Navigate_t navi;
-	int msglength = 0, nmwritten = 0;
+	size_t msglength = 0, nmwritten = 0;
 
 	char buffer[1024];
 
-	int remain = sizeof(buffer);
+	size_t remain = sizeof(buffer);
 
 	// GLL
 	Gll_t gll;
@@ -240,7 +240,7 @@ int main(void)
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 
-	int i = 0, nmread = 0;
+	size_t i = 0, nmread = 0;
 	remain = sizeof(buffer);
 
 	while (remain > 0)

@@ -21,11 +21,10 @@
 #define INCLUDE_navi_ggaplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/gga.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/gga.h>
 
 NAVI_EXTERN_CLASS(Gga_t) : public Message_t
 {

@@ -20,14 +20,13 @@
 #ifndef INCLUDE_navi_dtmplusplus
 #define INCLUDE_navi_dtmplusplus
 
-#include "libnavigate/c++/sentence.hpp"
+#include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/dtm.h>
 
 namespace libnavigate
 {
 
-#include <libnavigate/dtm.h>
-
-	NAVI_EXTERN_CLASS(Dtm_t) : public Message_t
+NAVI_EXTERN_CLASS(Dtm_t) : public Message_t
 {
 public:
 	Dtm_t(const TalkerId_t &tid = TalkerId_t::Unknown);

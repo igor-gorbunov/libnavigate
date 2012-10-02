@@ -21,12 +21,11 @@
 #define INCLUDE_navi_txtplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/txt.h>
 #include <string>
 
 namespace libnavigate
 {
-
-#include <libnavigate/txt.h>
 
 NAVI_EXTERN_CLASS(Txt_t) : public Message_t
 {

@@ -21,11 +21,10 @@
 #define INCLUDE_navi_rmcplusplus
 
 #include <libnavigate/c++/sentence.hpp>
+#include <libnavigate/rmc.h>
 
 namespace libnavigate
 {
-
-#include <libnavigate/rmc.h>
 
 NAVI_EXTERN_CLASS(Rmc_t) : public Message_t
 {
