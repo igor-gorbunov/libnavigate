@@ -698,6 +698,17 @@ void Message_t::clearMessage()
 	m_type = MessageType_t::Unknown;
 }
 
+Message_t & Message_t::operator=(const Message_t &right)
+{
+	if (this != &right)
+	{
+		setType(right.type());
+		memcpy(m_data, right, m_size);
+	}
+
+	return *this;
+}
+
 Datum_t Datum_t::fromDatumCode(int code)
 {
 	switch (code)

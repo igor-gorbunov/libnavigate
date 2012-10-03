@@ -105,7 +105,7 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 	*nmread = eom + 1;
 
 	// Check that the message is not broken
-	if (navi_checksum(buffer + som, maxsize - (som + eom), NULL, &ucs) != navi_Ok)
+	if (navi_checksum(buffer + som, eom - som, NULL, &ucs) != navi_Ok)
 	{
 		navierr_set_last(navi_InvalidMessage);
 		return navi_Error;

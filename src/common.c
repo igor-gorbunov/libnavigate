@@ -299,8 +299,8 @@ navierr_status_t navi_init_offset_from_radians(double offset,
 //
 // navi_get_position
 //
-navierr_status_t navi_get_position(const struct navi_position_t *in, double *latitude,
-	double *longitude)
+navierr_status_t navi_get_position(const struct navi_position_t *in,
+	double *latitude, double *longitude)
 {
 	double d;
 
@@ -308,17 +308,17 @@ navierr_status_t navi_get_position(const struct navi_position_t *in, double *lat
 	assert(latitude != NULL);
 	assert(longitude != NULL);
 
-	d = in->latitude * M_PI / 180.;
+	d = in->latitude;
 	if (in->latsign == navi_North)
 		*latitude = d;
 	else
 		*latitude = -d;
 
-	d = in->longitude * M_PI / 180.;
-	if (in->latsign == navi_East)
+	d = in->longitude;
+	if (in->lonsign == navi_East)
 		*longitude = d;
 	else
-		*longitude = 2 * M_PI - d;
+		*longitude = -d;
 
 	return navi_Ok;
 }

@@ -561,12 +561,14 @@ public:
 	virtual operator void *()
 		{ return m_data; }
 
+	virtual Message_t & operator=(const Message_t &right);
+
 private:
 	void setType(const MessageType_t &type);
 
 private:
 	MessageType_t m_type;
-	int m_size;
+	size_t m_size;
 	void *m_data;
 };
 
