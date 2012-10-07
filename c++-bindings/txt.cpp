@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/c++/txt.hpp>
+#include "include/libnavigate/c++/txt.hpp"
 #include <string.h>
 
 namespace libnavigate

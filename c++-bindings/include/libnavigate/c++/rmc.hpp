@@ -1,5 +1,5 @@
 /*
- * zda.hpp - C++ bindings for ZDA message
+ * rmc.hpp - C++ bindings for RMC message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,50 +17,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_zdaplusplus
-#define INCLUDE_navi_zdaplusplus
+#ifndef INCLUDE_navi_rmcplusplus
+#define INCLUDE_navi_rmcplusplus
 
-#include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/zda.h>
+#include "sentence.hpp"
+#include <libnavigate/rmc.h>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Zda_t) : public Message_t
+NAVI_EXTERN_CLASS(Rmc_t) : public Message_t
 {
 public:
-	Zda_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-	Zda_t(const Message_t &msg);
-	virtual ~Zda_t();
+	Rmc_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Rmc_t(const Message_t &msg);
+	virtual ~Rmc_t();
 
 public:
 	virtual TalkerId_t talkerId() const;
 
 public:
 	virtual bool isUtcValid() const;
+	virtual bool isPositionValid() const;
+	virtual bool isSpeedValid() const;
+	virtual bool isCourseValid() const;
 	virtual bool isDateValid() const;
-	virtual bool isLocalZoneOffsetValid() const;
+	virtual bool isMagneticVariationValid() const;
 
 public:
 	virtual Utc_t utc() const;
+	virtual Status_t status() const;
+	virtual PositionFix_t positionFix() const;
+	virtual double speed() const;
+	virtual double course() const;
 	virtual Date_t date() const;
-	virtual int localZoneOffset() const;
+	virtual Offset_t magneticVariation() const;
+	virtual ModeIndicator_t modeIndicator() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
 
 	virtual void setUtc(const Utc_t &utc);
+	virtual void setStatus(const Status_t &status);
+	virtual void setPositionFix(const PositionFix_t &fix);
+	virtual void setSpeed(double value);
+	virtual void setCourse(double value);
 	virtual void setDate(const Date_t &date);
-	virtual void setLocalZoneOffset(int value);
+	virtual void setMagneticVariation(const Offset_t &offset);
+	virtual void setModeIndicator(const ModeIndicator_t &mi);
 
 public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const struct zda_t *() const;
-	virtual operator struct zda_t *();
+	virtual operator const struct rmc_t *() const;
+	virtual operator struct rmc_t *();
 };
 
 }
 
-#endif // INCLUDE_navi_zdaplusplus
+#endif // INCLUDE_navi_rmcplusplus

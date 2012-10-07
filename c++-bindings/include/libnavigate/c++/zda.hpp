@@ -1,5 +1,5 @@
 /*
- * grs.hpp - C++ bindings for GRS message
+ * zda.hpp - C++ bindings for ZDA message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,51 +17,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_grsplusplus
-#define INCLUDE_navi_grsplusplus
+#ifndef INCLUDE_navi_zdaplusplus
+#define INCLUDE_navi_zdaplusplus
 
-#include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/grs.h>
+#include "sentence.hpp"
+#include <libnavigate/zda.h>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Grs_t) : public Message_t
+NAVI_EXTERN_CLASS(Zda_t) : public Message_t
 {
 public:
-	static const int MaxSatellites = GRS_MAX_SATELLITES;
-
-public:
-	Grs_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-	Grs_t(const Message_t &msg);
-	virtual ~Grs_t();
+	Zda_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Zda_t(const Message_t &msg);
+	virtual ~Zda_t();
 
 public:
 	virtual TalkerId_t talkerId() const;
 
 public:
-	virtual bool isResidualValid(int satIdx) const;
+	virtual bool isUtcValid() const;
+	virtual bool isDateValid() const;
+	virtual bool isLocalZoneOffsetValid() const;
 
 public:
 	virtual Utc_t utc() const;
-	virtual int mode() const;
-	virtual double residual(int satIdx) const;
+	virtual Date_t date() const;
+	virtual int localZoneOffset() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
 
 	virtual void setUtc(const Utc_t &utc);
-	virtual void setMode(int mode);
-	virtual void setResidual(int satIdx, double value);
+	virtual void setDate(const Date_t &date);
+	virtual void setLocalZoneOffset(int value);
 
 public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const struct grs_t *() const;
-	virtual operator struct grs_t *();
+	virtual operator const struct zda_t *() const;
+	virtual operator struct zda_t *();
 };
 
 }
 
-#endif // INCLUDE_navi_grsplusplus
+#endif // INCLUDE_navi_zdaplusplus

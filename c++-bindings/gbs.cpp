@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/c++/gbs.hpp>
+#include "include/libnavigate/c++/gbs.hpp"
 
 namespace libnavigate
 {

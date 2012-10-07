@@ -1,5 +1,5 @@
 /*
- * alr.hpp - C++ bindings for ALR message
+ * gll.hpp - C++ bindings for GLL message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,49 +17,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_alrplusplus
-#define INCLUDE_navi_alrplusplus
+#ifndef INCLUDE_navi_gllplusplus
+#define INCLUDE_navi_gllplusplus
 
-#include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/alr.h>
-#include <string>
+#include "sentence.hpp"
+#include <libnavigate/gll.h>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Alr_t) : public Message_t
+NAVI_EXTERN_CLASS(Gll_t) : public Message_t
 {
 public:
-	Alr_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-	Alr_t(const Message_t &msg);
-	virtual ~Alr_t();
+	Gll_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Gll_t(const Message_t &msg);
+	virtual ~Gll_t();
 
 public:
 	virtual TalkerId_t talkerId() const;
 
+public:
+	virtual bool isPositionValid() const;
+	virtual bool isUtcValid() const;
+
+public:
+	virtual PositionFix_t positionFix() const;
 	virtual Utc_t utc() const;
-	virtual int alarmId() const;
-	virtual Status_t condition() const;
-	virtual Status_t acknowledgeState() const;
-	virtual std::string description() const;
+	virtual Status_t status() const;
+	virtual ModeIndicator_t modeIndicator() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
 
-	virtual void setUtc(const Utc_t &value);
-	virtual void setAlarmId(int value);
-	virtual void setCondition(const Status_t &value);
-	virtual void setAcknowledgeState(const Status_t &value);
-	virtual void setDescription(const std::string &value);
+	virtual void setPositionFix(const PositionFix_t &fix);
+	virtual void setUtc(const Utc_t &utc);
+	virtual void setStatus(const Status_t &status);
+	virtual void setModeIndicator(const ModeIndicator_t &mi);
 
 public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const struct alr_t *() const;
-	virtual operator struct alr_t *();
+	virtual operator const struct gll_t *() const;
+	virtual operator struct gll_t *();
 };
 
 }
 
-#endif // INCLUDE_navi_alrplusplus
+#endif // INCLUDE_navi_gllplusplus

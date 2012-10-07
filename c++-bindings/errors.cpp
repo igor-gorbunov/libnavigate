@@ -1,4 +1,4 @@
-#include <libnavigate/c++/errors.hpp>
+#include "include/libnavigate/c++/errors.hpp"
 
 namespace libnavigate
 {

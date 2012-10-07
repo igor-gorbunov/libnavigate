@@ -1,5 +1,5 @@
 /*
- * gll.hpp - C++ bindings for GLL message
+ * ack.hpp - C++ bindings for ACK message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,51 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_gllplusplus
-#define INCLUDE_navi_gllplusplus
+#ifndef INCLUDE_navi_ackplusplus
+#define INCLUDE_navi_ackplusplus
 
-#include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/gll.h>
+#include "sentence.hpp"
+#include <libnavigate/ack.h>
+#include <string>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Gll_t) : public Message_t
+NAVI_EXTERN_CLASS(Ack_t) : public Message_t
 {
 public:
-	Gll_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-	Gll_t(const Message_t &msg);
-	virtual ~Gll_t();
+	Ack_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Ack_t(const Message_t &msg);
+	virtual ~Ack_t();
 
 public:
 	virtual TalkerId_t talkerId() const;
 
-public:
-	virtual bool isPositionValid() const;
-	virtual bool isUtcValid() const;
-
-public:
-	virtual PositionFix_t positionFix() const;
-	virtual Utc_t utc() const;
-	virtual Status_t status() const;
-	virtual ModeIndicator_t modeIndicator() const;
+	virtual int alarmId() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
 
-	virtual void setPositionFix(const PositionFix_t &fix);
-	virtual void setUtc(const Utc_t &utc);
-	virtual void setStatus(const Status_t &status);
-	virtual void setModeIndicator(const ModeIndicator_t &mi);
+	virtual void setAlarmId(int value);
 
 public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const struct gll_t *() const;
-	virtual operator struct gll_t *();
+	virtual operator const struct ack_t *() const;
+	virtual operator struct ack_t *();
 };
 
 }
 
-#endif // INCLUDE_navi_gllplusplus
+#endif // INCLUDE_navi_ackplusplus

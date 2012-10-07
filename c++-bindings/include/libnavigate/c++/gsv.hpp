@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_gsvplusplus
 #define INCLUDE_navi_gsvplusplus
 
-#include <libnavigate/c++/sentence.hpp>
+#include "sentence.hpp"
 #include <libnavigate/gsv.h>
 
 namespace libnavigate

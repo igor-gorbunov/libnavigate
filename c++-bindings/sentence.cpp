@@ -1,5 +1,5 @@
-#include <libnavigate/c++/errors.hpp>
-#include <libnavigate/c++/sentence.hpp>
+#include "include/libnavigate/c++/errors.hpp"
+#include "include/libnavigate/c++/sentence.hpp"
 #include <string.h>
 #include <stdlib.h>
 

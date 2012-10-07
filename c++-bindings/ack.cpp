@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/c++/ack.hpp>
+#include "include/libnavigate/c++/ack.hpp"
 
 namespace libnavigate
 {

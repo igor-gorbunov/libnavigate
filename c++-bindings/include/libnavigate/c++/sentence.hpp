@@ -5,7 +5,7 @@
 #include <libnavigate/generator.h>
 #include <libnavigate/parser.h>
 
-#include <libnavigate/c++/generic.hpp>
+#include "generic.hpp"
 
 namespace libnavigate
 {

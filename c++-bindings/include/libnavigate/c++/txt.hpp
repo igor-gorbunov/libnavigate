@@ -1,5 +1,5 @@
 /*
- * aam.hpp - C++ bindings for AAM message
+ * txt.hpp - C++ bindings for AAM message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,50 +17,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_aamplusplus
-#define INCLUDE_navi_aamplusplus
+#ifndef INCLUDE_navi_txtplusplus
+#define INCLUDE_navi_txtplusplus
 
-#include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/aam.h>
+#include "sentence.hpp"
+#include <libnavigate/txt.h>
 #include <string>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Aam_t) : public Message_t
+NAVI_EXTERN_CLASS(Txt_t) : public Message_t
 {
 public:
-	static const int MaxWaypointIdSize = 60;
+	static const int MaxTextMessageSize = 62;
 
 public:
-	Aam_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-	Aam_t(const Message_t &msg);
-	virtual ~Aam_t();
+	Txt_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Txt_t(const Message_t &msg);
+	virtual ~Txt_t();
 
 public:
 	virtual TalkerId_t talkerId() const;
-
-	virtual Status_t circleStatus() const;
-	virtual Status_t perpendicularStatus() const;
-	virtual double waypointRadius() const;
-	virtual std::string waypointId() const;
+	virtual int textId() const;
+	virtual std::string textMessage() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
-
-	virtual void setCircleStatus(const Status_t &value);
-	virtual void setPerpendicularStatus(const Status_t &value);
-	virtual void setWaypointRadius(double value);
-	virtual void setWaypointId(const std::string &value);
+	virtual void setTextId(int value);
+	virtual void setTextMessage(const std::string &value);
 
 public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const struct aam_t *() const;
-	virtual operator struct aam_t *();
+	virtual operator const struct txt_t *() const;
+	virtual operator struct txt_t *();
 };
 
 }
 
-#endif // INCLUDE_navi_aamplusplus
+#endif // INCLUDE_navi_txtplusplus

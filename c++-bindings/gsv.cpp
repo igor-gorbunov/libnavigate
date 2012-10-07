@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/c++/gsv.hpp>
+#include "include/libnavigate/c++/gsv.hpp"
 
 namespace libnavigate
 {

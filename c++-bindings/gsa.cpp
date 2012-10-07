@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libnavigate/c++/gsa.hpp>
+#include "include/libnavigate/c++/gsa.hpp"
 
 namespace libnavigate
 {

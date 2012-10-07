@@ -1,5 +1,5 @@
 /*
- * vtg.hpp - C++ bindings for VTG message
+ * grs.hpp - C++ bindings for GRS message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,53 +17,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_navi_vtgplusplus
-#define INCLUDE_navi_vtgplusplus
+#ifndef INCLUDE_navi_grsplusplus
+#define INCLUDE_navi_grsplusplus
 
-#include <libnavigate/c++/sentence.hpp>
-#include <libnavigate/vtg.h>
+#include "sentence.hpp"
+#include <libnavigate/grs.h>
 
 namespace libnavigate
 {
 
-NAVI_EXTERN_CLASS(Vtg_t) : public Message_t
+NAVI_EXTERN_CLASS(Grs_t) : public Message_t
 {
 public:
-	Vtg_t(const TalkerId_t &tid = TalkerId_t::Unknown);
-	Vtg_t(const Message_t &msg);
-	virtual ~Vtg_t();
+	static const int MaxSatellites = GRS_MAX_SATELLITES;
+
+public:
+	Grs_t(const TalkerId_t &tid = TalkerId_t::Unknown);
+	Grs_t(const Message_t &msg);
+	virtual ~Grs_t();
 
 public:
 	virtual TalkerId_t talkerId() const;
 
 public:
-	virtual bool isCourseTrueValid() const;
-	virtual bool isCourseMagneticValid() const;
-	virtual bool isSpeedValid() const;
+	virtual bool isResidualValid(int satIdx) const;
 
 public:
-	virtual double courseTrue() const;
-	virtual double courseMagnetic() const;
-	virtual double speed() const;
-	virtual ModeIndicator_t modeIndicator() const;
+	virtual Utc_t utc() const;
+	virtual int mode() const;
+	virtual double residual(int satIdx) const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
 
-	virtual void setCourseTrue(double value);
-	virtual void setCourseMagnetic(double value);
-	virtual void setSpeed(double value);
-	virtual void setModeIndicator(const ModeIndicator_t &mi);
+	virtual void setUtc(const Utc_t &utc);
+	virtual void setMode(int mode);
+	virtual void setResidual(int satIdx, double value);
 
 public:
 	virtual void clearMessage();
 
 public:
-	virtual operator const struct vtg_t *() const;
-	virtual operator struct vtg_t *();
+	virtual operator const struct grs_t *() const;
+	virtual operator struct grs_t *();
 };
 
 }
 
-#endif // INCLUDE_navi_vtgplusplus
-
+#endif // INCLUDE_navi_grsplusplus

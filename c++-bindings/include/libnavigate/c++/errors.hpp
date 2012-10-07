@@ -1,7 +1,7 @@
 #ifndef INCLUDE_navi_errorsplusplus
 #define INCLUDE_navi_errorsplusplus
 
-#include <libnavigate/c++/generic.hpp>
+#include "generic.hpp"
 #include <libnavigate/errors.h>
 
 namespace libnavigate

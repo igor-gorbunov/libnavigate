@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_almplusplus
 #define INCLUDE_navi_almplusplus
 
-#include <libnavigate/c++/sentence.hpp>
+#include "sentence.hpp"
 #include <libnavigate/alm.h>
 
 namespace libnavigate

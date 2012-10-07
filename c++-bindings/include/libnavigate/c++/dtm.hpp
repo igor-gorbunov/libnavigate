@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_dtmplusplus
 #define INCLUDE_navi_dtmplusplus
 
-#include <libnavigate/c++/sentence.hpp>
+#include "sentence.hpp"
 #include <libnavigate/dtm.h>
 
 namespace libnavigate
