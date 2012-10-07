@@ -29,6 +29,12 @@ int main(void)
 	size_t msglength = 0, nmwritten = 0;
 
 	char buffer[1024];
+	const char *longtxtmessage = "Pay big attention to the Metro stations in St.Petersburg. "
+		"Some stations have correspondents on several main lines. The big problem comes this way: "
+		"Even if it is the same station, it will have different names on each main line. So if you "
+		"know you want to reach Gostiny Dvor on the green line, pay attention as you might be "
+		"travelling on the blue line. You would have to descend at Nevski Prospekt station which is "
+		"in fact the same station as Gostiny Dvor.";
 
 	size_t remain = sizeof(buffer);
 
@@ -422,6 +428,18 @@ int main(void)
 		std::cout << "Could not generate VTG sentence.\n";
 	}
 
+	// Long TXT, splitted into several messages
+	try
+	{
+		nmwritten = navi.CreateTxtSequence(TalkerId_t::GL, 25, longtxtmessage,
+			buffer + msglength, remain);
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	catch (NaviError_t e)
+	{
+	}
+
 	std::cout << "msglength = " << msglength << "\n";
 	std::cout << "message = '" << buffer << "'\n";
 
@@ -449,6 +467,13 @@ int main(void)
 					if (vtg.isSpeedValid())
 						std::cout << "\tSpeed, m/s: " << vtg.speed() << "\n";
 					std::cout << "\tMode indicator: " << vtg.modeIndicator().toModeIndCode() << "\n";
+				}
+				break;
+			case MessageType_t::TXT:
+				{
+					Txt_t txt(msg);
+					std::cout << "TXT message: Talker Id = " << txt.talkerId().toTalkerIdCode() << "\n";
+					std::cout << "Message text: " << txt.textMessage() << "\n";
 				}
 				break;
 			default:

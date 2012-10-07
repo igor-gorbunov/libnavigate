@@ -49,6 +49,12 @@ int main(void)
 	struct zda_t zda;
 
 	char parsedbuffer[4096];
+	const char *longtxtmessage = "Pay big attention to the Metro stations in St.Petersburg. "
+		"Some stations have correspondents on several main lines. The big problem comes this way: "
+		"Even if it is the same station, it will have different names on each main line. So if you "
+		"know you want to reach Gostiny Dvor on the green line, pay attention as you might be "
+		"travelling on the blue line. You would have to descend at Nevski Prospekt station which is "
+		"in fact the same station as Gostiny Dvor.";
 	int finished;
 	navi_approved_fmt_t msgtype;
 
@@ -1191,6 +1197,19 @@ int main(void)
 	else
 	{
 		printf("Composition of TXT failed (%d)\n", result);
+	}
+
+	// Long TXT, splitted into several messages
+	result = navi_create_txt_sequence(navi_GL, 25, longtxtmessage, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of TXT failed (%d)\n", navierr_get_last()->errclass);
 	}
 
 	printf("msglength = %d\n", msglength);

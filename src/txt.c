@@ -43,6 +43,8 @@ navierr_status_t navi_init_txt(struct txt_t *msg, navi_talkerid_t tid)
 	return navi_Ok;
 }
 
+#ifndef NO_GENERATOR
+
 //
 // Creates TXT message
 navierr_status_t navi_create_txt(const struct txt_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
@@ -75,6 +77,66 @@ navierr_status_t navi_create_txt(const struct txt_t *msg, char *buffer, size_t m
 		textid, textmsg);
 	return navi_Ok;
 }
+
+//
+// Creates TXT message sequence rom text string
+navierr_status_t navi_create_txt_sequence(navi_talkerid_t tid, int textid,
+	const char *msg, char *buffer, size_t maxsize, size_t *nmwritten)
+{
+	int i, j, k;
+	int totalnm, messagenm;
+	size_t offset = 0, nmofcharswritten = 0;
+
+	struct txt_t txt;
+
+	i = 0, j = 0;
+	while (i < MAX_TEXT_SIZE && msg[i] != '\0')
+	{
+		switch (navi_get_character_type(msg[i++]))
+		{
+		case navi_char_Valid:
+			j += 1;
+			break;
+		default:
+			j += 3;
+			break;
+		}
+	}
+
+	if (j >= MAX_TEXT_SIZE)
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+
+	i = 0;
+	totalnm = j / MAX_TEXT_MESSAGE_SIZE + (j % MAX_TEXT_MESSAGE_SIZE ? 1 : 0);
+	for (messagenm = 1; messagenm <= totalnm; messagenm++)
+	{
+		navi_init_txt(&txt, tid);
+		txt.totalnm = totalnm;
+		txt.msgnm = messagenm;
+		txt.textid = textid;
+
+		j = k = 0;
+		while (j < MAX_TEXT_MESSAGE_SIZE && msg[i] != '\0')
+		{
+			j += navi_get_character_type(msg[i]) == navi_char_Valid ? 1 : 3;
+			txt.textmsg[k++] = msg[i++];
+		}
+
+		if (navi_create_msg(navi_TXT, &txt, buffer + offset, maxsize - offset, &nmofcharswritten) != navi_Ok)
+			return navi_Error;
+		offset += nmofcharswritten;
+	}
+
+	*nmwritten = offset;
+	return navi_Ok;
+}
+
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
 
 //
 // Parses TXT message
@@ -116,3 +178,5 @@ navierr_status_t navi_parse_txt(struct txt_t *msg, char *buffer)
 
 	return navi_Ok;
 }
+
+#endif // NO_PARSER

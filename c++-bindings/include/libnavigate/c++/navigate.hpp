@@ -30,6 +30,11 @@ public:
 	// in case of error throws an exception
 	size_t CreateMessage(const Message_t &msg, char *buffer, size_t maxsize);
 
+	//
+	// Creates TXT message sequence rom text string
+	size_t CreateTxtSequence(const TalkerId_t &tid, int textId,
+		const char *msg, char *buffer, size_t maxsize);
+
 	// returns the parsed message
 	// in case of error throws an exception
 	Message_t ParseMessage(char *buffer, size_t maxsize, size_t *nmread);

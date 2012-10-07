@@ -4,7 +4,6 @@ Library versions roadmap:
 
 	v0.3:
 	* implement building RPM package of libnavigate
-	* implement building the sequence of TXT sentences
 	* split ALM, MLA and GSV structures and implement building their sequences
 
 	v0.4:

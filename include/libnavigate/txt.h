@@ -30,13 +30,16 @@
 // $--TXT,xx,xx,xx,c--c*hh<cr><lf>
 //
 
+#define MAX_TEXT_MESSAGE_SIZE	61
+#define MAX_TEXT_SIZE			(99 * MAX_TEXT_MESSAGE_SIZE)
+
 struct txt_t
 {
 	navi_talkerid_t tid;	// talker identifier
 	int totalnm;		// total number of messages (01-99)
 	int msgnm;			// message number (01-99)
 	int textid;			// text identifier (01-99)
-	char textmsg[62];	// text message
+	char textmsg[MAX_TEXT_MESSAGE_SIZE + 1];	// text message with null terminator
 };
 
 NAVI_BEGIN_DECL
@@ -45,14 +48,27 @@ NAVI_BEGIN_DECL
 // Initializes TXT sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_txt(struct txt_t *msg, navi_talkerid_t tid);
 
+#ifndef NO_GENERATOR
+
 //
 // Creates TXT message
 NAVI_EXTERN(navierr_status_t) navi_create_txt(const struct txt_t *msg, char *buffer,
 	size_t maxsize, size_t *nmwritten);
 
 //
+// Creates TXT message sequence rom text string
+NAVI_EXTERN(navierr_status_t) navi_create_txt_sequence(navi_talkerid_t tid, int textid,
+	const char *msg, char *buffer, size_t maxsize, size_t *nmwritten);
+
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
+//
 // Parses TXT message
 NAVI_EXTERN(navierr_status_t) navi_parse_txt(struct txt_t *msg, char *buffer);
+
+#endif // NO_PARSER
 
 NAVI_END_DECL
 

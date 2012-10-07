@@ -1,3 +1,8 @@
+2012-10-07  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Building RPM packages with CPack
+	* Implemented generation of TXT message sequence
+
 2012-10-02  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* Added C++ bindings to the library
