@@ -14,10 +14,6 @@
 
 %define _source		%{_name}-%{version}.tar.bz2
 
-#%define _prefix		/usr/local
-
-#%define _build		i686-pc-linux-gnu
-
 #
 Name:           %{_name}
 Version:        %{_version}
