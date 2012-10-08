@@ -44,7 +44,7 @@ enum _navierr_class_t
 	navi_NotEnoughBuffer = 3,	// not enough space in output buffer
 	navi_MsgNotSupported = 4,	// message type not supported
 	navi_NoValidMessage = 5,	// no valid message in buffer
-	navi_NullField = 6,			// null field in a message
+	navi_NullField = 6,			// null field in a message, where it is not allowed
 	navi_InvalidMessage = 7,	// message does not conform to protocol
 	navi_NotImplemented = 8,	// method not implemented
 	navi_InvalidParameter = 9	// invalid parameter to method
