@@ -40,11 +40,12 @@ int main(void)
 	struct grs_t grs;
 	struct gsa_t gsa;
 	struct gst_t gst;
-	struct gsv_t gsv;
 	struct rmc_t rmc;
 	struct txt_t txt;
 	struct vtg_t vtg;
 	struct zda_t zda;
+
+	struct navi_satinfo_t gsvinfo[9];
 
 	char parsedbuffer[4096];
 	const char *longtxtmessage = "Pay big attention to the Metro stations in St.Petersburg. "
@@ -614,51 +615,46 @@ int main(void)
 	}
 
 	// GSV
-	gsv.tid = navi_GL;
-	gsv.nmsatellites = 9;
+	gsvinfo[0].vfields = SATINFO_VALID_ORIENTATION;
+	gsvinfo[0].id = 4;
+	gsvinfo[0].elevation = 12;
+	gsvinfo[0].azimuth = 0;
 
-	gsv.info[0].vfields = SATINFO_VALID_ORIENTATION;
-	gsv.info[0].id = 4;
-	gsv.info[0].elevation = 12;
-	gsv.info[0].azimuth = 0;
+	gsvinfo[1].vfields = SATINFO_VALID_ORIENTATION | SATINFO_VALID_SNR;
+	gsvinfo[1].id = 5;
+	gsvinfo[1].elevation = 18;
+	gsvinfo[1].azimuth = 12;
+	gsvinfo[1].snr = 45;
 
-	gsv.info[1].vfields = SATINFO_VALID_ORIENTATION |
-		SATINFO_VALID_SNR;
-	gsv.info[1].id = 5;
-	gsv.info[1].elevation = 18;
-	gsv.info[1].azimuth = 12;
-	gsv.info[1].snr = 45;
+	gsvinfo[2].vfields = 0;
+	gsvinfo[2].id = 14;
 
-	gsv.info[2].vfields = 0;
-	gsv.info[2].id = 14;
+	gsvinfo[3].vfields = SATINFO_VALID_ORIENTATION | SATINFO_VALID_SNR;
+	gsvinfo[3].id = 18;
+	gsvinfo[3].elevation = 12;
+	gsvinfo[3].azimuth = 300;
+	gsvinfo[3].snr = 70;
 
-	gsv.info[3].vfields = SATINFO_VALID_ORIENTATION |
-		SATINFO_VALID_SNR;
-	gsv.info[3].id = 18;
-	gsv.info[3].elevation = 12;
-	gsv.info[3].azimuth = 300;
-	gsv.info[3].snr = 70;
+	gsvinfo[4].vfields = 0;
+	gsvinfo[4].id = 6;
 
-	gsv.info[4].vfields = 0;
-	gsv.info[4].id = 6;
+	gsvinfo[5].vfields = SATINFO_VALID_SNR;
+	gsvinfo[5].id = 7;
+	gsvinfo[5].snr = 4;
 
-	gsv.info[5].vfields = SATINFO_VALID_SNR;
-	gsv.info[5].id = 7;
-	gsv.info[5].snr = 4;
+	gsvinfo[6].vfields = SATINFO_VALID_SNR;
+	gsvinfo[6].id = 8;
+	gsvinfo[6].snr = 4;
 
-	gsv.info[6].vfields = SATINFO_VALID_SNR;
-	gsv.info[6].id = 8;
-	gsv.info[6].snr = 4;
+	gsvinfo[7].vfields = SATINFO_VALID_SNR;
+	gsvinfo[7].id = 9;
+	gsvinfo[7].snr = 4;
 
-	gsv.info[7].vfields = SATINFO_VALID_SNR;
-	gsv.info[7].id = 9;
-	gsv.info[7].snr = 4;
+	gsvinfo[8].vfields = SATINFO_VALID_SNR;
+	gsvinfo[8].id = 10;
+	gsvinfo[8].snr = 4;
 
-	gsv.info[8].vfields = SATINFO_VALID_SNR;
-	gsv.info[8].id = 10;
-	gsv.info[8].snr = 4;
-
-	result = navi_create_msg(navi_GSV, &gsv, buffer + msglength,
+	result = navi_create_gsv_sequence(navi_GL, 9, gsvinfo, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)
 	{
@@ -743,6 +739,9 @@ int main(void)
 	{
 		printf("Composition of ALR failed (%d)\n", result);
 	}
+
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", buffer);
 
 	finished = 0;
 	parsed = 0;
@@ -895,9 +894,10 @@ int main(void)
 						navi_talkerid_str(gsv->tid), gsv->tid);
 					printf("\tTotal nm of messages: %i\n", gsv->totalnm);
 					printf("\tMessage number: %i\n", gsv->msgnm);
-					printf("\tTotal satellites in view: %i\n", gsv->nmsatellites);
+					if (gsv->nmsatellites != -1)
+						printf("\tTotal satellites in view: %i\n", gsv->nmsatellites);
 
-					for (i = 0; i < gsv->nmsatellites; i++)
+					for (i = 0; i < GSV_MAX_SATELLITES_PER_MESSAGE && gsv->info[i].id != 0; i++)
 					{
 						printf("\tSatellite id: %i\n", gsv->info[i].id);
 						if (gsv->info[i].vfields & SATINFO_VALID_ORIENTATION)

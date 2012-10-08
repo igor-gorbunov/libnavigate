@@ -224,7 +224,15 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		}
 		break;
 	case navi_GSV:
-		return navi_create_gsv((const struct gsv_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct gsv_t *pgsv = (const struct gsv_t *)msg;
+			tid = navi_talkerid_str(pgsv->tid);
+			sfmt = navi_sentencefmt_str(navi_GSV);
+
+			if (navi_create_gsv(pgsv, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_HDG:
 	case navi_HDT:
 	case navi_HMR:

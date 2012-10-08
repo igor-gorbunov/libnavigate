@@ -29,7 +29,7 @@ namespace libnavigate
 NAVI_EXTERN_CLASS(Gsv_t) : public Message_t
 {
 public:
-	static const int MaxSatellites = GSV_MAX_SATELLITES;
+	static const int MaxSatellites = GSV_MAX_SATELLITES_PER_MESSAGE;
 
 public:
 	Gsv_t(const TalkerId_t &tid = TalkerId_t::Unknown);

@@ -4,7 +4,6 @@ Library versions roadmap:
 
 	v0.3:
 	* implement building RPM package of libnavigate
-	* split GSV structure and implement building their sequences
 
 	v0.4:
 	* implement generation/parsing of APB, BEC, BOD, BWC, BWR
