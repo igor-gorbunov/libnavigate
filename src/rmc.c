@@ -1,5 +1,5 @@
 /*
- * rmc.c - generator and parser of RMS message
+ * rmc.c - generator and parser of RMC message
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,23 +17,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "rmc.h"
-#include "common.h"
+#include <libnavigate/rmc.h>
+#include <libnavigate/common.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
-#include <navigate.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes RMC sentence structure with default values
+navierr_status_t navi_init_rmc(struct rmc_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+	msg->status = navi_status_V;
+	navi_init_position_from_degrees(0.0, 0.0, &msg->fix);
+	msg->speed = 0.0;
+	msg->courseTrue = 0.0;
+	navi_init_date(2000, 1, 1, &msg->date);
+	navi_init_offset_from_degrees(0.0, navi_East, &msg->magnetic);
+	msg->mi = navi_DataNotValid;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_rmc(const struct rmc_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates RMC message
+navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *status, *magsign, *mi;
 	char utc[32], fix[64], snots[32], ctrue[32], day[3],
@@ -75,9 +98,11 @@ int navi_create_rmc(const struct rmc_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_rmc(struct rmc_t *msg, char *buffer)
+//
+// Parses RMC message
+navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 

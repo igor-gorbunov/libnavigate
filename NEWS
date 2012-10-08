@@ -1,10 +1,34 @@
+2012-10-08  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* ALM message restructured
+	* Generation of ALM message sequence
+	* MLA message restructured
+	* Generation of MLA message sequence
+	* GSV message restructured
+	* Generation of GSV message sequence
+	* Implement building RPM package of libnavigate
+
+2012-10-07  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Building RPM packages with CPack
+	* Implemented generation of TXT message sequence
+
+2012-10-02  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Added C++ bindings to the library
+	
+2012-10-01  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Implemented generation/parsing of AAM, ACK, ALR and
+	  TXT sentences
+
 2012-09-21  Igor Gorbunov  <igor.genius@gmail.com>
 
+	* Release 2 of libnavigate (version 0.2.0a)
 	* Implemented generation/parsing of ALM, GBS, GGA, GRS, GSA,
 	  GST, GSV and MLA sentences
-    * Switching temporarily to POSIX locale while printing
+	* Switching temporarily to POSIX locale while printing
 	  doubles with snprintf
-	* Release 2 of libnavigate (version 0.2.0a)
 
 2012-09-19  Igor Gorbunov  <igor.genius@gmail.com>
 

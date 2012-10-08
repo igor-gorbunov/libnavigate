@@ -17,23 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "dtm.h"
-#include "common.h"
+#include <libnavigate/dtm.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes DTM sentence structure with default values
+navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	msg->locdatum = navi_datum_NULL;
+	msg->locdatumsub = navi_datumsub_NULL;
+	navi_init_offset_from_degrees(0.0, navi_North, &msg->latofs);
+	navi_init_offset_from_degrees(0.0, navi_East, &msg->lonofs);
+	msg->altoffset = 0.0;
+	msg->refdatum = navi_datum_NULL;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_dtm(const struct dtm_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates DTM message
+navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *ldatum, *rdatum, *datumsd, *latsign, *lonsign;
 	char latofs[32], lonofs[32], altofs[32];
@@ -42,11 +62,11 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 		msg->vfields & DTM_VALID_LOCALDATUM));
 	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->locdatumsub,
 		msg->vfields & DTM_VALID_LOCALDATUMSUB));
-	msglength += navi_print_number(msg->latofs.offset, latofs,
+	msglength += navi_print_number(msg->latofs.offset * 60., latofs,
 		sizeof(latofs), msg->vfields & DTM_VALID_OFFSET);
 	msglength += strlen(latsign = navi_fixsign_str(msg->latofs.sign,
 		msg->vfields & DTM_VALID_OFFSET));
-	msglength += navi_print_number(msg->lonofs.offset, lonofs,
+	msglength += navi_print_number(msg->lonofs.offset * 60., lonofs,
 		sizeof(lonofs), msg->vfields & DTM_VALID_OFFSET);
 	msglength += strlen(lonsign = navi_fixsign_str(msg->lonofs.sign,
 		msg->vfields & DTM_VALID_OFFSET));
@@ -70,9 +90,11 @@ int navi_create_dtm(const struct dtm_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_dtm(struct dtm_t *msg, char *buffer)
+//
+// Parses DTM message
+navierr_status_t navi_parse_dtm(struct dtm_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 
@@ -105,6 +127,7 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	}
 	else
 	{
+		msg->latofs.offset /= 60.0;
 		msg->vfields |= DTM_VALID_OFFSET;
 	}
 	i += nmread;
@@ -116,6 +139,7 @@ int navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	}
 	else
 	{
+		msg->lonofs.offset /= 60.0;
 		msg->vfields |= DTM_VALID_OFFSET;
 	}
 	i += nmread;

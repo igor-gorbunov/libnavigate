@@ -17,33 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "zda.h"
-#include "common.h"
+#include <libnavigate/zda.h>
+#include <libnavigate/common.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
-#include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes ZDA sentence structure with default values
+navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_date(2000, 1, 1, &msg->date);
+	msg->lzoffset = 0;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmwritten)
+//
+// Creates ZDA message
+navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 	char utc[32], day[3], month[3], year[5], lzhours[4], lzmins[3];
 
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & ZDA_VALID_UTC);
 	msglength += snprintf(day, sizeof(day),
-		(msg->vfields & ZDA_VALID_DAY) ? "%02u" : "", msg->date.day);
+		(msg->vfields & ZDA_VALID_DATE) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),
-		(msg->vfields & ZDA_VALID_MONTH) ? "%02u" : "", msg->date.month);
+		(msg->vfields & ZDA_VALID_DATE) ? "%02u" : "", msg->date.month);
 	msglength += snprintf(year, sizeof(year),
-		(msg->vfields & ZDA_VALID_YEAR) ? "%04u" : "", msg->date.year);
+		(msg->vfields & ZDA_VALID_DATE) ? "%04u" : "", msg->date.year);
 
 	memset(lzhours, 0, sizeof(lzhours));
 	memset(lzmins, 0, sizeof(lzmins));
@@ -79,9 +98,11 @@ int navi_create_zda(const struct zda_t *msg, char *buffer, int maxsize, int *nmw
 
 #ifndef NO_PARSER
 
-int navi_parse_zda(struct zda_t *msg, char *buffer)
+//
+// Parses ZDA message
+navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	double d;
 
 	msg->vfields = 0;
@@ -105,7 +126,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	else
 	{
 		msg->date.day = (int)round(d);
-		msg->vfields |= ZDA_VALID_DAY;
+		msg->vfields |= ZDA_VALID_DATE;
 	}
 	i += nmread;
 
@@ -117,7 +138,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	else
 	{
 		msg->date.month = (int)round(d);
-		msg->vfields |= ZDA_VALID_MONTH;
+		msg->vfields |= ZDA_VALID_DATE;
 	}
 	i += nmread;
 
@@ -129,7 +150,7 @@ int navi_parse_zda(struct zda_t *msg, char *buffer)
 	else
 	{
 		msg->date.year = (int)round(d);
-		msg->vfields |= ZDA_VALID_YEAR;
+		msg->vfields |= ZDA_VALID_DATE;
 	}
 	i += nmread;
 

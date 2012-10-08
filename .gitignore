@@ -26,6 +26,7 @@ tests/.libs/
 tests/test
 Makefile
 libtool
+*.aps
 
 build
 

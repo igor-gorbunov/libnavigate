@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <navigate.h>
-
 #include <math.h>
 #include <ctype.h>
 #include <stddef.h>
@@ -26,50 +24,62 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "common.h"
+#include <libnavigate/parser.h>
+#include <libnavigate/common.h>
 
 #ifndef NO_PARSER
 
-#include "alm.h"
-#include "dtm.h"
-#include "gbs.h"
-#include "gga.h"
-#include "gll.h"
-#include "gns.h"
-#include "grs.h"
-#include "gsa.h"
-#include "gst.h"
-#include "gsv.h"
-#include "mla.h"
-#include "rmc.h"
-#include "vtg.h"
-#include "zda.h"
+#include <libnavigate/aam.h>
+#include <libnavigate/ack.h>
+#include <libnavigate/alm.h>
+#include <libnavigate/alr.h>
+#include <libnavigate/dtm.h>
+#include <libnavigate/gbs.h>
+#include <libnavigate/gga.h>
+#include <libnavigate/gll.h>
+#include <libnavigate/gns.h>
+#include <libnavigate/grs.h>
+#include <libnavigate/gsa.h>
+#include <libnavigate/gst.h>
+#include <libnavigate/gsv.h>
+#include <libnavigate/mla.h>
+#include <libnavigate/rmc.h>
+#include <libnavigate/txt.h>
+#include <libnavigate/vtg.h>
+#include <libnavigate/zda.h>
 
 #endif // NO_PARSER
 
 //
-// navi_parse_msg
-//
+// Talker IDs list
+extern const char *navi_tidlist[];
 
-int navi_parse_msg(char *buffer, int maxsize, int msgsize,
-	void *msg, int *msgtype, int *nmread)
+//
+// Approved sentence formatters list
+extern const char *navi_fmtlist[];
+
+//
+// IEC message parser
+//
+navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, void *msg,
+	navi_approved_fmt_t *msgtype, size_t *nmread)
 {
 
 #ifndef NO_PARSER
 
-	int tid;	// talker id
+	navi_talkerid_t tid;	// talker id
 
-	int som;	// start of message index
-	int eom;	// end of message index
+	size_t som;	// start of message index
+	size_t eom;	// end of message index
 
-	unsigned ucs, cs;
+	unsigned int ucs, cs;
 
 	//
 	//	Determine the borders of message in buffer
 	//
 
 	// Skip up to beginning of the next message
-	for (som = 0; buffer[som] != '$' && som < maxsize; som++);
+	for (som = 0; buffer[som] != '$' && som < maxsize; som++) { }
 
 	if (som >= maxsize)
 	{	// No valid message
@@ -95,7 +105,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	*nmread = eom + 1;
 
 	// Check that the message is not broken
-	if (navi_checksum(buffer + som, maxsize - (som + eom), NULL, &ucs) < 0)
+	if (navi_checksum(buffer + som, eom - som, NULL, &ucs) != navi_Ok)
 	{
 		navierr_set_last(navi_InvalidMessage);
 		return navi_Error;
@@ -118,17 +128,37 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	switch (*msgtype)
 	{
 	case navi_AAM:
+		if (msgsize < sizeof(struct aam_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_aam((struct aam_t *)msg, tid);
+		return navi_parse_aam((struct aam_t *)msg, buffer + som + 7);
 	case navi_ACK:
-		break;
+		if (msgsize < sizeof(struct ack_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_ack((struct ack_t *)msg, tid);
+		return navi_parse_ack((struct ack_t *)msg, buffer + som + 7);
 	case navi_ALM:
 		if (msgsize < sizeof(struct alm_t))
 		{
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct alm_t *)msg)->tid = tid;
+		navi_init_alm((struct alm_t *)msg, tid);
 		return navi_parse_alm((struct alm_t *)msg, buffer + som + 7);
 	case navi_ALR:
+		if (msgsize < sizeof(struct alr_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_alr((struct alr_t *)msg, tid);
+		return navi_parse_alr((struct alr_t *)msg, buffer + som + 7);
 	case navi_APB:
 	case navi_BEC:
 	case navi_BOD:
@@ -149,7 +179,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct dtm_t *)msg)->tid = tid;
+		navi_init_dtm((struct dtm_t *)msg, tid);
 		return navi_parse_dtm((struct dtm_t *)msg, buffer + som + 7);
 	case navi_FSI:
 		break;
@@ -159,7 +189,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gbs_t *)msg)->tid = tid;
+		navi_init_gbs((struct gbs_t *)msg, tid);
 		return navi_parse_gbs((struct gbs_t *)msg, buffer + som + 7);
 	case navi_GGA:
 		if (msgsize < sizeof(struct gga_t))
@@ -167,7 +197,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gga_t *)msg)->tid = tid;
+		navi_init_gga((struct gga_t *)msg, tid);
 		return navi_parse_gga((struct gga_t *)msg, buffer + som + 7);
 	case navi_GLC:
 		break;
@@ -177,7 +207,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gll_t *)msg)->tid = tid;
+		navi_init_gll((struct gll_t *)msg, tid);
 		return navi_parse_gll((struct gll_t *)msg, buffer + som + 7);
 	case navi_GNS:
 		if (msgsize < sizeof(struct gns_t))
@@ -185,7 +215,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gns_t *)msg)->tid = tid;
+		navi_init_gns((struct gns_t *)msg, tid);
 		return navi_parse_gns((struct gns_t *)msg, buffer + som + 7);
 	case navi_GRS:
 		if (msgsize < sizeof(struct grs_t))
@@ -193,7 +223,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct grs_t *)msg)->tid = tid;
+		navi_init_grs((struct grs_t *)msg, tid);
 		return navi_parse_grs((struct grs_t *)msg, buffer + som + 7);
 	case navi_GSA:
 		if (msgsize < sizeof(struct gsa_t))
@@ -201,7 +231,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gsa_t *)msg)->tid = tid;
+		navi_init_gsa((struct gsa_t *)msg, tid);
 		return navi_parse_gsa((struct gsa_t *)msg, buffer + som + 7);
 	case navi_GST:
 		if (msgsize < sizeof(struct gst_t))
@@ -209,7 +239,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gst_t *)msg)->tid = tid;
+		navi_init_gst((struct gst_t *)msg, tid);
 		return navi_parse_gst((struct gst_t *)msg, buffer + som + 7);
 	case navi_GSV:
 		if (msgsize < sizeof(struct gsv_t))
@@ -217,7 +247,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct gsv_t *)msg)->tid = tid;
+		navi_init_gsv((struct gsv_t *)msg, tid);
 		return navi_parse_gsv((struct gsv_t *)msg, buffer + som + 7);
 	case navi_HDG:
 	case navi_HDT:
@@ -251,7 +281,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct rmc_t *)msg)->tid = tid;
+		navi_init_rmc((struct rmc_t *)msg, tid);
 		return navi_parse_rmc((struct rmc_t *)msg, buffer + som + 7);
 	case navi_ROT:
 	case navi_RPM:
@@ -263,7 +293,15 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 	case navi_TLB:
 	case navi_TLL:
 	case navi_TTM:
+		break;
 	case navi_TXT:
+		if (msgsize < sizeof(struct txt_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_txt((struct txt_t *)msg, tid);
+		return navi_parse_txt((struct txt_t *)msg, buffer + som + 7);
 	case navi_VBW:
 	case navi_VDR:
 	case navi_VHW:
@@ -291,7 +329,7 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 			navierr_set_last(navi_NotEnoughBuffer);
 			return navi_Error;
 		}
-		((struct zda_t *)msg)->tid = tid;
+		navi_init_zda((struct zda_t *)msg, tid);
 		return navi_parse_zda((struct zda_t *)msg, buffer + som + 7);
 	case navi_ZDL:
 	case navi_ZFO:
@@ -322,20 +360,20 @@ int navi_parse_msg(char *buffer, int maxsize, int msgsize,
 #define PARSE_OFFSET_SIGN		3
 #define PARSE_OFFSET_FINI		4
 
-int navi_parse_offset(char *buffer, struct navi_offset_t *offset,
-		int *nmread)
+navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset, size_t *nmread)
 {
 
 #ifndef NO_PARSER
 
 	double t;
-	int i = 0, j = -1, state, c, s = 0, error = 0;
+	int j = -1, state, c, s = 0, error = 0;
+	size_t i = 0;
 
 	assert(buffer != NULL);
 	assert(offset != NULL);
 	assert(nmread != NULL);
 
-	t = 0.;
+	t = 0.0;
 	state = PARSE_OFFSET_INIT;
 
 	for ( ; ; )
@@ -450,7 +488,7 @@ _Exit:
 #else
 
 	navierr_set_last(navi_NotImplemented);
-	return -1;
+	return navi_Error;
 
 #endif // NO_PARSER
 
@@ -476,13 +514,13 @@ _Exit:
 #define PARSE_POSITION_NULLFIELD		7
 #define PARSE_POSITION_FINI				8
 
-int navi_parse_position_fix(char *buffer, struct navi_position_t *fix,
-	int *nmread)
+navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *fix, size_t *nmread)
 {
 
 #ifndef NO_PARSER
 
-	int state, i = 0, j = -1, k, c, error = 0;
+	int state, j = -1, k, c, error = 0;
+	size_t i = 0;
 	double deg, min;
 
 	assert(buffer != NULL);
@@ -490,7 +528,7 @@ int navi_parse_position_fix(char *buffer, struct navi_position_t *fix,
 	assert(nmread != NULL);
 
 	state = PARSE_POSITION_INIT;
-	deg = min = 0.;
+	deg = min = 0.0;
 
 	for ( ; ; )
 	{
@@ -722,7 +760,7 @@ _Exit:
 #else
 
 	navierr_set_last(navi_NotImplemented);
-	return -1;
+	return navi_Error;
 
 #endif // NO_PARSER
 
@@ -746,14 +784,15 @@ _Exit:
 #define PARSE_UTC_INTEGRAL		1
 #define PARSE_UTC_FRACTION		2
 
-int navi_parse_utc(char *buffer, struct navi_utc_t *utc, int *nmread)
+navierr_status_t navi_parse_utc(char *buffer, struct navi_utc_t *utc, size_t *nmread)
 {
 
 #ifndef NO_PARSER
 
-	int state, i = 0, j = -1, k, c, error = 0;
+	int state, j = -1, k, c, error = 0;
 	int t = 0;
-	double d = 0.;
+	size_t i = 0;
+	double d = 0.0;
 
 	assert(buffer != NULL);
 	assert(utc != NULL);
@@ -878,7 +917,7 @@ _Exit:
 #else
 
 	navierr_set_last(navi_NotImplemented);
-	return -1;
+	return navi_Error;
 
 #endif // NO_PARSER
 
@@ -897,14 +936,14 @@ _Exit:
 #define PARSE_NUMBER_INTEGRAL		1
 #define PARSE_NUMBER_FRACTION		2
 
-int navi_parse_number(char *buffer, double *parsed, int *nmread)
+navierr_status_t navi_parse_number(char *buffer, double *parsed, size_t *nmread)
 {
 
 #ifndef NO_PARSER
 
-	int state = PARSE_NUMBER_INIT, i = 0, j = -1,
-		c, s = 1, error = 0;
-	double d = 0.;
+	int state = PARSE_NUMBER_INIT, j = -1, c, s = 1, error = 0;
+	size_t i = 0;
+	double d = 0.0;
 
 	assert(buffer != NULL);
 	assert(parsed != NULL);
@@ -999,7 +1038,7 @@ _Exit:
 #else
 
 	navierr_set_last(navi_NotImplemented);
-	return -1;
+	return navi_Error;
 
 #endif // NO_PARSER
 
@@ -1012,7 +1051,7 @@ _Exit:
 //
 // navi_parse_datum
 //
-int navi_parse_datum(char *buffer, int *datum, int *nmread)
+navierr_status_t navi_parse_datum(char *buffer, navi_datum_t *datum, size_t *nmread)
 {
 	int error = 0;
 
@@ -1044,29 +1083,29 @@ int navi_parse_datum(char *buffer, int *datum, int *nmread)
 		(strncmp("*", buffer + 3, 1) == 0)))
 	{
 		*nmread = 4;
-		return 0;
+		return navi_Ok;
 	}
 	else if (error == 0)
 	{
 		*nmread = 4;
 		navierr_set_last(navi_MsgNotSupported);
-		return -1;
+		return navi_Error;
 	}
 	else
 	{
-		return -1;
+		return navi_Error;
 	}
 }
 
 //
 // navi_parse_datumsub
 //
-int navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
+navierr_status_t navi_parse_datumsub(char *buffer, navi_datum_subdivision_t *datumsub, size_t *nmread)
 {
 	if (strncmp(",", buffer, 1) == 0)
 	{
 		*nmread = 1;
-		*datumsub = navi_Null;
+		*datumsub = navi_datumsub_NULL;
 
 		navierr_set_last(navi_NullField);
 		return navi_Error;
@@ -1083,7 +1122,7 @@ int navi_parse_datumsub(char *buffer, int *datumsub, int *nmread)
 //
 // Parses mode navi_parse_miarray array
 //
-int navi_parse_miarray(char *buffer, int mi[], int *misize, int *nmread)
+navierr_status_t navi_parse_miarray(char *buffer, navi_modeindicator_t mi[], size_t *misize, size_t *nmread)
 {
 	int i = 0, c, error = 0;
 
@@ -1157,7 +1196,7 @@ _Exit:
 //
 // navi_parse_date
 //
-int navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
+navierr_status_t navi_parse_date(char *buffer, struct navi_date_t *date, size_t *nmread)
 {
 	int i, c;
 
@@ -1221,7 +1260,7 @@ int navi_parse_date(char *buffer, struct navi_date_t *date, int *nmread)
 #define PARSE_LOCALZONE_MINUTES		2
 #define PARSE_LOCALZONE_FINI		3
 
-int navi_parse_localzone(char *buffer, int *offset, int *nmread)
+navierr_status_t navi_parse_localzone(char *buffer, int *offset, size_t *nmread)
 {
 	int state = PARSE_LOCALZONE_INIT, i = 0, error = 0;
 	int c, s = 1, h = 0, m = 0;
@@ -1317,9 +1356,9 @@ _Exit:
 #undef PARSE_LOCALZONE_FINI
 
 // Talker identifier and sentence formatter
-int navi_parse_address(char *buffer, int *tid, int *msgtype)
+size_t navi_parse_address(char *buffer, navi_talkerid_t *tid, navi_approved_fmt_t *msgtype)
 {
-	int result, nmread;
+	size_t result, nmread;
 
 	*tid = navi_parse_talkerid(buffer, &nmread);
 	result = nmread;
@@ -1330,7 +1369,7 @@ int navi_parse_address(char *buffer, int *tid, int *msgtype)
 }
 
 // Looks up Talker ID
-int navi_parse_talkerid(char *buffer, int *nmread)
+navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread)
 {
 	int i;
 
@@ -1348,11 +1387,11 @@ int navi_parse_talkerid(char *buffer, int *nmread)
 			return i;
 	}
 
-	return -1;
+	return navi_talkerid_Unknown;
 }
 
 // Looks up sentence formatter
-int navi_parse_sentencefmt(char *buffer, int *nmread)
+navi_approved_fmt_t navi_parse_sentencefmt(char *buffer, size_t *nmread)
 {
 	int i;
 
@@ -1364,13 +1403,13 @@ int navi_parse_sentencefmt(char *buffer, int *nmread)
 			return i;
 	}
 
-	return -1;
+	return navi_approvedfmt_Unknown;
 }
 
 //
 // navi_parse_hexfield
 //
-int navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+navierr_status_t navi_parse_hexfield(char *buffer, int fieldwidth, char bytes[], size_t *nmread)
 {
 	int result = navi_Ok, i = 0, c;
 
@@ -1415,7 +1454,7 @@ _Exit:
 //
 // navi_parse_decfield
 //
-int navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], int *nmread)
+navierr_status_t navi_parse_decfield(char *buffer, int fieldwidth, char bytes[], size_t *nmread)
 {
 	int result = navi_Ok, i = 0, c;
 
@@ -1455,18 +1494,18 @@ _Exit:
 //
 // navi_parse_gsamode
 //
-int navi_parse_gsamode(char *buffer, int *mode, int *nmread)
+navierr_status_t navi_parse_gsamode(char *buffer, navi_gsaswitchmode_t *mode, size_t *nmread)
 {
 	int result = navi_Ok, c, i = 0;
 
 	c = buffer[i++];
 	if (c == 'M')
 	{
-		*mode = navi_GsaManual;
+		*mode = navi_gsa_Manual;
 	}
 	else if (c == 'A')
 	{
-		*mode = navi_GsaAutomatic;
+		*mode = navi_gsa_Automatic;
 	}
 	else
 	{
@@ -1485,3 +1524,54 @@ int navi_parse_gsamode(char *buffer, int *mode, int *nmread)
 	return result;
 }
 
+//
+// Parses a buffer with valid characters from the given string
+navierr_status_t navi_parse_character_field(const char *from, char *to, size_t maxsize, size_t *nmread)
+{
+	int i, j, c;
+	char bytes[2];
+
+	assert(from != NULL);
+	assert(to != NULL);
+	assert(maxsize > 0);
+	assert(nmread != NULL);
+
+	for (i = j = 0; i < NAVI_SENTENCE_MAXSIZE; i++)
+	{
+		c = from[i];
+
+		if ((c == ',') || (c == '*'))
+		{
+			break;
+		}
+		else if (c == '^')
+		{
+			c = from[++i];
+			if (c >= '0' && c <= '9')
+				bytes[0] = (char)(c - '0');
+			else if (c >= 'A' && c <= 'F')
+				bytes[0] = (char)(c - 'A' + 10);
+			else
+				bytes[0] = (char)(c - 'a' + 10);
+
+			c = from[++i];
+			if (c >= '0' && c <= '9')
+				bytes[1] = (char)(c - '0');
+			else if (c >= 'A' && c <= 'F')
+				bytes[1] = (char)(c - 'A' + 10);
+			else
+				bytes[1] = (char)(c - 'a' + 10);
+
+			to[j++] = (char)navi_compose_integer(bytes, 2, 16);
+		}
+		else
+		{
+			to[j++] = (char)c;
+		}
+	}
+
+	to[j] = '\0';
+	*nmread = i + 1;
+
+	return navi_Ok;
+}

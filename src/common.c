@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "common.h"
-#include <libnavigate/generator.h>
 #include <libnavigate/errors.h>
+#include <libnavigate/common.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +39,7 @@
 //
 // navi_parse_status
 //
-int navi_parse_status(char *buffer, int *status, int *nmread)
+navierr_status_t navi_parse_status(char *buffer, int *status, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -54,7 +53,7 @@ int navi_parse_status(char *buffer, int *status, int *nmread)
 	c = buffer[i++];
 	if ((c == 'A') || (c == 'V'))
 	{
-		*status = (c == 'A') ? navi_DataValid : navi_DataInvalid;
+		*status = (c == 'A') ? navi_status_A : navi_status_V;
 		c = buffer[i++];
 		if ((c != ',') && (c != '*'))
 		{
@@ -92,7 +91,7 @@ int navi_parse_status(char *buffer, int *status, int *nmread)
 //
 // navi_parse_modeindicator
 //
-int navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
+navierr_status_t navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
 {
 
 #ifndef NO_PARSER
@@ -167,9 +166,9 @@ int navi_parse_modeindicator(char *buffer, int *mi, int *nmread)
 //
 // remove_trailing_zeroes
 //
-int remove_trailing_zeroes(char *buffer, int length)
+size_t remove_trailing_zeroes(char *buffer, size_t length)
 {
-	int i;
+	size_t i;
 
 	for (i = length - 1; ; i--)
 	{
@@ -194,41 +193,105 @@ int remove_trailing_zeroes(char *buffer, int length)
 }
 
 //
-// navi_set_position
-//
-int navi_set_position(double latitude, double longitude,
-	struct navi_position_t *out)
+// Fills position fix structure with given values in degrees.
+navierr_status_t navi_init_position_from_degrees(double latitude,
+	double longitude, struct navi_position_t *fix)
 {
-	assert((latitude >= -M_PI) && (latitude <= M_PI));
-	assert((longitude >= -M_PI) && (longitude < 2. * M_PI));
-	assert(out != NULL);
+	assert((latitude >= -90.0) && (latitude <= +90.0));
+	assert((longitude >= -180.0) && (longitude < +2. * 180.0));
+	assert(fix != NULL);
 
 	if (latitude >= 0.)
 	{
-		out->latitude = latitude * 180. / M_PI;
-		out->latsign = navi_North;
+		fix->latitude = latitude;
+		fix->latsign = navi_North;
 	}
 	else
 	{
-		out->latitude = fabs(latitude) * 180. / M_PI;
-		out->latsign = navi_South;
+		fix->latitude = fabs(latitude);
+		fix->latsign = navi_South;
+	}
+
+	if ((longitude >= 0.) && (longitude < +90.0))
+	{
+		fix->longitude = longitude;
+		fix->lonsign = navi_East;
+	}
+	else if (longitude >= +90.0)
+	{
+		fix->longitude = longitude - 90.0;
+		fix->lonsign = navi_West;
+	}
+	else
+	{
+		fix->latitude = fabs(latitude);
+		fix->latsign = navi_West;
+	}
+
+	return navi_Ok;
+}
+
+//
+// Fills position fix structure with given values in radians.
+navierr_status_t navi_init_position_from_radians(double latitude,
+	double longitude, struct navi_position_t *fix)
+{
+	assert((latitude >= -M_PI) && (latitude <= +M_PI));
+	assert((longitude >= -M_PI) && (longitude < +2. * M_PI));
+	assert(fix != NULL);
+
+	if (latitude >= 0.)
+	{
+		fix->latitude = latitude * 180. / M_PI;
+		fix->latsign = navi_North;
+	}
+	else
+	{
+		fix->latitude = fabs(latitude) * 180. / M_PI;
+		fix->latsign = navi_South;
 	}
 
 	if ((longitude >= 0.) && (longitude < M_PI))
 	{
-		out->longitude = longitude * 180. / M_PI;
-		out->lonsign = navi_East;
+		fix->longitude = longitude * 180. / M_PI;
+		fix->lonsign = navi_East;
 	}
 	else if (longitude >= M_PI)
 	{
-		out->longitude = (longitude - M_PI) * 180. / M_PI;
-		out->lonsign = navi_West;
+		fix->longitude = (longitude - M_PI) * 180. / M_PI;
+		fix->lonsign = navi_West;
 	}
 	else
 	{
-		out->latitude = fabs(latitude) * 180. / M_PI;
-		out->latsign = navi_West;
+		fix->latitude = fabs(latitude) * 180. / M_PI;
+		fix->latsign = navi_West;
 	}
+
+	return navi_Ok;
+}
+
+//
+// Fills offset structure with given values in degrees.
+navierr_status_t navi_init_offset_from_degrees(double offset,
+	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+{
+	assert(ofs != NULL);
+
+	ofs->offset = fabs(offset);
+	ofs->sign = sign;
+
+	return navi_Ok;
+}
+
+//
+// Fills position fix structure with given values in radians.
+navierr_status_t navi_init_offset_from_radians(double offset,
+	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+{
+	assert(ofs != NULL);
+
+	ofs->offset = fabs(offset) * 180. / M_PI;
+	ofs->sign = sign;
 
 	return navi_Ok;
 }
@@ -236,8 +299,8 @@ int navi_set_position(double latitude, double longitude,
 //
 // navi_get_position
 //
-int navi_get_position(struct navi_position_t *in, double *latitude,
-	double *longitude)
+navierr_status_t navi_get_position(const struct navi_position_t *in,
+	double *latitude, double *longitude)
 {
 	double d;
 
@@ -245,17 +308,17 @@ int navi_get_position(struct navi_position_t *in, double *latitude,
 	assert(latitude != NULL);
 	assert(longitude != NULL);
 
-	d = in->latitude * M_PI / 180.;
+	d = in->latitude;
 	if (in->latsign == navi_North)
 		*latitude = d;
 	else
 		*latitude = -d;
 
-	d = in->longitude * M_PI / 180.;
-	if (in->latsign == navi_East)
+	d = in->longitude;
+	if (in->lonsign == navi_East)
 		*longitude = d;
 	else
-		*longitude = 2 * M_PI - d;
+		*longitude = -d;
 
 	return navi_Ok;
 }
@@ -263,7 +326,7 @@ int navi_get_position(struct navi_position_t *in, double *latitude,
 //
 // navi_split_integer
 //
-int navi_split_integer(unsigned int value, char bytes[], int width, int radix)
+navierr_status_t navi_split_integer(unsigned int value, char bytes[], int width, int radix)
 {
 	int i;
 
@@ -299,16 +362,16 @@ unsigned int navi_compose_integer(char bytes[], int width, int radix)
 //
 // navi_checksum
 //
-int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
+navierr_status_t navi_checksum(char *msg, size_t maxsize, char *csstr, unsigned int *cs)
 {
-	int i;
-	unsigned ucs = 0;
+	size_t i;
+	unsigned int ucs = 0;
 
 	assert(msg != NULL);
 	assert(maxsize > 0);
 
 	// Skip up to next character after '$'
-	for (i = 0; msg[i] != '$' && i < maxsize; i++);
+	for (i = 0; msg[i] != '$' && i < maxsize; i++) { }
 
 	if (i >= maxsize)
 	{
@@ -329,7 +392,47 @@ int navi_checksum(char *msg, int maxsize, char *csstr, unsigned *cs)
 		*cs = ucs;
 
 	if (csstr)
-		snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
+		(void)snprintf(csstr, 3, "%1X%1X", (ucs & 0xf0) >> 4, ucs & 0x0f);
+
+	return navi_Ok;
+}
+
+//
+// navi_get_character_type
+//
+navi_char_type_t navi_get_character_type(int c)
+{
+	if ((c < 0x20) || (c > 0x7f))
+		return navi_char_Undefined;
+	else if ((c == 0x21) || (c == 0x24) || (c == 0x2a) || (c == 0x2c) ||
+		(c == 0x5c) || (c == 0x5e) || (c == 0x7e) || (c == 0x7f))
+		return navi_char_Reserved;
+	else
+		return navi_char_Valid;
+}
+
+//
+// Fills utc structure with given values
+navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc)
+{
+	assert(utc != NULL);
+
+	utc->hour = hh;
+	utc->min = mm;
+	utc->sec = ss;
+
+	return navi_Ok;
+}
+
+//
+// Fills date structure with given values
+navierr_status_t navi_init_date(int yy, int mm, int dd, struct navi_date_t *date)
+{
+	assert(date != NULL);
+
+	date->year = yy;
+	date->month = mm;
+	date->day = dd;
 
 	return navi_Ok;
 }

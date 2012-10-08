@@ -17,40 +17,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <navigate.h>
-#include "common.h"
-
-#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <assert.h>
 #include <locale.h>
 
+#include <libnavigate/config.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/common.h>
+
 #ifndef NO_GENERATOR
 
-#include "alm.h"
-#include "dtm.h"
-#include "gbs.h"
-#include "gga.h"
-#include "gll.h"
-#include "gns.h"
-#include "grs.h"
-#include "gsa.h"
-#include "gst.h"
-#include "gsv.h"
-#include "mla.h"
-#include "rmc.h"
-#include "vtg.h"
-#include "zda.h"
+#include <libnavigate/aam.h>
+#include <libnavigate/ack.h>
+#include <libnavigate/alm.h>
+#include <libnavigate/alr.h>
+#include <libnavigate/dtm.h>
+#include <libnavigate/gbs.h>
+#include <libnavigate/gga.h>
+#include <libnavigate/gll.h>
+#include <libnavigate/gns.h>
+#include <libnavigate/grs.h>
+#include <libnavigate/gsa.h>
+#include <libnavigate/gst.h>
+#include <libnavigate/gsv.h>
+#include <libnavigate/mla.h>
+#include <libnavigate/rmc.h>
+#include <libnavigate/txt.h>
+#include <libnavigate/vtg.h>
+#include <libnavigate/zda.h>
 
 #endif // NO_GENERATOR
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
 
-int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritten)
+//
+// Talker IDs list
+extern const char *navi_tidlist[];
+
+//
+// Approved sentence formatters list
+extern const char *navi_fmtlist[];
+
+//
+// IEC message generator
+//
+navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten)
 {
 
 #ifndef NO_GENERATOR
@@ -58,7 +74,7 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	const char *tid = NULL, *sfmt = NULL;
 	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
 
-	int msglen = 0;
+	size_t msglen = 0;
 
 	assert(msg != NULL);
 	assert(buffer != NULL);
@@ -67,12 +83,45 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	switch (type)
 	{
 	case navi_AAM:
+		{
+			const struct aam_t *paam = (const struct aam_t *)msg;
+			tid = navi_talkerid_str(paam->tid);
+			sfmt = navi_sentencefmt_str(navi_AAM);
+
+			if (navi_create_aam(paam, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ACK:
-		navierr_set_last(navi_NotImplemented);
-		return navi_Error;
+		{
+			const struct ack_t *pack = (const struct ack_t *)msg;
+			tid = navi_talkerid_str(pack->tid);
+			sfmt = navi_sentencefmt_str(navi_ACK);
+
+			if (navi_create_ack(pack, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ALM:
-		return navi_create_alm((const struct alm_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct alm_t *palm = (const struct alm_t *)msg;
+			tid = navi_talkerid_str(palm->tid);
+			sfmt = navi_sentencefmt_str(navi_ALM);
+
+			if (navi_create_alm(palm, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ALR:
+		{
+			const struct alr_t *palr = (const struct alr_t *)msg;
+			tid = navi_talkerid_str(palr->tid);
+			sfmt = navi_sentencefmt_str(navi_ALR);
+
+			if (navi_create_alr(palr, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_APB:
 	case navi_BEC:
 	case navi_BOD:
@@ -175,7 +224,15 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		}
 		break;
 	case navi_GSV:
-		return navi_create_gsv((const struct gsv_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct gsv_t *pgsv = (const struct gsv_t *)msg;
+			tid = navi_talkerid_str(pgsv->tid);
+			sfmt = navi_sentencefmt_str(navi_GSV);
+
+			if (navi_create_gsv(pgsv, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_HDG:
 	case navi_HDT:
 	case navi_HMR:
@@ -187,7 +244,15 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_MLA:
-		return navi_create_mla((const struct mla_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct mla_t *pmla = (const struct mla_t *)msg;
+			tid = navi_talkerid_str(pmla->tid);
+			sfmt = navi_sentencefmt_str(navi_MLA);
+
+			if (navi_create_mla(pmla, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_MSK:
 	case navi_MSS:
 	case navi_MTW:
@@ -218,7 +283,18 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 	case navi_TLB:
 	case navi_TLL:
 	case navi_TTM:
+		navierr_set_last(navi_NotImplemented);
+		return navi_Error;
 	case navi_TXT:
+		{
+			const struct txt_t *ptxt = (const struct txt_t *)msg;
+			tid = navi_talkerid_str(ptxt->tid);
+			sfmt = navi_sentencefmt_str(navi_TXT);
+
+			if (navi_create_txt(ptxt, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_VBW:
 	case navi_VDR:
 	case navi_VHW:
@@ -298,10 +374,10 @@ int navi_create_msg(int type, void *msg, char *buffer, int maxsize, int *nmwritt
 //
 // navi_datum_to_string
 //
-const char *navi_datum_str(int datum, int notnull)
+const char *navi_datum_str(navi_datum_t datum, int notnull)
 {
 	if (!notnull)
-		datum = navi_Null;
+		datum = navi_datum_NULL;
 
 	switch (datum)
 	{
@@ -315,7 +391,7 @@ const char *navi_datum_str(int datum, int notnull)
 		return "P90";
 	case navi_UserDefined:
 		return "999";
-	case navi_Null:
+	case navi_datum_NULL:
 		return "";
 	default:
 		return NULL;
@@ -325,14 +401,14 @@ const char *navi_datum_str(int datum, int notnull)
 //
 // navi_datumsubdiv_str
 //
-const char *navi_datumsubdiv_str(int datumsub, int notnull)
+const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub, int notnull)
 {
 	if (!notnull)
-		datumsub = navi_Null;
+		datumsub = navi_datumsub_NULL;
 
 	switch (datumsub)
 	{
-	case navi_Null:
+	case navi_datumsub_NULL:
 		return "";
 	default:
 		return NULL;
@@ -342,10 +418,10 @@ const char *navi_datumsubdiv_str(int datumsub, int notnull)
 //
 // navi_fixsign_str
 //
-const char *navi_fixsign_str(int fixsign, int notnull)
+const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
 {
 	if (!notnull)
-		fixsign = navi_Null;
+		fixsign = navi_offsetsign_NULL;
 
 	switch (fixsign)
 	{
@@ -357,7 +433,7 @@ const char *navi_fixsign_str(int fixsign, int notnull)
 		return "E";
 	case navi_West:
 		return "W";
-	case navi_Null:
+	case navi_offsetsign_NULL:
 		return "";
 	default:
 		return NULL;
@@ -367,13 +443,13 @@ const char *navi_fixsign_str(int fixsign, int notnull)
 //
 // navi_status_str
 //
-const char *navi_status_str(int status)
+const char *navi_status_str(navi_status_t status)
 {
 	switch (status)
 	{
-	case navi_DataValid:
+	case navi_status_A:
 		return "A";
-	case navi_DataInvalid:
+	case navi_status_V:
 		return "V";
 	default:
 		return NULL;
@@ -383,7 +459,7 @@ const char *navi_status_str(int status)
 //
 // navi_modeindicator_str
 //
-const char *navi_modeindicator_str(int mi)
+const char *navi_modeindicator_str(navi_modeindicator_t mi)
 {
 	switch (mi)
 	{
@@ -407,7 +483,7 @@ const char *navi_modeindicator_str(int mi)
 //
 // navi_modeindicator_extended_str
 //
-const char *navi_modeindicator_extended_str(int mi)
+const char *navi_modeindicator_extended_str(navi_modeindicator_t mi)
 {
 	switch (mi)
 	{
@@ -437,15 +513,15 @@ const char *navi_modeindicator_extended_str(int mi)
 //
 // navi_gsamode_str
 //
-const char *navi_gsamode_str(int mode, int notnull)
+const char *navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull)
 {
 	if (notnull)
 	{
 		switch (mode)
 		{
-		case navi_GsaManual:
+		case navi_gsa_Manual:
 			return "M";
-		case navi_GsaAutomatic:
+		case navi_gsa_Automatic:
 			return "A";
 		default:
 			return NULL;
@@ -460,12 +536,13 @@ const char *navi_gsamode_str(int mode, int notnull)
 //
 // navi_print_position_fix
 //
-int navi_print_position_fix(const struct navi_position_t *fix,
-	char *buffer, int maxsize, int notnull)
+size_t navi_print_position_fix(const struct navi_position_t *fix,
+	char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
-		int nmwritten, precision;
+		int precision;
+		size_t nmwritten;
 		double degrees, fraction;
 
 		const char *s;
@@ -523,7 +600,7 @@ int navi_print_position_fix(const struct navi_position_t *fix,
 //
 // navi_print_number
 //
-int navi_print_number(double value, char *buffer, int maxsize, int notnull)
+size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -547,8 +624,7 @@ int navi_print_number(double value, char *buffer, int maxsize, int notnull)
 //
 // navi_print_utc
 //
-int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
-	int maxsize, int notnull)
+size_t navi_print_utc(const struct navi_utc_t *utc, char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
 	{
@@ -573,7 +649,7 @@ int navi_print_utc(const struct navi_utc_t *utc, char *buffer,
 //
 // navi_print_miarray
 //
-int navi_print_miarray(const int mi[], int miquant, char *buffer)
+size_t navi_print_miarray(const navi_modeindicator_t mi[], int miquant, char *buffer)
 {
 	int i;
 	const char *mistr;
@@ -598,32 +674,31 @@ int navi_print_miarray(const int mi[], int miquant, char *buffer)
 //
 // navi_sentencefmt_str
 //
-const char *navi_sentencefmt_str(int fmt)
+const char *navi_sentencefmt_str(navi_approved_fmt_t fmt)
 {
-	assert((fmt >= 0) && (fmt <= navi_ZTG));
+	assert((fmt >= navi_AAM) && (fmt <= navi_ZTG));
 	return navi_fmtlist[fmt];
 }
 
 //
 //	navi_create_talkerid
 //
-const char *navi_talkerid_str(int tid)
+const char *navi_talkerid_str(navi_talkerid_t tid)
 {
-	assert((tid >= 0) && (tid <= navi_P));
+	assert((tid >= navi_AG) && (tid <= navi_P));
 	return navi_tidlist[tid];
 }
 
 //
 // navi_print_numfield
 //
-int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
-	char *buffer, int maxsize)
+size_t navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
+	char *buffer, size_t maxsize)
 {
 	int i;
 	char str[4];
 
 	assert(buffer != NULL);
-	assert(maxsize > fieldwidth);
 
 	(void)strncpy(buffer, "", maxsize);
 
@@ -650,8 +725,8 @@ int navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
 //
 // navi_print_hexfield
 //
-int navi_print_hexfield(const char bytes[], int fieldwidth,
-	char *buffer, int maxsize)
+size_t navi_print_hexfield(const char bytes[], int fieldwidth,
+	char *buffer, size_t maxsize)
 {
 	return navi_print_fixedfield(bytes, fieldwidth, 16, buffer, maxsize);
 }
@@ -659,9 +734,50 @@ int navi_print_hexfield(const char bytes[], int fieldwidth,
 //
 // navi_print_decfield
 //
-int navi_print_decfield(const char bytes[], int fieldwidth,
-	char *buffer, int maxsize)
+size_t navi_print_decfield(const char bytes[], int fieldwidth,
+	char *buffer, size_t maxsize)
 {
 	return navi_print_fixedfield(bytes, fieldwidth, 10, buffer, maxsize);
 }
 
+//
+// navi_print_character_field
+//
+navierr_status_t navi_print_character_field(const char *from, char *to, size_t maxsize)
+{
+	size_t i, j, srclen;
+	char bytes[2];
+
+	assert(from != NULL);
+	assert(to != NULL);
+	assert(maxsize > 0);
+
+	srclen = strlen(from);
+
+	for (i = j = 0; i < srclen; i++)
+	{
+		switch (navi_get_character_type(from[i]))
+		{
+		case navi_char_Valid:
+			if (j >= maxsize - 1)
+				return navi_Error;
+
+			to[j++] = from[i];
+			break;
+		default:
+			if (j >= maxsize - 4)
+				return navi_Error;
+
+			navi_split_integer(from[i], bytes, 2, 16);
+
+			to[j++] = '^';
+			to[j++] = bytes[0] < 10 ? bytes[0] + '0' : bytes[0] - 10 + 'A';
+			to[j++] = bytes[1] < 10 ? bytes[1] + '0' : bytes[1] - 10 + 'A';
+			break;
+		}
+	}
+
+	to[j] = '\0';
+
+	return navi_Ok;
+}

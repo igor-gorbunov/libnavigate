@@ -17,23 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gll.h"
-#include "common.h"
+#include <libnavigate/gll.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes GLL sentence structure with default values
+navierr_status_t navi_init_gll(struct gll_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_position_from_degrees(0.0, 0.0, &msg->fix);
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+	msg->status = navi_status_V;
+	msg->mi = navi_DataNotValid;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_gll(const struct gll_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates GLL message
+navierr_status_t navi_create_gll(const struct gll_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *status, *mi;
 	char fix[64], utc[32];
@@ -60,9 +78,9 @@ int navi_create_gll(const struct gll_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gll(struct gll_t *msg, char *buffer)
+navierr_status_t navi_parse_gll(struct gll_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 

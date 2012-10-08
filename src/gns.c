@@ -17,24 +17,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gns.h"
-#include "common.h"
+#include <libnavigate/gns.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes GNS sentence structure with default values
+navierr_status_t navi_init_gns(struct gns_t *msg, navi_talkerid_t tid)
+{
+	int i;
+
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_position_from_degrees(0.0, 0.0, &msg->fix);
+	for (i = 0; i < GNS_MODEINDICATOR_SIZE; i++)
+		msg->mi[i] = navi_DataNotValid;
+	msg->nmsatellites = 0;
+	msg->hdop = 0.0;
+	msg->antaltitude = 0.0;
+	msg->geoidalsep = 0.0;
+	msg->diffage = 0;
+	msg->id = 0;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_gns(const struct gns_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates GNS message
+navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char utc[32], fix[64], mi[3], totalsats[3], hdop[32], antalt[32],
 		geoidsep[32], ddage[32], drsid[32];
@@ -47,7 +73,7 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 		sizeof(msg->mi) / sizeof(msg->mi[0]), mi);
 	msglength += snprintf(totalsats, sizeof(totalsats),
 		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
-		msg->totalsats);
+		msg->nmsatellites);
 	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
 		msg->vfields & GNS_VALID_HDOP);
 	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt),
@@ -74,9 +100,11 @@ int navi_create_gns(const struct gns_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gns(struct gns_t *msg, char *buffer)
+//
+// Parses GNS message
+navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 {
-	int i = 0, j, nmread;
+	size_t i = 0, j, nmread;
 	double d;
 
 	msg->vfields = 0;
@@ -117,7 +145,7 @@ int navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->totalsats = (int)round(d);
+		msg->nmsatellites = (int)round(d);
 		msg->vfields |= GNS_VALID_TOTALNMOFSATELLITES;
 	}
 	i += nmread;
