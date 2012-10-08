@@ -38,43 +38,55 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
-	virtual int nmOfSatellites() const;
 	virtual int totalNmOfMessages() const;
 	virtual int messageNumber() const;
 
-	virtual unsigned int satellitePrn(int satIdx) const;
-	virtual unsigned int gpsWeek(int satIdx) const;
-	virtual unsigned int svHealth(int satIdx) const;
-	virtual unsigned int eccentricity(int satIdx) const;
-	virtual unsigned int almanacReferenceTime(int satIdx) const;
-	virtual unsigned int inclinationAngle(int satIdx) const;
-	virtual unsigned int rateOfRightAscension(int satIdx) const;
-	virtual unsigned int sqrtOfSemiMajorAxis(int satIdx) const;
-	virtual unsigned int argumentOfPerigee(int satIdx) const;
-	virtual unsigned int longitudeOfAscensionNode(int satIdx) const;
-	virtual unsigned int meanAnomaly(int satIdx) const;
-	virtual unsigned int clockParameter0(int satIdx) const;
-	virtual unsigned int clockParameter1(int satIdx) const;
+	virtual unsigned int satellitePrn() const;
+	virtual unsigned int gpsWeek() const;
+	virtual unsigned int svHealth() const;
+	virtual unsigned int eccentricity() const;
+	virtual unsigned int almanacReferenceTime() const;
+	virtual unsigned int inclinationAngle() const;
+	virtual unsigned int rateOfRightAscension() const;
+	virtual unsigned int sqrtOfSemiMajorAxis() const;
+	virtual unsigned int argumentOfPerigee() const;
+	virtual unsigned int longitudeOfAscensionNode() const;
+	virtual unsigned int meanAnomaly() const;
+	virtual unsigned int clockParameter0() const;
+	virtual unsigned int clockParameter1() const;
+
+public:
+	virtual bool isGpsWeekValid() const;
+	virtual bool isSvHealthValid() const;
+	virtual bool isEccentricityValid() const;
+	virtual bool isAlmanacReferenceTimeValid() const;
+	virtual bool isInclinationAngleValid() const;
+	virtual bool isRateOfRightAscensionValid() const;
+	virtual bool isSqrtOfSemiMajorAxisValid() const;
+	virtual bool isArgumentOfPerigeeValid() const;
+	virtual bool isLongitudeOfAscensionNodeValid() const;
+	virtual bool isMeanAnomalyValid() const;
+	virtual bool isClockParameter0Valid() const;
+	virtual bool isClockParameter1Valid() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
-	virtual void setNmOfSatellites(int value);
 	virtual void setTotalNmOfMessages(int value);
 	virtual void setMessageNumber(int value);
 
-	virtual void setSatellitePrn(int satIdx, unsigned int value);
-	virtual void setGpsWeek(int satIdx, unsigned int value);
-	virtual void setSvHealth(int satIdx, unsigned int value);
-	virtual void setEccentricity(int satIdx, unsigned int value);
-	virtual void setAlmanacReferenceTime(int satIdx, unsigned int value);
-	virtual void setInclinationAngle(int satIdx, unsigned int value);
-	virtual void setRateOfRightAscension(int satIdx, unsigned int value);
-	virtual void setSqrtOfSemiMajorAxis(int satIdx, unsigned int value);
-	virtual void setArgumentOfPerigee(int satIdx, unsigned int value);
-	virtual void setLongitudeOfAscensionNode(int satIdx, unsigned int value);
-	virtual void setMeanAnomaly(int satIdx, unsigned int value);
-	virtual void setClockParameter0(int satIdx, unsigned int value);
-	virtual void setClockParameter1(int satIdx, unsigned int value);
+	virtual void setSatellitePrn(unsigned int value);
+	virtual void setGpsWeek(unsigned int value);
+	virtual void setSvHealth(unsigned int value);
+	virtual void setEccentricity(unsigned int value);
+	virtual void setAlmanacReferenceTime(unsigned int value);
+	virtual void setInclinationAngle(unsigned int value);
+	virtual void setRateOfRightAscension(unsigned int value);
+	virtual void setSqrtOfSemiMajorAxis(unsigned int value);
+	virtual void setArgumentOfPerigee(unsigned int value);
+	virtual void setLongitudeOfAscensionNode(unsigned int value);
+	virtual void setMeanAnomaly(unsigned int value);
+	virtual void setClockParameter0(unsigned int value);
+	virtual void setClockParameter1(unsigned int value);
 
 public:
 	virtual void clearMessage();
@@ -87,4 +99,3 @@ public:
 }
 
 #endif // INCLUDE_navi_almplusplus
-

@@ -56,50 +56,50 @@ int main(void)
 	{
 	}
 
-	// ALM
-	Alm_t alm;
-	alm.setTalkerId(TalkerId_t::GP);
-	alm.setNmOfSatellites(3);
+	//// ALM
+	//Alm_t alm;
+	//alm.setTalkerId(TalkerId_t::GP);
+	//alm.setNmOfSatellites(3);
 
-	alm.setSatellitePrn(0, 4);
-	alm.setGpsWeek(0, 3400);
-	alm.setSvHealth(0, 0x44);
-	alm.setEccentricity(0, 0x0011);
-	alm.setAlmanacReferenceTime(0, 0x09);
-	alm.setInclinationAngle(0, 0x8a14);
-	alm.setRateOfRightAscension(0, 0x7f01);
-	alm.setSqrtOfSemiMajorAxis(0, 0x780012);
-	alm.setArgumentOfPerigee(0, 0x00dd01);
-	alm.setLongitudeOfAscensionNode(0, 0x000000);
-	alm.setMeanAnomaly(0, 0x920f15);
-	alm.setClockParameter0(0, 0x115);
-	alm.setClockParameter1(0, 0x023);
+	//alm.setSatellitePrn(0, 4);
+	//alm.setGpsWeek(0, 3400);
+	//alm.setSvHealth(0, 0x44);
+	//alm.setEccentricity(0, 0x0011);
+	//alm.setAlmanacReferenceTime(0, 0x09);
+	//alm.setInclinationAngle(0, 0x8a14);
+	//alm.setRateOfRightAscension(0, 0x7f01);
+	//alm.setSqrtOfSemiMajorAxis(0, 0x780012);
+	//alm.setArgumentOfPerigee(0, 0x00dd01);
+	//alm.setLongitudeOfAscensionNode(0, 0x000000);
+	//alm.setMeanAnomaly(0, 0x920f15);
+	//alm.setClockParameter0(0, 0x115);
+	//alm.setClockParameter1(0, 0x023);
 
-	alm.setSatellitePrn(1, 14);
-	alm.setGpsWeek(1, 3400);
-	alm.setSvHealth(1, 0xaf);
-	alm.setEccentricity(1, 0x0011);
-	alm.setAlmanacReferenceTime(1, 0x00);
-	alm.setInclinationAngle(1, 0x8114);
-	alm.setRateOfRightAscension(1, 0x7701);
-	alm.setSqrtOfSemiMajorAxis(1, 0x000012);
-	alm.setArgumentOfPerigee(1, 0x002201);
-	alm.setLongitudeOfAscensionNode(1, 0x000000);
-	alm.setMeanAnomaly(1, 0x920115);
+	//alm.setSatellitePrn(1, 14);
+	//alm.setGpsWeek(1, 3400);
+	//alm.setSvHealth(1, 0xaf);
+	//alm.setEccentricity(1, 0x0011);
+	//alm.setAlmanacReferenceTime(1, 0x00);
+	//alm.setInclinationAngle(1, 0x8114);
+	//alm.setRateOfRightAscension(1, 0x7701);
+	//alm.setSqrtOfSemiMajorAxis(1, 0x000012);
+	//alm.setArgumentOfPerigee(1, 0x002201);
+	//alm.setLongitudeOfAscensionNode(1, 0x000000);
+	//alm.setMeanAnomaly(1, 0x920115);
 
-	alm.setSatellitePrn(2, 32);
-	alm.setGpsWeek(1, 3400);
-	alm.setSvHealth(1, 0x00);
+	//alm.setSatellitePrn(2, 32);
+	//alm.setGpsWeek(1, 3400);
+	//alm.setSvHealth(1, 0x00);
 
-	try
-	{
-		nmwritten = navi.CreateMessage(alm, buffer + msglength, remain);
-		msglength += nmwritten;
-		remain -= nmwritten;
-	}
-	catch (NaviError_t e)
-	{
-	}
+	//try
+	//{
+	//	nmwritten = navi.CreateMessage(alm, buffer + msglength, remain);
+	//	msglength += nmwritten;
+	//	remain -= nmwritten;
+	//}
+	//catch (NaviError_t e)
+	//{
+	//}
 
 	// RMC
 	Rmc_t rmc;

@@ -31,7 +31,6 @@ int main(void)
 	char buffer[1024];
 	struct aam_t aam;
 	struct ack_t ack;
-	struct alm_t alm;
 	struct alr_t alr;
 	struct dtm_t dtm;
 	struct gbs_t gbs;
@@ -433,63 +432,6 @@ int main(void)
 	msglength = 0;
 	remain = sizeof(buffer);
 
-	// ALM
-	alm.tid = navi_GP;
-	alm.nmsatellites = 3;
-
-	alm.almlist[0].vfields = GPSALM_VALID_SATELLITEPRN | GPSALM_VALID_GPSWEEK |
-		GPSALM_VALID_SVHEALTH | GPSALM_VALID_E | GPSALM_VALID_TOA |
-		GPSALM_VALID_SIGMAI | GPSALM_VALID_OMEGADOT | GPSALM_VALID_SQRTSEMIAXIS |
-		GPSALM_VALID_OMEGA | GPSALM_VALID_OMEGA0 | GPSALM_VALID_M0 |
-		GPSALM_VALID_AF0 | GPSALM_VALID_AF1;
-	alm.almlist[0].satelliteprn = 4;
-	alm.almlist[0].gpsweek = 3400;
-	alm.almlist[0].svhealth = 0x44;
-	alm.almlist[0].e = 0x0011;
-	alm.almlist[0].toa = 0x09;
-	alm.almlist[0].sigmai = 0x8a14;
-	alm.almlist[0].omegadot = 0x7f01;
-	alm.almlist[0].sqrtsemiaxis = 0x780012;
-	alm.almlist[0].omega = 0x00dd01;
-	alm.almlist[0].omega0 = 0x000000;
-	alm.almlist[0].m0 = 0x920f15;
-	alm.almlist[0].af0 = 0x115;
-	alm.almlist[0].af1 = 0x023;
-
-	alm.almlist[1].vfields = GPSALM_VALID_SATELLITEPRN | GPSALM_VALID_GPSWEEK |
-		GPSALM_VALID_SVHEALTH | GPSALM_VALID_E | GPSALM_VALID_TOA |
-		GPSALM_VALID_SIGMAI | GPSALM_VALID_OMEGADOT | GPSALM_VALID_SQRTSEMIAXIS |
-		GPSALM_VALID_OMEGA | GPSALM_VALID_OMEGA0 | GPSALM_VALID_M0;
-	alm.almlist[1].satelliteprn = 14;
-	alm.almlist[1].gpsweek = 3400;
-	alm.almlist[1].svhealth = 0xaf;
-	alm.almlist[1].e = 0x0011;
-	alm.almlist[1].toa = 0x00;
-	alm.almlist[1].sigmai = 0x8114;
-	alm.almlist[1].omegadot = 0x7701;
-	alm.almlist[1].sqrtsemiaxis = 0x000012;
-	alm.almlist[1].omega = 0x002201;
-	alm.almlist[1].omega0 = 0x000000;
-	alm.almlist[1].m0 = 0x920115;
-
-	alm.almlist[2].vfields = GPSALM_VALID_SATELLITEPRN | GPSALM_VALID_GPSWEEK |
-		GPSALM_VALID_SVHEALTH;
-	alm.almlist[2].satelliteprn = 32;
-	alm.almlist[2].gpsweek = 3400;
-	alm.almlist[2].svhealth = 0x00;
-
-	result = navi_create_msg(navi_ALM, &alm, buffer + msglength,
-		remain, &nmwritten);
-	if (result == navi_Ok)
-	{
-		msglength += nmwritten;
-		remain -= nmwritten;
-	}
-	else
-	{
-		printf("Composition of ALM failed (%d)\n", result);
-	}
-
 	// GBS
 	gbs.tid = navi_GL;
 
@@ -872,45 +814,6 @@ int main(void)
 
 			switch (msgtype)
 			{
-			case navi_ALM:
-				{
-					struct alm_t *alm = (struct alm_t *)parsedbuffer;
-
-					printf("Received ALM:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_str(alm->tid), alm->tid);
-					printf("\tTotal nm of messages: %i\n", alm->totalnm);
-					printf("\tMessage number: %i\n", alm->msgnm);
-
-					if (alm->almlist[0].vfields & GPSALM_VALID_SATELLITEPRN)
-						printf("\tSatellite PRN number: %u\n",
-							alm->almlist[0].satelliteprn);
-					if (alm->almlist[0].vfields & GPSALM_VALID_GPSWEEK)
-						printf("\tGPS week number: %u\n", alm->almlist[0].gpsweek);
-					if (alm->almlist[0].vfields & GPSALM_VALID_SVHEALTH)
-						printf("\tSV health: 0x%x\n", alm->almlist[0].svhealth);
-					if (alm->almlist[0].vfields & GPSALM_VALID_E)
-						printf("\tEccentricity: 0x%x\n", alm->almlist[0].e);
-					if (alm->almlist[0].vfields & GPSALM_VALID_TOA)
-						printf("\tAlmanac reference time: 0x%x\n", alm->almlist[0].toa);
-					if (alm->almlist[0].vfields & GPSALM_VALID_SIGMAI)
-						printf("\tInclination angle: 0x%x\n", alm->almlist[0].sigmai);
-					if (alm->almlist[0].vfields & GPSALM_VALID_OMEGADOT)
-						printf("\tRate of ascension: 0x%x\n", alm->almlist[0].omegadot);
-					if (alm->almlist[0].vfields & GPSALM_VALID_SQRTSEMIAXIS)
-						printf("\tRoot of semi-major axis: 0x%x\n",
-							alm->almlist[0].sqrtsemiaxis);
-					if (alm->almlist[0].vfields & GPSALM_VALID_OMEGA)
-						printf("\tArgument of perigee: 0x%x\n", alm->almlist[0].omega);
-					if (alm->almlist[0].vfields & GPSALM_VALID_OMEGA0)
-						printf("\tLongitude of ascension: 0x%x\n", alm->almlist[0].omega0);
-					if (alm->almlist[0].vfields & GPSALM_VALID_M0)
-						printf("\tMean anomaly: 0x%x\n", alm->almlist[0].m0);
-					if (alm->almlist[0].vfields & GPSALM_VALID_AF0)
-						printf("\tClock parameter 1: 0x%x\n", alm->almlist[0].af0);
-					if (alm->almlist[0].vfields & GPSALM_VALID_AF1)
-						printf("\tClock parameter 2: 0x%x\n", alm->almlist[0].af1);
-				}
-				break;
 			case navi_GBS:
 				{
 					struct gbs_t *gbs = (struct gbs_t *)parsedbuffer;
@@ -1280,9 +1183,9 @@ int main(void)
 		}
 	} while (!finished);
 
+#ifdef _MSC_VER
 	printf("sizeof struct aam_t = %Iu\n", sizeof(struct aam_t));
 	printf("sizeof struct ack_t = %Iu\n", sizeof(struct ack_t));
-	printf("sizeof struct alm_t = %Iu\n", sizeof(struct alm_t));
 	printf("sizeof struct alr_t = %Iu\n", sizeof(struct alr_t));
 	printf("sizeof struct dtm_t = %Iu\n", sizeof(struct dtm_t));
 	printf("sizeof struct gbs_t = %Iu\n", sizeof(struct gbs_t));
@@ -1298,6 +1201,25 @@ int main(void)
 	printf("sizeof struct txt_t = %Iu\n", sizeof(struct txt_t));
 	printf("sizeof struct vtg_t = %Iu\n", sizeof(struct vtg_t));
 	printf("sizeof struct zda_t = %Iu\n", sizeof(struct zda_t));
+#else
+	printf("sizeof struct aam_t = %zu\n", sizeof(struct aam_t));
+	printf("sizeof struct ack_t = %zu\n", sizeof(struct ack_t));
+	printf("sizeof struct alr_t = %zu\n", sizeof(struct alr_t));
+	printf("sizeof struct dtm_t = %zu\n", sizeof(struct dtm_t));
+	printf("sizeof struct gbs_t = %zu\n", sizeof(struct gbs_t));
+	printf("sizeof struct gga_t = %zu\n", sizeof(struct gga_t));
+	printf("sizeof struct gll_t = %zu\n", sizeof(struct gll_t));
+	printf("sizeof struct gns_t = %zu\n", sizeof(struct gns_t));
+	printf("sizeof struct grs_t = %zu\n", sizeof(struct grs_t));
+	printf("sizeof struct gsa_t = %zu\n", sizeof(struct gsa_t));
+	printf("sizeof struct gst_t = %zu\n", sizeof(struct gst_t));
+	printf("sizeof struct gsv_t = %zu\n", sizeof(struct gsv_t));
+	printf("sizeof struct mla_t = %zu\n", sizeof(struct mla_t));
+	printf("sizeof struct rmc_t = %zu\n", sizeof(struct rmc_t));
+	printf("sizeof struct txt_t = %zu\n", sizeof(struct txt_t));
+	printf("sizeof struct vtg_t = %zu\n", sizeof(struct vtg_t));
+	printf("sizeof struct zda_t = %zu\n", sizeof(struct zda_t));
+#endif // MSVC_VER
 
 	return 0;
 }

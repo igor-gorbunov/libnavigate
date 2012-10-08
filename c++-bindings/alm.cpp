@@ -32,59 +32,53 @@ Alm_t::~Alm_t() { }
 TalkerId_t Alm_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct alm_t *)(*this))->tid); }
 
-int Alm_t::nmOfSatellites() const
-	{ return ((const struct alm_t *)(*this))->nmsatellites; }
-
 int Alm_t::totalNmOfMessages() const
 	{ return ((const struct alm_t *)(*this))->totalnm; }
 
 int Alm_t::messageNumber() const
 	{ return ((const struct alm_t *)(*this))->msgnm; }
 
-unsigned int Alm_t::satellitePrn(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].satelliteprn; }
+unsigned int Alm_t::satellitePrn() const
+	{ return ((const struct alm_t *)(*this))->alm.satelliteprn; }
 
-unsigned int Alm_t::gpsWeek(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].gpsweek; }
+unsigned int Alm_t::gpsWeek() const
+	{ return ((const struct alm_t *)(*this))->alm.gpsweek; }
 
-unsigned int Alm_t::svHealth(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].svhealth; }
+unsigned int Alm_t::svHealth() const
+	{ return ((const struct alm_t *)(*this))->alm.svhealth; }
 
-unsigned int Alm_t::eccentricity(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].e; }
+unsigned int Alm_t::eccentricity() const
+	{ return ((const struct alm_t *)(*this))->alm.e; }
 
-unsigned int Alm_t::almanacReferenceTime(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].toa; }
+unsigned int Alm_t::almanacReferenceTime() const
+	{ return ((const struct alm_t *)(*this))->alm.toa; }
 
-unsigned int Alm_t::inclinationAngle(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].sigmai; }
+unsigned int Alm_t::inclinationAngle() const
+	{ return ((const struct alm_t *)(*this))->alm.sigmai; }
 
-unsigned int Alm_t::rateOfRightAscension(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].omegadot; }
+unsigned int Alm_t::rateOfRightAscension() const
+	{ return ((const struct alm_t *)(*this))->alm.omegadot; }
 
-unsigned int Alm_t::sqrtOfSemiMajorAxis(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].sqrtsemiaxis; }
+unsigned int Alm_t::sqrtOfSemiMajorAxis() const
+	{ return ((const struct alm_t *)(*this))->alm.sqrtsemiaxis; }
 
-unsigned int Alm_t::argumentOfPerigee(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].omega; }
+unsigned int Alm_t::argumentOfPerigee() const
+	{ return ((const struct alm_t *)(*this))->alm.omega; }
 
-unsigned int Alm_t::longitudeOfAscensionNode(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].omega0; }
+unsigned int Alm_t::longitudeOfAscensionNode() const
+	{ return ((const struct alm_t *)(*this))->alm.omega0; }
 
-unsigned int Alm_t::meanAnomaly(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].m0; }
+unsigned int Alm_t::meanAnomaly() const
+	{ return ((const struct alm_t *)(*this))->alm.m0; }
 
-unsigned int Alm_t::clockParameter0(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].af0; }
+unsigned int Alm_t::clockParameter0() const
+	{ return ((const struct alm_t *)(*this))->alm.af0; }
 
-unsigned int Alm_t::clockParameter1(int satIdx) const
-	{ return ((const struct alm_t *)(*this))->almlist[satIdx].af1; }
+unsigned int Alm_t::clockParameter1() const
+	{ return ((const struct alm_t *)(*this))->alm.af1; }
 
 void Alm_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct alm_t *)(*this))->tid = tid.toTalkerIdCode(); }
-
-void Alm_t::setNmOfSatellites(int value)
-	{ ((struct alm_t *)(*this))->nmsatellites = value; }
 
 void Alm_t::setTotalNmOfMessages(int value)
 	{ ((struct alm_t *)(*this))->totalnm = value; }
@@ -92,82 +86,139 @@ void Alm_t::setTotalNmOfMessages(int value)
 void Alm_t::setMessageNumber(int value)
 	{ ((struct alm_t *)(*this))->msgnm = value; }
 
-void Alm_t::setSatellitePrn(int satIdx, unsigned int value)
+void Alm_t::setSatellitePrn(unsigned int value)
+	{ ((struct alm_t *)(*this))->alm.satelliteprn = value; }
+
+void Alm_t::setGpsWeek(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].satelliteprn = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_SATELLITEPRN;
+	((struct alm_t *)(*this))->alm.gpsweek = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_GPSWEEK;
 }
 
-void Alm_t::setGpsWeek(int satIdx, unsigned int value)
+void Alm_t::setSvHealth(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].gpsweek = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_GPSWEEK;
+	((struct alm_t *)(*this))->alm.svhealth = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_SVHEALTH;
 }
 
-void Alm_t::setSvHealth(int satIdx, unsigned int value)
+void Alm_t::setEccentricity(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].svhealth = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_SVHEALTH;
+	((struct alm_t *)(*this))->alm.e = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_E;
 }
 
-void Alm_t::setEccentricity(int satIdx, unsigned int value)
+void Alm_t::setAlmanacReferenceTime(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].e = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_E;
+	((struct alm_t *)(*this))->alm.toa = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_TOA;
 }
 
-void Alm_t::setAlmanacReferenceTime(int satIdx, unsigned int value)
+void Alm_t::setInclinationAngle(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].toa = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_TOA;
+	((struct alm_t *)(*this))->alm.sigmai = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_SIGMAI;
 }
 
-void Alm_t::setInclinationAngle(int satIdx, unsigned int value)
+void Alm_t::setRateOfRightAscension(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].sigmai = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_SIGMAI;
+	((struct alm_t *)(*this))->alm.omegadot = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_OMEGADOT;
 }
 
-void Alm_t::setRateOfRightAscension(int satIdx, unsigned int value)
+void Alm_t::setSqrtOfSemiMajorAxis(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].omegadot = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_OMEGADOT;
+	((struct alm_t *)(*this))->alm.sqrtsemiaxis = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_SQRTSEMIAXIS;
 }
 
-void Alm_t::setSqrtOfSemiMajorAxis(int satIdx, unsigned int value)
+void Alm_t::setArgumentOfPerigee(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].sqrtsemiaxis = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_SQRTSEMIAXIS;
+	((struct alm_t *)(*this))->alm.omega = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_OMEGA;
 }
 
-void Alm_t::setArgumentOfPerigee(int satIdx, unsigned int value)
+void Alm_t::setLongitudeOfAscensionNode(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].omega = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_OMEGA;
+	((struct alm_t *)(*this))->alm.omega0 = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_OMEGA0;
 }
 
-void Alm_t::setLongitudeOfAscensionNode(int satIdx, unsigned int value)
+void Alm_t::setMeanAnomaly(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].omega0 = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_OMEGA0;
+	((struct alm_t *)(*this))->alm.m0 = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_M0;
 }
 
-void Alm_t::setMeanAnomaly(int satIdx, unsigned int value)
+void Alm_t::setClockParameter0(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].m0 = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_M0;
+	((struct alm_t *)(*this))->alm.af0 = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_AF0;
 }
 
-void Alm_t::setClockParameter0(int satIdx, unsigned int value)
+void Alm_t::setClockParameter1(unsigned int value)
 {
-	((struct alm_t *)(*this))->almlist[satIdx].af0 = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_AF0;
+	((struct alm_t *)(*this))->alm.af1 = value;
+	((struct alm_t *)(*this))->alm.vfields |= GPSALM_VALID_AF1;
 }
 
-void Alm_t::setClockParameter1(int satIdx, unsigned int value)
+bool Alm_t::isGpsWeekValid() const
 {
-	((struct alm_t *)(*this))->almlist[satIdx].af1 = value;
-	((struct alm_t *)(*this))->almlist[satIdx].vfields |= GPSALM_VALID_AF1;
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_GPSWEEK) != 0 ? true : false;
+}
+
+bool Alm_t::isSvHealthValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_SVHEALTH) != 0 ? true : false;
+}
+
+bool Alm_t::isEccentricityValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_E) != 0 ? true : false;
+}
+
+bool Alm_t::isAlmanacReferenceTimeValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_TOA) != 0 ? true : false;
+}
+
+bool Alm_t::isInclinationAngleValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_SIGMAI) != 0 ? true : false;
+}
+
+bool Alm_t::isRateOfRightAscensionValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_OMEGADOT) != 0 ? true : false;
+}
+
+bool Alm_t::isSqrtOfSemiMajorAxisValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_SQRTSEMIAXIS) != 0 ? true : false;
+}
+
+bool Alm_t::isArgumentOfPerigeeValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_OMEGA) != 0 ? true : false;
+}
+
+bool Alm_t::isLongitudeOfAscensionNodeValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_OMEGA0) != 0 ? true : false;
+}
+
+bool Alm_t::isMeanAnomalyValid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_M0) != 0 ? true : false;
+}
+
+bool Alm_t::isClockParameter0Valid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_AF0) != 0 ? true : false;
+}
+
+bool Alm_t::isClockParameter1Valid() const
+{
+	return (((const struct alm_t *)(*this))->alm.vfields & GPSALM_VALID_AF1) != 0 ? true : false;
 }
 
 void Alm_t::clearMessage()
@@ -188,4 +239,3 @@ Alm_t::operator struct alm_t *()
 }
 
 }
-

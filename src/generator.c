@@ -103,7 +103,15 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		}
 		break;
 	case navi_ALM:
-		return navi_create_alm((const struct alm_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct alm_t *palm = (const struct alm_t *)msg;
+			tid = navi_talkerid_str(palm->tid);
+			sfmt = navi_sentencefmt_str(navi_ALM);
+
+			if (navi_create_alm(palm, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_ALR:
 		{
 			const struct alr_t *palr = (const struct alr_t *)msg;

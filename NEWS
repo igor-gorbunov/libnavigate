@@ -1,3 +1,8 @@
+2012-10-08  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* ALM message restructured
+	* Generation of ALM message sequence
+
 2012-10-07  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* Building RPM packages with CPack

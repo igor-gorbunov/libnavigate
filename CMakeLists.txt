@@ -122,8 +122,13 @@ ENDIF()
 IF(BUILD_TESTS)
 	ADD_EXECUTABLE(test tests/main.c)
 	TARGET_LINK_LIBRARIES(test navigate)
+
+	ADD_EXECUTABLE(check_alm tests/check_alm.c)
+	TARGET_LINK_LIBRARIES(check_alm navigate)
+
 	IF(UNIX)
 		TARGET_LINK_LIBRARIES(test m)
+		TARGET_LINK_LIBRARIES(check_alm m)
 	ENDIF ()
 
 	IF(BUILD_CPPBINDINGS)
