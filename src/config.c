@@ -22,7 +22,7 @@
 
 #include "version.h"
 
-NAVI_ALIGNED(struct, navi_config_t)
+struct navi_config_t
 {
 	unsigned int caps;		// capabilities of the library
 	const char *version;	// version of the library

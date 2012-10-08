@@ -26,7 +26,7 @@ const navi_error_t *navierr_get_last(void)
 	return &g_navi_error;
 }
 
-void navierr_set_last(int errclass)
+void navierr_set_last(navierr_class_t errclass)
 {
 	g_navi_error.errclass = errclass;
 }

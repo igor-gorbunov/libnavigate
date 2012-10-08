@@ -1,5 +1,5 @@
 /*
- * entry.c - IEC messages generating/parsing tests and usage examples.
+ * main.c - IEC messages generating/parsing tests and usage examples.
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -26,11 +26,12 @@
 int main(void)
 {
 	int result;
-	int msglength, nmwritten, nmread;
-	int remain;
+	size_t msglength, nmwritten, nmread, remain, parsed;
 
 	char buffer[1024];
-	struct alm_t alm;
+	struct aam_t aam;
+	struct ack_t ack;
+	struct alr_t alr;
 	struct dtm_t dtm;
 	struct gbs_t gbs;
 	struct gga_t gga;
@@ -39,15 +40,22 @@ int main(void)
 	struct grs_t grs;
 	struct gsa_t gsa;
 	struct gst_t gst;
-	struct gsv_t gsv;
-	struct mla_t mla;
 	struct rmc_t rmc;
+	struct txt_t txt;
 	struct vtg_t vtg;
 	struct zda_t zda;
 
+	struct navi_satinfo_t gsvinfo[9];
+
 	char parsedbuffer[4096];
-	int finished, parsed;
-	int msgtype;
+	const char *longtxtmessage = "Pay big attention to the Metro stations in St.Petersburg. "
+		"Some stations have correspondents on several main lines. The big problem comes this way: "
+		"Even if it is the same station, it will have different names on each main line. So if you "
+		"know you want to reach Gostiny Dvor on the green line, pay attention as you might be "
+		"travelling on the blue line. You would have to descend at Nevski Prospekt station which is "
+		"in fact the same station as Gostiny Dvor.";
+	int finished;
+	navi_approved_fmt_t msgtype;
 
 	const navi_error_t *lasterr;
 
@@ -55,20 +63,14 @@ int main(void)
 	remain = sizeof(buffer);
 
 	// ZDA
-	zda.tid = navi_GL;
-	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DAY | ZDA_VALID_MONTH |
-		ZDA_VALID_YEAR | ZDA_VALID_LOCALZONE;
-	zda.utc.hour = 8;
-	zda.utc.min = 12;
-	zda.utc.sec = 38.56;
-	zda.date.day = 25;
-	zda.date.month = 5;
-	zda.date.year = 1982;
+	navi_init_zda(&zda, navi_GL);
+	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
+	navi_init_utc(8, 12, 38.56, &zda.utc);
+	navi_init_date(1982, 5, 25, &zda.date);
 	zda.lzoffset = -240;
 
 	nmwritten = 0;
-	result = navi_create_msg(navi_ZDA, &zda, buffer + msglength,
-		remain, &nmwritten);
+	result = navi_create_msg(navi_ZDA, &zda, buffer + msglength, remain, &nmwritten);
 	if (result == navi_Ok)
 	{
 		msglength += nmwritten;
@@ -84,9 +86,9 @@ int main(void)
 	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_OFFSET |
 		DTM_VALID_ALTOFFSET | DTM_VALID_REFDATUM;
 	dtm.locdatum = navi_UserDefined;
-	dtm.latofs.offset = 2.4366;
+	dtm.latofs.offset = 0.2366;
 	dtm.latofs.sign = navi_North;
-	dtm.lonofs.offset = 3.81825;
+	dtm.lonofs.offset = 0.31825;
 	dtm.lonofs.sign = navi_West;
 	dtm.altoffset = 3.446;
 	dtm.refdatum = navi_WGS84;
@@ -113,7 +115,7 @@ int main(void)
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18.4;
-	gll.status = navi_DataValid;
+	gll.status = navi_status_A;
 	gll.mi = navi_Autonomous;
 
 	result = navi_create_msg(navi_GLL, &gll, buffer + msglength,
@@ -130,8 +132,7 @@ int main(void)
 
 	// GNS
 	gns.tid = navi_GL;
-	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX |
-		GNS_VALID_MODEINDICATOR | GNS_VALID_TOTALNMOFSATELLITES |
+	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX | GNS_VALID_TOTALNMOFSATELLITES |
 		GNS_VALID_HDOP | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
 	gns.utc.hour = 20;
@@ -143,7 +144,7 @@ int main(void)
 	gns.fix.lonsign = navi_East;
 	gns.mi[0] = navi_Autonomous;
 	gns.mi[1] = navi_Differential;
-	gns.totalsats = 4;
+	gns.nmsatellites = 4;
 	gns.hdop = 2.3;
 	gns.antaltitude = 2.003;
 	gns.geoidalsep = 18.2;
@@ -168,7 +169,7 @@ int main(void)
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39.98;
-	rmc.status = navi_DataInvalid;
+	rmc.status = navi_status_V;
 	rmc.fix.latitude = 74.64772882;
 	rmc.fix.latsign = navi_South;
 	rmc.fix.longitude = 132.0000333;
@@ -209,7 +210,7 @@ int main(void)
 	}
 
 	// VTG
-	vtg.tid = navi_VW;
+	navi_init_vtg(&vtg, navi_VW);
 	vtg.vfields = VTG_VALID_COURSETRUE | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
 	vtg.courseTrue = 0.223;
 	vtg.courseMagn = 22.203;
@@ -303,7 +304,7 @@ int main(void)
 							navi_fixsign_str(gns->fix.lonsign, 1), gns->fix.lonsign);
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
 					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
-						printf("\tsatellites = %d\n", gns->totalsats);
+						printf("\tsatellites = %d\n", gns->nmsatellites);
 					if (gns->vfields & GNS_VALID_HDOP)
 						printf("\thdop = %.12f\n", gns->hdop);
 					if (gns->vfields & GNS_VALID_ANTENNAALTITUDE)
@@ -369,12 +370,9 @@ int main(void)
 					if (zda->vfields & ZDA_VALID_UTC)
 						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour,
 							zda->utc.min, zda->utc.sec);
-					if (zda->vfields & ZDA_VALID_DAY)
-						printf("\tday = %d\n", zda->date.day);
-					if (zda->vfields & ZDA_VALID_MONTH)
-						printf("\tmonth = %d\n", zda->date.month);
-					if (zda->vfields & ZDA_VALID_YEAR)
-						printf("\tyear = %d\n", zda->date.year);
+					if (zda->vfields & ZDA_VALID_DATE)
+						printf("\tdate = %04d-%02d-%02d\n", zda->date.year, zda->date.month,
+							zda->date.day);
 					if (zda->vfields & ZDA_VALID_LOCALZONE)
 						printf("\tlocal zone offset = %d\n", zda->lzoffset);
 				}
@@ -434,63 +432,6 @@ int main(void)
 	msglength = 0;
 	remain = sizeof(buffer);
 
-	// ALM
-	alm.tid = navi_GP;
-	alm.nmsatellites = 3;
-
-	alm.almlist[0].vfields = GPSALM_VALID_SATELLITEPRN | GPSALM_VALID_GPSWEEK |
-		GPSALM_VALID_SVHEALTH | GPSALM_VALID_E | GPSALM_VALID_TOA |
-		GPSALM_VALID_SIGMAI | GPSALM_VALID_OMEGADOT | GPSALM_VALID_SQRTSEMIAXIS |
-		GPSALM_VALID_OMEGA | GPSALM_VALID_OMEGA0 | GPSALM_VALID_M0 |
-		GPSALM_VALID_AF0 | GPSALM_VALID_AF1;
-	alm.almlist[0].satelliteprn = 4;
-	alm.almlist[0].gpsweek = 3400;
-	alm.almlist[0].svhealth = 0x44;
-	alm.almlist[0].e = 0x0011;
-	alm.almlist[0].toa = 0x09;
-	alm.almlist[0].sigmai = 0x8a14;
-	alm.almlist[0].omegadot = 0x7f01;
-	alm.almlist[0].sqrtsemiaxis = 0x780012;
-	alm.almlist[0].omega = 0x00dd01;
-	alm.almlist[0].omega0 = 0x000000;
-	alm.almlist[0].m0 = 0x920f15;
-	alm.almlist[0].af0 = 0x115;
-	alm.almlist[0].af1 = 0x023;
-
-	alm.almlist[1].vfields = GPSALM_VALID_SATELLITEPRN | GPSALM_VALID_GPSWEEK |
-		GPSALM_VALID_SVHEALTH | GPSALM_VALID_E | GPSALM_VALID_TOA |
-		GPSALM_VALID_SIGMAI | GPSALM_VALID_OMEGADOT | GPSALM_VALID_SQRTSEMIAXIS |
-		GPSALM_VALID_OMEGA | GPSALM_VALID_OMEGA0 | GPSALM_VALID_M0;
-	alm.almlist[1].satelliteprn = 14;
-	alm.almlist[1].gpsweek = 3400;
-	alm.almlist[1].svhealth = 0xaf;
-	alm.almlist[1].e = 0x0011;
-	alm.almlist[1].toa = 0x00;
-	alm.almlist[1].sigmai = 0x8114;
-	alm.almlist[1].omegadot = 0x7701;
-	alm.almlist[1].sqrtsemiaxis = 0x000012;
-	alm.almlist[1].omega = 0x002201;
-	alm.almlist[1].omega0 = 0x000000;
-	alm.almlist[1].m0 = 0x920115;
-
-	alm.almlist[2].vfields = GPSALM_VALID_SATELLITEPRN | GPSALM_VALID_GPSWEEK |
-		GPSALM_VALID_SVHEALTH;
-	alm.almlist[2].satelliteprn = 32;
-	alm.almlist[2].gpsweek = 3400;
-	alm.almlist[2].svhealth = 0x00;
-
-	result = navi_create_msg(navi_ALM, &alm, buffer + msglength,
-		remain, &nmwritten);
-	if (result == navi_Ok)
-	{
-		msglength += nmwritten;
-		remain -= nmwritten;
-	}
-	else
-	{
-		printf("Composition of ALM failed (%d)\n", result);
-	}
-
 	// GBS
 	gbs.tid = navi_GL;
 
@@ -533,7 +474,7 @@ int main(void)
 	gga.fix.latsign = navi_South;
 	gga.fix.longitude = 112.01;
 	gga.fix.lonsign = navi_West;
-	gga.gpsindicator = navi_GpsDifferential;
+	gga.gpsindicator = navi_gps_Differential;
 	gga.nmsatellites = 8;
 	gga.hdop = 1.0;
 	gga.antaltitude = 8.1;
@@ -600,7 +541,7 @@ int main(void)
 	memset(&gsa, 0, sizeof(gsa));
 	gsa.tid = navi_GP;
 
-	gsa.switchmode = navi_GsaAutomatic;
+	gsa.swmode = navi_gsa_Automatic;
 	gsa.fixmode = 3;
 
 	gsa.satellites[0].notnull = 1;
@@ -673,108 +614,47 @@ int main(void)
 		printf("Composition of GST failed (%d)\n", result);
 	}
 
-	// MLA
-	mla.tid = navi_GL;
-	mla.nmsatellites = 3;
-
-	mla.almlist[0].vfields = GLOALM_VALID_SATSLOT | GLOALM_VALID_DAYCOUNT |
-		GLOALM_VALID_SVHEALTH | GLOALM_VALID_E | GLOALM_VALID_DOT |
-		GLOALM_VALID_OMEGA | GLOALM_VALID_TAUC | GLOALM_VALID_DELTAT |
-		GLOALM_VALID_T | GLOALM_VALID_LAMBDA | GLOALM_VALID_DELTAI |
-		GLOALM_VALID_TAUN;
-	mla.almlist[0].satslot = 4;
-	mla.almlist[0].daycount = 3400;
-	mla.almlist[0].svhealth = 0x44;
-	mla.almlist[0].e = 0x0011;
-	mla.almlist[0].dot = 0x09;
-	mla.almlist[0].omega = 0x8a14;
-	mla.almlist[0].tauc_high = 0x7f01;
-	mla.almlist[0].deltat = 0x780012;
-	mla.almlist[0].t = 0x00dd01;
-	mla.almlist[0].lambda = 0x000000;
-	mla.almlist[0].deltai = 0x920f15;
-	mla.almlist[0].tauc_low = 0x115;
-	mla.almlist[0].taun = 0x023;
-
-	mla.almlist[1].vfields =  GLOALM_VALID_SATSLOT | GLOALM_VALID_DAYCOUNT |
-		GLOALM_VALID_SVHEALTH | GLOALM_VALID_E | GLOALM_VALID_DOT |
-		GLOALM_VALID_OMEGA | GLOALM_VALID_TAUC | GLOALM_VALID_DELTAT |
-		GLOALM_VALID_T;
-	mla.almlist[1].satslot = 14;
-	mla.almlist[1].daycount = 400;
-	mla.almlist[1].svhealth = 0x44;
-	mla.almlist[1].e = 0x0111;
-	mla.almlist[1].dot = 0x09;
-	mla.almlist[1].omega = 0x8a14;
-	mla.almlist[1].tauc_high = 0x7f01;
-	mla.almlist[1].deltat = 0x780012;
-	mla.almlist[1].t = 0x00dd01;
-	mla.almlist[1].tauc_low = 0x115;
-
-	mla.almlist[2].vfields = GLOALM_VALID_SATSLOT | GLOALM_VALID_DAYCOUNT |
-		GLOALM_VALID_SVHEALTH;
-	mla.almlist[2].satslot = 11;
-	mla.almlist[2].daycount = 400;
-	mla.almlist[2].svhealth = 0;
-
-	result = navi_create_msg(navi_MLA, &mla, buffer + msglength,
-		remain, &nmwritten);
-	if (result == navi_Ok)
-	{
-		msglength += nmwritten;
-		remain -= nmwritten;
-	}
-	else
-	{
-		printf("Composition of MLA failed (%d)\n", result);
-	}
-
 	// GSV
-	gsv.tid = navi_GL;
-	gsv.totalsv = gsv.nmsatellites = 9;
+	gsvinfo[0].vfields = SATINFO_VALID_ORIENTATION;
+	gsvinfo[0].id = 4;
+	gsvinfo[0].elevation = 12;
+	gsvinfo[0].azimuth = 0;
 
-	gsv.info[0].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH;
-	gsv.info[0].id = 4;
-	gsv.info[0].elevation = 12;
-	gsv.info[0].azimuth = 0;
+	gsvinfo[1].vfields = SATINFO_VALID_ORIENTATION | SATINFO_VALID_SNR;
+	gsvinfo[1].id = 5;
+	gsvinfo[1].elevation = 18;
+	gsvinfo[1].azimuth = 12;
+	gsvinfo[1].snr = 45;
 
-	gsv.info[1].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH |
-		SATINFO_VALID_SNR;
-	gsv.info[1].id = 5;
-	gsv.info[1].elevation = 18;
-	gsv.info[1].azimuth = 12;
-	gsv.info[1].snr = 45;
+	gsvinfo[2].vfields = 0;
+	gsvinfo[2].id = 14;
 
-	gsv.info[2].vfields = 0;
-	gsv.info[2].id = 14;
+	gsvinfo[3].vfields = SATINFO_VALID_ORIENTATION | SATINFO_VALID_SNR;
+	gsvinfo[3].id = 18;
+	gsvinfo[3].elevation = 12;
+	gsvinfo[3].azimuth = 300;
+	gsvinfo[3].snr = 70;
 
-	gsv.info[3].vfields = SATINFO_VALID_ELEVATION | SATINFO_VALID_AZIMUTH |
-		SATINFO_VALID_SNR;
-	gsv.info[3].id = 18;
-	gsv.info[3].elevation = 12;
-	gsv.info[3].azimuth = 300;
-	gsv.info[3].snr = 70;
+	gsvinfo[4].vfields = 0;
+	gsvinfo[4].id = 6;
 
-	gsv.info[4].vfields = 0;
-	gsv.info[4].id = 6;
+	gsvinfo[5].vfields = SATINFO_VALID_SNR;
+	gsvinfo[5].id = 7;
+	gsvinfo[5].snr = 4;
 
-	gsv.info[5].vfields = SATINFO_VALID_SNR;
-	gsv.info[5].id = 7;
-	gsv.info[5].snr = 4;
+	gsvinfo[6].vfields = SATINFO_VALID_SNR;
+	gsvinfo[6].id = 8;
+	gsvinfo[6].snr = 4;
 
-	gsv.info[6].vfields = SATINFO_VALID_SNR;
-	gsv.info[6].id = 8;
-	gsv.info[6].snr = 4;
+	gsvinfo[7].vfields = SATINFO_VALID_SNR;
+	gsvinfo[7].id = 9;
+	gsvinfo[7].snr = 4;
 
-	gsv.info[7].vfields = SATINFO_VALID_SNR;
-	gsv.info[7].id = 9;
-	gsv.info[7].snr = 4;
+	gsvinfo[8].vfields = SATINFO_VALID_SNR;
+	gsvinfo[8].id = 10;
+	gsvinfo[8].snr = 4;
 
-	gsv.info[8].vfields = SATINFO_VALID_SNR;
-	gsv.info[8].id = 10;
-	gsv.info[8].snr = 4;
-
-	result = navi_create_msg(navi_GSV, &gsv, buffer + msglength,
+	result = navi_create_gsv_sequence(navi_GL, 9, gsvinfo, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)
 	{
@@ -784,6 +664,80 @@ int main(void)
 	else
 	{
 		printf("Composition of GSV failed (%d)\n", result);
+	}
+
+	// AAM
+	navi_init_aam(&aam, navi_GL);
+	aam.circle = navi_status_A;
+	aam.perp = navi_status_V;
+	aam.radius = 10.1;
+	strcpy(aam.wpid, "St. Petersburg, Russia");
+
+	result = navi_create_msg(navi_AAM, &aam, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of AAM failed (%d)\n", result);
+	}
+
+	// ACK
+	navi_init_ack(&ack, navi_GL);
+	ack.alarmid = 846;
+
+	result = navi_create_msg(navi_ACK, &ack, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of ACK failed (%d)\n", result);
+	}
+
+	// ALR
+	navi_init_alr(&alr, navi_GL);
+	navi_init_utc(12, 8, 13, &alr.utc);
+	alr.alarmid = 846;
+	alr.condition = navi_status_A;
+	alr.ackstate = navi_status_V;
+
+	result = navi_create_msg(navi_ALR, &alr, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of ALR failed (%d)\n", result);
+	}
+
+	// ALR
+	navi_init_alr(&alr, navi_GL);
+	navi_init_utc(16, 12, 0, &alr.utc);
+	alr.alarmid = 7;
+	alr.condition = navi_status_V;
+	alr.ackstate = navi_status_V;
+	strcpy(alr.description, "Captain, take your pills.");
+
+	result = navi_create_msg(navi_ALR, &alr, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of ALR failed (%d)\n", result);
 	}
 
 	printf("msglength = %d\n", msglength);
@@ -802,45 +756,6 @@ int main(void)
 
 			switch (msgtype)
 			{
-			case navi_ALM:
-				{
-					struct alm_t *alm = (struct alm_t *)parsedbuffer;
-
-					printf("Received ALM:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_str(alm->tid), alm->tid);
-					printf("\tTotal nm of messages: %i\n", alm->totalnm);
-					printf("\tMessage number: %i\n", alm->msgnm);
-
-					if (alm->almlist[0].vfields & GPSALM_VALID_SATELLITEPRN)
-						printf("\tSatellite PRN number: %u\n",
-							alm->almlist[0].satelliteprn);
-					if (alm->almlist[0].vfields & GPSALM_VALID_GPSWEEK)
-						printf("\tGPS week number: %u\n", alm->almlist[0].gpsweek);
-					if (alm->almlist[0].vfields & GPSALM_VALID_SVHEALTH)
-						printf("\tSV health: 0x%x\n", alm->almlist[0].svhealth);
-					if (alm->almlist[0].vfields & GPSALM_VALID_E)
-						printf("\tEccentricity: 0x%x\n", alm->almlist[0].e);
-					if (alm->almlist[0].vfields & GPSALM_VALID_TOA)
-						printf("\tAlmanac reference time: 0x%x\n", alm->almlist[0].toa);
-					if (alm->almlist[0].vfields & GPSALM_VALID_SIGMAI)
-						printf("\tInclination angle: 0x%x\n", alm->almlist[0].sigmai);
-					if (alm->almlist[0].vfields & GPSALM_VALID_OMEGADOT)
-						printf("\tRate of ascension: 0x%x\n", alm->almlist[0].omegadot);
-					if (alm->almlist[0].vfields & GPSALM_VALID_SQRTSEMIAXIS)
-						printf("\tRoot of semi-major axis: 0x%x\n",
-							alm->almlist[0].sqrtsemiaxis);
-					if (alm->almlist[0].vfields & GPSALM_VALID_OMEGA)
-						printf("\tArgument of perigee: 0x%x\n", alm->almlist[0].omega);
-					if (alm->almlist[0].vfields & GPSALM_VALID_OMEGA0)
-						printf("\tLongitude of ascension: 0x%x\n", alm->almlist[0].omega0);
-					if (alm->almlist[0].vfields & GPSALM_VALID_M0)
-						printf("\tMean anomaly: 0x%x\n", alm->almlist[0].m0);
-					if (alm->almlist[0].vfields & GPSALM_VALID_AF0)
-						printf("\tClock parameter 1: 0x%x\n", alm->almlist[0].af0);
-					if (alm->almlist[0].vfields & GPSALM_VALID_AF1)
-						printf("\tClock parameter 2: 0x%x\n", alm->almlist[0].af1);
-				}
-				break;
 			case navi_GBS:
 				{
 					struct gbs_t *gbs = (struct gbs_t *)parsedbuffer;
@@ -922,7 +837,7 @@ int main(void)
 					printf("Received GSA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gsa->tid), gsa->tid);
 					if (gsa->vfields & GSA_VALID_SWITCHMODE)
-						printf("\tswitchmode = %i\n", gsa->switchmode);
+						printf("\tswitchmode = %i\n", gsa->swmode);
 					if (gsa->vfields & GSA_VALID_FIXMODE)
 						printf("\tfixmode = %i\n", gsa->fixmode);
 					for (i = 0; i < 12; i++)
@@ -970,45 +885,6 @@ int main(void)
 					}
 				}
 				break;
-			case navi_MLA:
-				{
-					struct mla_t *mla = (struct mla_t *)parsedbuffer;
-
-					printf("Received MLA:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_str(mla->tid), mla->tid);
-					printf("\tTotal nm of messages: %i\n", mla->totalnm);
-					printf("\tMessage number: %i\n", mla->msgnm);
-
-					if (mla->almlist[0].vfields & GLOALM_VALID_SATSLOT)
-						printf("\tSatellite slot number: %u\n",
-							mla->almlist[0].satslot);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DAYCOUNT)
-						printf("\tDays count: %u\n", mla->almlist[0].daycount);
-					if (mla->almlist[0].vfields & GLOALM_VALID_SVHEALTH)
-						printf("\tSV health: 0x%x\n", mla->almlist[0].svhealth);
-					if (mla->almlist[0].vfields & GLOALM_VALID_E)
-						printf("\tEccentricity: 0x%x\n", mla->almlist[0].e);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DOT)
-						printf("\tDOT: 0x%x\n", mla->almlist[0].dot);
-					if (mla->almlist[0].vfields & GLOALM_VALID_OMEGA)
-						printf("\tOmega n: 0x%x\n", mla->almlist[0].omega);
-					if (mla->almlist[0].vfields & GLOALM_VALID_TAUC)
-						printf("\tTau c (high): 0x%x\n", mla->almlist[0].tauc_high);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DELTAT)
-						printf("\tDelta T n: 0x%x\n",
-							mla->almlist[0].deltat);
-					if (mla->almlist[0].vfields & GLOALM_VALID_T)
-						printf("\tt n: 0x%x\n", mla->almlist[0].t);
-					if (mla->almlist[0].vfields & GLOALM_VALID_LAMBDA)
-						printf("\tLambda n: 0x%x\n", mla->almlist[0].lambda);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DELTAI)
-						printf("\tDelta i n: 0x%x\n", mla->almlist[0].deltai);
-					if (mla->almlist[0].vfields & GLOALM_VALID_TAUC)
-						printf("\tTau c (low): 0x%x\n", mla->almlist[0].tauc_low);
-					if (mla->almlist[0].vfields & GLOALM_VALID_TAUN)
-						printf("\tTau n: 0x%x\n", mla->almlist[0].taun);
-				}
-				break;
 			case navi_GSV:
 				{
 					int i;
@@ -1018,17 +894,58 @@ int main(void)
 						navi_talkerid_str(gsv->tid), gsv->tid);
 					printf("\tTotal nm of messages: %i\n", gsv->totalnm);
 					printf("\tMessage number: %i\n", gsv->msgnm);
-					printf("\tTotal satellites in view: %i\n", gsv->totalsv);
+					if (gsv->nmsatellites != -1)
+						printf("\tTotal satellites in view: %i\n", gsv->nmsatellites);
 
-					for (i = 0; i < gsv->nmsatellites; i++)
+					for (i = 0; i < GSV_MAX_SATELLITES_PER_MESSAGE && gsv->info[i].id != 0; i++)
 					{
 						printf("\tSatellite id: %i\n", gsv->info[i].id);
-						if (gsv->info[i].vfields & SATINFO_VALID_ELEVATION)
+						if (gsv->info[i].vfields & SATINFO_VALID_ORIENTATION)
 							printf("\t\tElevation: %i\n", gsv->info[i].elevation);
-						if (gsv->info[i].vfields & SATINFO_VALID_AZIMUTH)
+						if (gsv->info[i].vfields & SATINFO_VALID_ORIENTATION)
 							printf("\t\tAzimuth: %i\n", gsv->info[i].azimuth);
 						if (gsv->info[i].vfields & SATINFO_VALID_SNR)
 							printf("\t\tSNR: %i\n", gsv->info[i].snr);
+					}
+				}
+				break;
+			case navi_AAM:
+				{
+					struct aam_t *aam = (struct aam_t *)parsedbuffer;
+
+					printf("Received AAM:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(aam->tid), aam->tid);
+					printf("\tStatus of circle: %s\n", aam->circle == navi_status_A ? "entered" : "not entered");
+					printf("\tStatus of perpendicular: %s\n", aam->perp == navi_status_A ? "passed" : "not passed");
+					printf("\tArrival circle radius: %f nautical miles\n", aam->radius);
+					printf("\tWaypoint ID: %s\n", aam->wpid);
+				}
+				break;
+			case navi_ACK:
+				{
+					struct ack_t *ack = (struct ack_t *)parsedbuffer;
+
+					printf("Received ACK:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(ack->tid), ack->tid);
+					printf("\tLocal alarm identifier: %i\n", ack->alarmid);
+				}
+				break;
+			case navi_ALR:
+				{
+					struct alr_t *alr = (struct alr_t *)parsedbuffer;
+
+					printf("Received ALR:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(alr->tid), alr->tid);
+					printf("\tutc = %02u:%02u:%06.3f\n", alr->utc.hour,
+						alr->utc.min, alr->utc.sec);
+					printf("\tLocal alarm identifier: %i\n", alr->alarmid);
+					printf("\tCondition of alarm: %s\n", alr->condition == navi_status_A ?
+						"threshold exceeded" : "not exceeded");
+					printf("\tAcknowledge state: %s\n", alr->ackstate == navi_status_A ?
+						"acknowledged" : "unacknowledged");
+					if (strlen(alr->description) > 0)
+					{
+						printf("\tAlarm's description: %s\n", alr->description);
 					}
 				}
 				break;
@@ -1050,9 +967,6 @@ int main(void)
 
 			switch (msgtype)
 			{
-			case navi_ALM:
-				printf("Could not parse ALM\n");
-				break;
 			default:
 				break;
 			}
@@ -1069,20 +983,139 @@ int main(void)
 		}
 	} while (!finished);
 
-	printf("sizeof struct alm_t = %u\n", sizeof(struct alm_t));
-	printf("sizeof struct dtm_t = %u\n", sizeof(struct dtm_t));
-	printf("sizeof struct gbs_t = %u\n", sizeof(struct gbs_t));
-	printf("sizeof struct gga_t = %u\n", sizeof(struct gga_t));
-	printf("sizeof struct gll_t = %u\n", sizeof(struct gll_t));
-	printf("sizeof struct gns_t = %u\n", sizeof(struct gns_t));
-	printf("sizeof struct grs_t = %u\n", sizeof(struct grs_t));
-	printf("sizeof struct gsa_t = %u\n", sizeof(struct gsa_t));
-	printf("sizeof struct gst_t = %u\n", sizeof(struct gst_t));
-	printf("sizeof struct gsv_t = %u\n", sizeof(struct gsv_t));
-	printf("sizeof struct mla_t = %u\n", sizeof(struct mla_t));
-	printf("sizeof struct rmc_t = %u\n", sizeof(struct rmc_t));
-	printf("sizeof struct vtg_t = %u\n", sizeof(struct vtg_t));
-	printf("sizeof struct zda_t = %u\n", sizeof(struct zda_t));
+	msglength = 0;
+	remain = sizeof(buffer);
+
+	// TXT
+	navi_init_txt(&txt, navi_GP);
+	txt.textid = 25;
+	strcpy(txt.textmsg, "DR MODE - ANTENNA FAULT!");
+
+	result = navi_create_msg(navi_TXT, &txt, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of TXT failed (%d)\n", result);
+	}
+
+	// Long TXT, splitted into several messages
+	result = navi_create_txt_sequence(navi_GL, 25, longtxtmessage, buffer + msglength,
+		remain, &nmwritten);
+	if (result == navi_Ok)
+	{
+		msglength += nmwritten;
+		remain -= nmwritten;
+	}
+	else
+	{
+		printf("Composition of TXT failed (%d)\n", navierr_get_last()->errclass);
+	}
+
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", buffer);
+
+	finished = 0;
+	parsed = 0;
+	nmread = 0;
+
+	do
+	{
+		while ((result = navi_parse_msg(buffer + parsed, sizeof(buffer) - parsed,
+			sizeof(parsedbuffer), parsedbuffer, &msgtype, &nmread)) == navi_Ok)
+		{
+			parsed += nmread;
+
+			switch (msgtype)
+			{
+			case navi_TXT:
+				{
+					struct txt_t *txt = (struct txt_t *)parsedbuffer;
+
+					printf("Received TXT:\n\ttalker id = %s (%d)\n",
+						navi_talkerid_str(txt->tid), txt->tid);
+					printf("\tTotal nm of messages: %i\n", txt->totalnm);
+					printf("\tMessage number: %i\n", txt->msgnm);
+					printf("\tText identifier: %i\n", txt->textid);
+					if (strlen(txt->textmsg) > 0)
+					{
+						printf("\tText message: %s\n", txt->textmsg);
+					}
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+		lasterr = navierr_get_last();
+
+		if (lasterr->errclass == navi_CrcEror)
+		{
+			printf("CRC error\n");
+			parsed += nmread;	// advance to parse next message
+		}
+		else if (lasterr->errclass == navi_MsgNotSupported)
+		{
+			parsed += nmread;	// advance to parse next message
+
+			switch (msgtype)
+			{
+			default:
+				break;
+			}
+		}
+		else if (lasterr->errclass == navi_NoValidMessage)
+		{
+			printf("Buffer emptied (%d)\n", lasterr->errclass);
+			finished = 1;
+		}
+		else
+		{
+			printf("Parsing result = %d\n", lasterr->errclass);
+			finished = 1;
+		}
+	} while (!finished);
+
+#ifdef _MSC_VER
+	printf("sizeof struct aam_t = %Iu\n", sizeof(struct aam_t));
+	printf("sizeof struct ack_t = %Iu\n", sizeof(struct ack_t));
+	printf("sizeof struct alr_t = %Iu\n", sizeof(struct alr_t));
+	printf("sizeof struct dtm_t = %Iu\n", sizeof(struct dtm_t));
+	printf("sizeof struct gbs_t = %Iu\n", sizeof(struct gbs_t));
+	printf("sizeof struct gga_t = %Iu\n", sizeof(struct gga_t));
+	printf("sizeof struct gll_t = %Iu\n", sizeof(struct gll_t));
+	printf("sizeof struct gns_t = %Iu\n", sizeof(struct gns_t));
+	printf("sizeof struct grs_t = %Iu\n", sizeof(struct grs_t));
+	printf("sizeof struct gsa_t = %Iu\n", sizeof(struct gsa_t));
+	printf("sizeof struct gst_t = %Iu\n", sizeof(struct gst_t));
+	printf("sizeof struct gsv_t = %Iu\n", sizeof(struct gsv_t));
+	printf("sizeof struct rmc_t = %Iu\n", sizeof(struct rmc_t));
+	printf("sizeof struct txt_t = %Iu\n", sizeof(struct txt_t));
+	printf("sizeof struct vtg_t = %Iu\n", sizeof(struct vtg_t));
+	printf("sizeof struct zda_t = %Iu\n", sizeof(struct zda_t));
+#else
+	printf("sizeof struct aam_t = %zu\n", sizeof(struct aam_t));
+	printf("sizeof struct ack_t = %zu\n", sizeof(struct ack_t));
+	printf("sizeof struct alr_t = %zu\n", sizeof(struct alr_t));
+	printf("sizeof struct dtm_t = %zu\n", sizeof(struct dtm_t));
+	printf("sizeof struct gbs_t = %zu\n", sizeof(struct gbs_t));
+	printf("sizeof struct gga_t = %zu\n", sizeof(struct gga_t));
+	printf("sizeof struct gll_t = %zu\n", sizeof(struct gll_t));
+	printf("sizeof struct gns_t = %zu\n", sizeof(struct gns_t));
+	printf("sizeof struct grs_t = %zu\n", sizeof(struct grs_t));
+	printf("sizeof struct gsa_t = %zu\n", sizeof(struct gsa_t));
+	printf("sizeof struct gst_t = %zu\n", sizeof(struct gst_t));
+	printf("sizeof struct gsv_t = %zu\n", sizeof(struct gsv_t));
+	printf("sizeof struct rmc_t = %zu\n", sizeof(struct rmc_t));
+	printf("sizeof struct txt_t = %zu\n", sizeof(struct txt_t));
+	printf("sizeof struct vtg_t = %zu\n", sizeof(struct vtg_t));
+	printf("sizeof struct zda_t = %zu\n", sizeof(struct zda_t));
+#endif // MSVC_VER
 
 	return 0;
 }

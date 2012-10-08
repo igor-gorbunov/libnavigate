@@ -17,24 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gst.h"
-#include "common.h"
+#include <libnavigate/gst.h>
+#include <libnavigate/common.h>
 
 #include <navigate.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes GST sentence structure with default values
+navierr_status_t navi_init_gst(struct gst_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	navi_init_utc(0, 0, 0.0, &msg->utc);
+
+	msg->rms = msg->devmajor = msg->devminor = msg->orientmajor =
+		msg->devlaterr = msg->devlonerr = msg->devalterr = 0.0;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_gst(const struct gst_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates GST message
+navierr_status_t navi_create_gst(const struct gst_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	char utc[32], rms[16], devmajor[16], devminor[16], orientmajor[16],
 		devlaterr[16], devlonerr[16], devalterr[16];
@@ -70,9 +88,11 @@ int navi_create_gst(const struct gst_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_gst(struct gst_t *msg, char *buffer)
+//
+// Parses GST message
+navierr_status_t navi_parse_gst(struct gst_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 
 	msg->vfields = 0;
 
@@ -160,4 +180,3 @@ int navi_parse_gst(struct gst_t *msg, char *buffer)
 }
 
 #endif // NO_PARSER
-

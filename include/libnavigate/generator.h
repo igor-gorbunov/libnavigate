@@ -20,8 +20,8 @@
 #ifndef INCLUDE_navi_generator_h
 #define INCLUDE_navi_generator_h
 
-#include "generic.h"
-#include "sentence.h"
+#include <libnavigate/errors.h>
+#include <libnavigate/sentence.h>
 
 NAVI_BEGIN_DECL
 
@@ -34,88 +34,95 @@ NAVI_BEGIN_DECL
 // Returns 0 if succeeded, -1 otherwise
 // Call navierr_get_last() to get the error description
 //
-NAVI_EXTERN(int) navi_create_msg(int type, void *msg, char *buffer,
-		int maxsize, int *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_msg(navi_approved_fmt_t type,
+	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Returns the string representation of talker identifier
-NAVI_EXTERN(const char *) navi_talkerid_str(int tid);
+NAVI_EXTERN(const char *) navi_talkerid_str(navi_talkerid_t tid);
 
 //
 // Returns the string representation of approved sentence
-NAVI_EXTERN(const char *) navi_sentencefmt_str(int fmt);
+NAVI_EXTERN(const char *) navi_sentencefmt_str(navi_approved_fmt_t fmt);
 
 //
 // Returns the string representation of geodetic datum
-NAVI_EXTERN(const char *) navi_datum_str(int datum, int notnull);
+NAVI_EXTERN(const char *) navi_datum_str(navi_datum_t datum, int notnull);
 
 //
 // Returns the string representation of geodetic datum
-NAVI_EXTERN(const char *) navi_datumsubdiv_str(int datumsub, int notnull);
+NAVI_EXTERN(const char *) navi_datumsubdiv_str(navi_datum_subdivision_t datumsub,
+	int notnull);
 
 //
 // Returns the offset or position fix sign
-NAVI_EXTERN(const char *) navi_fixsign_str(int fixsign, int notnull);
+NAVI_EXTERN(const char *) navi_fixsign_str(navi_offset_sign_t fixsign, int notnull);
 
 //
 // Returns the status
-NAVI_EXTERN(const char *) navi_status_str(int status);
+NAVI_EXTERN(const char *) navi_status_str(navi_status_t status);
 
 //
 // Returns the mode indicator
-NAVI_EXTERN(const char *) navi_modeindicator_str(int mi);
+NAVI_EXTERN(const char *) navi_modeindicator_str(navi_modeindicator_t mi);
+
+//
+// Returns the extended mode indicator
+NAVI_EXTERN(const char *) navi_modeindicator_extended_str(navi_modeindicator_t mi);
 
 //
 // Returns the GSA 2D/3D switching mode
-NAVI_EXTERN(const char *) navi_gsamode_str(int mode, int notnull);
+NAVI_EXTERN(const char *) navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull);
 
 //
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
 // Returns the number of printed characters
-NAVI_EXTERN(int) navi_print_position_fix(const struct navi_position_t *fix,
-		char *buffer, int maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_position_fix(const struct navi_position_t *fix,
+	char *buffer, size_t maxsize, int notnull);
 
 //
 // Prints variable numbers
 // Returns the number of printed characters
-NAVI_EXTERN(int) navi_print_number(double value, char *buffer,
-		int maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_number(double value, char *buffer,
+	size_t maxsize, int notnull);
 
 //
 // Prints fixed length hexadecimal numbers, MSB on the left.
 // If fieldwidth equals 0, the field is considered to be null.
 // Returns the number of printed characters
-NAVI_EXTERN(int) navi_print_hexfield(const char bytes[], int fieldwidth,
-		char *buffer, int maxsize);
+NAVI_EXTERN(size_t) navi_print_hexfield(const char bytes[], int fieldwidth,
+	char *buffer, size_t maxsize);
 
 //
 // Prints fixed length decimal numbers
 // If fieldwidth equals 0, the field is considered to be null.
 // Returns the number of printed characters
-NAVI_EXTERN(int) navi_print_decfield(const char bytes[], int fieldwidth,
-		char *buffer, int maxsize);
+NAVI_EXTERN(size_t) navi_print_decfield(const char bytes[], int fieldwidth,
+	char *buffer, size_t maxsize);
+
+//
+// Print fixed length field with given radix
+NAVI_EXTERN(size_t) navi_print_fixedfield(const char bytes[], int fieldwidth, int radix,
+	char *buffer, size_t maxsize);
 
 //
 // Prints UTC time
 // Returns the number of printed characters
-NAVI_EXTERN(int) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
-		int maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
+	size_t maxsize, int notnull);
 
 //
 // Prints array of mode indicators
 // Returns the number of printed characters
-NAVI_EXTERN(int) navi_print_miarray(const int mi[], int miquant, char *buffer);
+NAVI_EXTERN(size_t) navi_print_miarray(const navi_modeindicator_t mi[], int miquant,
+	char *buffer);
 
 //
-// Fills in the navi_position_t structure with latitude and longitude
-// given as arguments in radians.
-// Latitude is provided in the range of [-pi/2, +pi/2] and the result is within
-// [90°S, 90°N].
-// The longitude is provided in the range of [-pi, +2pi) and result is within
-// [180°W, 180°E). Thus, the input range of [0, +pi) is treated as [0, 180°E)
-// and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0].
-NAVI_EXTERN(int) navi_set_position(double latitude, double longitude,
-		struct navi_position_t *out);
+// Fills a buffer with valid characters from the given string,
+// translating reserved characters to triples '^xx'.
+// Returns navi_Error, if the conversion is not possible
+NAVI_EXTERN(navierr_status_t) navi_print_character_field(const char *from,
+	char *to, size_t maxsize);
 
 NAVI_END_DECL
 

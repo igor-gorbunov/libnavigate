@@ -1,7 +1,7 @@
 #ifndef INCLUDE_navi_config_h
 #define INCLUDE_navi_config_h
 
-#include "generic.h"
+#include <libnavigate/generic.h>
 
 NAVI_BEGIN_DECL
 

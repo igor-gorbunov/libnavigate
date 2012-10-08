@@ -17,23 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "vtg.h"
-#include "common.h"
+#include <libnavigate/vtg.h>
+#include <libnavigate/common.h>
+#include <libnavigate/generator.h>
+#include <libnavigate/parser.h>
 
-#include <navigate.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+	#include "win32/win32navi.h"
 #endif // MSVC_VER
+
+//
+// Initializes VTG sentence structure with default values
+NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t tid)
+{
+	assert(msg != NULL);
+
+	msg->tid = tid;
+	msg->vfields = 0;
+	msg->courseTrue = 0.;
+	msg->courseMagn = 0.;
+	msg->speed = 0.;
+	msg->mi = navi_DataNotValid;
+
+	return navi_Ok;
+}
 
 #ifndef NO_GENERATOR
 
-int navi_create_vtg(const struct vtg_t *msg, char *buffer,
-	int maxsize, int *nmwritten)
+//
+// Creates VTG message
+navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	int msglength;
+	size_t msglength;
 
 	const char *mi;
 	char ctrue[32], courseT[2], cmagn[32], courseM[2], snots[32],
@@ -73,9 +92,11 @@ int navi_create_vtg(const struct vtg_t *msg, char *buffer,
 
 #ifndef NO_PARSER
 
-int navi_parse_vtg(struct vtg_t *msg, char *buffer)
+//
+// Parses VTG message
+navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 {
-	int i = 0, nmread;
+	size_t i = 0, nmread;
 	double speedknots, speedkmph;
 
 	msg->vfields = 0;
