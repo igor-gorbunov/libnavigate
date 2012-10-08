@@ -4,15 +4,29 @@
 # Copyright (c) 2012 Igor Gorbunov <igor.genius@gmail.com>
 #
 
+%define _name			libnavigate
+
+%define _version_major	0
+%define _version_minor	3
+%define _version_patch	0
+
+%define _version	%{_version_major}.%{_version_minor}.%{_version_patch}
+
+%define _source		%{_name}-%{version}.tar.bz2
+
+#%define _prefix		/usr/local
+
+#%define _build		i686-pc-linux-gnu
+
 #
-Name:           libnavigate
-Version:        0.3.0
-Release:        1
+Name:           %{_name}
+Version:        %{_version}
+Release:        2
 Summary:        The IEC 61162-1/NMEA 0183 messages generating/parsing library
 License:        LGPLv3
 Group:          Development/Libraries
 URL:            http://github.com/igor-gorbunov/libnavigate
-Source0:        %{name}-%{version}.tar.bz2
+Source0:        %{_source}
 BuildRequires:  cmake
 BuildRequires:  pkgconfig
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -49,7 +63,14 @@ rm -rf %{buildroot}
 
 %files
 %defattr (-,root,root)
-%doc AUTHORS ChangeLog COPYING lgpl-3.0.txt NEWS README THANKS TODO
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/AUTHORS
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/ChangeLog
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/COPYING
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/lgpl-3.0.txt
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/NEWS
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/README
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/THANKS
+%doc %{_prefix}/share/doc/navigate-%{_version_major}.%{_version_minor}/TODO
 %{_libdir}/%{name}.so.*
 %{_libdir}/%{name}.so
 
