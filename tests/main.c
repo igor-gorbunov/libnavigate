@@ -41,7 +41,6 @@ int main(void)
 	struct gsa_t gsa;
 	struct gst_t gst;
 	struct gsv_t gsv;
-	struct mla_t mla;
 	struct rmc_t rmc;
 	struct txt_t txt;
 	struct vtg_t vtg;
@@ -614,62 +613,6 @@ int main(void)
 		printf("Composition of GST failed (%d)\n", result);
 	}
 
-	// MLA
-	mla.tid = navi_GL;
-	mla.nmsatellites = 3;
-
-	mla.almlist[0].vfields = GLOALM_VALID_SATSLOT | GLOALM_VALID_DAYCOUNT |
-		GLOALM_VALID_SVHEALTH | GLOALM_VALID_E | GLOALM_VALID_DOT |
-		GLOALM_VALID_OMEGA | GLOALM_VALID_TAUC | GLOALM_VALID_DELTAT |
-		GLOALM_VALID_T | GLOALM_VALID_LAMBDA | GLOALM_VALID_DELTAI |
-		GLOALM_VALID_TAUN;
-	mla.almlist[0].satslot = 4;
-	mla.almlist[0].daycount = 3400;
-	mla.almlist[0].svhealth = 0x44;
-	mla.almlist[0].e = 0x0011;
-	mla.almlist[0].dot = 0x09;
-	mla.almlist[0].omega = 0x8a14;
-	mla.almlist[0].tauc_high = 0x7f01;
-	mla.almlist[0].deltat = 0x780012;
-	mla.almlist[0].t = 0x00dd01;
-	mla.almlist[0].lambda = 0x000000;
-	mla.almlist[0].deltai = 0x920f15;
-	mla.almlist[0].tauc_low = 0x115;
-	mla.almlist[0].taun = 0x023;
-
-	mla.almlist[1].vfields =  GLOALM_VALID_SATSLOT | GLOALM_VALID_DAYCOUNT |
-		GLOALM_VALID_SVHEALTH | GLOALM_VALID_E | GLOALM_VALID_DOT |
-		GLOALM_VALID_OMEGA | GLOALM_VALID_TAUC | GLOALM_VALID_DELTAT |
-		GLOALM_VALID_T;
-	mla.almlist[1].satslot = 14;
-	mla.almlist[1].daycount = 400;
-	mla.almlist[1].svhealth = 0x44;
-	mla.almlist[1].e = 0x0111;
-	mla.almlist[1].dot = 0x09;
-	mla.almlist[1].omega = 0x8a14;
-	mla.almlist[1].tauc_high = 0x7f01;
-	mla.almlist[1].deltat = 0x780012;
-	mla.almlist[1].t = 0x00dd01;
-	mla.almlist[1].tauc_low = 0x115;
-
-	mla.almlist[2].vfields = GLOALM_VALID_SATSLOT | GLOALM_VALID_DAYCOUNT |
-		GLOALM_VALID_SVHEALTH;
-	mla.almlist[2].satslot = 11;
-	mla.almlist[2].daycount = 400;
-	mla.almlist[2].svhealth = 0;
-
-	result = navi_create_msg(navi_MLA, &mla, buffer + msglength,
-		remain, &nmwritten);
-	if (result == navi_Ok)
-	{
-		msglength += nmwritten;
-		remain -= nmwritten;
-	}
-	else
-	{
-		printf("Composition of MLA failed (%d)\n", result);
-	}
-
 	// GSV
 	gsv.tid = navi_GL;
 	gsv.nmsatellites = 9;
@@ -943,45 +886,6 @@ int main(void)
 					}
 				}
 				break;
-			case navi_MLA:
-				{
-					struct mla_t *mla = (struct mla_t *)parsedbuffer;
-
-					printf("Received MLA:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_str(mla->tid), mla->tid);
-					printf("\tTotal nm of messages: %i\n", mla->totalnm);
-					printf("\tMessage number: %i\n", mla->msgnm);
-
-					if (mla->almlist[0].vfields & GLOALM_VALID_SATSLOT)
-						printf("\tSatellite slot number: %u\n",
-							mla->almlist[0].satslot);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DAYCOUNT)
-						printf("\tDays count: %u\n", mla->almlist[0].daycount);
-					if (mla->almlist[0].vfields & GLOALM_VALID_SVHEALTH)
-						printf("\tSV health: 0x%x\n", mla->almlist[0].svhealth);
-					if (mla->almlist[0].vfields & GLOALM_VALID_E)
-						printf("\tEccentricity: 0x%x\n", mla->almlist[0].e);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DOT)
-						printf("\tDOT: 0x%x\n", mla->almlist[0].dot);
-					if (mla->almlist[0].vfields & GLOALM_VALID_OMEGA)
-						printf("\tOmega n: 0x%x\n", mla->almlist[0].omega);
-					if (mla->almlist[0].vfields & GLOALM_VALID_TAUC)
-						printf("\tTau c (high): 0x%x\n", mla->almlist[0].tauc_high);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DELTAT)
-						printf("\tDelta T n: 0x%x\n",
-							mla->almlist[0].deltat);
-					if (mla->almlist[0].vfields & GLOALM_VALID_T)
-						printf("\tt n: 0x%x\n", mla->almlist[0].t);
-					if (mla->almlist[0].vfields & GLOALM_VALID_LAMBDA)
-						printf("\tLambda n: 0x%x\n", mla->almlist[0].lambda);
-					if (mla->almlist[0].vfields & GLOALM_VALID_DELTAI)
-						printf("\tDelta i n: 0x%x\n", mla->almlist[0].deltai);
-					if (mla->almlist[0].vfields & GLOALM_VALID_TAUC)
-						printf("\tTau c (low): 0x%x\n", mla->almlist[0].tauc_low);
-					if (mla->almlist[0].vfields & GLOALM_VALID_TAUN)
-						printf("\tTau n: 0x%x\n", mla->almlist[0].taun);
-				}
-				break;
 			case navi_GSV:
 				{
 					int i;
@@ -1063,9 +967,6 @@ int main(void)
 
 			switch (msgtype)
 			{
-			case navi_ALM:
-				printf("Could not parse ALM\n");
-				break;
 			default:
 				break;
 			}
@@ -1164,9 +1065,6 @@ int main(void)
 
 			switch (msgtype)
 			{
-			case navi_ALM:
-				printf("Could not parse ALM\n");
-				break;
 			default:
 				break;
 			}
@@ -1196,7 +1094,6 @@ int main(void)
 	printf("sizeof struct gsa_t = %Iu\n", sizeof(struct gsa_t));
 	printf("sizeof struct gst_t = %Iu\n", sizeof(struct gst_t));
 	printf("sizeof struct gsv_t = %Iu\n", sizeof(struct gsv_t));
-	printf("sizeof struct mla_t = %Iu\n", sizeof(struct mla_t));
 	printf("sizeof struct rmc_t = %Iu\n", sizeof(struct rmc_t));
 	printf("sizeof struct txt_t = %Iu\n", sizeof(struct txt_t));
 	printf("sizeof struct vtg_t = %Iu\n", sizeof(struct vtg_t));
@@ -1214,7 +1111,6 @@ int main(void)
 	printf("sizeof struct gsa_t = %zu\n", sizeof(struct gsa_t));
 	printf("sizeof struct gst_t = %zu\n", sizeof(struct gst_t));
 	printf("sizeof struct gsv_t = %zu\n", sizeof(struct gsv_t));
-	printf("sizeof struct mla_t = %zu\n", sizeof(struct mla_t));
 	printf("sizeof struct rmc_t = %zu\n", sizeof(struct rmc_t));
 	printf("sizeof struct txt_t = %zu\n", sizeof(struct txt_t));
 	printf("sizeof struct vtg_t = %zu\n", sizeof(struct vtg_t));

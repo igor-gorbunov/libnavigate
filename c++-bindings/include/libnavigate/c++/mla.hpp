@@ -29,7 +29,7 @@ namespace libnavigate
 NAVI_EXTERN_CLASS(Mla_t) : public Message_t
 {
 public:
-	static const int MaxSatellites = 32;
+	static const int MaxSatellites = MLA_MAX_SATELLITES;
 
 public:
 	Mla_t(const TalkerId_t &tid = TalkerId_t::Unknown);
@@ -38,59 +38,55 @@ public:
 
 public:
 	virtual TalkerId_t talkerId() const;
-	virtual int nmOfSatellites() const;
 	virtual int totalNmOfMessages() const;
 	virtual int messageNumber() const;
 
 public:
-	virtual bool isSatelliteSlotValid(int satIdx) const;
-	virtual bool isDayCountValid(int satIdx) const;
-	virtual bool isSvHealthValid(int satIdx) const;
-	virtual bool isEccentricityValid(int satIdx) const;
-	virtual bool isRateOfChangeOfDraconicTimeValid(int satIdx) const;
-	virtual bool isArgumentOfPerigeeValid(int satIdx) const;
-	virtual bool isSystemTimescaleCorrectionValid(int satIdx) const;
-	virtual bool isCorrectionToDraconicTimeValid(int satIdx) const;
-	virtual bool isTimeOfAscensionNodeValid(int satIdx) const;
-	virtual bool isLongitudeOfAscensionNodeValid(int satIdx) const;
-	virtual bool isCorrectionToInclinationAngleValid(int satIdx) const;
-	virtual bool isCourseValueOfTimescaleShiftValid(int satIdx) const;
+	virtual unsigned int satelliteSlot() const;
+	virtual unsigned int dayCount() const;
+	virtual unsigned int svHealth() const;
+	virtual unsigned int eccentricity() const;
+	virtual unsigned int rateOfChangeOfDraconicTime() const;
+	virtual unsigned int argumentOfPerigee() const;
+	virtual unsigned int systemTimescaleCorrection_High() const;
+	virtual unsigned int correctionToDraconicTime() const;
+	virtual unsigned int timeOfAscensionNode() const;
+	virtual unsigned int longitudeOfAscensionNode() const;
+	virtual unsigned int correctionToInclinationAngle() const;
+	virtual unsigned int systemTimescaleCorrection_Low() const;
+	virtual unsigned int courseValueOfTimescaleShift() const;
 
 public:
-
-	virtual unsigned int satelliteSlot(int satIdx) const;
-	virtual unsigned int dayCount(int satIdx) const;
-	virtual unsigned int svHealth(int satIdx) const;
-	virtual unsigned int eccentricity(int satIdx) const;
-	virtual unsigned int rateOfChangeOfDraconicTime(int satIdx) const;
-	virtual unsigned int argumentOfPerigee(int satIdx) const;
-	virtual unsigned int systemTimescaleCorrection_High(int satIdx) const;
-	virtual unsigned int correctionToDraconicTime(int satIdx) const;
-	virtual unsigned int timeOfAscensionNode(int satIdx) const;
-	virtual unsigned int longitudeOfAscensionNode(int satIdx) const;
-	virtual unsigned int correctionToInclinationAngle(int satIdx) const;
-	virtual unsigned int systemTimescaleCorrection_Low(int satIdx) const;
-	virtual unsigned int courseValueOfTimescaleShift(int satIdx) const;
+	virtual bool isDayCountValid() const;
+	virtual bool isSvHealthValid() const;
+	virtual bool isEccentricityValid() const;
+	virtual bool isRateOfChangeOfDraconicTimeValid() const;
+	virtual bool isArgumentOfPerigeeValid() const;
+	virtual bool isSystemTimescaleCorrectionValid() const;
+	virtual bool isCorrectionToDraconicTimeValid() const;
+	virtual bool isTimeOfAscensionNodeValid() const;
+	virtual bool isLongitudeOfAscensionNodeValid() const;
+	virtual bool isCorrectionToInclinationAngleValid() const;
+	virtual bool isCourseValueOfTimescaleShiftValid() const;
 
 public:
 	virtual void setTalkerId(const TalkerId_t &tid);
-	virtual void setNmOfSatellites(int value);
 	virtual void setTotalNmOfMessages(int value);
 	virtual void setMessageNumber(int value);
 
-	virtual void setSatelliteSlot(int satIdx, unsigned int value);
-	virtual void setDayCount(int satIdx, unsigned int value);
-	virtual void setSvHealth(int satIdx, unsigned int value);
-	virtual void setEccentricity(int satIdx, unsigned int value);
-	virtual void setRateOfChangeOfDraconicTime(int satIdx, unsigned int value);
-	virtual void setArgumentOfPerigee(int satIdx, unsigned int value);
-	virtual void setSystemTimescaleCorrection_High(int satIdx, unsigned int value);
-	virtual void setCorrectionToDraconicTime(int satIdx, unsigned int value);
-	virtual void setTimeOfAscensionNode(int satIdx, unsigned int value);
-	virtual void setLongitudeOfAscensionNode(int satIdx, unsigned int value);
-	virtual void setCorrectionToInclinationAngle(int satIdx, unsigned int value);
-	virtual void setSystemTimescaleCorrection_Low(int satIdx, unsigned int value);
-	virtual void setCourseValueOfTimescaleShift(int satIdx, unsigned int value);
+	virtual void setSatelliteSlot(unsigned int value);
+	virtual void setDayCount(unsigned int value);
+	virtual void setSvHealth(unsigned int value);
+	virtual void setEccentricity(unsigned int value);
+	virtual void setRateOfChangeOfDraconicTime(unsigned int value);
+	virtual void setArgumentOfPerigee(unsigned int value);
+	virtual void setSystemTimescaleCorrection_High(unsigned int value);
+	virtual void setCorrectionToDraconicTime(unsigned int value);
+	virtual void setTimeOfAscensionNode(unsigned int value);
+	virtual void setLongitudeOfAscensionNode(unsigned int value);
+	virtual void setCorrectionToInclinationAngle(unsigned int value);
+	virtual void setSystemTimescaleCorrection_Low(unsigned int value);
+	virtual void setCourseValueOfTimescaleShift(unsigned int value);
 
 public:
 	virtual void clearMessage();
@@ -103,4 +99,3 @@ public:
 }
 
 #endif // INCLUDE_navi_mlaplusplus
-

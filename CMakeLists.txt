@@ -126,9 +126,13 @@ IF(BUILD_TESTS)
 	ADD_EXECUTABLE(check_alm tests/check_alm.c)
 	TARGET_LINK_LIBRARIES(check_alm navigate)
 
+	ADD_EXECUTABLE(check_mla tests/check_mla.c)
+	TARGET_LINK_LIBRARIES(check_mla navigate)
+
 	IF(UNIX)
 		TARGET_LINK_LIBRARIES(test m)
 		TARGET_LINK_LIBRARIES(check_alm m)
+		TARGET_LINK_LIBRARIES(check_mla m)
 	ENDIF ()
 
 	IF(BUILD_CPPBINDINGS)

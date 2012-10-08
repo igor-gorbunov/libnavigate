@@ -54,28 +54,28 @@ struct navi_gloalm_t
 	unsigned taun;		// course value of the time scale shift
 };
 
-#define GLOALM_VALID_SATSLOT		0x001
-#define GLOALM_VALID_DAYCOUNT		0x002
-#define GLOALM_VALID_SVHEALTH		0x004
-#define GLOALM_VALID_E				0x008
-#define GLOALM_VALID_DOT			0x010
-#define GLOALM_VALID_OMEGA			0x020
-#define GLOALM_VALID_TAUC			0x040
-#define GLOALM_VALID_DELTAT			0x080
-#define GLOALM_VALID_T				0x100
-#define GLOALM_VALID_LAMBDA			0x200
-#define GLOALM_VALID_DELTAI			0x400
-#define GLOALM_VALID_TAUN			0x800
+#define GLOALM_VALID_DAYCOUNT		0x001
+#define GLOALM_VALID_SVHEALTH		0x002
+#define GLOALM_VALID_E				0x004
+#define GLOALM_VALID_DOT			0x008
+#define GLOALM_VALID_OMEGA			0x010
+#define GLOALM_VALID_TAUC			0x020
+#define GLOALM_VALID_DELTAT			0x040
+#define GLOALM_VALID_T				0x080
+#define GLOALM_VALID_LAMBDA			0x100
+#define GLOALM_VALID_DELTAI			0x200
+#define GLOALM_VALID_TAUN			0x400
 
 //
 // Holder of information for all the almanacs
 struct mla_t
 {
 	navi_talkerid_t tid;	// talker id
-	int nmsatellites;		// number of satellites in the almlist array
-	struct navi_gloalm_t almlist[MLA_MAX_SATELLITES];	// almanacs of GLONASS satellites
-	int totalnm;	// total number of messages (filled during parsing)
+	int totalnm;	// total number of messages
 	int msgnm;		// number of received message
+
+	// almanac of a GLONASS satellite
+	struct navi_gloalm_t alm;
 };
 
 NAVI_BEGIN_DECL
@@ -84,14 +84,27 @@ NAVI_BEGIN_DECL
 // Initializes MLA sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_mla(struct mla_t *msg, navi_talkerid_t tid);
 
+#ifndef NO_GENERATOR
+
 //
 // Creates MLA message
 NAVI_EXTERN(navierr_status_t) navi_create_mla(const struct mla_t *msg, char *buffer,
 	size_t maxsize, size_t *nmwritten);
 
 //
+// Creates MLA message sequence from satellites array
+NAVI_EXTERN(navierr_status_t) navi_create_mla_sequence(navi_talkerid_t tid, int nmofsatellites,
+	const struct navi_gloalm_t almanaclist[], char *buffer, size_t maxsize, size_t *nmwritten);
+
+#endif // NO_GENERATOR
+
+#ifndef NO_PARSER
+
+//
 // Parses MLA message
 NAVI_EXTERN(navierr_status_t) navi_parse_mla(struct mla_t *msg, char *buffer);
+
+#endif // NO_PARSER
 
 NAVI_END_DECL
 

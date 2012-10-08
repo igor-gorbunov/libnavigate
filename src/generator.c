@@ -236,7 +236,15 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_MLA:
-		return navi_create_mla((const struct mla_t *)msg, buffer, maxsize, nmwritten);
+		{
+			const struct mla_t *pmla = (const struct mla_t *)msg;
+			tid = navi_talkerid_str(pmla->tid);
+			sfmt = navi_sentencefmt_str(navi_MLA);
+
+			if (navi_create_mla(pmla, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_MSK:
 	case navi_MSS:
 	case navi_MTW:

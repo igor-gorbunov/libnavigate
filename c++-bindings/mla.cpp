@@ -32,59 +32,53 @@ Mla_t::~Mla_t() { }
 TalkerId_t Mla_t::talkerId() const
 	{ return TalkerId_t::fromTalkerIdCode(((const struct mla_t *)(*this))->tid); }
 
-int Mla_t::nmOfSatellites() const
-	{ return ((const struct mla_t *)(*this))->nmsatellites; }
-
 int Mla_t::totalNmOfMessages() const
 	{ return ((const struct mla_t *)(*this))->totalnm; }
 
 int Mla_t::messageNumber() const
 	{ return ((const struct mla_t *)(*this))->msgnm; }
 
-unsigned int Mla_t::satelliteSlot(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].satslot; }
+unsigned int Mla_t::satelliteSlot() const
+	{ return ((const struct mla_t *)(*this))->alm.satslot; }
 
-unsigned int Mla_t::dayCount(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].daycount; }
+unsigned int Mla_t::dayCount() const
+	{ return ((const struct mla_t *)(*this))->alm.daycount; }
 
-unsigned int Mla_t::svHealth(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].svhealth; }
+unsigned int Mla_t::svHealth() const
+	{ return ((const struct mla_t *)(*this))->alm.svhealth; }
 
-unsigned int Mla_t::eccentricity(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].e; }
+unsigned int Mla_t::eccentricity() const
+	{ return ((const struct mla_t *)(*this))->alm.e; }
 
-unsigned int Mla_t::rateOfChangeOfDraconicTime(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].dot; }
+unsigned int Mla_t::rateOfChangeOfDraconicTime() const
+	{ return ((const struct mla_t *)(*this))->alm.dot; }
 
-unsigned int Mla_t::argumentOfPerigee(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].omega; }
+unsigned int Mla_t::argumentOfPerigee() const
+	{ return ((const struct mla_t *)(*this))->alm.omega; }
 
-unsigned int Mla_t::systemTimescaleCorrection_High(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].tauc_high; }
+unsigned int Mla_t::systemTimescaleCorrection_High() const
+	{ return ((const struct mla_t *)(*this))->alm.tauc_high; }
 
-unsigned int Mla_t::correctionToDraconicTime(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].deltat; }
+unsigned int Mla_t::correctionToDraconicTime() const
+	{ return ((const struct mla_t *)(*this))->alm.deltat; }
 
-unsigned int Mla_t::timeOfAscensionNode(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].t; }
+unsigned int Mla_t::timeOfAscensionNode() const
+	{ return ((const struct mla_t *)(*this))->alm.t; }
 
-unsigned int Mla_t::longitudeOfAscensionNode(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].lambda; }
+unsigned int Mla_t::longitudeOfAscensionNode() const
+	{ return ((const struct mla_t *)(*this))->alm.lambda; }
 
-unsigned int Mla_t::correctionToInclinationAngle(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].deltai; }
+unsigned int Mla_t::correctionToInclinationAngle() const
+	{ return ((const struct mla_t *)(*this))->alm.deltai; }
 
-unsigned int Mla_t::systemTimescaleCorrection_Low(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].tauc_low; }
+unsigned int Mla_t::systemTimescaleCorrection_Low() const
+	{ return ((const struct mla_t *)(*this))->alm.tauc_low; }
 
-unsigned int Mla_t::courseValueOfTimescaleShift(int satIdx) const
-	{ return ((const struct mla_t *)(*this))->almlist[satIdx].taun; }
+unsigned int Mla_t::courseValueOfTimescaleShift() const
+	{ return ((const struct mla_t *)(*this))->alm.taun; }
 
 void Mla_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct mla_t *)(*this))->tid = tid.toTalkerIdCode(); }
-
-void Mla_t::setNmOfSatellites(int value)
-	{ ((struct mla_t *)(*this))->nmsatellites = value; }
 
 void Mla_t::setTotalNmOfMessages(int value)
 	{ ((struct mla_t *)(*this))->totalnm = value; }
@@ -92,142 +86,134 @@ void Mla_t::setTotalNmOfMessages(int value)
 void Mla_t::setMessageNumber(int value)
 	{ ((struct mla_t *)(*this))->msgnm = value; }
 
-void Mla_t::setSatelliteSlot(int satIdx, unsigned int value)
+void Mla_t::setSatelliteSlot(unsigned int value)
+	{ ((struct mla_t *)(*this))->alm.satslot = value; }
+
+void Mla_t::setDayCount(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].satslot = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_SATSLOT;
+	((struct mla_t *)(*this))->alm.daycount = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_DAYCOUNT;
 }
 
-void Mla_t::setDayCount(int satIdx, unsigned int value)
+void Mla_t::setSvHealth(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].daycount = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DAYCOUNT;
+	((struct mla_t *)(*this))->alm.svhealth = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_SVHEALTH;
 }
 
-void Mla_t::setSvHealth(int satIdx, unsigned int value)
+void Mla_t::setEccentricity(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].svhealth = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_SVHEALTH;
+	((struct mla_t *)(*this))->alm.e = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_E;
 }
 
-void Mla_t::setEccentricity(int satIdx, unsigned int value)
+void Mla_t::setRateOfChangeOfDraconicTime(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].e = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_E;
+	((struct mla_t *)(*this))->alm.dot = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_DOT;
 }
 
-void Mla_t::setRateOfChangeOfDraconicTime(int satIdx, unsigned int value)
+void Mla_t::setArgumentOfPerigee(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].dot = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DOT;
+	((struct mla_t *)(*this))->alm.omega = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_OMEGA;
 }
 
-void Mla_t::setArgumentOfPerigee(int satIdx, unsigned int value)
+void Mla_t::setSystemTimescaleCorrection_High(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].omega = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_OMEGA;
+	((struct mla_t *)(*this))->alm.tauc_high = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_TAUC;
 }
 
-void Mla_t::setSystemTimescaleCorrection_High(int satIdx, unsigned int value)
+void Mla_t::setCorrectionToDraconicTime(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].tauc_high = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUC;
+	((struct mla_t *)(*this))->alm.deltat = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_DELTAT;
 }
 
-void Mla_t::setCorrectionToDraconicTime(int satIdx, unsigned int value)
+void Mla_t::setTimeOfAscensionNode(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].deltat = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DELTAT;
+	((struct mla_t *)(*this))->alm.t = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_T;
 }
 
-void Mla_t::setTimeOfAscensionNode(int satIdx, unsigned int value)
+void Mla_t::setLongitudeOfAscensionNode(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].t = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_T;
+	((struct mla_t *)(*this))->alm.lambda = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_LAMBDA;
 }
 
-void Mla_t::setLongitudeOfAscensionNode(int satIdx, unsigned int value)
+void Mla_t::setCorrectionToInclinationAngle(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].lambda = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_LAMBDA;
+	((struct mla_t *)(*this))->alm.deltai = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_DELTAI;
 }
 
-void Mla_t::setCorrectionToInclinationAngle(int satIdx, unsigned int value)
+void Mla_t::setSystemTimescaleCorrection_Low(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].deltai = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_DELTAI;
+	((struct mla_t *)(*this))->alm.tauc_low = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_TAUC;
 }
 
-void Mla_t::setSystemTimescaleCorrection_Low(int satIdx, unsigned int value)
+void Mla_t::setCourseValueOfTimescaleShift(unsigned int value)
 {
-	((struct mla_t *)(*this))->almlist[satIdx].tauc_low = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUC;
+	((struct mla_t *)(*this))->alm.taun = value;
+	((struct mla_t *)(*this))->alm.vfields |= GLOALM_VALID_TAUN;
 }
 
-void Mla_t::setCourseValueOfTimescaleShift(int satIdx, unsigned int value)
+bool Mla_t::isDayCountValid() const
 {
-	((struct mla_t *)(*this))->almlist[satIdx].taun = value;
-	((struct mla_t *)(*this))->almlist[satIdx].vfields |= GLOALM_VALID_TAUN;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_DAYCOUNT) != 0 ? true : false;
 }
 
-bool Mla_t::isSatelliteSlotValid(int satIdx) const
+bool Mla_t::isSvHealthValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_SATSLOT) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_SVHEALTH) != 0 ? true : false;
 }
 
-bool Mla_t::isDayCountValid(int satIdx) const
+bool Mla_t::isEccentricityValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DAYCOUNT) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_E) != 0 ? true : false;
 }
 
-bool Mla_t::isSvHealthValid(int satIdx) const
+bool Mla_t::isRateOfChangeOfDraconicTimeValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_SVHEALTH) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_DOT) != 0 ? true : false;
 }
 
-bool Mla_t::isEccentricityValid(int satIdx) const
+bool Mla_t::isArgumentOfPerigeeValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_E) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_OMEGA) != 0 ? true : false;
 }
 
-bool Mla_t::isRateOfChangeOfDraconicTimeValid(int satIdx) const
+bool Mla_t::isSystemTimescaleCorrectionValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DOT) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_TAUC) != 0 ? true : false;
 }
 
-bool Mla_t::isArgumentOfPerigeeValid(int satIdx) const
+bool Mla_t::isCorrectionToDraconicTimeValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_OMEGA) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_DELTAT) != 0 ? true : false;
 }
 
-bool Mla_t::isSystemTimescaleCorrectionValid(int satIdx) const
+bool Mla_t::isTimeOfAscensionNodeValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_TAUC) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_T) != 0 ? true : false;
 }
 
-bool Mla_t::isCorrectionToDraconicTimeValid(int satIdx) const
+bool Mla_t::isLongitudeOfAscensionNodeValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DELTAT) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_LAMBDA) != 0 ? true : false;
 }
 
-bool Mla_t::isTimeOfAscensionNodeValid(int satIdx) const
+bool Mla_t::isCorrectionToInclinationAngleValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_T) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_DELTAI) != 0 ? true : false;
 }
 
-bool Mla_t::isLongitudeOfAscensionNodeValid(int satIdx) const
+bool Mla_t::isCourseValueOfTimescaleShiftValid() const
 {
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_LAMBDA) != 0 ? true : false;
-}
-
-bool Mla_t::isCorrectionToInclinationAngleValid(int satIdx) const
-{
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_DELTAI) != 0 ? true : false;
-}
-
-bool Mla_t::isCourseValueOfTimescaleShiftValid(int satIdx) const
-{
-	return (((const struct mla_t *)(*this))->almlist[satIdx].vfields & GLOALM_VALID_TAUN) != 0 ? true : false;
+	return (((const struct mla_t *)(*this))->alm.vfields & GLOALM_VALID_TAUN) != 0 ? true : false;
 }
 
 void Mla_t::clearMessage()
