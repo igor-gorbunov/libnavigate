@@ -1,17 +1,12 @@
 2012-10-08  Igor Gorbunov  <igor.genius@gmail.com>
 
-	* GSV message restructured
-	* Generation of GSV message sequence
-
-2012-10-08  Igor Gorbunov  <igor.genius@gmail.com>
-
-	* MLA message restructured
-	* Generation of MLA message sequence
-
-2012-10-08  Igor Gorbunov  <igor.genius@gmail.com>
-
 	* ALM message restructured
 	* Generation of ALM message sequence
+	* MLA message restructured
+	* Generation of MLA message sequence
+	* GSV message restructured
+	* Generation of GSV message sequence
+	* Implement building RPM package of libnavigate
 
 2012-10-07  Igor Gorbunov  <igor.genius@gmail.com>
 
