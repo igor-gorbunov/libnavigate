@@ -79,7 +79,7 @@ navierr_status_t navi_create_txt(const struct txt_t *msg, char *buffer, size_t m
 }
 
 //
-// Creates TXT message sequence rom text string
+// Creates TXT message sequence from text string
 navierr_status_t navi_create_txt_sequence(navi_talkerid_t tid, int textid,
 	const char *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {

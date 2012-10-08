@@ -56,7 +56,7 @@ NAVI_EXTERN(navierr_status_t) navi_create_txt(const struct txt_t *msg, char *buf
 	size_t maxsize, size_t *nmwritten);
 
 //
-// Creates TXT message sequence rom text string
+// Creates TXT message sequence from text string
 NAVI_EXTERN(navierr_status_t) navi_create_txt_sequence(navi_talkerid_t tid, int textid,
 	const char *msg, char *buffer, size_t maxsize, size_t *nmwritten);
 
