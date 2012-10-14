@@ -433,6 +433,14 @@ const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
 		return "E";
 	case navi_West:
 		return "W";
+	case navi_Left:
+		return "L";
+	case navi_Right:
+		return "R";
+	case navi_True:
+		return "T";
+	case navi_Magnetic:
+		return "M";
 	case navi_offsetsign_NULL:
 		return "";
 	default:
@@ -530,6 +538,36 @@ const char *navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull)
 	else
 	{
 		return "";
+	}
+}
+
+//
+// Prints offset 'x.x,a', or null fields
+size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_t maxsize, int notnull)
+{
+	assert(offset != NULL);
+	assert(buffer != NULL);
+	assert(maxsize > 0);
+
+	if (notnull)
+	{
+		size_t nmwritten;
+		const char *s;
+
+		nmwritten = navi_print_number(offset->offset, buffer, maxsize, notnull);
+
+		nmwritten += 1;
+		(void)strncat(buffer, ",", maxsize);
+
+		nmwritten += strlen(s = navi_fixsign_str(offset->sign, notnull));
+		(void)strncat(buffer, s, maxsize);
+
+		return nmwritten;
+	}
+	else
+	{
+		(void)strncpy(buffer, ",", maxsize);
+		return 1;
 	}
 }
 
