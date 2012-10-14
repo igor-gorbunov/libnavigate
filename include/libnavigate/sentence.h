@@ -239,6 +239,9 @@ typedef int navi_datum_subdivision_t;
 //
 enum _navi_status_t
 {
+	// Unefined or unsupported status
+	navi_status_NULL = -1,
+
 	// Data not valid
 	navi_status_V = 0,
 

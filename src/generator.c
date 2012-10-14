@@ -459,6 +459,8 @@ const char *navi_status_str(navi_status_t status)
 		return "A";
 	case navi_status_V:
 		return "V";
+	case navi_status_NULL:
+		return "";
 	default:
 		return NULL;
 	}
