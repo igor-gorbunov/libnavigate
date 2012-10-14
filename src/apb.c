@@ -39,6 +39,17 @@ navierr_status_t navi_init_apb(struct apb_t *msg, navi_talkerid_t tid)
 	msg->tid = tid;
 	msg->vfields = 0;
 
+	msg->status_0 = navi_status_V;
+	msg->status_1 = navi_status_V;
+	navi_init_offset_from_degrees(0.0, navi_Left, &msg->xte_magnitude);
+	msg->arrival_circle = navi_status_V;
+	msg->perpendicular = navi_status_V;
+	navi_init_offset_from_degrees(0.0, navi_True, &msg->bearing_origin);
+	memset(msg->waypoint_id, 0, sizeof(msg->waypoint_id));
+	navi_init_offset_from_degrees(0.0, navi_True, &msg->bearing_present);
+	navi_init_offset_from_degrees(0.0, navi_True, &msg->heading);
+	msg->mode_indicator = navi_DataNotValid;
+
 	return navi_Ok;
 }
 

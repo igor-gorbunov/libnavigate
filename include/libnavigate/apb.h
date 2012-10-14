@@ -36,7 +36,28 @@ struct apb_t
 {
 	navi_talkerid_t tid;	// talker id
 	unsigned int vfields;	// valid fields, bitwise or of APB_VALID_xxx
+	navi_status_t status_0;	// A = Data Valid, V = LORAN-C blink or SNR warning,
+							// V = genearl warning flag for other navigation systems
+							// when a reliable fix is not available
+	navi_status_t status_1;	// A = OK or not used, V = LORAN-C cycle lock warning flag
+	struct navi_offset_t xte_magnitude;	// Magnitude of XTE (cross-track-error) and
+										// direction to steer, L/R
+	navi_status_t arrival_circle;	// A = arrival circle entered, V = not entered
+	navi_status_t perpendicular;	// A = perpendicular passed at waypoint, V = not passed
+	struct navi_offset_t bearing_origin;	// Bearing origin to destination, M/T
+	char waypoint_id[21];					// Destination waipoint ID
+	struct navi_offset_t bearing_present;	// Bearing, present position to destination, M/T
+	struct navi_offset_t heading;			// Heading to steer to destination waypoint, M/T
+	navi_modeindicator_t mode_indicator;	// Mode indicator
 };
+
+#define APB_VALID_XTE_MAGNITUDE		0x01
+#define APB_VALID_ARRIVAL_CIRCLE	0x02
+#define APB_VALID_PERPENDICULAR		0x04
+#define APB_VALID_BEARING_ORIGIN	0x08
+#define APB_VALID_WAYPOINT_ID		0x10
+#define APB_VALID_BEARING_PRESENT	0x20
+#define APB_VALID_HEADING			0x40
 
 NAVI_BEGIN_DECL
 

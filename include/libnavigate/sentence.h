@@ -356,7 +356,15 @@ enum _navi_offset_sign_t
 	// East
 	navi_East,
 	// West
-	navi_West
+	navi_West,
+	// Left
+	navi_Left,
+	// Right
+	navi_Right,
+	// True
+	navi_True,
+	// Magnetic
+	navi_Magnetic
 };
 
 typedef int navi_offset_sign_t;
@@ -366,8 +374,8 @@ typedef int navi_offset_sign_t;
 //
 struct navi_offset_t
 {
-	double offset;				// degrees
-	navi_offset_sign_t sign;	// N/S or E/W
+	double offset;				// degrees, nautical miles
+	navi_offset_sign_t sign;	// N/S, E/W, L/R, M/T
 };
 
 //
