@@ -33,6 +33,7 @@
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
+#include <libnavigate/apb.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -160,6 +161,13 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 		navi_init_alr((struct alr_t *)msg, tid);
 		return navi_parse_alr((struct alr_t *)msg, buffer + som + 7);
 	case navi_APB:
+		if (msgsize < sizeof(struct apb_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_apb((struct apb_t *)msg, tid);
+		return navi_parse_apb((struct apb_t *)msg, buffer + som + 7);
 	case navi_BEC:
 	case navi_BOD:
 	case navi_BWC:
