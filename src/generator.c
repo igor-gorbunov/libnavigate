@@ -123,6 +123,15 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		}
 		break;
 	case navi_APB:
+		{
+			const struct apb_t *papb = (const struct apb_t *)msg;
+			tid = navi_talkerid_str(papb->tid);
+			sfmt = navi_sentencefmt_str(navi_APB);
+
+			if (navi_create_apb(papb, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BEC:
 	case navi_BOD:
 	case navi_BWC:
