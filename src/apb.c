@@ -37,17 +37,16 @@ navierr_status_t navi_init_apb(struct apb_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
 
 	msg->status_0 = navi_status_V;
 	msg->status_1 = navi_status_V;
-	navi_init_offset_from_degrees(0.0, navi_Left, &msg->xte_magnitude);
+	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->xte_magnitude);
 	msg->arrival_circle = navi_status_NULL;
 	msg->perpendicular = navi_status_NULL;
-	navi_init_offset_from_degrees(0.0, navi_True, &msg->bearing_origin);
+	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_origin);
 	memset(msg->waypoint_id, 0, sizeof(msg->waypoint_id));
-	navi_init_offset_from_degrees(0.0, navi_True, &msg->bearing_present);
-	navi_init_offset_from_degrees(0.0, navi_True, &msg->heading);
+	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_present);
+	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->heading);
 	msg->mode_indicator = navi_DataNotValid;
 
 	return navi_Ok;
@@ -90,7 +89,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength += 1;
 
 	msglength += navi_print_offset(&msg->xte_magnitude, local_str + msglength,
-		sizeof(local_str) - msglength, msg->vfields & APB_VALID_XTE_MAGNITUDE);
+		sizeof(local_str) - msglength, msg->xte_magnitude.sign != navi_offset_NULL);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);
@@ -120,7 +119,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength += 1;
 
 	msglength += navi_print_offset(&msg->bearing_origin, local_str + msglength,
-		sizeof(local_str) - msglength, msg->vfields & APB_VALID_BEARING_ORIGIN);
+		sizeof(local_str) - msglength, msg->bearing_origin.sign != navi_offset_NULL);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);
@@ -139,7 +138,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength = strlen(local_str);
 
 	msglength += navi_print_offset(&msg->bearing_present, local_str + msglength,
-		sizeof(local_str) - msglength, msg->vfields & APB_VALID_BEARING_PRESENT);
+		sizeof(local_str) - msglength, msg->bearing_present.sign != navi_offset_NULL);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);
@@ -149,7 +148,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength += 1;
 
 	msglength += navi_print_offset(&msg->heading, local_str + msglength,
-		sizeof(local_str) - msglength, msg->vfields & APB_VALID_HEADING);
+		sizeof(local_str) - msglength, msg->heading.sign != navi_offset_NULL);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);

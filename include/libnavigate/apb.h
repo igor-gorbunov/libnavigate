@@ -35,7 +35,6 @@
 struct apb_t
 {
 	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of APB_VALID_xxx
 	navi_status_t status_0;	// A = Data Valid, V = LORAN-C blink or SNR warning,
 							// V = genearl warning flag for other navigation systems
 							// when a reliable fix is not available
@@ -50,11 +49,6 @@ struct apb_t
 	struct navi_offset_t heading;			// Heading to steer to destination waypoint, M/T
 	navi_modeindicator_t mode_indicator;	// Mode indicator
 };
-
-#define APB_VALID_XTE_MAGNITUDE		0x1
-#define APB_VALID_BEARING_ORIGIN	0x2
-#define APB_VALID_BEARING_PRESENT	0x4
-#define APB_VALID_HEADING			0x8
 
 NAVI_BEGIN_DECL
 
