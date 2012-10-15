@@ -180,8 +180,98 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 // Parses APB message
 navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 {
-	navierr_set_last(navi_NotImplemented);
-	return navi_Error;
+	size_t i = 0, nmread;
+	char tmp[4];
+
+	if (navi_parse_status(buffer + i, &msg->status_0, &nmread) != navi_Ok)
+	{
+		navierr_set_last(navi_InvalidMessage);
+		return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_status(buffer + i, &msg->status_1, &nmread) != navi_Ok)
+	{
+		navierr_set_last(navi_InvalidMessage);
+		return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_offset(buffer + i, &msg->xte_magnitude, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass == navi_NullField)
+			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->xte_magnitude);
+		else
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_character_field(buffer + i, tmp, sizeof(tmp), &nmread) != 0)
+	{
+		navierr_set_last(navi_InvalidMessage);
+		return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_status(buffer + i, &msg->arrival_circle, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass == navi_NullField)
+			msg->arrival_circle = navi_status_NULL;
+		else
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_status(buffer + i, &msg->perpendicular, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass == navi_NullField)
+			msg->perpendicular = navi_status_NULL;
+		else
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_offset(buffer + i, &msg->bearing_origin, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass == navi_NullField)
+			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_origin);
+		else
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_character_field(buffer + i, msg->waypoint_id, sizeof(msg->waypoint_id), &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass != navi_NullField)
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_offset(buffer + i, &msg->bearing_present, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass == navi_NullField)
+			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_present);
+		else
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_offset(buffer + i, &msg->heading, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass == navi_NullField)
+			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->heading);
+		else
+			return navi_Error;
+	}
+	i += nmread;
+
+	if (navi_parse_modeindicator(buffer + i, &msg->mode_indicator, &nmread) != 0)
+	{	// cannot be null field
+		navierr_set_last(navi_InvalidMessage);
+		return navi_Error;
+	}
+
+	return navi_Ok;
 }
 
 #endif // NO_PARSER
