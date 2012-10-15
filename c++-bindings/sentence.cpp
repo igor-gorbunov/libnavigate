@@ -344,8 +344,10 @@ Status_t Status_t::fromStatusCode(int status)
 {
 	switch (status)
 	{
-	case navi_status_A: return DataValid;
-	case navi_status_V: return DataInvalid;
+	case navi_status_A:
+		return DataValid;
+	case navi_status_V:
+		return DataInvalid;
 	default:
 		return Unknown;
 	}

@@ -613,7 +613,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{	// no, proceed to the latitude sign
 				state = PARSE_POSITION_LAT_SIGN;
-				fix->latitude = deg + min / 60.;
+				fix->latitude.offset = deg + min / 60.;
 			}
 			else
 			{	// invalid character
@@ -629,7 +629,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{
 				state = PARSE_POSITION_LAT_SIGN;
-				fix->latitude = deg + min / 60.;
+				fix->latitude.offset = deg + min / 60.;
 			}
 			else
 			{
@@ -640,11 +640,11 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 		case PARSE_POSITION_LAT_SIGN:
 			if (c == 'N')
 			{
-				fix->latsign = navi_North;
+				fix->latitude.sign = navi_North;
 			}
 			else if (c == 'S')
 			{
-				fix->latsign = navi_South;
+				fix->latitude.sign = navi_South;
 			}
 			else
 			{
@@ -656,7 +656,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			if (c == ',')
 			{
 				state = PARSE_POSITION_LON_INTEGRAL;
-				min = 0.;
+				min = 0.0;
 			}
 			else
 			{
@@ -704,7 +704,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{	// no, proceed to the longitude sign
 				state = PARSE_POSITION_LON_SIGN;
-				fix->longitude = deg + min / 60.;
+				fix->longitude.offset = deg + min / 60.;
 			}
 			else
 			{	// invalid character
@@ -720,7 +720,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{
 				state = PARSE_POSITION_LON_SIGN;
-				fix->longitude = deg + min / 60.;
+				fix->longitude.offset = deg + min / 60.;
 			}
 			else
 			{
@@ -731,11 +731,11 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 		case PARSE_POSITION_LON_SIGN:
 			if (c == 'E')
 			{
-				fix->lonsign = navi_East;
+				fix->longitude.sign = navi_East;
 			}
 			else if (c == 'W')
 			{
-				fix->lonsign = navi_West;
+				fix->longitude.sign = navi_West;
 			}
 			else
 			{

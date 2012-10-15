@@ -603,9 +603,9 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		precision = naviconf_get_presicion();
 
 		// extract and print latitude
-		fraction = modf(fix->latitude, &degrees);
-		degrees = degrees * 100.;
-		fraction = fraction * 60.;
+		fraction = modf(fix->latitude.offset, &degrees);
+		degrees = degrees * 100.0;
+		fraction = fraction * 60.0;
 		fraction = fraction + degrees;
 
 		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
@@ -615,16 +615,16 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
-		nmwritten += strlen(s = navi_fixsign_str(fix->latsign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(fix->latitude.sign, notnull));
 		(void)strncat(buffer, s, maxsize);
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
 		// extract and print longitude
-		fraction = modf(fix->longitude, &degrees);
-		degrees = degrees * 100.;
-		fraction = fraction * 60.;
+		fraction = modf(fix->longitude.offset, &degrees);
+		degrees = degrees * 100.0;
+		fraction = fraction * 60.0;
 		fraction = fraction + degrees;
 
 		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
@@ -634,7 +634,7 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
-		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(fix->longitude.sign, notnull));
 		(void)strncat(buffer, s, maxsize);
 
 		setlocale(LC_NUMERIC, oldlocale);

@@ -76,6 +76,10 @@ NAVI_EXTERN(navierr_status_t) navi_init_date(int yy, int mm, int dd,
 	struct navi_date_t *date);
 
 //
+// Fills position fix structure with null value.
+NAVI_EXTERN(navierr_status_t) navi_init_position(struct navi_position_t *fix);
+
+//
 // Fills position fix structure with given values in degrees.
 // Latitude is provided in the range of [-pi/2, +pi/2] and the result is within
 // [90°S, 90°N].

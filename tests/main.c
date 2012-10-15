@@ -108,10 +108,10 @@ int main(void)
 	// GLL
 	gll.tid = navi_SN;
 	gll.vfields = GLL_VALID_POSITION_FIX | GLL_VALID_UTC;
-	gll.fix.latitude = 0.02;
-	gll.fix.latsign = navi_North;
-	gll.fix.longitude = 0.00000000999;
-	gll.fix.lonsign = navi_East;
+	gll.fix.latitude.offset = 0.02;
+	gll.fix.latitude.sign = navi_North;
+	gll.fix.longitude.offset = 0.00000000999;
+	gll.fix.longitude.sign = navi_East;
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18.4;
@@ -138,10 +138,10 @@ int main(void)
 	gns.utc.hour = 20;
 	gns.utc.min = 7;
 	gns.utc.sec = 1.;
-	gns.fix.latitude = 60.;
-	gns.fix.latsign = navi_North;
-	gns.fix.longitude = 30.;
-	gns.fix.lonsign = navi_East;
+	gns.fix.latitude.offset = 60.;
+	gns.fix.latitude.sign = navi_North;
+	gns.fix.longitude.offset = 30.;
+	gns.fix.longitude.sign = navi_East;
 	gns.mi[0] = navi_Autonomous;
 	gns.mi[1] = navi_Differential;
 	gns.nmsatellites = 4;
@@ -170,10 +170,10 @@ int main(void)
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39.98;
 	rmc.status = navi_status_V;
-	rmc.fix.latitude = 74.64772882;
-	rmc.fix.latsign = navi_South;
-	rmc.fix.longitude = 132.0000333;
-	rmc.fix.lonsign = navi_East;
+	rmc.fix.latitude.offset = 74.64772882;
+	rmc.fix.latitude.sign = navi_South;
+	rmc.fix.longitude.offset = 132.0000333;
+	rmc.fix.longitude.sign = navi_East;
 	rmc.speed = 1.03553;
 	rmc.courseTrue = 180.2112;
 	rmc.date.day = 18;
@@ -275,10 +275,10 @@ int main(void)
 
 					if (gll->vfields & GLL_VALID_POSITION_FIX)
 						printf("\tlatitude = %.12f %s (%d)\n", gll->fix.latitude,
-							navi_fixsign_str(gll->fix.latsign, 1), gll->fix.latsign);
+							navi_fixsign_str(gll->fix.latitude.sign, 1), gll->fix.latitude.sign);
 					if (gll->vfields & GLL_VALID_POSITION_FIX)
 						printf("\tlongitude = %.12f %s (%d)\n", gll->fix.longitude,
-							navi_fixsign_str(gll->fix.lonsign, 1), gll->fix.lonsign);
+							navi_fixsign_str(gll->fix.longitude.sign, 1), gll->fix.longitude.sign);
 					if (gll->vfields & GLL_VALID_UTC)
 						printf("\tutc = %02u:%02u:%06.3f\n", gll->utc.hour,
 							gll->utc.min, gll->utc.sec);
@@ -298,10 +298,10 @@ int main(void)
 							gns->utc.min, gns->utc.sec);
 					if (gns->vfields & GNS_VALID_POSITION_FIX)
 						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude,
-							navi_fixsign_str(gns->fix.latsign, 1), gns->fix.latsign);
+							navi_fixsign_str(gns->fix.latitude.sign, 1), gns->fix.latitude.sign);
 					if (gns->vfields & GNS_VALID_POSITION_FIX)
 						printf("\tlongitude = %.12f %s (%d)\n", gns->fix.longitude,
-							navi_fixsign_str(gns->fix.lonsign, 1), gns->fix.lonsign);
+							navi_fixsign_str(gns->fix.longitude.sign, 1), gns->fix.longitude.sign);
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
 					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
 						printf("\tsatellites = %d\n", gns->nmsatellites);
@@ -329,10 +329,10 @@ int main(void)
 					printf("\tstatus = %d\n", rmc->status);
 					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 						printf("\tlatitude = %.12f %s (%d)\n", rmc->fix.latitude,
-							navi_fixsign_str(rmc->fix.latsign, 1), rmc->fix.latsign);
+							navi_fixsign_str(rmc->fix.latitude.sign, 1), rmc->fix.latitude.sign);
 					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 						printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude,
-							navi_fixsign_str(rmc->fix.lonsign, 1), rmc->fix.lonsign);
+							navi_fixsign_str(rmc->fix.longitude.sign, 1), rmc->fix.longitude.sign);
 					if (rmc->vfields & RMC_VALID_SPEED)
 						printf("\tspeed = %.12f\n", rmc->speed);
 					if (rmc->vfields & RMC_VALID_COURSETRUE)
@@ -470,10 +470,10 @@ int main(void)
 	gga.utc.hour = 0;
 	gga.utc.min = 34;
 	gga.utc.sec = 16.;
-	gga.fix.latitude = 12.0;
-	gga.fix.latsign = navi_South;
-	gga.fix.longitude = 112.01;
-	gga.fix.lonsign = navi_West;
+	gga.fix.latitude.offset = 12.0;
+	gga.fix.latitude.sign = navi_South;
+	gga.fix.longitude.offset = 112.01;
+	gga.fix.longitude.sign = navi_West;
 	gga.gpsindicator = navi_gps_Differential;
 	gga.nmsatellites = 8;
 	gga.hdop = 1.0;
@@ -791,10 +791,10 @@ int main(void)
 							gga->utc.min, gga->utc.sec);
 					if (gga->vfields & GGA_VALID_FIX)
 						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude,
-							navi_fixsign_str(gga->fix.latsign, 1), gga->fix.latsign);
+							navi_fixsign_str(gga->fix.latitude.sign, 1), gga->fix.latitude.sign);
 					if (gga->vfields & GGA_VALID_FIX)
 						printf("\tlongitude = %f %s (%d)\n", gga->fix.longitude,
-							navi_fixsign_str(gga->fix.lonsign, 1), gga->fix.lonsign);
+							navi_fixsign_str(gga->fix.longitude.sign, 1), gga->fix.longitude.sign);
 					printf("\tGPS quality indicator: %i\n", gga->gpsindicator);
 					if (gga->vfields & GGA_VALID_NMSATELLITES)
 						printf("\tNm of satellites in use: %i\n", gga->nmsatellites);

@@ -37,7 +37,7 @@ navierr_status_t navi_init_gll(struct gll_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	navi_init_position_from_degrees(0.0, 0.0, &msg->fix);
+	navi_init_position(&msg->fix);
 	navi_init_utc(0, 0, 0.0, &msg->utc);
 	msg->status = navi_status_V;
 	msg->mi = navi_DataNotValid;

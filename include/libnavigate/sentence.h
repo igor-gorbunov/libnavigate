@@ -386,17 +386,9 @@ struct navi_offset_t
 //
 struct navi_position_t
 {
-	double latitude;				// degrees
-	navi_offset_sign_t latsign;		// N/S
-
-	double longitude;				// degrees
-	navi_offset_sign_t lonsign;		// E/W
+	struct navi_offset_t latitude;		// (degrees, N/S) or NULL
+	struct navi_offset_t longitude;		// (degrees, E/W) or NULL
 };
-
-//	// Heading/track controller (Autopilot) sentence B
-//	struct apb_t
-//	{
-//	};
 
 //	// Bearing and distance to waypoint, dead reckoning
 //	struct bec_t
