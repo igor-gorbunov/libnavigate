@@ -378,7 +378,7 @@ typedef int navi_offset_sign_t;
 struct navi_offset_t
 {
 	double offset;				// degrees, nautical miles
-	navi_offset_sign_t sign;	// N/S, E/W, L/R, M/T
+	navi_offset_sign_t sign;	// N/S, E/W, L/R, M/T, or NULL field
 };
 
 //

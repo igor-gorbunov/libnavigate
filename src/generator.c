@@ -33,6 +33,7 @@
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
+#include <libnavigate/apb.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
