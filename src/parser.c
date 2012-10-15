@@ -366,7 +366,8 @@ navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset, s
 #ifndef NO_PARSER
 
 	double t;
-	int j = -1, state, c, s = 0, error = 0;
+	int j = -1, state, c, error = 0;
+	navi_offset_sign_t s = navi_offset_NULL;
 	size_t i = 0;
 
 	assert(buffer != NULL);
@@ -453,6 +454,22 @@ navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset, s
 			else if (c == 'W')
 			{
 				s = navi_West;
+			}
+			else if (c == 'L')
+			{
+				s = navi_Left;
+			}
+			else if (c == 'R')
+			{
+				s = navi_Right;
+			}
+			else if (c == 'T')
+			{
+				s = navi_True;
+			}
+			else if (c == 'M')
+			{
+				s = navi_Magnetic;
 			}
 			else
 			{
