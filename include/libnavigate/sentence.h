@@ -350,7 +350,7 @@ struct navi_date_t
 enum _navi_offset_sign_t
 {
 	// null field
-	navi_offsetsign_NULL = - 1,
+	navi_offset_NULL = - 1,
 
 	// North
 	navi_North,

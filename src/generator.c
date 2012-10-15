@@ -421,7 +421,7 @@ const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub, int notnull)
 const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
 {
 	if (!notnull)
-		fixsign = navi_offsetsign_NULL;
+		fixsign = navi_offset_NULL;
 
 	switch (fixsign)
 	{
@@ -441,7 +441,7 @@ const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
 		return "T";
 	case navi_Magnetic:
 		return "M";
-	case navi_offsetsign_NULL:
+	case navi_offset_NULL:
 		return "";
 	default:
 		return NULL;
