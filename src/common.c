@@ -201,31 +201,26 @@ navierr_status_t navi_init_position_from_degrees(double latitude,
 	assert((longitude >= -180.0) && (longitude < +2. * 180.0));
 	assert(fix != NULL);
 
-	if (latitude >= 0.)
-	{
-		fix->latitude = latitude;
+	if (latitude >= 0.0)
 		fix->latsign = navi_North;
-	}
 	else
-	{
-		fix->latitude = fabs(latitude);
 		fix->latsign = navi_South;
-	}
+	fix->latitude = fabs(latitude);
 
-	if ((longitude >= 0.) && (longitude < +90.0))
+	if ((longitude >= 0.0) && (longitude <= +180.0))
 	{
 		fix->longitude = longitude;
 		fix->lonsign = navi_East;
 	}
-	else if (longitude >= +90.0)
+	else if (longitude > +180.0)
 	{
-		fix->longitude = longitude - 90.0;
+		fix->longitude = longitude - 180.0;
 		fix->lonsign = navi_West;
 	}
 	else
 	{
-		fix->latitude = fabs(latitude);
-		fix->latsign = navi_West;
+		fix->longitude = fabs(longitude);
+		fix->lonsign = navi_West;
 	}
 
 	return navi_Ok;
@@ -237,34 +232,29 @@ navierr_status_t navi_init_position_from_radians(double latitude,
 	double longitude, struct navi_position_t *fix)
 {
 	assert((latitude >= -M_PI) && (latitude <= +M_PI));
-	assert((longitude >= -M_PI) && (longitude < +2. * M_PI));
+	assert((longitude >= -M_PI) && (longitude < +2.0 * M_PI));
 	assert(fix != NULL);
 
-	if (latitude >= 0.)
-	{
-		fix->latitude = latitude * 180. / M_PI;
+	if (latitude >= 0.0)
 		fix->latsign = navi_North;
-	}
 	else
-	{
-		fix->latitude = fabs(latitude) * 180. / M_PI;
 		fix->latsign = navi_South;
-	}
+	fix->latitude = fabs(latitude) * 180.0 / M_PI;
 
-	if ((longitude >= 0.) && (longitude < M_PI))
+	if ((longitude >= 0.0) && (longitude <= M_PI))
 	{
-		fix->longitude = longitude * 180. / M_PI;
+		fix->longitude = longitude * 180.0 / M_PI;
 		fix->lonsign = navi_East;
 	}
-	else if (longitude >= M_PI)
+	else if (longitude > M_PI)
 	{
-		fix->longitude = (longitude - M_PI) * 180. / M_PI;
+		fix->longitude = (longitude - M_PI) * 180.0 / M_PI;
 		fix->lonsign = navi_West;
 	}
 	else
 	{
-		fix->latitude = fabs(latitude) * 180. / M_PI;
-		fix->latsign = navi_West;
+		fix->longitude = fabs(latitude) * 180.0 / M_PI;
+		fix->lonsign = navi_West;
 	}
 
 	return navi_Ok;
