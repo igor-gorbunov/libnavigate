@@ -537,32 +537,33 @@ const char *navi_gsamode_str(navi_gsaswitchmode_t mode)
 
 //
 // Prints offset 'x.x,a', or null fields
-size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_t maxsize, int notnull)
+size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_t maxsize)
 {
+	size_t nmwritten;
+
 	assert(offset != NULL);
 	assert(buffer != NULL);
 	assert(maxsize > 0);
 
-	if (notnull)
+	if (offset->sign != navi_offset_NULL)
 	{
-		size_t nmwritten;
 		const char *s;
 
-		nmwritten = navi_print_number(offset->offset, buffer, maxsize, notnull);
+		nmwritten = navi_print_number(offset->offset, buffer, maxsize, 1);
 
-		nmwritten += 1;
 		(void)strncat(buffer, ",", maxsize);
+		nmwritten++;
 
 		nmwritten += strlen(s = navi_fixsign_str(offset->sign));
 		(void)strncat(buffer, s, maxsize);
-
-		return nmwritten;
 	}
 	else
 	{
 		(void)strncpy(buffer, ",", maxsize);
-		return 1;
+		nmwritten = 1;
 	}
+
+	return nmwritten;
 }
 
 //

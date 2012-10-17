@@ -89,7 +89,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength += 1;
 
 	msglength += navi_print_offset(&msg->xte_magnitude, local_str + msglength,
-		sizeof(local_str) - msglength, msg->xte_magnitude.sign != navi_offset_NULL);
+		sizeof(local_str) - msglength);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);
@@ -119,7 +119,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength += 1;
 
 	msglength += navi_print_offset(&msg->bearing_origin, local_str + msglength,
-		sizeof(local_str) - msglength, msg->bearing_origin.sign != navi_offset_NULL);
+		sizeof(local_str) - msglength);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);
@@ -138,7 +138,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength = strlen(local_str);
 
 	msglength += navi_print_offset(&msg->bearing_present, local_str + msglength,
-		sizeof(local_str) - msglength, msg->bearing_present.sign != navi_offset_NULL);
+		sizeof(local_str) - msglength);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);
@@ -148,7 +148,7 @@ navierr_status_t navi_create_apb(const struct apb_t *msg, char *buffer,
 	msglength += 1;
 
 	msglength += navi_print_offset(&msg->heading, local_str + msglength,
-		sizeof(local_str) - msglength, msg->heading.sign != navi_offset_NULL);
+		sizeof(local_str) - msglength);
 	if (msglength + 2 > sizeof(local_str))
 	{
 		navierr_set_last(navi_MsgExceedsMaxSize);

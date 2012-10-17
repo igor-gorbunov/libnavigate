@@ -77,7 +77,7 @@ NAVI_EXTERN(const char *) navi_gsamode_str(navi_gsaswitchmode_t mode);
 // Prints offset 'x.x,a', or null fields
 // Returns the number of printed characters
 NAVI_EXTERN(size_t) navi_print_offset(const struct navi_offset_t *offset,
-	char *buffer, size_t maxsize, int notnull);
+	char *buffer, size_t maxsize);
 
 //
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
