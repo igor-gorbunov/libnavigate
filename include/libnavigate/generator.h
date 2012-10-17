@@ -50,9 +50,8 @@ NAVI_EXTERN(const char *) navi_sentencefmt_str(navi_approved_fmt_t fmt);
 NAVI_EXTERN(const char *) navi_datum_str(navi_datum_t datum);
 
 //
-// Returns the string representation of geodetic datum
-NAVI_EXTERN(const char *) navi_datumsubdiv_str(navi_datum_subdivision_t datumsub,
-	int notnull);
+// Returns the string representation of geodetic datum subdivision code
+NAVI_EXTERN(const char *) navi_datumsubdiv_str(navi_datum_subdivision_t datumsub);
 
 //
 // Returns the offset or position fix sign

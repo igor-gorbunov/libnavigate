@@ -405,13 +405,9 @@ const char *navi_datum_str(navi_datum_t datum)
 }
 
 //
-// navi_datumsubdiv_str
-//
-const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub, int notnull)
+// Returns the string representation of geodetic datum subdivision code
+const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub)
 {
-	if (!notnull)
-		datumsub = navi_datumsub_NULL;
-
 	switch (datumsub)
 	{
 	case navi_datumsub_NULL:
