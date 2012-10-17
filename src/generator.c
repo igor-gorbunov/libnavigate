@@ -382,13 +382,9 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 }
 
 //
-// navi_datum_to_string
-//
-const char *navi_datum_str(navi_datum_t datum, int notnull)
+// Returns the string representation of geodetic datum
+const char *navi_datum_str(navi_datum_t datum)
 {
-	if (!notnull)
-		datum = navi_datum_NULL;
-
 	switch (datum)
 	{
 	case navi_WGS84:

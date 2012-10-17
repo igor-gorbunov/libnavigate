@@ -47,7 +47,7 @@ NAVI_EXTERN(const char *) navi_sentencefmt_str(navi_approved_fmt_t fmt);
 
 //
 // Returns the string representation of geodetic datum
-NAVI_EXTERN(const char *) navi_datum_str(navi_datum_t datum, int notnull);
+NAVI_EXTERN(const char *) navi_datum_str(navi_datum_t datum);
 
 //
 // Returns the string representation of geodetic datum
