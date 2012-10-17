@@ -71,7 +71,7 @@ NAVI_EXTERN(const char *) navi_modeindicator_extended_str(navi_modeindicator_t m
 
 //
 // Returns the GSA 2D/3D switching mode
-NAVI_EXTERN(const char *) navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull);
+NAVI_EXTERN(const char *) navi_gsamode_str(navi_gsaswitchmode_t mode);
 
 //
 // Prints offset 'x.x,a', or null fields

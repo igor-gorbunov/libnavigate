@@ -58,8 +58,7 @@ navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, size_t m
 	char bytes[2];
 	char fixmode[2], satellites[12][4], pdop[16], hdop[16], vdop[16];
 
-	msglength = strlen(swmode = navi_gsamode_str(msg->swmode,
-		msg->vfields & GSA_VALID_SWITCHMODE));
+	msglength = strlen(swmode = navi_gsamode_str(msg->swmode));
 
 	(void)navi_split_integer(msg->fixmode, bytes, 1, 10);
 	msglength += navi_print_decfield(bytes,

@@ -519,25 +519,19 @@ const char *navi_modeindicator_extended_str(navi_modeindicator_t mi)
 }
 
 //
-// navi_gsamode_str
-//
-const char *navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull)
+// Returns the GSA 2D/3D switching mode
+const char *navi_gsamode_str(navi_gsaswitchmode_t mode)
 {
-	if (notnull)
+	switch (mode)
 	{
-		switch (mode)
-		{
-		case navi_gsa_Manual:
-			return "M";
-		case navi_gsa_Automatic:
-			return "A";
-		default:
-			return NULL;
-		}
-	}
-	else
-	{
+	case navi_gsa_Manual:
+		return "M";
+	case navi_gsa_Automatic:
+		return "A";
+	case navi_gsa_NULL:
 		return "";
+	default:
+		return NULL;
 	}
 }
 
