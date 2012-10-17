@@ -36,8 +36,8 @@ struct gsa_t
 {
 	navi_talkerid_t tid;	// talker id
 	unsigned int vfields;	// valid fields, bitwise or of GSA_VALID_xxx
-	navi_gsaswitchmode_t swmode;	// Mode: Manula or Automatic
-	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D
+	navi_gsaswitchmode_t swmode;	// Mode: Manual or Automatic
+	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D, -1 = null field
 	struct
 	{
 		int notnull;		// 0 = null field, 1 = not null
