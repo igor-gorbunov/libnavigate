@@ -567,25 +567,25 @@ size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_
 }
 
 //
-// navi_print_position_fix
-//
-size_t navi_print_position_fix(const struct navi_position_t *fix,
-	char *buffer, size_t maxsize, int notnull)
+// Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
+size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
+	size_t maxsize)
 {
-	if (notnull)
-	{
-		int precision;
-		size_t nmwritten;
-		double degrees, fraction;
+	size_t nmwritten = 0;
 
-		const char *s;
-		char *oldlocale = setlocale(LC_NUMERIC, NULL);
-		setlocale(LC_NUMERIC, "POSIX");
+	int precision;
+	double degrees, fraction;
 
-		nmwritten = 0;
-		precision = naviconf_get_presicion();
+	const char *s;
+	char *oldlocale = setlocale(LC_NUMERIC, NULL);
+	(void)setlocale(LC_NUMERIC, "POSIX");
 
-		// extract and print latitude
+	assert(fix != NULL);
+
+	precision = naviconf_get_presicion();
+
+	if (fix->latitude.sign != navi_offset_NULL)
+	{	// extract and print latitude
 		fraction = modf(fix->latitude.offset, &degrees);
 		degrees = degrees * 100.0;
 		fraction = fraction * 60.0;
@@ -596,14 +596,22 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
+		nmwritten++;
 
 		nmwritten += strlen(s = navi_fixsign_str(fix->latitude.sign));
 		(void)strncat(buffer, s, maxsize);
 
 		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
+		nmwritten++;
+	}
+	else
+	{
+		(void)strncpy(buffer, ",,", maxsize);
+		nmwritten += 2;
+	}
 
+	if (fix->longitude.sign != navi_offset_NULL)
+	{
 		// extract and print longitude
 		fraction = modf(fix->longitude.offset, &degrees);
 		degrees = degrees * 100.0;
@@ -615,19 +623,19 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
+		nmwritten++;
 
 		nmwritten += strlen(s = navi_fixsign_str(fix->longitude.sign));
 		(void)strncat(buffer, s, maxsize);
-
-		setlocale(LC_NUMERIC, oldlocale);
-		return nmwritten;
 	}
 	else
 	{
-		(void)strncpy(buffer, ",,,", maxsize);
-		return 3;
+		(void)strncpy(buffer, ",", maxsize);
+		nmwritten++;
 	}
+
+	setlocale(LC_NUMERIC, oldlocale);
+	return nmwritten;
 }
 
 //

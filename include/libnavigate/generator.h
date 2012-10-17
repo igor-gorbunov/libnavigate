@@ -83,7 +83,7 @@ NAVI_EXTERN(size_t) navi_print_offset(const struct navi_offset_t *offset,
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
 // Returns the number of printed characters
 NAVI_EXTERN(size_t) navi_print_position_fix(const struct navi_position_t *fix,
-	char *buffer, size_t maxsize, int notnull);
+	char *buffer, size_t maxsize);
 
 //
 // Prints variable numbers

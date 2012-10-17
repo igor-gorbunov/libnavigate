@@ -67,8 +67,7 @@ navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer, size_t m
 
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & GNS_VALID_UTC);
-	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
-		msg->vfields & GNS_VALID_POSITION_FIX);
+	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix));
 	msglength += navi_print_miarray(msg->mi,
 		sizeof(msg->mi) / sizeof(msg->mi[0]), mi);
 	msglength += snprintf(totalsats, sizeof(totalsats),

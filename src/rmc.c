@@ -65,8 +65,7 @@ navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer, size_t m
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
 		msg->vfields & RMC_VALID_UTC);
 	msglength += strlen(status = navi_status_str(msg->status));
-	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix),
-		msg->vfields & RMC_VALID_POSITION_FIX);
+	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix));
 	msglength += navi_print_number(MPS_TO_KNOTS(msg->speed), snots,
 		sizeof(snots), msg->vfields & RMC_VALID_SPEED);
 	msglength += navi_print_number(msg->courseTrue, ctrue,
