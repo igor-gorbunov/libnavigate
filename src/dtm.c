@@ -36,13 +36,15 @@ navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
+
 	msg->vfields = 0;
-	msg->locdatum = navi_datum_NULL;
-	msg->locdatumsub = navi_datumsub_NULL;
-	navi_init_offset(&msg->latofs);
-	navi_init_offset(&msg->lonofs);
-	msg->altoffset = 0.0;
-	msg->refdatum = navi_datum_NULL;
+
+	msg->local_dtm = navi_datum_NULL;
+	msg->local_dtmsd = navi_datumsub_NULL;
+	navi_init_offset(&msg->lat_offset);
+	navi_init_offset(&msg->long_offset);
+	msg->alt_offset = 0.0;
+	msg->reference_dtm = navi_datum_NULL;
 
 	return navi_Ok;
 }
@@ -58,22 +60,22 @@ navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, size_t m
 	const char *ldatum, *rdatum, *datumsd, *latsign, *lonsign;
 	char latofs[32], lonofs[32], altofs[32];
 
-	msglength = strlen(ldatum = navi_datum_str(msg->locdatum,
-		msg->vfields & DTM_VALID_LOCALDATUM));
-	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->locdatumsub,
-		msg->vfields & DTM_VALID_LOCALDATUMSUB));
-	msglength += navi_print_number(msg->latofs.offset * 60., latofs,
-		sizeof(latofs), msg->vfields & DTM_VALID_OFFSET);
-	msglength += strlen(latsign = navi_fixsign_str(msg->latofs.sign,
-		msg->vfields & DTM_VALID_OFFSET));
-	msglength += navi_print_number(msg->lonofs.offset * 60., lonofs,
-		sizeof(lonofs), msg->vfields & DTM_VALID_OFFSET);
-	msglength += strlen(lonsign = navi_fixsign_str(msg->lonofs.sign,
-		msg->vfields & DTM_VALID_OFFSET));
-	msglength += navi_print_number(msg->altoffset, altofs,
+	msglength = strlen(ldatum = navi_datum_str(msg->local_dtm,
+		msg->local_dtm != navi_datum_NULL));
+	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->local_dtmsd,
+		msg->local_dtmsd != navi_datumsub_NULL));
+	msglength += navi_print_number(msg->lat_offset.offset * 60., latofs,
+		sizeof(latofs), msg->lat_offset.sign != navi_offset_NULL);
+	msglength += strlen(latsign = navi_fixsign_str(msg->lat_offset.sign,
+		msg->lat_offset.sign != navi_offset_NULL));
+	msglength += navi_print_number(msg->long_offset.offset * 60., lonofs,
+		sizeof(lonofs), msg->long_offset.sign != navi_offset_NULL);
+	msglength += strlen(lonsign = navi_fixsign_str(msg->long_offset.sign,
+		msg->long_offset.sign != navi_offset_NULL));
+	msglength += navi_print_number(msg->alt_offset, altofs,
 		sizeof(altofs), msg->vfields & DTM_VALID_ALTOFFSET);
-	msglength += strlen(rdatum = navi_datum_str(msg->refdatum,
-		msg->vfields & DTM_VALID_REFDATUM));
+	msglength += strlen(rdatum = navi_datum_str(msg->reference_dtm,
+		msg->reference_dtm != navi_datum_NULL));
 
 	if (msglength > maxsize)
 	{
@@ -98,56 +100,46 @@ navierr_status_t navi_parse_dtm(struct dtm_t *msg, char *buffer)
 
 	msg->vfields = 0;
 
-	if (navi_parse_datum(buffer + i, &msg->locdatum, &nmread) != 0)
+	if (navi_parse_datum(buffer + i, &msg->local_dtm, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= DTM_VALID_LOCALDATUM;
+			return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_datumsub(buffer + i, &msg->locdatumsub, &nmread) != 0)
+	if (navi_parse_datumsub(buffer + i, &msg->local_dtmsd, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= DTM_VALID_LOCALDATUMSUB;
+			return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_offset(buffer + i, &msg->latofs, &nmread) != 0)
+	if (navi_parse_offset(buffer + i, &msg->lat_offset, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
-		msg->latofs.offset /= 60.0;
-		msg->vfields |= DTM_VALID_OFFSET;
+		msg->lat_offset.offset /= 60.0;
 	}
 	i += nmread;
 
-	if (navi_parse_offset(buffer + i, &msg->lonofs, &nmread) != 0)
+	if (navi_parse_offset(buffer + i, &msg->long_offset, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
-		msg->lonofs.offset /= 60.0;
-		msg->vfields |= DTM_VALID_OFFSET;
+		msg->long_offset.offset /= 60.0;
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->altoffset, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->alt_offset, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -155,17 +147,13 @@ navierr_status_t navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_datum(buffer + i, &msg->refdatum, &nmread) != 0)
+	if (navi_parse_datum(buffer + i, &msg->reference_dtm, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= DTM_VALID_REFDATUM;
+			return navi_Error;
 	}
 
-	return 0;
+	return navi_Ok;
 }
 
 #endif // NO_PARSER

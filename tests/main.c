@@ -82,16 +82,16 @@ int main(void)
 	}
 
 	// DTM
-	dtm.tid = navi_GP;
-	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_OFFSET |
-		DTM_VALID_ALTOFFSET | DTM_VALID_REFDATUM;
-	dtm.locdatum = navi_UserDefined;
-	dtm.latofs.offset = 0.2366;
-	dtm.latofs.sign = navi_North;
-	dtm.lonofs.offset = 0.31825;
-	dtm.lonofs.sign = navi_West;
-	dtm.altoffset = 3.446;
-	dtm.refdatum = navi_WGS84;
+	navi_init_dtm(&dtm, navi_GP);
+
+	dtm.vfields = DTM_VALID_ALTOFFSET;
+	dtm.local_dtm = navi_UserDefined;
+
+	navi_init_offset_from_degrees(0.2366, navi_North, &dtm.lat_offset);
+	navi_init_offset_from_degrees(0.31825, navi_West, &dtm.long_offset);
+
+	dtm.alt_offset = 3.446;
+	dtm.reference_dtm = navi_WGS84;
 
 	result = navi_create_msg(navi_DTM, &dtm, buffer + msglength,
 		remain, &nmwritten);
@@ -251,20 +251,20 @@ int main(void)
 					printf("Received DTM:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(dtm->tid), dtm->tid);
 
-					if (dtm->vfields & DTM_VALID_LOCALDATUM)
-						printf("\tlocal datum = %d\n", dtm->locdatum);
-					if (dtm->vfields & DTM_VALID_LOCALDATUMSUB)
-						printf("\tlocal datum subdivision = %d\n", dtm->locdatumsub);
-					if (dtm->vfields & DTM_VALID_OFFSET)
-						printf("\tlatitude offset = %.8f %s (%d)\n", dtm->latofs.offset,
-							navi_fixsign_str(dtm->latofs.sign, 1), dtm->latofs.sign);
-					if (dtm->vfields & DTM_VALID_OFFSET)
-						printf("\tlongitude offset = %.8f %s (%d)\n", dtm->lonofs.offset,
-							navi_fixsign_str(dtm->lonofs.sign, 1), dtm->lonofs.sign);
+					if (dtm->local_dtm != navi_datum_NULL)
+						printf("\tlocal datum = %d\n", dtm->local_dtm);
+					if (dtm->local_dtmsd != navi_datumsub_NULL)
+						printf("\tlocal datum subdivision = %d\n", dtm->local_dtmsd);
+					if (dtm->lat_offset.sign != navi_offset_NULL)
+						printf("\tlatitude offset = %.8f %s (%d)\n", dtm->lat_offset.offset,
+							navi_fixsign_str(dtm->lat_offset.sign, 1), dtm->lat_offset.sign);
+					if (dtm->long_offset.sign != navi_offset_NULL)
+						printf("\tlongitude offset = %.8f %s (%d)\n", dtm->long_offset.offset,
+							navi_fixsign_str(dtm->long_offset.sign, 1), dtm->long_offset.sign);
 					if (dtm->vfields & DTM_VALID_ALTOFFSET)
-						printf("\taltitude offset = %.8f\n", dtm->altoffset);
-					if (dtm->vfields & DTM_VALID_REFDATUM)
-						printf("\treference datum = %d\n", dtm->refdatum);
+						printf("\taltitude offset = %.8f\n", dtm->alt_offset);
+					if (dtm->reference_dtm != navi_datum_NULL)
+						printf("\treference datum = %d\n", dtm->reference_dtm);
 				}
 				break;
 			case navi_GLL:

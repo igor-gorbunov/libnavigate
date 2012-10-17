@@ -35,21 +35,32 @@
 
 struct dtm_t
 {
-	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of DTM_VALID_xxx
-	navi_datum_t locdatum;	// local datum
-	navi_datum_subdivision_t locdatumsub;	// local datum subdivision code
-	struct navi_offset_t latofs;	// latitude offset, min, N/S
-	struct navi_offset_t lonofs;	// longitude offset, min, E/W
-	double altoffset;		// altitude offset, m
-	navi_datum_t refdatum;	// reference datum
+	// talker id
+	navi_talkerid_t tid;
+
+	// valid fields, bitwise or of DTM_VALID_xxx
+	unsigned int vfields;
+
+	// local datum
+	navi_datum_t local_dtm;
+
+	// local datum subdivision code
+	navi_datum_subdivision_t local_dtmsd;
+
+	// latitude offset, min, N/S
+	struct navi_offset_t lat_offset;
+
+	// longitude offset, min, E/W
+	struct navi_offset_t long_offset;
+
+	// altitude offset, m
+	double alt_offset;
+
+	// reference datum
+	navi_datum_t reference_dtm;
 };
 
-#define DTM_VALID_LOCALDATUM		0x01
-#define DTM_VALID_LOCALDATUMSUB		0x02
-#define DTM_VALID_OFFSET			0x04
-#define DTM_VALID_ALTOFFSET			0x08
-#define DTM_VALID_REFDATUM			0x10
+#define DTM_VALID_ALTOFFSET			0x1
 
 NAVI_BEGIN_DECL
 

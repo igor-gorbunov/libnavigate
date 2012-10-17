@@ -481,29 +481,53 @@ void Offset_t::setOffset(double offset)
 void Offset_t::setQuarter(enum Offset_t::quarters_t quarter)
 	{ m_quarter = quarter; }
 
-enum Offset_t::quarters_t Offset_t::quarterFromCode(int quarter)
+enum Offset_t::quarters_t Offset_t::quarterFromCode(navi_offset_sign_t quarter)
 {
 	switch (quarter)
 	{
-	case navi_North: return North;
-	case navi_South: return South;
-	case navi_East: return East;
-	case navi_West: return West;
+	case navi_North:
+		return North;
+	case navi_South:
+		return South;
+	case navi_East:
+		return East;
+	case navi_West:
+		return West;
+	case navi_Left:
+		return Left;
+	case navi_Right:
+		return Right;
+	case navi_True:
+		return True;
+	case navi_Magnetic:
+		return Magnetic;
 	default:
-		return Unknown;
+		return Null;
 	}
 }
 
-int Offset_t::quarterToCode(enum quarters_t quarter)
+navi_offset_sign_t Offset_t::quarterToCode(enum quarters_t quarter)
 {
 	switch (quarter)
 	{
-	case North: return navi_North;
-	case South: return navi_South;
-	case East: return navi_East;
-	case West: return navi_West;
+	case North:
+		return navi_North;
+	case South:
+		return navi_South;
+	case East:
+		return navi_East;
+	case West:
+		return navi_West;
+	case Left:
+		return navi_Left;
+	case Right:
+		return navi_Right;
+	case True:
+		return navi_True;
+	case Magnetic:
+		return navi_Magnetic;
 	default:
-		return -1;
+		return navi_offset_NULL;
 	}
 }
 
@@ -711,17 +735,22 @@ Message_t & Message_t::operator=(const Message_t &right)
 	return *this;
 }
 
-Datum_t Datum_t::fromDatumCode(int code)
+Datum_t Datum_t::fromDatumCode(navi_datum_t code)
 {
 	switch (code)
 	{
-	case navi_WGS84: return WGS84;
-	case navi_WGS72: return WGS72;
-	case navi_SGS85: return SGS85;
-	case navi_PE90: return PE90;
-	case navi_UserDefined: return UserDefined;
+	case navi_WGS84:
+		return WGS84;
+	case navi_WGS72:
+		return WGS72;
+	case navi_SGS85:
+		return SGS85;
+	case navi_PE90:
+		return PE90;
+	case navi_UserDefined:
+		return UserDefined;
 	default:
-		return Unknown;
+		return Null;
 	}
 }
 
@@ -736,27 +765,32 @@ enum Datum_t::datums_t Datum_t::datum() const
 void Datum_t::setDatum(enum Datum_t::datums_t datum)
 	{ m_value = datum; }
 
-int Datum_t::toDatumCode() const
+navi_datum_t Datum_t::toDatumCode() const
 {
 	switch (m_value)
 	{
-	case WGS84: return navi_WGS84;
-	case WGS72: return navi_WGS72;
-	case SGS85: return navi_SGS85;
-	case PE90: return navi_PE90;
-	case UserDefined: return navi_UserDefined;
+	case WGS84:
+		return navi_WGS84;
+	case WGS72:
+		return navi_WGS72;
+	case SGS85:
+		return navi_SGS85;
+	case PE90:
+		return navi_PE90;
+	case UserDefined:
+		return navi_UserDefined;
 	default:
-		return -1;
+		return navi_datum_NULL;
 	}
 }
 
-DatumSubdivision_t DatumSubdivision_t::fromDatumSubcode(int subcode)
+DatumSubdivision_t DatumSubdivision_t::fromDatumSubcode(navi_datum_subdivision_t subcode)
 {
 	switch (subcode)
 	{
 	case navi_datumsub_NULL:
 	default:
-		return Unknown;
+		return Null;
 	}
 }
 
@@ -771,11 +805,11 @@ enum DatumSubdivision_t::datumsubcodes_t DatumSubdivision_t::datumSubcode() cons
 void DatumSubdivision_t::setDatum(enum DatumSubdivision_t::datumsubcodes_t datumSubcode)
 	{ m_value = datumSubcode; }
 
-int DatumSubdivision_t::toDatumSubcode() const
+navi_datum_subdivision_t DatumSubdivision_t::toDatumSubcode() const
 {
 	switch (m_value)
 	{
-	case Unknown:
+	case Null:
 	default:
 		return navi_datumsub_NULL;
 	}
