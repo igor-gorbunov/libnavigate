@@ -40,10 +40,10 @@
 struct navi_satinfo_t
 {
 	unsigned int vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
-	unsigned int id;		// satellite ID number (if id == 0, the structure is empty)
-	unsigned int elevation;	// degrees 00-90
-	unsigned int azimuth;	// degrees true, 000-359
-	unsigned int snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+	int id;			// satellite ID number (if id == 0, the structure is empty)
+	int elevation;	// degrees 00-90
+	int azimuth;	// degrees true, 000-359
+	int snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
 };
 
 #define SATINFO_VALID_ORIENTATION	0x1
