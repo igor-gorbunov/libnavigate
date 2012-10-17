@@ -198,8 +198,8 @@ navierr_status_t navi_init_position(struct navi_position_t *fix)
 {
 	assert(fix != NULL);
 
-	fix->latitude.offset = fix->longitude.offset = 0.0;
-	fix->latitude.sign = fix->longitude.sign = navi_offset_NULL;
+	(void)navi_init_offset(&fix->latitude);
+	(void)navi_init_offset(&fix->longitude);
 
 	return navi_Ok;
 }
@@ -272,10 +272,23 @@ navierr_status_t navi_init_position_from_radians(double latitude,
 	return navi_Ok;
 }
 
+
 //
-// Fills offset structure with given values in degrees.
-navierr_status_t navi_init_offset_from_degrees(double offset,
-	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+// Fills offset structure with null value
+NAVI_EXTERN(navierr_status_t) navi_init_offset(struct navi_offset_t *ofs)
+{
+	assert(ofs != NULL);
+
+	ofs->offset = 0.0;
+	ofs->sign = navi_offset_NULL;
+
+	return navi_Ok;
+}
+
+//
+// Fills offset structure with given values in degrees
+navierr_status_t navi_init_offset_from_degrees(double offset, navi_offset_sign_t sign,
+	struct navi_offset_t *ofs)
 {
 	assert(ofs != NULL);
 
@@ -286,9 +299,9 @@ navierr_status_t navi_init_offset_from_degrees(double offset,
 }
 
 //
-// Fills position fix structure with given values in radians.
-navierr_status_t navi_init_offset_from_radians(double offset,
-	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+// Fills offset structure with given values in radians
+navierr_status_t navi_init_offset_from_radians(double offset, navi_offset_sign_t sign,
+	struct navi_offset_t *ofs)
 {
 	assert(ofs != NULL);
 

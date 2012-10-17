@@ -39,8 +39,8 @@ navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
 	msg->vfields = 0;
 	msg->locdatum = navi_datum_NULL;
 	msg->locdatumsub = navi_datumsub_NULL;
-	navi_init_offset_from_degrees(0.0, navi_North, &msg->latofs);
-	navi_init_offset_from_degrees(0.0, navi_East, &msg->lonofs);
+	navi_init_offset(&msg->latofs);
+	navi_init_offset(&msg->lonofs);
 	msg->altoffset = 0.0;
 	msg->refdatum = navi_datum_NULL;
 

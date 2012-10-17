@@ -44,7 +44,7 @@ navierr_status_t navi_init_rmc(struct rmc_t *msg, navi_talkerid_t tid)
 	msg->speed = 0.0;
 	msg->courseTrue = 0.0;
 	navi_init_date(2000, 1, 1, &msg->date);
-	navi_init_offset_from_degrees(0.0, navi_East, &msg->magnetic);
+	navi_init_offset(&msg->magnetic);
 	msg->mi = navi_DataNotValid;
 
 	return navi_Ok;

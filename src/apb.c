@@ -40,13 +40,13 @@ navierr_status_t navi_init_apb(struct apb_t *msg, navi_talkerid_t tid)
 
 	msg->status_0 = navi_status_V;
 	msg->status_1 = navi_status_V;
-	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->xte_magnitude);
+	navi_init_offset(&msg->xte_magnitude);
 	msg->arrival_circle = navi_status_NULL;
 	msg->perpendicular = navi_status_NULL;
-	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_origin);
+	navi_init_offset(&msg->bearing_origin);
 	memset(msg->waypoint_id, 0, sizeof(msg->waypoint_id));
-	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_present);
-	navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->heading);
+	navi_init_offset(&msg->bearing_present);
+	navi_init_offset(&msg->heading);
 	msg->mode_indicator = navi_DataNotValid;
 
 	return navi_Ok;
@@ -200,7 +200,7 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 	if (navi_parse_offset(buffer + i, &msg->xte_magnitude, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->xte_magnitude);
+			(void)navi_init_offset(&msg->xte_magnitude);
 		else
 			return navi_Error;
 	}
@@ -234,7 +234,7 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 	if (navi_parse_offset(buffer + i, &msg->bearing_origin, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_origin);
+			(void)navi_init_offset(&msg->bearing_origin);
 		else
 			return navi_Error;
 	}
@@ -250,7 +250,7 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 	if (navi_parse_offset(buffer + i, &msg->bearing_present, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->bearing_present);
+			(void)navi_init_offset(&msg->bearing_present);
 		else
 			return navi_Error;
 	}
@@ -259,7 +259,7 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 	if (navi_parse_offset(buffer + i, &msg->heading, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset_from_degrees(0.0, navi_offset_NULL, &msg->heading);
+			(void)navi_init_offset(&msg->heading);
 		else
 			return navi_Error;
 	}
