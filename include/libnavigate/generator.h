@@ -55,7 +55,7 @@ NAVI_EXTERN(const char *) navi_datumsubdiv_str(navi_datum_subdivision_t datumsub
 
 //
 // Returns the offset or position fix sign
-NAVI_EXTERN(const char *) navi_fixsign_str(navi_offset_sign_t fixsign, int notnull);
+NAVI_EXTERN(const char *) navi_fixsign_str(navi_offset_sign_t fixsign);
 
 //
 // Returns the status

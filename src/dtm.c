@@ -64,12 +64,10 @@ navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, size_t m
 	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->local_dtmsd));
 	msglength += navi_print_number(msg->lat_offset.offset * 60., latofs,
 		sizeof(latofs), msg->lat_offset.sign != navi_offset_NULL);
-	msglength += strlen(latsign = navi_fixsign_str(msg->lat_offset.sign,
-		msg->lat_offset.sign != navi_offset_NULL));
+	msglength += strlen(latsign = navi_fixsign_str(msg->lat_offset.sign));
 	msglength += navi_print_number(msg->long_offset.offset * 60., lonofs,
 		sizeof(lonofs), msg->long_offset.sign != navi_offset_NULL);
-	msglength += strlen(lonsign = navi_fixsign_str(msg->long_offset.sign,
-		msg->long_offset.sign != navi_offset_NULL));
+	msglength += strlen(lonsign = navi_fixsign_str(msg->long_offset.sign));
 	msglength += navi_print_number(msg->alt_offset, altofs,
 		sizeof(altofs), msg->vfields & DTM_VALID_ALTOFFSET);
 	msglength += strlen(rdatum = navi_datum_str(msg->reference_dtm));

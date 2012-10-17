@@ -418,13 +418,9 @@ const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub)
 }
 
 //
-// navi_fixsign_str
-//
-const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
+// Returns the offset or position fix sign
+const char *navi_fixsign_str(navi_offset_sign_t fixsign)
 {
-	if (!notnull)
-		fixsign = navi_offset_NULL;
-
 	switch (fixsign)
 	{
 	case navi_North:
@@ -563,7 +559,7 @@ size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_
 		nmwritten += 1;
 		(void)strncat(buffer, ",", maxsize);
 
-		nmwritten += strlen(s = navi_fixsign_str(offset->sign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(offset->sign));
 		(void)strncat(buffer, s, maxsize);
 
 		return nmwritten;
@@ -607,7 +603,7 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
-		nmwritten += strlen(s = navi_fixsign_str(fix->latitude.sign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(fix->latitude.sign));
 		(void)strncat(buffer, s, maxsize);
 
 		(void)strncat(buffer, ",", maxsize);
@@ -626,7 +622,7 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten += 1;
 
-		nmwritten += strlen(s = navi_fixsign_str(fix->longitude.sign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(fix->longitude.sign));
 		(void)strncat(buffer, s, maxsize);
 
 		setlocale(LC_NUMERIC, oldlocale);

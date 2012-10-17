@@ -79,8 +79,7 @@ navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer, size_t m
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.year % 100);
 	msglength += navi_print_number(msg->magnetic.offset, magnetic, sizeof(magnetic),
 		(msg->vfields & RMC_VALID_MAGNVARIATION));
-	msglength += strlen(magsign = navi_fixsign_str(msg->magnetic.sign,
-		msg->vfields & RMC_VALID_MAGNVARIATION));
+	msglength += strlen(magsign = navi_fixsign_str(msg->magnetic.sign));
 	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
 	if (msglength > maxsize)
