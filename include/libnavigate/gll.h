@@ -32,15 +32,21 @@
 
 struct gll_t
 {
-	navi_talkerid_t tid;		// talker id
-	unsigned int vfields;		// valid fields, bitwise or of GLL_VALID_xxx
-	struct navi_position_t fix;	// latitude, longitude fix
-	struct navi_utc_t utc;		// UTC time
-	navi_status_t status;		// status
-	navi_modeindicator_t mi;	// mode indicator
-};
+	// talker id
+	navi_talkerid_t tid;
 
-#define GLL_VALID_UTC				0x2
+	// latitude, longitude fix
+	struct navi_position_t fix;
+
+	// UTC time
+	struct navi_utc_t utc;
+
+	// status
+	navi_status_t status;
+
+	// mode indicator
+	navi_modeindicator_t mi;
+};
 
 NAVI_BEGIN_DECL
 

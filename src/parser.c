@@ -825,6 +825,8 @@ navierr_status_t navi_parse_utc(char *buffer, struct navi_utc_t *utc, size_t *nm
 	assert(utc != NULL);
 	assert(nmread != NULL);
 
+	navi_init_utc(utc);
+
 	state = PARSE_UTC_INIT;
 
 	for ( ; ; )

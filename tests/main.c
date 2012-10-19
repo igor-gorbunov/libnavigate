@@ -107,7 +107,6 @@ int main(void)
 
 	// GLL
 	gll.tid = navi_SN;
-	gll.vfields = GLL_VALID_UTC;
 	gll.fix.latitude.offset = 0.02;
 	gll.fix.latitude.sign = navi_North;
 	gll.fix.longitude.offset = 0.00000000999;
@@ -280,9 +279,9 @@ int main(void)
 						printf("\tlongitude = %.12f %s (%d)\n", gll->fix.longitude.offset,
 							navi_fixsign_str(gll->fix.longitude.sign), gll->fix.longitude.sign);
 					}
-					if (gll->vfields & GLL_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", gll->utc.hour,
-							gll->utc.min, gll->utc.sec);
+					if (navi_check_validity_utc(&gll->utc) == navi_Ok)
+						printf("\tutc = %02u:%02u:%06.3f\n", gll->utc.hour, gll->utc.min,
+						gll->utc.sec);
 
 					printf("\tstatus = %d\n", gll->status);
 					printf("\tmode indicator = %d\n", gll->mi);

@@ -51,10 +51,7 @@ void Gll_t::setPositionFix(const PositionFix_t &fix)
 	{ ((struct gll_t *)(*this))->fix = fix.toPosition(); }
 
 void Gll_t::setUtc(const Utc_t &utc)
-{
-	((struct gll_t *)(*this))->utc = utc.toUtcStruct();
-	((struct gll_t *)(*this))->vfields |= GLL_VALID_UTC;
-}
+	{ ((struct gll_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Gll_t::setStatus(const Status_t &status)
 	{ ((struct gll_t *)(*this))->status = status.toStatusCode(); }
@@ -66,9 +63,7 @@ bool Gll_t::isPositionValid() const
 	{ return ((const struct gll_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
 
 bool Gll_t::isUtcValid() const
-{
-	return (((const struct gll_t *)(*this))->vfields & GLL_VALID_UTC) != 0 ? true : false;
-}
+	{ return navi_check_validity_utc(&((const struct gll_t *)(*this))->utc) == navi_Ok; }
 
 void Gll_t::clearMessage()
 	{ navi_init_gll((struct gll_t *)(*this), navi_talkerid_Unknown); }

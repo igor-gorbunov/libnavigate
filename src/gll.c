@@ -36,7 +36,7 @@ navierr_status_t navi_init_gll(struct gll_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
+
 	navi_init_position(&msg->fix);
 	navi_init_utc(&msg->utc);
 	msg->status = navi_status_V;
@@ -80,8 +80,6 @@ navierr_status_t navi_parse_gll(struct gll_t *msg, char *buffer)
 {
 	size_t i = 0, nmread;
 
-	msg->vfields = 0;
-
 	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
@@ -93,10 +91,6 @@ navierr_status_t navi_parse_gll(struct gll_t *msg, char *buffer)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GLL_VALID_UTC;
 	}
 	i += nmread;
 
