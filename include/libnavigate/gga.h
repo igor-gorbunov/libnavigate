@@ -45,7 +45,6 @@ struct gga_t
 };
 
 #define GGA_VALID_UTC				0x01
-#define GGA_VALID_FIX				0x02
 #define GGA_VALID_NMSATELLITES		0x04
 #define GGA_VALID_HDOP				0x08
 #define GGA_VALID_ANTALTITUDE		0x10

@@ -128,10 +128,6 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GGA_VALID_FIX;
-	}
 	i += nmread;
 
 	if (navi_parse_decfield(buffer + i, 1, bytes, &nmread) != 0)

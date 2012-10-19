@@ -467,9 +467,8 @@ int main(void)
 	// GGA
 	gga.tid = navi_GP;
 
-	gga.vfields = GGA_VALID_UTC | GGA_VALID_FIX | GGA_VALID_NMSATELLITES |
-		GGA_VALID_HDOP | GGA_VALID_ANTALTITUDE | GGA_VALID_GEOIDALSEP |
-		GGA_VALID_DIFFAGE | GGA_VALID_ID;
+	gga.vfields = GGA_VALID_UTC | GGA_VALID_NMSATELLITES | GGA_VALID_HDOP | 
+		GGA_VALID_ANTALTITUDE | GGA_VALID_GEOIDALSEP | GGA_VALID_DIFFAGE | GGA_VALID_ID;
 	gga.utc.hour = 0;
 	gga.utc.min = 34;
 	gga.utc.sec = 16.;
@@ -792,12 +791,13 @@ int main(void)
 					if (gga->vfields & GGA_VALID_UTC)
 						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour,
 							gga->utc.min, gga->utc.sec);
-					if (gga->vfields & GGA_VALID_FIX)
+					if (gga->fix.latitude.sign != navi_offset_NULL)
+					{
 						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude.offset,
 							navi_fixsign_str(gga->fix.latitude.sign), gga->fix.latitude.sign);
-					if (gga->vfields & GGA_VALID_FIX)
 						printf("\tlongitude = %f %s (%d)\n", gga->fix.longitude.offset,
 							navi_fixsign_str(gga->fix.longitude.sign), gga->fix.longitude.sign);
+					}
 					printf("\tGPS quality indicator: %i\n", gga->gpsindicator);
 					if (gga->vfields & GGA_VALID_NMSATELLITES)
 						printf("\tNm of satellites in use: %i\n", gga->nmsatellites);

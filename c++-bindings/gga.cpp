@@ -69,10 +69,7 @@ void Gga_t::setUtc(const Utc_t &utc)
 }
 
 void Gga_t::setPositionFix(const PositionFix_t &fix)
-{
-	((struct gga_t *)(*this))->fix = fix.toPosition();
-	((struct gga_t *)(*this))->vfields |= GGA_VALID_FIX;
-}
+	{ ((struct gga_t *)(*this))->fix = fix.toPosition(); }
 
 void Gga_t::setQualityIndicator(const GpsQualityIndicator_t &qi)
 	{ ((struct gga_t *)(*this))->gpsindicator = qi.toQualityCode(); }
@@ -119,9 +116,7 @@ bool Gga_t::isUtcValid() const
 }
 
 bool Gga_t::isPositionValid() const
-{
-	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_FIX) != 0 ? true : false;
-}
+	{ return ((const struct gga_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
 
 bool Gga_t::isNmSatellitesValid() const
 {
