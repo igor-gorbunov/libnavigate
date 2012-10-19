@@ -33,7 +33,7 @@
 #include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+#include "win32/win32navi.h"
 #endif // MSVC_VER
 
 //

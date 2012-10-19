@@ -1,5 +1,5 @@
 /*
- * win32navi.h - Windows definitions for compatibility
+ * nan.c - implementation or nan() for Windows
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -17,15 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDE_win32navi_h
-#define INCLUDE_win32navi_h
+#include <math.h>
 
-#include <float.h>
+double nan(const char *tagp)
+{
+	tagp = tagp;
 
-#define snprintf	_snprintf
-#define isnan		_isnan
-
-extern double round(double x);
-extern double nan(const char *tagp);
-
-#endif	// INCLUDE_win32navi_h
+	return fmod(1.0, 0.0);
+}
