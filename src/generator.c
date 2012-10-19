@@ -539,17 +539,17 @@ const char *navi_gsamode_str(navi_gsaswitchmode_t mode)
 // Prints offset 'x.x,a', or null fields
 size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_t maxsize)
 {
-	size_t nmwritten;
+	size_t nmwritten = 0;
 
 	assert(offset != NULL);
 	assert(buffer != NULL);
 	assert(maxsize > 0);
 
-	if (offset->sign != navi_offset_NULL)
+	if (navi_check_validity_offset(offset) == navi_Ok)
 	{
 		const char *s;
 
-		nmwritten = navi_print_number(offset->offset, buffer, maxsize, 1);
+		nmwritten += navi_print_number(offset->offset, buffer, maxsize, 1);
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten++;
@@ -559,8 +559,7 @@ size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_
 	}
 	else
 	{
-		(void)strncpy(buffer, ",", maxsize);
-		nmwritten = 1;
+		nmwritten += snprintf(buffer, maxsize, ",");
 	}
 
 	return nmwritten;
@@ -573,19 +572,21 @@ size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
 {
 	size_t nmwritten = 0;
 
-	int precision;
-	double degrees, fraction;
-
-	const char *s;
-	char *oldlocale = setlocale(LC_NUMERIC, NULL);
-	(void)setlocale(LC_NUMERIC, "POSIX");
-
 	assert(fix != NULL);
+	assert(buffer != NULL);
 
-	precision = naviconf_get_presicion();
+	if (navi_check_validity_position(fix) == navi_Ok)
+	{
+		int precision;
+		double degrees, fraction;
 
-	if (fix->latitude.sign != navi_offset_NULL)
-	{	// extract and print latitude
+		const char *s;
+		char *oldlocale = setlocale(LC_NUMERIC, NULL);
+		(void)setlocale(LC_NUMERIC, "POSIX");
+
+		precision = naviconf_get_presicion();
+
+		// extract and print latitude
 		fraction = modf(fix->latitude.offset, &degrees);
 		degrees = degrees * 100.0;
 		fraction = fraction * 60.0;
@@ -603,15 +604,7 @@ size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten++;
-	}
-	else
-	{
-		(void)strncpy(buffer, ",,", maxsize);
-		nmwritten += 2;
-	}
 
-	if (fix->longitude.sign != navi_offset_NULL)
-	{
 		// extract and print longitude
 		fraction = modf(fix->longitude.offset, &degrees);
 		degrees = degrees * 100.0;
@@ -627,14 +620,14 @@ size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
 
 		nmwritten += strlen(s = navi_fixsign_str(fix->longitude.sign));
 		(void)strncat(buffer, s, maxsize);
+
+		setlocale(LC_NUMERIC, oldlocale);
 	}
 	else
 	{
-		(void)strncpy(buffer, ",", maxsize);
-		nmwritten++;
+		nmwritten += snprintf(buffer, maxsize, ",,,");
 	}
 
-	setlocale(LC_NUMERIC, oldlocale);
 	return nmwritten;
 }
 
