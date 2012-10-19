@@ -46,10 +46,7 @@ void Zda_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct zda_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Zda_t::setUtc(const Utc_t &utc)
-{
-	((struct zda_t *)(*this))->utc = utc.toUtcStruct();
-	((struct zda_t *)(*this))->vfields |= ZDA_VALID_UTC;
-}
+	{ ((struct zda_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Zda_t::setDate(const Date_t &date)
 {
@@ -64,9 +61,7 @@ void Zda_t::setLocalZoneOffset(int value)
 }
 
 bool Zda_t::isUtcValid() const
-{
-	return (((const struct zda_t *)(*this))->vfields & ZDA_VALID_UTC) != 0 ? true : false;
-}
+	{ return navi_check_validity_utc(&((const struct zda_t *)(*this))->utc) == navi_Ok; }
 
 bool Zda_t::isDateValid() const
 {

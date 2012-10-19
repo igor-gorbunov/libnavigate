@@ -64,7 +64,7 @@ int main(void)
 
 	// ZDA
 	navi_init_zda(&zda, navi_GL);
-	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
+	zda.vfields = ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
 	navi_init_utc_from_hhmmss(8, 12, 38.56, &zda.utc);
 	navi_init_date(1982, 5, 25, &zda.date);
 	zda.lzoffset = -240;
@@ -369,9 +369,9 @@ int main(void)
 					printf("Received ZDA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(zda->tid), zda->tid);
 
-					if (zda->vfields & ZDA_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour,
-							zda->utc.min, zda->utc.sec);
+					if (navi_check_validity_utc(&zda->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour, zda->utc.min,
+						zda->utc.sec);
 					if (zda->vfields & ZDA_VALID_DATE)
 						printf("\tdate = %04d-%02d-%02d\n", zda->date.year, zda->date.month,
 							zda->date.day);

@@ -106,21 +106,17 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 
 	msg->vfields = 0;
 
-	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= ZDA_VALID_UTC;
+			return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -129,10 +125,10 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -141,10 +137,10 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -153,10 +149,10 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_localzone(buffer + i, &msg->lzoffset, &nmread) != 0)
+	if (navi_parse_localzone(buffer + i, &msg->lzoffset, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
