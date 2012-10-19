@@ -55,8 +55,7 @@ navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, size_t m
 	size_t msglength;
 	char utc[32], day[3], month[3], year[5], lzhours[4], lzmins[3];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & ZDA_VALID_UTC);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += snprintf(day, sizeof(day),
 		(msg->vfields & ZDA_VALID_DATE) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),

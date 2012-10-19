@@ -57,8 +57,7 @@ navierr_status_t navi_create_gll(const struct gll_t *msg, char *buffer, size_t m
 	char fix[64], utc[32];
 
 	msglength = navi_print_position_fix(&msg->fix, fix, sizeof(fix));
-	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & GLL_VALID_UTC);
+	msglength += navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += strlen(status = navi_status_str(msg->status));
 	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 

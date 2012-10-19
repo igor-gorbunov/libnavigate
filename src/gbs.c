@@ -62,7 +62,7 @@ navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer, size_t m
 	char utc[32], experrlat[32], experrlon[32], experralt[32],
 		id[4], probability[32], estimate[32], deviation[32];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc), 1);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += navi_print_number(msg->experrlat, experrlat, sizeof(experrlat),
 		msg->vfields & GBS_VALID_EXPERRLATLON);
 	msglength += navi_print_number(msg->experrlon, experrlon, sizeof(experrlon),

@@ -113,8 +113,8 @@ NAVI_EXTERN(size_t) navi_print_fixedfield(const char bytes[], int fieldwidth, in
 //
 // Prints UTC time
 // Returns the number of printed characters
-NAVI_EXTERN(size_t) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
-	size_t maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_utc(const struct navi_utc_t *utc,
+	char *buffer, size_t maxsize);
 
 //
 // Prints array of mode indicators

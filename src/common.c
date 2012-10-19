@@ -455,7 +455,7 @@ navierr_status_t navi_init_utc_from_hhmmss(int hh, int mm, double ss,
 
 //
 // Checks if the utc structure contains valid values
-navierr_status_t navi_check_validity_utc(struct navi_utc_t *utc)
+navierr_status_t navi_check_validity_utc(const struct navi_utc_t *utc)
 {
 	navierr_status_t status = navi_Ok;
 

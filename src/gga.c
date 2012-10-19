@@ -63,8 +63,7 @@ navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer, size_t m
 	char utc[32], fix[64], qi[2], nmsats[3], hdop[32], antalt[32],
 		geoidsep[32], ddage[32], id[32];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & GGA_VALID_UTC);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix));
 
 	(void)navi_split_integer(msg->gpsindicator, bytes, 1, 10);

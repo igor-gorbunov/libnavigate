@@ -663,11 +663,12 @@ size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull
 }
 
 //
-// navi_print_utc
-//
-size_t navi_print_utc(const struct navi_utc_t *utc, char *buffer, size_t maxsize, int notnull)
+// Prints UTC time
+size_t navi_print_utc(const struct navi_utc_t *utc, char *buffer, size_t maxsize)
 {
-	if (notnull)
+	assert(utc != NULL);
+
+	if (navi_check_validity_utc(utc) == navi_Ok)
 	{
 		int result, precision;
 		char *oldlocale = setlocale(LC_NUMERIC, NULL);

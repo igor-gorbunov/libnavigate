@@ -65,8 +65,7 @@ navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer, size_t m
 	char utc[32], fix[64], mi[3], totalsats[3], hdop[32], antalt[32],
 		geoidsep[32], ddage[32], drsid[32];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & GNS_VALID_UTC);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix));
 	msglength += navi_print_miarray(msg->mi,
 		sizeof(msg->mi) / sizeof(msg->mi[0]), mi);

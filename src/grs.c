@@ -59,7 +59,7 @@ navierr_status_t navi_create_grs(const struct grs_t *msg, char *buffer, size_t m
 	char bytes[2];
 	char utc[32], mode[2], residuals[12][32];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc), 1);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 
 	(void)navi_split_integer(msg->mode, bytes, 1, 10);
 	msglength += navi_print_decfield(bytes, 1, mode, sizeof(mode));

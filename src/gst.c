@@ -57,7 +57,7 @@ navierr_status_t navi_create_gst(const struct gst_t *msg, char *buffer, size_t m
 	char utc[32], rms[16], devmajor[16], devminor[16], orientmajor[16],
 		devlaterr[16], devlonerr[16], devalterr[16];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc), 1);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += navi_print_number(msg->rms, rms, sizeof(rms),
 		msg->vfields & GST_VALID_RMS);
 	msglength += navi_print_number(msg->devmajor, devmajor, sizeof(devmajor),

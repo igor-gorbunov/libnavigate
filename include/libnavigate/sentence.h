@@ -349,7 +349,7 @@ NAVI_EXTERN(navierr_status_t) navi_init_utc_from_hhmmss(int hh, int mm, double s
 // Checks if the utc structure contains valid values
 // Returns navi_Ok, if the field is not null, otherwise returns navi_Error
 // and sets last error to navi_NullField
-NAVI_EXTERN(navierr_status_t) navi_check_validity_utc(struct navi_utc_t *utc);
+NAVI_EXTERN(navierr_status_t) navi_check_validity_utc(const struct navi_utc_t *utc);
 
 //
 // Holds UTC date

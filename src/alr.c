@@ -56,7 +56,7 @@ navierr_status_t navi_create_alr(const struct alr_t *msg, char *buffer, size_t m
 	char bytes[4];
 	char utc[32], alarmid[4], description[80];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc), 1);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 
 	navi_split_integer(msg->alarmid, bytes, 3, 10);
 	msglength += navi_print_decfield(bytes, 3, alarmid, sizeof(alarmid));
