@@ -47,7 +47,6 @@ struct gns_t
 };
 
 #define GNS_VALID_UTC					0x01
-#define GNS_VALID_POSITION_FIX			0x02
 #define GNS_VALID_TOTALNMOFSATELLITES	0x04
 #define GNS_VALID_HDOP					0x08
 #define GNS_VALID_ANTENNAALTITUDE		0x10

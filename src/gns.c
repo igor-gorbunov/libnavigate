@@ -124,10 +124,6 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GNS_VALID_POSITION_FIX;
-	}
 	i += nmread;
 
 	j = sizeof(msg->mi) / sizeof(msg->mi[0]);

@@ -69,10 +69,7 @@ void Gns_t::setUtc(const Utc_t &utc)
 }
 
 void Gns_t::setPositionFix(const PositionFix_t &fix)
-{
-	((struct gns_t *)(*this))->fix = fix.toPosition();
-	((struct gns_t *)(*this))->vfields |= GNS_VALID_POSITION_FIX;
-}
+	{ ((struct gns_t *)(*this))->fix = fix.toPosition(); }
 
 void Gns_t::setModeIndicatorArray(const ModeIndicatorArray_t &modeArray)
 	{ modeArray.toModeIndicators(((struct gns_t *)(*this))->mi); }
@@ -119,9 +116,7 @@ bool Gns_t::isUtcValid() const
 }
 
 bool Gns_t::isPositionValid() const
-{
-	return (((const struct gns_t *)(*this))->vfields & GNS_VALID_POSITION_FIX) != 0 ? true : false;
-}
+	{ return ((const struct gns_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
 
 bool Gns_t::isNmSatellitesValid() const
 {

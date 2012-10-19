@@ -132,7 +132,7 @@ int main(void)
 
 	// GNS
 	gns.tid = navi_GL;
-	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX | GNS_VALID_TOTALNMOFSATELLITES |
+	gns.vfields = GNS_VALID_UTC | GNS_VALID_TOTALNMOFSATELLITES |
 		GNS_VALID_HDOP | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
 	gns.utc.hour = 20;
@@ -296,12 +296,13 @@ int main(void)
 					if (gns->vfields & GNS_VALID_UTC)
 						printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour,
 							gns->utc.min, gns->utc.sec);
-					if (gns->vfields & GNS_VALID_POSITION_FIX)
+					if (gns->fix.latitude.sign != navi_offset_NULL)
+					{
 						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude.offset,
 							navi_fixsign_str(gns->fix.latitude.sign), gns->fix.latitude.sign);
-					if (gns->vfields & GNS_VALID_POSITION_FIX)
 						printf("\tlongitude = %.12f %s (%d)\n", gns->fix.longitude.offset,
 							navi_fixsign_str(gns->fix.longitude.sign), gns->fix.longitude.sign);
+					}
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
 					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
 						printf("\tsatellites = %d\n", gns->nmsatellites);
