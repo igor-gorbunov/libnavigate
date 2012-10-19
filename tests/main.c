@@ -163,24 +163,25 @@ int main(void)
 	}
 
 	// RMC
-	rmc.tid = navi_GL;
+	navi_init_rmc(&rmc, navi_GL);
+
 	rmc.vfields = RMC_VALID_DATE;
-	rmc.utc.hour = 9;
-	rmc.utc.min = 19;
-	rmc.utc.sec = 39.98;
+
+	navi_init_utc_from_hhmmss(9, 19, 39.98, &rmc.utc);
+
 	rmc.status = navi_status_V;
+
 	rmc.fix.latitude.offset = 74.64772882;
 	rmc.fix.latitude.sign = navi_South;
 	rmc.fix.longitude.offset = 132.0000333;
 	rmc.fix.longitude.sign = navi_East;
-	rmc.speed = 1.03553;
-	rmc.courseTrue = 180.2112;
+
 	rmc.date.day = 18;
 	rmc.date.month = 3;
 	rmc.date.year = 2012;
-	rmc.magnetic.offset = 23.011;
-	rmc.magnetic.sign = navi_East;
+
 	rmc.mi = navi_Estimated;
+
 	// Part 1
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
@@ -193,9 +194,28 @@ int main(void)
 	{
 		printf("Composition of RMC failed (%d)\n", result);
 	}
+
 	// Part 2
+	navi_init_rmc(&rmc, navi_GL);
+
 	rmc.vfields = RMC_VALID_SPEED | RMC_VALID_COURSETRUE | RMC_VALID_DATE |
 		RMC_VALID_MAGNVARIATION;
+
+	navi_init_utc_from_hhmmss(9, 19, 39.98, &rmc.utc);
+
+	rmc.status = navi_status_V;
+
+	rmc.speed = 1.03553;
+	rmc.courseTrue = 180.2112;
+
+	rmc.date.day = 18;
+	rmc.date.month = 3;
+	rmc.date.year = 2012;
+
+	rmc.magnetic.offset = 23.011;
+	rmc.magnetic.sign = navi_East;
+	rmc.mi = navi_Estimated;
+
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)

@@ -274,12 +274,30 @@ navierr_status_t navi_init_position_from_radians(double latitude,
 
 
 //
+// Checks if the position structure contains valid values
+navierr_status_t navi_check_validity_position(const struct navi_position_t *fix)
+{
+	navi_status_t status = navi_Ok;
+
+	assert(fix != NULL);
+
+	if ((navi_check_validity_offset(&fix->latitude) == navi_Error) ||
+		(navi_check_validity_offset(&fix->longitude) == navi_Error))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
+}
+
+//
 // Fills offset structure with null values
-NAVI_EXTERN(navierr_status_t) navi_init_offset(struct navi_offset_t *ofs)
+navierr_status_t navi_init_offset(struct navi_offset_t *ofs)
 {
 	assert(ofs != NULL);
 
-	ofs->offset = 0.0;
+	ofs->offset = nan("");
 	ofs->sign = navi_offset_NULL;
 
 	return navi_Ok;
@@ -309,6 +327,23 @@ navierr_status_t navi_init_offset_from_radians(double offset, navi_offset_sign_t
 	ofs->sign = sign;
 
 	return navi_Ok;
+}
+
+//
+// Checks if the offset structure contains valid values
+navierr_status_t navi_check_validity_offset(const struct navi_offset_t *offset)
+{
+	navi_status_t status = navi_Ok;
+
+	assert(offset != NULL);
+
+	if ((offset->sign == navi_offset_NULL) || (isnan(offset->offset)))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
 }
 
 //

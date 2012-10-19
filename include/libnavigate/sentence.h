@@ -413,6 +413,12 @@ NAVI_EXTERN(navierr_status_t) navi_init_offset_from_radians(double offset,
 	navi_offset_sign_t sign, struct navi_offset_t *ofs);
 
 //
+// Checks if the offset structure contains valid values
+// Returns navi_Ok, if the field is not null, otherwise returns navi_Error
+// and sets last error to navi_NullField
+NAVI_EXTERN(navierr_status_t) navi_check_validity_offset(const struct navi_offset_t *offset);
+
+//
 // Holds position data
 struct navi_position_t
 {
@@ -443,6 +449,12 @@ NAVI_EXTERN(navierr_status_t) navi_init_position_from_degrees(double latitude,
 // and the ranges of [-pi, 0) or [+pi, +2pi] are [180°W, 0]
 NAVI_EXTERN(navierr_status_t) navi_init_position_from_radians(double latitude,
 	double longitude, struct navi_position_t *fix);
+
+//
+// Checks if the position structure contains valid values
+// Returns navi_Ok, if the field is not null, otherwise returns navi_Error
+// and sets last error to navi_NullField
+NAVI_EXTERN(navierr_status_t) navi_check_validity_position(const struct navi_position_t *fix);
 
 //	// Bearing and distance to waypoint, dead reckoning
 //	struct bec_t
