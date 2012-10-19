@@ -330,7 +330,6 @@ typedef int navi_gsaswitchmode_t;
 
 //
 // Holds UTC time (hours, minutes and seconds)
-//
 struct navi_utc_t
 {
 	int hour, min;
@@ -344,7 +343,6 @@ NAVI_EXTERN(navierr_status_t) navi_init_utc(int hh, int mm, double ss,
 
 //
 // Holds UTC date
-//
 struct navi_date_t
 {
 	int day, month, year;
@@ -356,12 +354,11 @@ NAVI_EXTERN(navierr_status_t) navi_init_date(int yy, int mm, int dd,
 	struct navi_date_t *date);
 
 //
-// Offset sign (N/S, E/W)
-//
+// Offset sign (N/S, E/W, L/R, T/M)
 enum _navi_offset_sign_t
 {
 	// null field
-	navi_offset_NULL = - 1,
+	navi_offset_NULL = -1,
 
 	// North
 	navi_North,
@@ -385,10 +382,9 @@ typedef int navi_offset_sign_t;
 
 //
 // Holds offset data
-//
 struct navi_offset_t
 {
-	double offset;				// degrees, nautical miles
+	double offset;				// degrees, nautical miles or other
 	navi_offset_sign_t sign;	// N/S, E/W, L/R, M/T, or null field
 };
 
@@ -408,7 +404,6 @@ NAVI_EXTERN(navierr_status_t) navi_init_offset_from_radians(double offset,
 
 //
 // Holds position data
-//
 struct navi_position_t
 {
 	struct navi_offset_t latitude;		// (degrees, N/S) or null field
