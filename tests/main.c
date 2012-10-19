@@ -132,8 +132,8 @@ int main(void)
 
 	// GNS
 	gns.tid = navi_GL;
-	gns.vfields = GNS_VALID_UTC | GNS_VALID_TOTALNMOFSATELLITES |
-		GNS_VALID_HDOP | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
+	gns.vfields = GNS_VALID_TOTALNMOFSATELLITES | GNS_VALID_HDOP |
+		GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
 		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
 	gns.utc.hour = 20;
 	gns.utc.min = 7;
@@ -294,9 +294,9 @@ int main(void)
 					printf("Received GNS:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gns->tid), gns->tid);
 
-					if (gns->vfields & GNS_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour,
-							gns->utc.min, gns->utc.sec);
+					if (navi_check_validity_utc(&gns->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour, gns->utc.min,
+						gns->utc.sec);
 					if (gns->fix.latitude.sign != navi_offset_NULL)
 					{
 						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude.offset,

@@ -63,10 +63,7 @@ void Gns_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct gns_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gns_t::setUtc(const Utc_t &utc)
-{
-	((struct gns_t *)(*this))->utc = utc.toUtcStruct();
-	((struct gns_t *)(*this))->vfields |= GNS_VALID_UTC;
-}
+	{ ((struct gns_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Gns_t::setPositionFix(const PositionFix_t &fix)
 	{ ((struct gns_t *)(*this))->fix = fix.toPosition(); }
@@ -111,9 +108,7 @@ void Gns_t::setDiffReferenceStationId(int value)
 }
 
 bool Gns_t::isUtcValid() const
-{
-	return (((const struct gns_t *)(*this))->vfields & GNS_VALID_UTC) != 0 ? true : false;
-}
+	{ return navi_check_validity_utc(&((const struct gns_t *)(*this))->utc) == navi_Ok; }
 
 bool Gns_t::isPositionValid() const
 	{ return ((const struct gns_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }

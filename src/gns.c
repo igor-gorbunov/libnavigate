@@ -107,18 +107,14 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 
 	msg->vfields = 0;
 
-	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GNS_VALID_UTC;
-	}
 	i += nmread;
 
-	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
+	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -126,13 +122,13 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	i += nmread;
 
 	j = sizeof(msg->mi) / sizeof(msg->mi[0]);
-	if (navi_parse_miarray(buffer + i, msg->mi, &j, &nmread) != 0)
+	if (navi_parse_miarray(buffer + i, msg->mi, &j, &nmread) != navi_Ok)
 	{
 		return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -144,7 +140,7 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->hdop, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->hdop, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -155,7 +151,7 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->antaltitude, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->antaltitude, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -166,7 +162,7 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->geoidalsep, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->geoidalsep, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -177,7 +173,7 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -189,7 +185,7 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
