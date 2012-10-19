@@ -430,7 +430,7 @@ Utc_t Utc_t::fromUtcStruct(const struct navi_utc_t &utc)
 struct navi_utc_t Utc_t::toUtcStruct() const
 {
 	struct navi_utc_t s;
-	navi_init_utc(hours(), minutes(), seconds(), &s);
+	navi_init_utc_from_hhmmss(hours(), minutes(), seconds(), &s);
 	return s;
 }
 

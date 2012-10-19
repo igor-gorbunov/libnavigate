@@ -39,7 +39,7 @@ navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_utc(&msg->utc);
 	navi_init_date(2000, 1, 1, &msg->date);
 	msg->lzoffset = 0;
 

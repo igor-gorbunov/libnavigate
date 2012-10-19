@@ -37,7 +37,7 @@ navierr_status_t navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_utc(&msg->utc);
 
 	msg->experrlat = 0.0;
 	msg->experrlon = 0.0;

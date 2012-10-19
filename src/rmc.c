@@ -38,7 +38,7 @@ navierr_status_t navi_init_rmc(struct rmc_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_utc(&msg->utc);
 	msg->status = navi_status_V;
 	navi_init_position(&msg->fix);
 	msg->speed = 0.0;

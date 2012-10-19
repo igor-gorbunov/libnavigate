@@ -65,7 +65,7 @@ int main(void)
 	// ZDA
 	navi_init_zda(&zda, navi_GL);
 	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
-	navi_init_utc(8, 12, 38.56, &zda.utc);
+	navi_init_utc_from_hhmmss(8, 12, 38.56, &zda.utc);
 	navi_init_date(1982, 5, 25, &zda.date);
 	zda.lzoffset = -240;
 
@@ -705,7 +705,7 @@ int main(void)
 
 	// ALR
 	navi_init_alr(&alr, navi_GL);
-	navi_init_utc(12, 8, 13, &alr.utc);
+	navi_init_utc_from_hhmmss(12, 8, 13, &alr.utc);
 	alr.alarmid = 846;
 	alr.condition = navi_status_A;
 	alr.ackstate = navi_status_V;
@@ -724,7 +724,7 @@ int main(void)
 
 	// ALR
 	navi_init_alr(&alr, navi_GL);
-	navi_init_utc(16, 12, 0, &alr.utc);
+	navi_init_utc_from_hhmmss(16, 12, 0, &alr.utc);
 	alr.alarmid = 7;
 	alr.condition = navi_status_V;
 	alr.ackstate = navi_status_V;

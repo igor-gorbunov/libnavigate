@@ -37,7 +37,7 @@ navierr_status_t navi_init_alr(struct alr_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_utc(&msg->utc);
 	msg->alarmid = 0;
 	msg->condition = navi_status_V;
 	msg->ackstate = navi_status_V;

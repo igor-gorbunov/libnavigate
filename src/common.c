@@ -193,7 +193,7 @@ size_t remove_trailing_zeroes(char *buffer, size_t length)
 }
 
 //
-// Fills position fix structure with null value.
+// Fills position fix structure with null values
 navierr_status_t navi_init_position(struct navi_position_t *fix)
 {
 	assert(fix != NULL);
@@ -205,7 +205,7 @@ navierr_status_t navi_init_position(struct navi_position_t *fix)
 }
 
 //
-// Fills position fix structure with given values in degrees.
+// Fills position fix structure with given values in degrees
 navierr_status_t navi_init_position_from_degrees(double latitude,
 	double longitude, struct navi_position_t *fix)
 {
@@ -239,7 +239,7 @@ navierr_status_t navi_init_position_from_degrees(double latitude,
 }
 
 //
-// Fills position fix structure with given values in radians.
+// Fills position fix structure with given values in radians
 navierr_status_t navi_init_position_from_radians(double latitude,
 	double longitude, struct navi_position_t *fix)
 {
@@ -274,7 +274,7 @@ navierr_status_t navi_init_position_from_radians(double latitude,
 
 
 //
-// Fills offset structure with null value
+// Fills offset structure with null values
 NAVI_EXTERN(navierr_status_t) navi_init_offset(struct navi_offset_t *ofs)
 {
 	assert(ofs != NULL);
@@ -427,8 +427,22 @@ navi_char_type_t navi_get_character_type(int c)
 }
 
 //
+// Fills utc structure with null values
+navierr_status_t navi_init_utc(struct navi_utc_t *utc)
+{
+	assert(utc != NULL);
+
+	utc->hour = 0;
+	utc->min = 0;
+	utc->sec = nan("");
+
+	return navi_Ok;
+}
+
+//
 // Fills utc structure with given values
-navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc)
+navierr_status_t navi_init_utc_from_hhmmss(int hh, int mm, double ss,
+	struct navi_utc_t *utc)
 {
 	assert(utc != NULL);
 
@@ -437,6 +451,23 @@ navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc
 	utc->sec = ss;
 
 	return navi_Ok;
+}
+
+//
+// Checks if the utc structure contains valid values
+navierr_status_t navi_check_validity_utc(struct navi_utc_t *utc)
+{
+	navierr_status_t status = navi_Ok;
+
+	assert(utc != NULL);
+
+	if (isnan(utc->sec))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
 }
 
 //

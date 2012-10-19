@@ -38,7 +38,7 @@ navierr_status_t navi_init_gst(struct gst_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_utc(&msg->utc);
 
 	msg->rms = msg->devmajor = msg->devminor = msg->orientmajor =
 		msg->devlaterr = msg->devlonerr = msg->devalterr = 0.0;
