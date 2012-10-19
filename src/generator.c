@@ -632,8 +632,7 @@ size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
 }
 
 //
-// navi_print_number
-//
+// Prints variable numbers
 size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull)
 {
 	if (notnull)
