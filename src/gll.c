@@ -86,18 +86,14 @@ navierr_status_t navi_parse_gll(struct gll_t *msg, char *buffer)
 	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= GLL_VALID_POSITION_FIX;
+			return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -108,14 +104,14 @@ navierr_status_t navi_parse_gll(struct gll_t *msg, char *buffer)
 	if (navi_parse_status(buffer + i, &msg->status, &nmread) != 0)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != 0)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 
 	return navi_Ok;

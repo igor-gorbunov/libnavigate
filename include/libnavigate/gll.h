@@ -40,7 +40,6 @@ struct gll_t
 	navi_modeindicator_t mi;	// mode indicator
 };
 
-#define GLL_VALID_POSITION_FIX		0x1
 #define GLL_VALID_UTC				0x2
 
 NAVI_BEGIN_DECL

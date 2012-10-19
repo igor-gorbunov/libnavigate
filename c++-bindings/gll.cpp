@@ -48,10 +48,7 @@ void Gll_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct gll_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gll_t::setPositionFix(const PositionFix_t &fix)
-{
-	((struct gll_t *)(*this))->fix = fix.toPosition();
-	((struct gll_t *)(*this))->vfields |= GLL_VALID_POSITION_FIX;
-}
+	{ ((struct gll_t *)(*this))->fix = fix.toPosition(); }
 
 void Gll_t::setUtc(const Utc_t &utc)
 {
@@ -66,9 +63,7 @@ void Gll_t::setModeIndicator(const ModeIndicator_t &mi)
 	{ ((struct gll_t *)(*this))->mi = mi.toModeIndCode(); }
 
 bool Gll_t::isPositionValid() const
-{
-	return (((const struct gll_t *)(*this))->vfields & GLL_VALID_POSITION_FIX) != 0 ? true : false;
-}
+	{ return ((const struct gll_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
 
 bool Gll_t::isUtcValid() const
 {
