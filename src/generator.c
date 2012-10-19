@@ -549,7 +549,7 @@ size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_
 	{
 		const char *s;
 
-		nmwritten += navi_print_number(offset->offset, buffer, maxsize, 1);
+		nmwritten += navi_print_number(offset->offset, buffer, maxsize);
 
 		(void)strncat(buffer, ",", maxsize);
 		nmwritten++;
@@ -633,9 +633,9 @@ size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
 
 //
 // Prints variable numbers
-size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull)
+size_t navi_print_number(double value, char *buffer, size_t maxsize)
 {
-	if (notnull)
+	if (navi_check_validity_number(value) == navi_Ok)
 	{
 		int result, precision;
 		char *oldlocale = setlocale(LC_NUMERIC, NULL);

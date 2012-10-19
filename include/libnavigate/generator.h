@@ -88,8 +88,7 @@ NAVI_EXTERN(size_t) navi_print_position_fix(const struct navi_position_t *fix,
 //
 // Prints variable numbers
 // Returns the number of printed characters
-NAVI_EXTERN(size_t) navi_print_number(double value, char *buffer,
-	size_t maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_number(double value, char *buffer, size_t maxsize);
 
 //
 // Prints fixed length hexadecimal numbers, MSB on the left.

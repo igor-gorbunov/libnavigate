@@ -39,13 +39,13 @@ navierr_status_t navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid)
 	msg->vfields = 0;
 	navi_init_utc(&msg->utc);
 
-	msg->experrlat = 0.0;
-	msg->experrlon = 0.0;
-	msg->experralt = 0.0;
+	msg->experrlat = nan("");
+	msg->experrlon = nan("");
+	msg->experralt = nan("");
 	msg->id = 0;
-	msg->probability = 0.0;
-	msg->estimate = 0.0;
-	msg->deviation = 0.0;
+	msg->probability = nan("");
+	msg->estimate = nan("");
+	msg->deviation = nan("");
 
 	return navi_Ok;
 }
@@ -63,23 +63,17 @@ navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer, size_t m
 		id[4], probability[32], estimate[32], deviation[32];
 
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
-	msglength += navi_print_number(msg->experrlat, experrlat, sizeof(experrlat),
-		msg->vfields & GBS_VALID_EXPERRLATLON);
-	msglength += navi_print_number(msg->experrlon, experrlon, sizeof(experrlon),
-		msg->vfields & GBS_VALID_EXPERRLATLON);
-	msglength += navi_print_number(msg->experralt, experralt, sizeof(experralt),
-		msg->vfields & GBS_VALID_EXPERRALT);
+	msglength += navi_print_number(msg->experrlat, experrlat, sizeof(experrlat));
+	msglength += navi_print_number(msg->experrlon, experrlon, sizeof(experrlon));
+	msglength += navi_print_number(msg->experralt, experralt, sizeof(experralt));
 
 	(void)navi_split_integer(msg->id, bytes, 2, 10);
 	msglength += navi_print_decfield(bytes, msg->vfields & GBS_VALID_ID ? 2 : 0,
 		id, sizeof(id));
 
-	msglength += navi_print_number(msg->probability, probability, sizeof(probability),
-		msg->vfields & GBS_VALID_PROBABILITY);
-	msglength += navi_print_number(msg->estimate, estimate, sizeof(estimate),
-		msg->vfields & GBS_VALID_ESTIMATE);
-	msglength += navi_print_number(msg->deviation, deviation, sizeof(deviation),
-		msg->vfields & GBS_VALID_DEVIATION);
+	msglength += navi_print_number(msg->probability, probability, sizeof(probability));
+	msglength += navi_print_number(msg->estimate, estimate, sizeof(estimate));
+	msglength += navi_print_number(msg->deviation, deviation, sizeof(deviation));
 
 	if (msglength > maxsize)
 	{

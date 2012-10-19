@@ -42,9 +42,9 @@ navierr_status_t navi_init_gga(struct gga_t *msg, navi_talkerid_t tid)
 	navi_init_position(&msg->fix);
 	msg->gpsindicator = navi_gps_Invalid;
 	msg->nmsatellites = 0;
-	msg->hdop = 0.0;
-	msg->antaltitude = 0.0;
-	msg->geoidalsep = 0.0;
+	msg->hdop = nan("");
+	msg->antaltitude = nan("");
+	msg->geoidalsep = nan("");
 	msg->diffage = 0;
 	msg->id = 0;
 
@@ -73,14 +73,10 @@ navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer, size_t m
 	msglength += navi_print_decfield(bytes,
 		msg->vfields & GGA_VALID_NMSATELLITES ? 2 : 0, nmsats, sizeof(nmsats));
 
-	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
-		msg->vfields & GGA_VALID_HDOP);
-	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt),
-		msg->vfields & GGA_VALID_ANTALTITUDE);
-	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep),
-		msg->vfields & GGA_VALID_GEOIDALSEP);
-	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage),
-		msg->vfields & GGA_VALID_DIFFAGE);
+	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop));
+	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt));
+	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep));
+	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage));
 
 	(void)navi_split_integer(msg->id, bytes, 4, 10);
 	msglength += navi_print_decfield(bytes,

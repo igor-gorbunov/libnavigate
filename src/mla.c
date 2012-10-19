@@ -57,14 +57,13 @@ navierr_status_t navi_create_mla(const struct mla_t *msg, char *buffer, size_t m
 		lambda[8], deltai[8], tauc_low[4], taun[4];
 	char bytes[8];
 
-	msglength = navi_print_number(msg->totalnm, totalnm, sizeof(totalnm), 1);
-	msglength += navi_print_number(msg->msgnm, msgnm, sizeof(msgnm), 1);
+	msglength = navi_print_number(msg->totalnm, totalnm, sizeof(totalnm));
+	msglength += navi_print_number(msg->msgnm, msgnm, sizeof(msgnm));
 
 	(void)navi_split_integer(msg->alm.satslot, bytes, 2, 10);
 	msglength += navi_print_decfield(bytes, 2, satslot, sizeof(satslot));
 
-	msglength += navi_print_number(msg->alm.daycount, daycount,
-		sizeof(daycount), msg->alm.vfields & GLOALM_VALID_DAYCOUNT);
+	msglength += navi_print_number(msg->alm.daycount, daycount, sizeof(daycount));
 
 	(void)navi_split_integer(msg->alm.svhealth, bytes, 2, 16);
 	msglength += navi_print_hexfield(bytes,

@@ -43,7 +43,7 @@ navierr_status_t navi_init_grs(struct grs_t *msg, navi_talkerid_t tid)
 	msg->mode = 0;
 	for (i = 0; i < GRS_MAX_SATELLITES; i++)
 		msg->residuals[i].notnull = 0,
-		msg->residuals[i].residual = 0.0;
+		msg->residuals[i].residual = nan("");
 
 	return navi_Ok;
 }
@@ -69,12 +69,12 @@ navierr_status_t navi_create_grs(const struct grs_t *msg, char *buffer, size_t m
 		if (msg->residuals[i].notnull && (fabs(msg->residuals[i].residual) > 99.9))
 		{
 			msglength += navi_print_number((int)msg->residuals[i].residual, residuals[i],
-				sizeof(residuals[i]), msg->residuals[i].notnull);
+				sizeof(residuals[i]));
 		}
 		else
 		{
 			msglength += navi_print_number(msg->residuals[i].residual, residuals[i],
-				sizeof(residuals[i]), msg->residuals[i].notnull);
+				sizeof(residuals[i]));
 		}
 	}
 

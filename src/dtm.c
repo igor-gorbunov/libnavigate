@@ -43,7 +43,7 @@ navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
 	msg->local_dtmsd = navi_datumsub_NULL;
 	navi_init_offset(&msg->lat_offset);
 	navi_init_offset(&msg->long_offset);
-	msg->alt_offset = 0.0;
+	msg->alt_offset = nan("");
 	msg->reference_dtm = navi_datum_NULL;
 
 	return navi_Ok;
@@ -62,14 +62,16 @@ navierr_status_t navi_create_dtm(const struct dtm_t *msg, char *buffer, size_t m
 
 	msglength = strlen(ldatum = navi_datum_str(msg->local_dtm));
 	msglength += strlen(datumsd = navi_datumsubdiv_str(msg->local_dtmsd));
-	msglength += navi_print_number(msg->lat_offset.offset * 60., latofs,
-		sizeof(latofs), msg->lat_offset.sign != navi_offset_NULL);
+
+	msglength += navi_print_number(msg->lat_offset.offset * 60., latofs, sizeof(latofs));
+
 	msglength += strlen(latsign = navi_fixsign_str(msg->lat_offset.sign));
-	msglength += navi_print_number(msg->long_offset.offset * 60., lonofs,
-		sizeof(lonofs), msg->long_offset.sign != navi_offset_NULL);
+
+	msglength += navi_print_number(msg->long_offset.offset * 60., lonofs, sizeof(lonofs));
+
 	msglength += strlen(lonsign = navi_fixsign_str(msg->long_offset.sign));
-	msglength += navi_print_number(msg->alt_offset, altofs,
-		sizeof(altofs), msg->vfields & DTM_VALID_ALTOFFSET);
+
+	msglength += navi_print_number(msg->alt_offset, altofs, sizeof(altofs));
 	msglength += strlen(rdatum = navi_datum_str(msg->reference_dtm));
 
 	if (msglength > maxsize)

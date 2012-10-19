@@ -45,9 +45,9 @@ navierr_status_t navi_init_gns(struct gns_t *msg, navi_talkerid_t tid)
 	for (i = 0; i < GNS_MODEINDICATOR_SIZE; i++)
 		msg->mi[i] = navi_DataNotValid;
 	msg->nmsatellites = 0;
-	msg->hdop = 0.0;
-	msg->antaltitude = 0.0;
-	msg->geoidalsep = 0.0;
+	msg->hdop = nan("");
+	msg->antaltitude = nan("");
+	msg->geoidalsep = nan("");
 	msg->diffage = 0;
 	msg->id = 0;
 
@@ -72,14 +72,10 @@ navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer, size_t m
 	msglength += snprintf(totalsats, sizeof(totalsats),
 		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
 		msg->nmsatellites);
-	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
-		msg->vfields & GNS_VALID_HDOP);
-	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt),
-		msg->vfields & GNS_VALID_ANTENNAALTITUDE);
-	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep),
-		msg->vfields & GNS_VALID_GEOIDALSEP);
-	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage),
-		msg->vfields & GNS_VALID_AGEOFDIFFDATA);
+	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop));
+	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt));
+	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep));
+	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage));
 	msglength += snprintf(drsid, sizeof(drsid),
 		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
 

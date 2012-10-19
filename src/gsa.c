@@ -41,7 +41,9 @@ navierr_status_t navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid)
 	msg->swmode = navi_gsa_NULL;
 	msg->fixmode = 1;
 	memset(msg->satellites, 0, sizeof(msg->satellites));
-	msg->pdop = msg->hdop = msg->vdop = 0.0;
+	msg->pdop = nan("");
+	msg->hdop = nan("");
+	msg->vdop = nan("");
 
 	return navi_Ok;
 }
@@ -71,12 +73,9 @@ navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, size_t m
 			msg->satellites[i].notnull ? 2 : 0, satellites[i], sizeof(satellites[i]));
 	}
 
-	msglength += navi_print_number(msg->pdop, pdop, sizeof(pdop),
-		msg->vfields & GSA_VALID_PDOP);
-	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
-		msg->vfields & GSA_VALID_HDOP);
-	msglength += navi_print_number(msg->vdop, vdop, sizeof(vdop),
-		msg->vfields & GSA_VALID_VDOP);
+	msglength += navi_print_number(msg->pdop, pdop, sizeof(pdop));
+	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop));
+	msglength += navi_print_number(msg->vdop, vdop, sizeof(vdop));
 
 	if (msglength > maxsize)
 	{

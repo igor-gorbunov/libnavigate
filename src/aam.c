@@ -38,7 +38,7 @@ navierr_status_t navi_init_aam(struct aam_t *msg, navi_talkerid_t tid)
 	msg->tid = tid;
 	msg->circle = navi_status_V;
 	msg->perp = navi_status_V;
-	msg->radius = 0.0;
+	msg->radius = nan("");
 	memset(msg->wpid, 0, sizeof(msg->wpid));
 
 	return navi_Ok;
@@ -55,7 +55,7 @@ navierr_status_t navi_create_aam(const struct aam_t *msg, char *buffer, size_t m
 
 	msglength = strlen(circle = navi_status_str(msg->circle));
 	msglength += strlen(perp = navi_status_str(msg->perp));
-	msglength += navi_print_number(msg->radius, radius, sizeof(radius), 1);
+	msglength += navi_print_number(msg->radius, radius, sizeof(radius));
 
 	if (navi_print_character_field(msg->wpid, waypointid, sizeof(waypointid)) != navi_Ok)
 		return navi_Error;

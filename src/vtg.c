@@ -38,9 +38,9 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	msg->courseTrue = 0.;
-	msg->courseMagn = 0.;
-	msg->speed = 0.;
+	msg->courseTrue = nan("");
+	msg->courseMagn = nan("");
+	msg->speed = nan("");
 	msg->mi = navi_DataNotValid;
 
 	return navi_Ok;
@@ -58,20 +58,16 @@ navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, size_t m
 	char ctrue[32], courseT[2], cmagn[32], courseM[2], snots[32],
 		speedN[4], skmph[32], speedK[2];
 
-	msglength = navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
-		msg->vfields & VTG_VALID_COURSETRUE);
+	msglength = navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue));
 	msglength += snprintf(courseT, sizeof(courseT),
 		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
-	msglength += navi_print_number(msg->courseMagn, cmagn, sizeof(cmagn),
-		msg->vfields & VTG_VALID_COURSEMAGN);
+	msglength += navi_print_number(msg->courseMagn, cmagn, sizeof(cmagn));
 	msglength += snprintf(courseM, sizeof(courseM),
 		(msg->vfields & VTG_VALID_COURSEMAGN) ? "M" : "");
-	msglength += navi_print_number(MPS_TO_KNOTS(msg->speed), snots,
-		sizeof(snots), msg->vfields & VTG_VALID_SPEED);
+	msglength += navi_print_number(MPS_TO_KNOTS(msg->speed), snots, sizeof(snots));
 	msglength += snprintf(speedN, sizeof(speedN),
 		(msg->vfields & VTG_VALID_SPEED) ? "N" : "");
-	msglength += navi_print_number(MPS_TO_KMPH(msg->speed), skmph,
-		sizeof(skmph), msg->vfields & VTG_VALID_SPEED);
+	msglength += navi_print_number(MPS_TO_KMPH(msg->speed), skmph, sizeof(skmph));
 	msglength += snprintf(speedK, sizeof(speedK),
 		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");
 

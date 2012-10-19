@@ -40,8 +40,13 @@ navierr_status_t navi_init_gst(struct gst_t *msg, navi_talkerid_t tid)
 	msg->vfields = 0;
 	navi_init_utc(&msg->utc);
 
-	msg->rms = msg->devmajor = msg->devminor = msg->orientmajor =
-		msg->devlaterr = msg->devlonerr = msg->devalterr = 0.0;
+	msg->rms = nan("");
+	msg->devmajor = nan("");
+	msg->devminor = nan("");
+	msg->orientmajor = nan("");
+	msg->devlaterr = nan("");
+	msg->devlonerr = nan("");
+	msg->devalterr = nan("");
 
 	return navi_Ok;
 }
@@ -58,20 +63,13 @@ navierr_status_t navi_create_gst(const struct gst_t *msg, char *buffer, size_t m
 		devlaterr[16], devlonerr[16], devalterr[16];
 
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
-	msglength += navi_print_number(msg->rms, rms, sizeof(rms),
-		msg->vfields & GST_VALID_RMS);
-	msglength += navi_print_number(msg->devmajor, devmajor, sizeof(devmajor),
-		msg->vfields & GST_VALID_STDDEVELLIPSE);
-	msglength += navi_print_number(msg->devminor, devminor, sizeof(devminor),
-		msg->vfields & GST_VALID_STDDEVELLIPSE);
-	msglength += navi_print_number(msg->orientmajor, orientmajor, sizeof(orientmajor),
-		msg->vfields & GST_VALID_STDDEVELLIPSE);
-	msglength += navi_print_number(msg->devlaterr, devlaterr, sizeof(devlaterr),
-		msg->vfields & GST_VALID_DEVLATLONERR);
-	msglength += navi_print_number(msg->devlonerr, devlonerr, sizeof(devlonerr),
-		msg->vfields & GST_VALID_DEVLATLONERR);
-	msglength += navi_print_number(msg->devalterr, devalterr, sizeof(devalterr),
-		msg->vfields & GST_VALID_DEVALTERR);
+	msglength += navi_print_number(msg->rms, rms, sizeof(rms));
+	msglength += navi_print_number(msg->devmajor, devmajor, sizeof(devmajor));
+	msglength += navi_print_number(msg->devminor, devminor, sizeof(devminor));
+	msglength += navi_print_number(msg->orientmajor, orientmajor, sizeof(orientmajor));
+	msglength += navi_print_number(msg->devlaterr, devlaterr, sizeof(devlaterr));
+	msglength += navi_print_number(msg->devlonerr, devlonerr, sizeof(devlonerr));
+	msglength += navi_print_number(msg->devalterr, devalterr, sizeof(devalterr));
 
 	if (msglength > maxsize)
 	{
