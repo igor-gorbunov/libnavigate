@@ -165,7 +165,7 @@ int main(void)
 
 	// RMC
 	rmc.tid = navi_GL;
-	rmc.vfields = RMC_VALID_UTC | RMC_VALID_POSITION_FIX | RMC_VALID_DATE;
+	rmc.vfields = RMC_VALID_UTC | RMC_VALID_DATE;
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39.98;
@@ -327,12 +327,13 @@ int main(void)
 						printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour,
 							rmc->utc.min, rmc->utc.sec);
 					printf("\tstatus = %d\n", rmc->status);
-					if (rmc->vfields & RMC_VALID_POSITION_FIX)
+					if (rmc->fix.latitude.sign != navi_offset_NULL)
+					{
 						printf("\tlatitude = %.12f %s (%d)\n", rmc->fix.latitude.offset,
 							navi_fixsign_str(rmc->fix.latitude.sign), rmc->fix.latitude.sign);
-					if (rmc->vfields & RMC_VALID_POSITION_FIX)
 						printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude.offset,
 							navi_fixsign_str(rmc->fix.longitude.sign), rmc->fix.longitude.sign);
+					}
 					if (rmc->vfields & RMC_VALID_SPEED)
 						printf("\tspeed = %.12f\n", rmc->speed);
 					if (rmc->vfields & RMC_VALID_COURSETRUE)

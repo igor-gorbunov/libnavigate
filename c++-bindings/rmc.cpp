@@ -69,10 +69,7 @@ void Rmc_t::setStatus(const Status_t &status)
 	{ ((struct rmc_t *)(*this))->status = status.toStatusCode(); }
 
 void Rmc_t::setPositionFix(const PositionFix_t &fix)
-{
-	((struct rmc_t *)(*this))->fix = fix.toPosition();
-	((struct rmc_t *)(*this))->vfields |= RMC_VALID_POSITION_FIX;
-}
+	{ ((struct rmc_t *)(*this))->fix = fix.toPosition(); }
 
 void Rmc_t::setSpeed(double value)
 {
@@ -107,9 +104,7 @@ bool Rmc_t::isUtcValid() const
 }
 
 bool Rmc_t::isPositionValid() const
-{
-	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_POSITION_FIX) != 0 ? true : false;
-}
+	{ return ((const struct rmc_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
 
 bool Rmc_t::isSpeedValid() const
 {

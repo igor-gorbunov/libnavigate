@@ -526,8 +526,8 @@ _Exit:
 #undef PARSE_OFFSET_FINI
 
 //
-// navi_parse_position_fix
-//
+// Parses position fix in the form of 'llll.ll,a,yyyyy.yy,a | ,,,'.
+// The field must end with ',' or '*'
 
 #define PARSE_POSITION_INIT				0
 #define PARSE_POSITION_LAT_INTEGRAL		1
@@ -551,6 +551,8 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 	assert(buffer != NULL);
 	assert(fix != NULL);
 	assert(nmread != NULL);
+
+	navi_init_position(fix);
 
 	state = PARSE_POSITION_INIT;
 	deg = min = 0.0;

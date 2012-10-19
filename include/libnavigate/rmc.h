@@ -44,7 +44,6 @@ struct rmc_t
 };
 
 #define RMC_VALID_UTC				0x01
-#define RMC_VALID_POSITION_FIX		0x02
 #define RMC_VALID_SPEED				0x04
 #define RMC_VALID_COURSETRUE		0x08
 #define RMC_VALID_DATE				0x10
