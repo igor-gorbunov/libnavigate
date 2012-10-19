@@ -43,7 +43,6 @@ struct rmc_t
 	navi_modeindicator_t mi;		// mode indicator
 };
 
-#define RMC_VALID_UTC				0x01
 #define RMC_VALID_SPEED				0x04
 #define RMC_VALID_COURSETRUE		0x08
 #define RMC_VALID_DATE				0x10

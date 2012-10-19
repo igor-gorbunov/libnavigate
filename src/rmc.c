@@ -103,32 +103,28 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 
 	msg->vfields = 0;
 
-	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= RMC_VALID_UTC;
-	}
 	i += nmread;
 
-	if (navi_parse_status(buffer + i, &msg->status, &nmread) != 0)
+	if (navi_parse_status(buffer + i, &msg->status, &nmread) != navi_Ok)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
 		return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != 0)
+	if (navi_parse_position_fix(buffer + i, &msg->fix, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->speed, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->speed, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -139,7 +135,7 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->courseTrue, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->courseTrue, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -150,7 +146,7 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_date(buffer + i, &msg->date, &nmread) != 0)
+	if (navi_parse_date(buffer + i, &msg->date, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -161,7 +157,7 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_offset(buffer + i, &msg->magnetic, &nmread) != 0)
+	if (navi_parse_offset(buffer + i, &msg->magnetic, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -172,7 +168,7 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != 0)
+	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != navi_Ok)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
 		return navi_Error;

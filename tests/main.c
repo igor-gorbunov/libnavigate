@@ -164,7 +164,7 @@ int main(void)
 
 	// RMC
 	rmc.tid = navi_GL;
-	rmc.vfields = RMC_VALID_UTC | RMC_VALID_DATE;
+	rmc.vfields = RMC_VALID_DATE;
 	rmc.utc.hour = 9;
 	rmc.utc.min = 19;
 	rmc.utc.sec = 39.98;
@@ -194,8 +194,8 @@ int main(void)
 		printf("Composition of RMC failed (%d)\n", result);
 	}
 	// Part 2
-	rmc.vfields = RMC_VALID_UTC | RMC_VALID_SPEED | RMC_VALID_COURSETRUE |
-		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
+	rmc.vfields = RMC_VALID_SPEED | RMC_VALID_COURSETRUE | RMC_VALID_DATE |
+		RMC_VALID_MAGNVARIATION;
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)
@@ -324,9 +324,9 @@ int main(void)
 					printf("Received RMC:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(rmc->tid), rmc->tid);
 
-					if (rmc->vfields & RMC_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour,
-							rmc->utc.min, rmc->utc.sec);
+					if (navi_check_validity_utc(&rmc->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour, rmc->utc.min,
+						rmc->utc.sec);
 					printf("\tstatus = %d\n", rmc->status);
 					if (rmc->fix.latitude.sign != navi_offset_NULL)
 					{

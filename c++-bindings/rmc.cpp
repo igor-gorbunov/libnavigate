@@ -60,10 +60,7 @@ void Rmc_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct rmc_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Rmc_t::setUtc(const Utc_t &utc)
-{
-	((struct rmc_t *)(*this))->utc = utc.toUtcStruct();
-	((struct rmc_t *)(*this))->vfields |= RMC_VALID_UTC;
-}
+	{ ((struct rmc_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Rmc_t::setStatus(const Status_t &status)
 	{ ((struct rmc_t *)(*this))->status = status.toStatusCode(); }
@@ -99,9 +96,7 @@ void Rmc_t::setModeIndicator(const ModeIndicator_t &mi)
 	{ ((struct rmc_t *)(*this))->mi = mi.toModeIndCode(); }
 
 bool Rmc_t::isUtcValid() const
-{
-	return (((const struct rmc_t *)(*this))->vfields & RMC_VALID_UTC) != 0 ? true : false;
-}
+	{ return navi_check_validity_utc(&((const struct rmc_t *)(*this))->utc) == navi_Ok; }
 
 bool Rmc_t::isPositionValid() const
 	{ return ((const struct rmc_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
