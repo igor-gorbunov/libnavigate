@@ -44,7 +44,6 @@ struct gga_t
 	int id;					// Differential reference station ID, 1-1023
 };
 
-#define GGA_VALID_UTC				0x01
 #define GGA_VALID_NMSATELLITES		0x04
 #define GGA_VALID_HDOP				0x08
 #define GGA_VALID_ANTALTITUDE		0x10

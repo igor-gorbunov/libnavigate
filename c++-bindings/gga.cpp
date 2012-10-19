@@ -63,10 +63,7 @@ void Gga_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct gga_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gga_t::setUtc(const Utc_t &utc)
-{
-	((struct gga_t *)(*this))->utc = utc.toUtcStruct();
-	((struct gga_t *)(*this))->vfields |= GGA_VALID_UTC;
-}
+	{ ((struct gga_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Gga_t::setPositionFix(const PositionFix_t &fix)
 	{ ((struct gga_t *)(*this))->fix = fix.toPosition(); }
@@ -111,9 +108,7 @@ void Gga_t::setDiffReferenceStationId(int value)
 }
 
 bool Gga_t::isUtcValid() const
-{
-	return (((const struct gga_t *)(*this))->vfields & GGA_VALID_UTC) != 0 ? true : false;
-}
+	{ return navi_check_validity_utc(&((const struct gga_t *)(*this))->utc) == navi_Ok; }
 
 bool Gga_t::isPositionValid() const
 	{ return ((const struct gga_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }

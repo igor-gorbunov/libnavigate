@@ -466,8 +466,8 @@ int main(void)
 	// GGA
 	gga.tid = navi_GP;
 
-	gga.vfields = GGA_VALID_UTC | GGA_VALID_NMSATELLITES | GGA_VALID_HDOP | 
-		GGA_VALID_ANTALTITUDE | GGA_VALID_GEOIDALSEP | GGA_VALID_DIFFAGE | GGA_VALID_ID;
+	gga.vfields = GGA_VALID_NMSATELLITES | GGA_VALID_HDOP | GGA_VALID_ANTALTITUDE |
+		GGA_VALID_GEOIDALSEP | GGA_VALID_DIFFAGE | GGA_VALID_ID;
 	gga.utc.hour = 0;
 	gga.utc.min = 34;
 	gga.utc.sec = 16.;
@@ -787,9 +787,9 @@ int main(void)
 
 					printf("Received GGA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gga->tid), gga->tid);
-					if (gga->vfields & GGA_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour,
-							gga->utc.min, gga->utc.sec);
+					if (navi_check_validity_utc(&gga->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour, gga->utc.min,
+						gga->utc.sec);
 					if (gga->fix.latitude.sign != navi_offset_NULL)
 					{
 						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude.offset,
