@@ -382,6 +382,9 @@ navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset, s
 	assert(offset != NULL);
 	assert(nmread != NULL);
 
+	if (navi_init_offset(offset) != navi_Ok)
+		return navi_Error;
+
 	t = 0.0;
 	state = PARSE_OFFSET_INIT;
 

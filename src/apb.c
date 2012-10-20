@@ -199,9 +199,7 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 
 	if (navi_parse_offset(buffer + i, &msg->xte_magnitude, &nmread) != navi_Ok)
 	{
-		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset(&msg->xte_magnitude);
-		else
+		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
@@ -215,32 +213,27 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 
 	if (navi_parse_status(buffer + i, &msg->arrival_circle, &nmread) != navi_Ok)
 	{
-		if (navierr_get_last()->errclass == navi_NullField)
-			msg->arrival_circle = navi_status_NULL;
-		else
+		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_status(buffer + i, &msg->perpendicular, &nmread) != navi_Ok)
 	{
-		if (navierr_get_last()->errclass == navi_NullField)
-			msg->perpendicular = navi_status_NULL;
-		else
+		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_offset(buffer + i, &msg->bearing_origin, &nmread) != navi_Ok)
 	{
-		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset(&msg->bearing_origin);
-		else
+		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_character_field(buffer + i, msg->waypoint_id, sizeof(msg->waypoint_id), &nmread) != navi_Ok)
+	if (navi_parse_character_field(buffer + i, msg->waypoint_id,
+		sizeof(msg->waypoint_id), &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
@@ -249,18 +242,14 @@ navierr_status_t navi_parse_apb(struct apb_t *msg, char *buffer)
 
 	if (navi_parse_offset(buffer + i, &msg->bearing_present, &nmread) != navi_Ok)
 	{
-		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset(&msg->bearing_present);
-		else
+		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
 
 	if (navi_parse_offset(buffer + i, &msg->heading, &nmread) != navi_Ok)
 	{
-		if (navierr_get_last()->errclass == navi_NullField)
-			(void)navi_init_offset(&msg->heading);
-		else
+		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	i += nmread;
