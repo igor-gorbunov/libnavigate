@@ -41,10 +41,10 @@ navierr_status_t navi_init_rmc(struct rmc_t *msg, navi_talkerid_t tid)
 	navi_init_utc(&msg->utc);
 	msg->status = navi_status_V;
 	navi_init_position(&msg->fix);
-	msg->speed = nan("");
-	msg->courseTrue = nan("");
+	navi_init_number(&msg->speedN);
+	navi_init_number(&msg->courseT);
 	navi_init_date(2000, 1, 1, &msg->date);
-	navi_init_offset(&msg->magnetic);
+	navi_init_offset(&msg->magnVariation);
 	msg->mi = navi_DataNotValid;
 
 	return navi_Ok;
@@ -65,15 +65,15 @@ navierr_status_t navi_create_rmc(const struct rmc_t *msg, char *buffer, size_t m
 	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += strlen(status = navi_status_str(msg->status));
 	msglength += navi_print_position_fix(&msg->fix, fix, sizeof(fix));
-	msglength += navi_print_number(MPS_TO_KNOTS(msg->speed), snots, sizeof(snots));
-	msglength += navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue));
+	msglength += navi_print_number(msg->speedN, snots, sizeof(snots));
+	msglength += navi_print_number(msg->courseT, ctrue, sizeof(ctrue));
 	msglength += snprintf(day, sizeof(day),
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.month);
 	msglength += snprintf(year, sizeof(year),
 		(msg->vfields & RMC_VALID_DATE) ? "%02u" : "", msg->date.year % 100);
-	msglength += navi_print_offset(&msg->magnetic, magnetic, sizeof(magnetic));
+	msglength += navi_print_offset(&msg->magnVariation, magnetic, sizeof(magnetic));
 	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
 
 	if (msglength > maxsize)
@@ -120,25 +120,17 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->speed, &nmread) != navi_Ok)
+	if (navi_parse_number(buffer + i, &msg->speedN, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= RMC_VALID_SPEED;
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &msg->courseTrue, &nmread) != navi_Ok)
+	if (navi_parse_number(buffer + i, &msg->courseT, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= RMC_VALID_COURSETRUE;
 	}
 	i += nmread;
 
@@ -153,14 +145,10 @@ navierr_status_t navi_parse_rmc(struct rmc_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_offset(buffer + i, &msg->magnetic, &nmread) != navi_Ok)
+	if (navi_parse_offset(buffer + i, &msg->magnVariation, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= RMC_VALID_MAGNVARIATION;
 	}
 	i += nmread;
 

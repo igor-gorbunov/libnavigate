@@ -168,13 +168,8 @@ int main(void)
 	rmc.vfields = RMC_VALID_DATE;
 
 	navi_init_utc_from_hhmmss(9, 19, 39.98, &rmc.utc);
-
 	rmc.status = navi_status_V;
-
-	rmc.fix.latitude.offset = 74.64772882;
-	rmc.fix.latitude.sign = navi_South;
-	rmc.fix.longitude.offset = 132.0000333;
-	rmc.fix.longitude.sign = navi_East;
+	navi_init_position_from_degrees(-74.64772882, 132.0000333, &rmc.fix);
 
 	rmc.date.day = 18;
 	rmc.date.month = 3;
@@ -198,22 +193,19 @@ int main(void)
 	// Part 2
 	navi_init_rmc(&rmc, navi_GL);
 
-	rmc.vfields = RMC_VALID_SPEED | RMC_VALID_COURSETRUE | RMC_VALID_DATE |
-		RMC_VALID_MAGNVARIATION;
+	rmc.vfields = RMC_VALID_DATE;
 
 	navi_init_utc_from_hhmmss(9, 19, 39.98, &rmc.utc);
-
 	rmc.status = navi_status_V;
 
-	rmc.speed = 1.03553;
-	rmc.courseTrue = 180.2112;
+	rmc.speedN = 1.03553;
+	rmc.courseT = 180.2112;
 
 	rmc.date.day = 18;
 	rmc.date.month = 3;
 	rmc.date.year = 2012;
 
-	rmc.magnetic.offset = 23.011;
-	rmc.magnetic.sign = navi_East;
+	navi_init_offset_from_degrees(23.011, navi_East, &rmc.magnVariation);
 	rmc.mi = navi_Estimated;
 
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
@@ -355,16 +347,16 @@ int main(void)
 						printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude.offset,
 							navi_fixsign_str(rmc->fix.longitude.sign), rmc->fix.longitude.sign);
 					}
-					if (rmc->vfields & RMC_VALID_SPEED)
-						printf("\tspeed = %.12f\n", rmc->speed);
-					if (rmc->vfields & RMC_VALID_COURSETRUE)
-						printf("\tcourse, true = %.12f\n", rmc->courseTrue);
+					if (navi_check_validity_number(rmc->speedN))
+						printf("\tspeed, knots = %f\n", rmc->speedN);
+					if (navi_check_validity_number(rmc->courseT))
+						printf("\tcourse, true = %f\n", rmc->courseT);
 					if (rmc->vfields & RMC_VALID_DATE)
 						printf("\tdate = %d %d %d\n", rmc->date.day,
 							rmc->date.month, rmc->date.year);
-					if (rmc->vfields & RMC_VALID_MAGNVARIATION)
-						printf("\tmagnetic variation = %.12f (%d)\n",
-							rmc->magnetic.offset, rmc->magnetic.sign);
+					if (navi_check_validity_offset(&rmc->magnVariation))
+						printf("\tmagnetic variation = %f (%d)\n",
+							rmc->magnVariation.offset, rmc->magnVariation.sign);
 					printf("\tmode indicator = %d\n", rmc->mi);
 				}
 				break;
