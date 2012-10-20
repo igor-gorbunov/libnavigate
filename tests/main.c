@@ -84,7 +84,6 @@ int main(void)
 	// DTM
 	navi_init_dtm(&dtm, navi_GP);
 
-	dtm.vfields = DTM_VALID_ALTOFFSET;
 	dtm.local_dtm = navi_UserDefined;
 
 	navi_init_offset_from_degrees(0.2366, navi_North, &dtm.lat_offset);
@@ -272,8 +271,8 @@ int main(void)
 					if (dtm->long_offset.sign != navi_offset_NULL)
 						printf("\tlongitude offset = %.8f %s (%d)\n", dtm->long_offset.offset,
 							navi_fixsign_str(dtm->long_offset.sign), dtm->long_offset.sign);
-					if (dtm->vfields & DTM_VALID_ALTOFFSET)
-						printf("\taltitude offset = %.8f\n", dtm->alt_offset);
+					if (navi_check_validity_number(dtm->alt_offset))
+						printf("\taltitude offset, m = %f\n", dtm->alt_offset);
 					if (dtm->reference_dtm != navi_datum_NULL)
 						printf("\treference datum = %d\n", dtm->reference_dtm);
 				}

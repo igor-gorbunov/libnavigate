@@ -38,9 +38,6 @@ struct dtm_t
 	// talker id
 	navi_talkerid_t tid;
 
-	// valid fields, bitwise or of DTM_VALID_xxx
-	unsigned int vfields;
-
 	// local datum
 	navi_datum_t local_dtm;
 
@@ -59,8 +56,6 @@ struct dtm_t
 	// reference datum
 	navi_datum_t reference_dtm;
 };
-
-#define DTM_VALID_ALTOFFSET			0x1
 
 NAVI_BEGIN_DECL
 

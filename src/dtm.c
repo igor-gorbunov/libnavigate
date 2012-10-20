@@ -37,13 +37,11 @@ navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 
-	msg->vfields = 0;
-
 	msg->local_dtm = navi_datum_NULL;
 	msg->local_dtmsd = navi_datumsub_NULL;
 	navi_init_offset(&msg->lat_offset);
 	navi_init_offset(&msg->long_offset);
-	msg->alt_offset = nan("");
+	navi_init_number(&msg->alt_offset);
 	msg->reference_dtm = navi_datum_NULL;
 
 	return navi_Ok;
@@ -95,8 +93,6 @@ navierr_status_t navi_parse_dtm(struct dtm_t *msg, char *buffer)
 {
 	size_t i = 0, nmread;
 
-	msg->vfields = 0;
-
 	if (navi_parse_datum(buffer + i, &msg->local_dtm, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
@@ -137,10 +133,6 @@ navierr_status_t navi_parse_dtm(struct dtm_t *msg, char *buffer)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= DTM_VALID_ALTOFFSET;
 	}
 	i += nmread;
 
