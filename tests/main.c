@@ -547,39 +547,22 @@ int main(void)
 	}
 
 	// GSA
-	memset(&gsa, 0, sizeof(gsa));
-	gsa.tid = navi_GP;
+	navi_init_gsa(&gsa, navi_GP);
 
 	gsa.swmode = navi_gsa_Automatic;
 	gsa.fixmode = 3;
 
-	gsa.satellites[0].notnull = 1;
-	gsa.satellites[0].id = 1;
-
-	gsa.satellites[1].notnull = 1;
-	gsa.satellites[1].id = 12;
-
-	gsa.satellites[2].notnull = 1;
-	gsa.satellites[2].id = 3;
-
-	gsa.satellites[3].notnull = 1;
-	gsa.satellites[3].id = 2;
-
-	gsa.satellites[4].notnull = 1;
-	gsa.satellites[4].id = 18;
-
-	gsa.satellites[7].notnull = 1;
-	gsa.satellites[7].id = 24;
-
-	gsa.satellites[8].notnull = 1;
-	gsa.satellites[8].id = 14;
+	gsa.satellites[0] = 1;
+	gsa.satellites[1] = 12;
+	gsa.satellites[2] = 3;
+	gsa.satellites[3] = 2;
+	gsa.satellites[4] = 18;
+	gsa.satellites[7] = 24;
+	gsa.satellites[8] = 14;
 
 	gsa.hdop = 2.12;
-	gsa.vdop = .012;
+	gsa.vdop = 0.012;
 	gsa.pdop = 2.12003396;
-
-	gsa.vfields = GSA_VALID_SWITCHMODE | GSA_VALID_FIXMODE | GSA_VALID_PDOP |
-		GSA_VALID_HDOP | GSA_VALID_VDOP;
 
 	result = navi_create_msg(navi_GSA, &gsa, buffer + msglength,
 		remain, &nmwritten);
@@ -841,22 +824,20 @@ int main(void)
 
 					printf("Received GSA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gsa->tid), gsa->tid);
-					if (gsa->vfields & GSA_VALID_SWITCHMODE)
+					if (gsa->swmode !=  navi_gsa_NULL)
 						printf("\tswitchmode = %i\n", gsa->swmode);
-					if (gsa->vfields & GSA_VALID_FIXMODE)
+					if (gsa->fixmode != -1)
 						printf("\tfixmode = %i\n", gsa->fixmode);
-					for (i = 0; i < 12; i++)
+					for (i = 0; i < GSA_MAX_SATELLITES; i++)
 					{
-						if (gsa->satellites[i].notnull)
-						{
-							printf("\tSatellite %i = %i\n", i, gsa->satellites[i].id);
-						}
+						if (gsa->satellites[i] != -1)
+							printf("\tSatellite %i = %i\n", i, gsa->satellites[i]);
 					}
-					if (gsa->vfields & GSA_VALID_PDOP)
+					if (navi_check_validity_number(gsa->pdop))
 						printf("\tPDOP = %f\n", gsa->pdop);
-					if (gsa->vfields & GSA_VALID_HDOP)
+					if (navi_check_validity_number(gsa->hdop))
 						printf("\tHDOP = %f\n", gsa->hdop);
-					if (gsa->vfields & GSA_VALID_VDOP)
+					if (navi_check_validity_number(gsa->vdop))
 						printf("\tVDOP = %f\n", gsa->vdop);
 				}
 				break;
