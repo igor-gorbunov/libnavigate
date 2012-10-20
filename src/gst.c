@@ -37,16 +37,14 @@ navierr_status_t navi_init_gst(struct gst_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
 	navi_init_utc(&msg->utc);
-
-	msg->rms = nan("");
-	msg->devmajor = nan("");
-	msg->devminor = nan("");
-	msg->orientmajor = nan("");
-	msg->devlaterr = nan("");
-	msg->devlonerr = nan("");
-	msg->devalterr = nan("");
+	navi_init_number(&msg->rms);
+	navi_init_number(&msg->devmajor);
+	navi_init_number(&msg->devminor);
+	navi_init_number(&msg->orientmajor);
+	navi_init_number(&msg->devlaterr);
+	navi_init_number(&msg->devlonerr);
+	navi_init_number(&msg->devalterr);
 
 	return navi_Ok;
 }
@@ -92,20 +90,17 @@ navierr_status_t navi_parse_gst(struct gst_t *msg, char *buffer)
 {
 	size_t i = 0, nmread;
 
-	msg->vfields = 0;
-
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
-		return navi_Error;
+	{
+		if (navierr_get_last()->errclass != navi_NullField)
+			return navi_Error;
+	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->rms, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GST_VALID_RMS;
 	}
 	i += nmread;
 
@@ -114,20 +109,12 @@ navierr_status_t navi_parse_gst(struct gst_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GST_VALID_STDDEVELLIPSE;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->devminor, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GST_VALID_STDDEVELLIPSE;
 	}
 	i += nmread;
 
@@ -136,20 +123,12 @@ navierr_status_t navi_parse_gst(struct gst_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GST_VALID_STDDEVELLIPSE;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->devlaterr, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GST_VALID_DEVLATLONERR;
 	}
 	i += nmread;
 
@@ -158,20 +137,12 @@ navierr_status_t navi_parse_gst(struct gst_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GST_VALID_DEVLATLONERR;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->devalterr, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GST_VALID_DEVALTERR;
 	}
 
 	return navi_Ok;

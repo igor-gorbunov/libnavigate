@@ -448,7 +448,7 @@ int main(void)
 	remain = sizeof(buffer);
 
 	// GBS
-	gbs.tid = navi_GL;
+	navi_init_gbs(&gbs, navi_GL);
 
 	navi_init_utc_from_hhmmss(0, 34, 16.0, &gbs.utc);
 	gbs.experrlat = 1.4;
@@ -594,22 +594,17 @@ int main(void)
 	}
 
 	// GST
-	gst.tid = navi_GP;
+	navi_init_gst(&gst, navi_GP);
 
-	gst.vfields = GST_VALID_RMS | GST_VALID_STDDEVELLIPSE |
-		GST_VALID_DEVLATLONERR | GST_VALID_DEVALTERR;
-
-	gst.utc.hour = 14;
-	gst.utc.min = 8;
-	gst.utc.sec = 16;
+	navi_init_utc_from_hhmmss(14, 8, 16.0, &gst.utc);
 
 	gst.rms = 1.4;
-	gst.devmajor = .56;
+	gst.devmajor = 0.56;
 	gst.devminor = 3.2;
-	gst.orientmajor = 18.;
+	gst.orientmajor = 18.0;
 	gst.devlaterr = 0.2;
 	gst.devlonerr = 0.1;
-	gst.devalterr = 1.;
+	gst.devalterr = 1.0;
 
 	result = navi_create_msg(navi_GST, &gst, buffer + msglength,
 		remain, &nmwritten);
@@ -874,25 +869,21 @@ int main(void)
 					printf("\tutc = %02u:%02u:%06.3f\n", gst->utc.hour,
 						gst->utc.min, gst->utc.sec);
 
-					if (gst->vfields & GST_VALID_RMS)
-					{
+					if (navi_check_validity_number(gst->rms))
 						printf("\tRMS = %f\n", gst->rms);
-					}
-					if (gst->vfields & GST_VALID_STDDEVELLIPSE)
+					if (navi_check_validity_number(gst->devmajor))
 					{
 						printf("\tstd dev of semi-major = %f\n", gst->devmajor);
 						printf("\tstd dev of semi-minor = %f\n", gst->devminor);
 						printf("\torientation of semi-major = %f\n", gst->orientmajor);
 					}
-					if (gst->vfields & GST_VALID_DEVLATLONERR)
+					if (navi_check_validity_number(gst->devlaterr))
 					{
 						printf("\tstd dev of latitude err = %f\n", gst->devlaterr);
 						printf("\tstd dev of longitude err = %f\n", gst->devlonerr);
 					}
-					if (gst->vfields & GST_VALID_DEVALTERR)
-					{
+					if (navi_check_validity_number(gst->devalterr))
 						printf("\tstd dev of altitude err = %f\n", gst->devalterr);
-					}
 				}
 				break;
 			case navi_GSV:
