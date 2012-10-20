@@ -519,6 +519,17 @@ navierr_status_t navi_init_date(int yy, int mm, int dd, struct navi_date_t *date
 }
 
 //
+// Fills variable number with null value
+navierr_status_t navi_init_number(double *number)
+{
+	assert(number != NULL);
+
+	*number = nan("");
+
+	return navi_Ok;
+}
+
+//
 // Checks if the variable number is valid
 navierr_status_t navi_check_validity_number(double value)
 {

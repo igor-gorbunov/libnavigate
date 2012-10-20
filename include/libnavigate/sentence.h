@@ -457,6 +457,10 @@ NAVI_EXTERN(navierr_status_t) navi_init_position_from_radians(double latitude,
 NAVI_EXTERN(navierr_status_t) navi_check_validity_position(const struct navi_position_t *fix);
 
 //
+// Fills variable number with null value
+NAVI_EXTERN(navierr_status_t) navi_init_number(double *number);
+
+//
 // Checks if the variable number is valid
 // Returns navi_Ok, if the field is not null, otherwise returns navi_Error
 // and sets last error to navi_NullField
