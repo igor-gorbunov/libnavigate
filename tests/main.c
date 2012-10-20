@@ -450,16 +450,11 @@ int main(void)
 	// GBS
 	gbs.tid = navi_GL;
 
-	gbs.vfields = GBS_VALID_EXPERRLATLON | GBS_VALID_EXPERRALT |
-		GBS_VALID_ID | GBS_VALID_PROBABILITY | GBS_VALID_ESTIMATE |
-		GBS_VALID_DEVIATION;
-	gbs.utc.hour = 0;
-	gbs.utc.min = 34;
-	gbs.utc.sec = 16.;
+	navi_init_utc_from_hhmmss(0, 34, 16.0, &gbs.utc);
 	gbs.experrlat = 1.4;
 	gbs.experrlon = 0.12;
 	gbs.experralt = 1.1;
-	gbs.id = 66;
+	gbs.failed_id = 66;
 	gbs.probability = 0.12;
 	gbs.estimate = 1.1;
 	gbs.deviation = 1.3;
@@ -778,19 +773,19 @@ int main(void)
 						navi_talkerid_str(gbs->tid), gbs->tid);
 					printf("\tutc = %02u:%02u:%06.3f\n", gbs->utc.hour,
 						gbs->utc.min, gbs->utc.sec);
-					if (gbs->vfields & GBS_VALID_EXPERRLATLON)
+					if (navi_check_validity_number(gbs->experrlat) == navi_Ok)
 						printf("\tExpected error in latitude: %f\n", gbs->experrlat);
-					if (gbs->vfields & GBS_VALID_EXPERRLATLON)
+					if (navi_check_validity_number(gbs->experrlon) == navi_Ok)
 						printf("\tExpected error in longitude: %f\n", gbs->experrlon);
-					if (gbs->vfields & GBS_VALID_EXPERRALT)
+					if (navi_check_validity_number(gbs->experralt) == navi_Ok)
 						printf("\tExpected error in altitude: %f\n", gbs->experralt);
-					if (gbs->vfields & GBS_VALID_ID)
-						printf("\tFault station ID: %d\n", gbs->id);
-					if (gbs->vfields & GBS_VALID_PROBABILITY)
+					if (gbs->failed_id != 1)
+						printf("\tFault station ID: %d\n", gbs->failed_id);
+					if (navi_check_validity_number(gbs->probability) == navi_Ok)
 						printf("\tProbability: %f\n", gbs->probability);
-					if (gbs->vfields & GBS_VALID_ESTIMATE)
+					if (navi_check_validity_number(gbs->estimate) == navi_Ok)
 						printf("\tEstimated: %f\n", gbs->estimate);
-					if (gbs->vfields & GBS_VALID_DEVIATION)
+					if (navi_check_validity_number(gbs->deviation) == navi_Ok)
 						printf("\tDeviation: %f\n", gbs->deviation);
 				}
 				break;

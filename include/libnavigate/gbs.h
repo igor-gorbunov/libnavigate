@@ -31,25 +31,35 @@
 
 struct gbs_t
 {
-	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of GBS_VALID_xxx
-	struct navi_utc_t utc;	// UTC time
-	double experrlat;		// expected error in latitude
-	double experrlon;		// expected error in longitude
-	double experralt;		// expected error in altitude
-	int id;					// ID number of most likely failed satellite
-	double probability;		// probability of missed detection for most likely
-							// failed satellite
-	double estimate;		// estimate of bias on most likely failed satellite
-	double deviation;		// standard deviation of bias estimate
-};
+	// talker id
+	navi_talkerid_t tid;
 
-#define GBS_VALID_EXPERRLATLON	0x01
-#define GBS_VALID_EXPERRALT		0x02
-#define GBS_VALID_ID			0x04
-#define GBS_VALID_PROBABILITY	0x08
-#define GBS_VALID_ESTIMATE		0x10
-#define GBS_VALID_DEVIATION		0x20
+	// UTC time
+	struct navi_utc_t utc;
+
+	// expected error in latitude
+	double experrlat;
+
+	// expected error in longitude
+	double experrlon;
+
+	// expected error in altitude
+	double experralt;
+
+	// ID number of most likely failed satellite,
+	// -1 if null field
+	int failed_id;
+
+	// probability of missed detection for most likely
+	// failed satellite
+	double probability;
+
+	// estimate of bias on most likely failed satellite
+	double estimate;
+
+	// standard deviation of bias estimate
+	double deviation;
+};
 
 NAVI_BEGIN_DECL
 
