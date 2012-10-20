@@ -51,6 +51,10 @@
 
 #endif // NO_PARSER
 
+#ifdef _MSC_VER
+#include "win32/win32navi.h"
+#endif // MSVC_VER
+
 //
 // Talker IDs list
 extern const char *navi_tidlist[];
@@ -980,6 +984,8 @@ navierr_status_t navi_parse_number(char *buffer, double *parsed, size_t *nmread)
 	assert(buffer != NULL);
 	assert(parsed != NULL);
 	assert(nmread != NULL);
+
+	*parsed = nan("");
 
 	for ( ; ; )
 	{

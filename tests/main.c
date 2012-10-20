@@ -230,10 +230,10 @@ int main(void)
 
 	// VTG
 	navi_init_vtg(&vtg, navi_VW);
-	vtg.vfields = VTG_VALID_COURSETRUE | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
-	vtg.courseTrue = 0.223;
-	vtg.courseMagn = 22.203;
-	vtg.speed = 1.023;
+	vtg.courseT = 0.223;
+	vtg.courseM = 22.203;
+	vtg.speedN = MPS_TO_KNOTS(1.023);
+	vtg.speedK = MPS_TO_KMPH(1.023);
 	vtg.mi = navi_Simulator;
 
 	result = navi_create_msg(navi_VTG, &vtg, buffer + msglength,
@@ -374,12 +374,14 @@ int main(void)
 					printf("Received VTG:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(vtg->tid), vtg->tid);
 
-					if (vtg->vfields & VTG_VALID_COURSETRUE)
-						printf("\tcource, true = %.12f\n", vtg->courseTrue);
-					if (vtg->vfields & VTG_VALID_COURSEMAGN)
-						printf("\tcourse, magnetic = %.12f\n", vtg->courseMagn);
-					if (vtg->vfields & VTG_VALID_SPEED)
-						printf("\tspeed = %.12f\n", vtg->speed);
+					if (navi_check_validity_number(vtg->courseT))
+						printf("\tcource, true = %f\n", vtg->courseT);
+					if (navi_check_validity_number(vtg->courseM))
+						printf("\tcourse, magnetic = %f\n", vtg->courseM);
+					if (navi_check_validity_number(vtg->speedN))
+						printf("\tspeed, knots = %f\n", vtg->speedN);
+					if (navi_check_validity_number(vtg->speedK))
+						printf("\tspeed, km/h = %f\n", vtg->speedK);
 					printf("\tmode indicator = %d\n", vtg->mi);
 				}
 				break;

@@ -39,12 +39,14 @@ public:
 public:
 	virtual bool isCourseTrueValid() const;
 	virtual bool isCourseMagneticValid() const;
-	virtual bool isSpeedValid() const;
+	virtual bool isSpeedKnotsValid() const;
+	virtual bool isSpeedKmphValid() const;
 
 public:
 	virtual double courseTrue() const;
 	virtual double courseMagnetic() const;
-	virtual double speed() const;
+	virtual double speedKnots() const;
+	virtual double speedKmph() const;
 	virtual ModeIndicator_t modeIndicator() const;
 
 public:
@@ -52,7 +54,8 @@ public:
 
 	virtual void setCourseTrue(double value);
 	virtual void setCourseMagnetic(double value);
-	virtual void setSpeed(double value);
+	virtual void setSpeedKnots(double value);
+	virtual void setSpeedKmph(double value);
 	virtual void setModeIndicator(const ModeIndicator_t &mi);
 
 public:
