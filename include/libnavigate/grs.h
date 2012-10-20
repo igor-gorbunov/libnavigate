@@ -33,18 +33,21 @@
 
 struct grs_t
 {
-	navi_talkerid_t tid;	// talker id
-	struct navi_utc_t utc;	// UTC time
-	int mode;				// Mode:
-							// 0 = residuals were used to calculate the position
-							// given in the matching GGA or GNS sentence
-							// 1 = residuals were recomputed after the GGA or GNS
-							// position was computed
-	struct
-	{
-		int notnull;		// 0 = null field, 1 = not null
-		double residual;	// residual for given satellite ID
-	} residuals[GRS_MAX_SATELLITES];	// range residuals array
+	// talker id
+	navi_talkerid_t tid;
+
+	// UTC time
+	struct navi_utc_t utc;
+
+	// Mode:
+	// 0 = residuals were used to calculate the position
+	// given in the matching GGA or GNS sentence
+	// 1 = residuals were recomputed after the GGA or GNS
+	// position was computed
+	int mode;
+
+	// range residuals array
+	double residuals[GRS_MAX_SATELLITES];
 };
 
 NAVI_BEGIN_DECL

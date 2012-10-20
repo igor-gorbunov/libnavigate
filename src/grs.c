@@ -34,7 +34,7 @@
 // Initializes GRS sentence structure with default values
 navierr_status_t navi_init_grs(struct grs_t *msg, navi_talkerid_t tid)
 {
-	int i;
+	size_t i;
 
 	assert(msg != NULL);
 
@@ -42,8 +42,7 @@ navierr_status_t navi_init_grs(struct grs_t *msg, navi_talkerid_t tid)
 	navi_init_utc(&msg->utc);
 	msg->mode = 0;
 	for (i = 0; i < GRS_MAX_SATELLITES; i++)
-		msg->residuals[i].notnull = 0,
-		msg->residuals[i].residual = nan("");
+		navi_init_number(&msg->residuals[i]);
 
 	return navi_Ok;
 }
@@ -66,14 +65,15 @@ navierr_status_t navi_create_grs(const struct grs_t *msg, char *buffer, size_t m
 
 	for (i = 0; i < GRS_MAX_SATELLITES; i++)
 	{
-		if (msg->residuals[i].notnull && (fabs(msg->residuals[i].residual) > 99.9))
+		if ((navi_check_validity_number(msg->residuals[i]) == navi_Ok) &&
+			(fabs(msg->residuals[i]) > 99.9))
 		{
-			msglength += navi_print_number((int)msg->residuals[i].residual, residuals[i],
+			msglength += navi_print_number((int)msg->residuals[i], residuals[i],
 				sizeof(residuals[i]));
 		}
 		else
 		{
-			msglength += navi_print_number(msg->residuals[i].residual, residuals[i],
+			msglength += navi_print_number(msg->residuals[i], residuals[i],
 				sizeof(residuals[i]));
 		}
 	}
@@ -103,11 +103,11 @@ navierr_status_t navi_parse_grs(struct grs_t *msg, char *buffer)
 	size_t i = 0, j, nmread;
 	char bytes[2];
 
-	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 		return navi_Error;
 	i += nmread;
 
-	if (navi_parse_decfield(buffer + i, 1, bytes, &nmread) != 0)
+	if (navi_parse_decfield(buffer + i, 1, bytes, &nmread) != navi_Ok)
 		return navi_Error;
 	else
 		msg->mode = navi_compose_integer(bytes, 1, 10);
@@ -115,16 +115,10 @@ navierr_status_t navi_parse_grs(struct grs_t *msg, char *buffer)
 
 	for (j = 0; j < GRS_MAX_SATELLITES; j++)
 	{
-		msg->residuals[j].notnull = 0;
-
-		if (navi_parse_number(buffer + i, &msg->residuals[j].residual, &nmread) != 0)
+		if (navi_parse_number(buffer + i, &msg->residuals[j], &nmread) != navi_Ok)
 		{
 			if (navierr_get_last()->errclass != navi_NullField)
 				return navi_Error;
-		}
-		else
-		{
-			msg->residuals[j].notnull = 1;
 		}
 		i += nmread;
 	}

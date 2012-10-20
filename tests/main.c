@@ -504,35 +504,17 @@ int main(void)
 	}
 
 	// GRS
-	memset(&grs, 0, sizeof(grs));
-	grs.tid = navi_GP;
-
-	grs.utc.hour = 0;
-	grs.utc.min = 34;
-	grs.utc.sec = 16.;
-
+	navi_init_grs(&grs, navi_GP);
+	navi_init_utc_from_hhmmss(0, 34, 16.0, &grs.utc);
 	grs.mode = 0;
 
-	grs.residuals[0].notnull = 1;
-	grs.residuals[0].residual = 1.0;
-
-	grs.residuals[1].notnull = 1;
-	grs.residuals[1].residual = 0.2;
-
-	grs.residuals[2].notnull = 1;
-	grs.residuals[2].residual = 0.34;
-
-	grs.residuals[3].notnull = 1;
-	grs.residuals[3].residual = 1.01;
-
-	grs.residuals[4].notnull = 1;
-	grs.residuals[4].residual = 0.98;
-
-	grs.residuals[7].notnull = 1;
-	grs.residuals[7].residual = 0.1;
-
-	grs.residuals[8].notnull = 1;
-	grs.residuals[8].residual = -103.7;
+	grs.residuals[0] = 1.0;
+	grs.residuals[1] = 0.2;
+	grs.residuals[2] = 0.34;
+	grs.residuals[3] = 1.01;
+	grs.residuals[4] = 0.98;
+	grs.residuals[7] = 0.1;
+	grs.residuals[8] = -103.7;
 
 	result = navi_create_msg(navi_GRS, &grs, buffer + msglength,
 		remain, &nmwritten);
@@ -808,12 +790,10 @@ int main(void)
 					printf("\tutc = %02u:%02u:%06.3f\n", grs->utc.hour,
 							grs->utc.min, grs->utc.sec);
 					printf("\tmode = %i\n", grs->mode);
-					for (i = 0; i < 12; i++)
+					for (i = 0; i < GRS_MAX_SATELLITES; i++)
 					{
-						if (grs->residuals[i].notnull)
-						{
-							printf("\tResidual %i = %f\n", i, grs->residuals[i].residual);
-						}
+						if (navi_check_validity_number(grs->residuals[i]) == navi_Ok)
+							printf("\tResidual for %i = %f\n", i, grs->residuals[i]);
 					}
 				}
 				break;
