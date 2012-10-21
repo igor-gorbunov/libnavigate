@@ -34,22 +34,21 @@
 // Initializes GNS sentence structure with default values
 navierr_status_t navi_init_gns(struct gns_t *msg, navi_talkerid_t tid)
 {
-	int i;
+	size_t i;
 
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
 	navi_init_utc(&msg->utc);
 	navi_init_position(&msg->fix);
 	for (i = 0; i < GNS_MODEINDICATOR_SIZE; i++)
 		msg->mi[i] = navi_DataNotValid;
-	msg->nmsatellites = 0;
-	msg->hdop = nan("");
-	msg->antaltitude = nan("");
-	msg->geoidalsep = nan("");
-	msg->diffage = 0;
-	msg->id = 0;
+	msg->nmsatellites = -1;
+	navi_init_number(&msg->hdop);
+	navi_init_number(&msg->antaltitude);
+	navi_init_number(&msg->geoidalsep);
+	msg->diffdata_age = -1;
+	msg->station_id = -1;
 
 	return navi_Ok;
 }
@@ -70,14 +69,13 @@ navierr_status_t navi_create_gns(const struct gns_t *msg, char *buffer, size_t m
 	msglength += navi_print_miarray(msg->mi,
 		sizeof(msg->mi) / sizeof(msg->mi[0]), mi);
 	msglength += snprintf(totalsats, sizeof(totalsats),
-		(msg->vfields & GNS_VALID_TOTALNMOFSATELLITES) ? "%02u" : "",
-		msg->nmsatellites);
+		(msg->nmsatellites == -1) ? "" : "%02u", msg->nmsatellites);
 	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop));
 	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt));
 	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep));
-	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage));
+	msglength += navi_print_number(msg->diffdata_age, ddage, sizeof(ddage));
 	msglength += snprintf(drsid, sizeof(drsid),
-		(msg->vfields & GNS_VALID_DIFFREFSTATIONID) ? "%i" : "", msg->id);
+		(msg->station_id == -1) ? "" : "%i", msg->station_id);
 
 	if (msglength > maxsize)
 	{
@@ -100,8 +98,6 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 {
 	size_t i = 0, j, nmread;
 	double d;
-
-	msg->vfields = 0;
 
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
@@ -132,7 +128,6 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	else
 	{
 		msg->nmsatellites = (int)round(d);
-		msg->vfields |= GNS_VALID_TOTALNMOFSATELLITES;
 	}
 	i += nmread;
 
@@ -141,20 +136,12 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GNS_VALID_HDOP;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->antaltitude, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GNS_VALID_ANTENNAALTITUDE;
 	}
 	i += nmread;
 
@@ -163,9 +150,16 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
+	i += nmread;
+
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
+	{
+		if (navierr_get_last()->errclass != navi_NullField)
+			return navi_Error;
+	}
 	else
 	{
-		msg->vfields |= GNS_VALID_GEOIDALSEP;
+		msg->diffdata_age = (int)round(d);
 	}
 	i += nmread;
 
@@ -176,20 +170,7 @@ navierr_status_t navi_parse_gns(struct gns_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->diffage = (int)round(d);
-		msg->vfields |= GNS_VALID_AGEOFDIFFDATA;
-	}
-	i += nmread;
-
-	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
-	{
-		if (navierr_get_last()->errclass != navi_NullField)
-			return navi_Error;
-	}
-	else
-	{
-		msg->id = (int)round(d);
-		msg->vfields |= GNS_VALID_DIFFREFSTATIONID;
+		msg->station_id = (int)round(d);
 	}
 
 	return navi_Ok;

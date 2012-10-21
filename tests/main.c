@@ -129,25 +129,17 @@ int main(void)
 	}
 
 	// GNS
-	gns.tid = navi_GL;
-	gns.vfields = GNS_VALID_TOTALNMOFSATELLITES | GNS_VALID_HDOP |
-		GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
-		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
-	gns.utc.hour = 20;
-	gns.utc.min = 7;
-	gns.utc.sec = 1.;
-	gns.fix.latitude.offset = 60.;
-	gns.fix.latitude.sign = navi_North;
-	gns.fix.longitude.offset = 30.;
-	gns.fix.longitude.sign = navi_East;
+	navi_init_gns(&gns, navi_GL);
+	navi_init_utc_from_hhmmss(20, 7, 1.0, &gns.utc);
+	navi_init_position_from_degrees(60.0, 30.0, &gns.fix);
 	gns.mi[0] = navi_Autonomous;
 	gns.mi[1] = navi_Differential;
 	gns.nmsatellites = 4;
 	gns.hdop = 2.3;
 	gns.antaltitude = 2.003;
 	gns.geoidalsep = 18.2;
-	gns.diffage = 4;
-	gns.id = 13;
+	gns.diffdata_age = 4;
+	gns.station_id = 13;
 
 	result = navi_create_msg(navi_GNS, &gns, buffer + msglength,
 		remain, &nmwritten);
@@ -315,18 +307,18 @@ int main(void)
 							navi_fixsign_str(gns->fix.longitude.sign), gns->fix.longitude.sign);
 					}
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
-					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
+					if (gns->nmsatellites != -1)
 						printf("\tsatellites = %d\n", gns->nmsatellites);
-					if (gns->vfields & GNS_VALID_HDOP)
+					if (navi_check_validity_number(gns->hdop) == navi_Ok)
 						printf("\thdop = %.12f\n", gns->hdop);
-					if (gns->vfields & GNS_VALID_ANTENNAALTITUDE)
+					if (navi_check_validity_number(gns->antaltitude) == navi_Ok)
 						printf("\tantenna altitude = %.12f\n", gns->antaltitude);
-					if (gns->vfields & GNS_VALID_GEOIDALSEP)
+					if (navi_check_validity_number(gns->geoidalsep) == navi_Ok)
 						printf("\tgeoidal separation = %.12f\n", gns->geoidalsep);
-					if (gns->vfields & GNS_VALID_AGEOFDIFFDATA)
-						printf("\tage of dd = %if\n", gns->diffage);
-					if (gns->vfields & GNS_VALID_DIFFREFSTATIONID)
-						printf("\tid = %d\n", gns->id);
+					if (gns->diffdata_age != -1)
+						printf("\tage of dd = %if\n", gns->diffdata_age);
+					if (gns->station_id != -1)
+						printf("\tid = %d\n", gns->station_id);
 				}
 				break;
 			case navi_RMC:
