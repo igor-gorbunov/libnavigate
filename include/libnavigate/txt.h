@@ -35,11 +35,20 @@
 
 struct txt_t
 {
-	navi_talkerid_t tid;	// talker identifier
-	int totalnm;		// total number of messages (01-99)
-	int msgnm;			// message number (01-99)
-	int textid;			// text identifier (01-99)
-	char textmsg[MAX_TEXT_MESSAGE_SIZE + 1];	// text message with null terminator
+	// talker identifier
+	navi_talkerid_t tid;
+
+	// total number of messages (01-99)
+	int totalnm;
+
+	// message number (01-99)
+	int msgnm;
+
+	// text identifier (01-99)
+	int textid;
+
+	// text message with null terminator
+	char textmsg[MAX_TEXT_MESSAGE_SIZE + 1];
 };
 
 NAVI_BEGIN_DECL
