@@ -70,9 +70,14 @@ struct navi_gloalm_t
 // Holder of information for all the almanacs
 struct mla_t
 {
-	navi_talkerid_t tid;	// talker id
-	int totalnm;	// total number of messages
-	int msgnm;		// number of received message
+	// talker id
+	navi_talkerid_t tid;
+
+	// total number of messages
+	int totalnm;
+
+	// number of received message
+	int msgnm;
 
 	// almanac of a GLONASS satellite
 	struct navi_gloalm_t alm;
