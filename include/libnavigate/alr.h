@@ -32,16 +32,27 @@
 
 struct alr_t
 {
-	navi_talkerid_t tid;	// talker identifier
-	struct navi_utc_t utc;	// time of alarm condition change
-	int alarmid;			// local alarm number
-	navi_status_t condition;	// alarm condition
-							// A = threshold exceeded
-							// V = not exceeded
-	navi_status_t ackstate;		// alarm's acknowledge state
-							// A = acknowledged
-							// V = unacknowledged
-	char description[60];	// alarm's description text
+	// talker identifier
+	navi_talkerid_t tid;
+
+	// time of alarm condition change
+	struct navi_utc_t utc;
+
+	// local alarm number
+	int alarmid;
+
+	// alarm condition
+	// A = threshold exceeded
+	// V = not exceeded
+	navi_status_t condition;
+
+	// alarm's acknowledge state
+	// A = acknowledged
+	// V = unacknowledged
+	navi_status_t ackstate;
+
+	// alarm's description text
+	char description[60];
 };
 
 NAVI_BEGIN_DECL
