@@ -34,20 +34,41 @@
 //
 struct apb_t
 {
-	navi_talkerid_t tid;	// talker id
-	navi_status_t status_0;	// A = Data Valid, V = LORAN-C blink or SNR warning,
-							// V = genearl warning flag for other navigation systems
-							// when a reliable fix is not available
-	navi_status_t status_1;	// A = OK or not used, V = LORAN-C cycle lock warning flag
-	struct navi_offset_t xte_magnitude;	// Magnitude of XTE (cross-track-error) and
-										// direction to steer, L/R
-	navi_status_t arrival_circle;	// A = arrival circle entered, V = not entered
-	navi_status_t perpendicular;	// A = perpendicular passed at waypoint, V = not passed
-	struct navi_offset_t bearing_origin;	// Bearing origin to destination, M/T
-	char waypoint_id[21];					// Destination waipoint ID
-	struct navi_offset_t bearing_present;	// Bearing, present position to destination, M/T
-	struct navi_offset_t heading;			// Heading to steer to destination waypoint, M/T
-	navi_modeindicator_t mode_indicator;	// Mode indicator
+	// talker id
+	navi_talkerid_t tid;
+
+	// A = Data Valid, V = LORAN-C blink or SNR warning,
+	// V = genearl warning flag for other navigation systems
+	// when a reliable fix is not available
+	navi_status_t status_0;
+
+	// A = OK or not used, V = LORAN-C cycle lock warning flag
+	navi_status_t status_1;
+
+	// Magnitude of XTE (cross-track-error) and
+	// direction to steer, L/R
+	struct navi_offset_t xte_magnitude;
+
+	// A = arrival circle entered, V = not entered
+	navi_status_t arrival_circle;
+
+	// A = perpendicular passed at waypoint, V = not passed
+	navi_status_t perpendicular;
+
+	// Bearing origin to destination, M/T
+	struct navi_offset_t bearing_origin;
+
+	// Destination waipoint ID
+	char waypoint_id[21];
+
+	// Bearing, present position to destination, M/T
+	struct navi_offset_t bearing_present;
+
+	// Heading to steer to destination waypoint, M/T
+	struct navi_offset_t heading;
+
+	// Mode indicator
+	navi_modeindicator_t mode_indicator;
 };
 
 NAVI_BEGIN_DECL
