@@ -38,7 +38,7 @@ navierr_status_t navi_init_aam(struct aam_t *msg, navi_talkerid_t tid)
 	msg->tid = tid;
 	msg->circle = navi_status_V;
 	msg->perp = navi_status_V;
-	msg->radius = nan("");
+	navi_init_number(&msg->radius);
 	memset(msg->wpid, 0, sizeof(msg->wpid));
 
 	return navi_Ok;
