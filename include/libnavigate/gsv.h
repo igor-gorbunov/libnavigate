@@ -39,11 +39,20 @@
 //
 struct navi_satinfo_t
 {
-	unsigned int vfields;	// valid fields, bitwise or of SATINFO_VALID_xxx
-	int id;			// satellite ID number (if id == 0, the structure is empty)
-	int elevation;	// degrees 00-90
-	int azimuth;	// degrees true, 000-359
-	int snr;		// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+	// valid fields, bitwise or of SATINFO_VALID_xxx
+	unsigned int vfields;
+
+	// satellite ID number (if id == 0, the structure is empty)
+	int id;
+
+	// degrees 00-90
+	int elevation;
+
+	// degrees true, 000-359
+	int azimuth;
+
+	// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+	int snr;
 };
 
 #define SATINFO_VALID_ORIENTATION	0x1
@@ -51,10 +60,17 @@ struct navi_satinfo_t
 
 struct gsv_t
 {
-	navi_talkerid_t tid;	// talker id
-	int totalnm;		// total number of messages
-	int msgnm;			// number of received message
-	int nmsatellites;	// total number of satellites in view, -1 if null
+	// talker id
+	navi_talkerid_t tid;
+
+	// total number of messages
+	int totalnm;
+
+	// number of received message
+	int msgnm;
+
+	// total number of satellites in view, -1 if null
+	int nmsatellites;
 
 	// satellite info array
 	struct navi_satinfo_t info[GSV_MAX_SATELLITES_PER_MESSAGE];
