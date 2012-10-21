@@ -44,10 +44,10 @@ struct dtm_t
 	// local datum subdivision code
 	navi_datum_subdivision_t local_dtmsd;
 
-	// latitude offset, min, N/S
+	// latitude offset, (degrees, N/S)
 	struct navi_offset_t lat_offset;
 
-	// longitude offset, min, E/W
+	// longitude offset, (degrees, E/W)
 	struct navi_offset_t long_offset;
 
 	// altitude offset, m
