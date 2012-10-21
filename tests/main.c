@@ -464,24 +464,16 @@ int main(void)
 	}
 
 	// GGA
-	gga.tid = navi_GP;
-
-	gga.vfields = GGA_VALID_NMSATELLITES | GGA_VALID_HDOP | GGA_VALID_ANTALTITUDE |
-		GGA_VALID_GEOIDALSEP | GGA_VALID_DIFFAGE | GGA_VALID_ID;
-	gga.utc.hour = 0;
-	gga.utc.min = 34;
-	gga.utc.sec = 16.;
-	gga.fix.latitude.offset = 12.0;
-	gga.fix.latitude.sign = navi_South;
-	gga.fix.longitude.offset = 112.01;
-	gga.fix.longitude.sign = navi_West;
+	navi_init_gga(&gga, navi_GP);
+	navi_init_utc_from_hhmmss(0, 34, 16.0, &gga.utc);
+	navi_init_position_from_degrees(-12.0, -112.01, &gga.fix);
 	gga.gpsindicator = navi_gps_Differential;
 	gga.nmsatellites = 8;
 	gga.hdop = 1.0;
 	gga.antaltitude = 8.1;
 	gga.geoidalsep = -1.2;
-	gga.diffage = 21;
-	gga.id = 1011;
+	gga.diffdata_age = 21;
+	gga.station_id = 1011;
 
 	result = navi_create_msg(navi_GGA, &gga, buffer + msglength,
 		remain, &nmwritten);
@@ -750,7 +742,7 @@ int main(void)
 					if (navi_check_validity_utc(&gga->utc))
 						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour, gga->utc.min,
 						gga->utc.sec);
-					if (gga->fix.latitude.sign != navi_offset_NULL)
+					if (navi_check_validity_position(&gga->fix) == navi_Ok)
 					{
 						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude.offset,
 							navi_fixsign_str(gga->fix.latitude.sign), gga->fix.latitude.sign);
@@ -758,18 +750,18 @@ int main(void)
 							navi_fixsign_str(gga->fix.longitude.sign), gga->fix.longitude.sign);
 					}
 					printf("\tGPS quality indicator: %i\n", gga->gpsindicator);
-					if (gga->vfields & GGA_VALID_NMSATELLITES)
+					if (gga->nmsatellites != -1)
 						printf("\tNm of satellites in use: %i\n", gga->nmsatellites);
-					if (gga->vfields & GGA_VALID_HDOP)
+					if (navi_check_validity_number(gga->hdop) == navi_Ok)
 						printf("\tHDOP: %f\n", gga->hdop);
-					if (gga->vfields & GGA_VALID_ANTALTITUDE)
+					if (navi_check_validity_number(gga->antaltitude) == navi_Ok)
 						printf("\tAntenna altitude: %f\n", gga->antaltitude);
-					if (gga->vfields & GGA_VALID_GEOIDALSEP)
+					if (navi_check_validity_number(gga->geoidalsep) == navi_Ok)
 						printf("\tGeoidal separation: %f\n", gga->geoidalsep);
-					if (gga->vfields & GGA_VALID_DIFFAGE)
-						printf("\tAge of differential GPS data: %i\n", gga->diffage);
-					if (gga->vfields & GGA_VALID_ID)
-						printf("\tRef. station ID: %i\n", gga->id);
+					if (gga->diffdata_age != -1)
+						printf("\tAge of differential GPS data: %i\n", gga->diffdata_age);
+					if (gga->station_id != -1)
+						printf("\tRef. station ID: %i\n", gga->station_id);
 				}
 				break;
 			case navi_GRS:

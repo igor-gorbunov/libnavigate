@@ -31,25 +31,39 @@
 
 struct gga_t
 {
-	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of GGA_VALID_xxx
-	struct navi_utc_t utc;	// UTC time
-	struct navi_position_t fix;	// latitude, longitude fix
-	navi_gpsindicator_t gpsindicator;	// GPS quality indicator
-	int nmsatellites;		// Number of satellites in use (00-12)
-	double hdop;			// Horizontal dilution of precision
-	double antaltitude;		// Antenna altitude above/below mean sea level (geoid)
-	double geoidalsep;		// Geoidal separation
-	int diffage;			// Age of differential GPS data, seconds
-	int id;					// Differential reference station ID, 1-1023
-};
+	// talker id
+	navi_talkerid_t tid;
 
-#define GGA_VALID_NMSATELLITES		0x04
-#define GGA_VALID_HDOP				0x08
-#define GGA_VALID_ANTALTITUDE		0x10
-#define GGA_VALID_GEOIDALSEP		0x20
-#define GGA_VALID_DIFFAGE			0x40
-#define GGA_VALID_ID				0x80
+	// UTC time
+	struct navi_utc_t utc;
+
+	// latitude, longitude fix
+	struct navi_position_t fix;
+
+	// GPS quality indicator
+	navi_gpsindicator_t gpsindicator;
+
+	// Number of satellites in use (00-12)
+	// -1, if null field
+	int nmsatellites;
+
+	// Horizontal dilution of precision
+	double hdop;
+
+	// Antenna altitude above/below mean sea level (geoid)
+	double antaltitude;
+
+	// Geoidal separation
+	double geoidalsep;
+
+	// Age of differential GPS data, seconds
+	// -1, if null field
+	int diffdata_age;
+
+	// Differential reference station ID, 1-1023
+	// -1, if null field
+	int station_id;
+};
 
 NAVI_BEGIN_DECL
 

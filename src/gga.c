@@ -37,16 +37,15 @@ navierr_status_t navi_init_gga(struct gga_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
 	navi_init_utc(&msg->utc);
 	navi_init_position(&msg->fix);
 	msg->gpsindicator = navi_gps_Invalid;
-	msg->nmsatellites = 0;
-	msg->hdop = nan("");
-	msg->antaltitude = nan("");
-	msg->geoidalsep = nan("");
-	msg->diffage = 0;
-	msg->id = 0;
+	msg->nmsatellites = -1;
+	navi_init_number(&msg->hdop);
+	navi_init_number(&msg->antaltitude);
+	navi_init_number(&msg->geoidalsep);
+	msg->diffdata_age = -1;
+	msg->station_id = -1;
 
 	return navi_Ok;
 }
@@ -70,17 +69,17 @@ navierr_status_t navi_create_gga(const struct gga_t *msg, char *buffer, size_t m
 	msglength += navi_print_decfield(bytes, 1, qi, sizeof(qi));
 
 	(void)navi_split_integer(msg->nmsatellites, bytes, 2, 10);
-	msglength += navi_print_decfield(bytes,
-		msg->vfields & GGA_VALID_NMSATELLITES ? 2 : 0, nmsats, sizeof(nmsats));
+	msglength += navi_print_decfield(bytes, msg->nmsatellites == -1 ? 0 : 2,
+		nmsats, sizeof(nmsats));
 
 	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop));
 	msglength += navi_print_number(msg->antaltitude, antalt, sizeof(antalt));
 	msglength += navi_print_number(msg->geoidalsep, geoidsep, sizeof(geoidsep));
-	msglength += navi_print_number(msg->diffage, ddage, sizeof(ddage));
+	msglength += navi_print_number(msg->diffdata_age, ddage, sizeof(ddage));
 
-	(void)navi_split_integer(msg->id, bytes, 4, 10);
-	msglength += navi_print_decfield(bytes,
-		msg->vfields & GGA_VALID_ID ? 4 : 0, id, sizeof(id));
+	(void)navi_split_integer(msg->station_id, bytes, 4, 10);
+	msglength += navi_print_decfield(bytes, msg->station_id == -1 ? 0 : 4,
+		id, sizeof(id));
 
 	if (msglength > maxsize)
 	{
@@ -104,8 +103,6 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 	size_t i = 0, nmread;
 	double d;
 	char bytes[4];
-
-	msg->vfields = 0;
 
 	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
@@ -135,7 +132,6 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 	else
 	{
 		msg->nmsatellites = navi_compose_integer(bytes, 2, 10);
-		msg->vfields |= GGA_VALID_NMSATELLITES;
 	}
 	i += nmread;
 
@@ -144,20 +140,12 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GGA_VALID_HDOP;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->antaltitude, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GGA_VALID_ANTALTITUDE;
 	}
 	i += nmread + 2;	// skip 'M,'
 
@@ -166,10 +154,6 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GGA_VALID_GEOIDALSEP;
-	}
 	i += nmread + 2;	// skip 'M,'
 
 	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
@@ -179,8 +163,7 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->diffage = (int)round(d);
-		msg->vfields |= GGA_VALID_DIFFAGE;
+		msg->diffdata_age = (int)round(d);
 	}
 	i += nmread;
 
@@ -191,8 +174,7 @@ navierr_status_t navi_parse_gga(struct gga_t *msg, char *buffer)
 	}
 	else
 	{
-		msg->id = (int)round(d);
-		msg->vfields |= GGA_VALID_ID;
+		msg->station_id = (int)round(d);
 	}
 
 	return navi_Ok;
