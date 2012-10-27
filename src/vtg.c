@@ -37,10 +37,12 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->courseT = nan("");
-	msg->courseM = nan("");
-	msg->speedN = nan("");
-	msg->speedK = nan("");
+
+	navi_init_number(&msg->courseT);
+	navi_init_number(&msg->courseM);
+	navi_init_number(&msg->speedN);
+	navi_init_number(&msg->speedK);
+
 	msg->mi = navi_DataNotValid;
 
 	return navi_Ok;
@@ -57,6 +59,10 @@ navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer,
 
 	const char *const_str;
 	char local_str[NAVI_SENTENCE_MAXSIZE];
+
+	assert(msg != NULL);
+	assert(buffer != NULL);
+	assert(maxsize > 0);
 
 	if (navi_check_validity_number(msg->courseT) == navi_Ok)
 	{
@@ -110,9 +116,13 @@ navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer,
 			sizeof(local_str) - msglength, ",,");
 	}
 
-	const_str = navi_modeindicator_str(msg->mi);
-	msglength += snprintf(local_str + msglength, sizeof(local_str) - msglength,
-		",%s", const_str);
+	msglength += strlen(const_str = navi_modeindicator_str(msg->mi));
+	if (msglength + 1 > sizeof(local_str))
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+	(void)strcat(local_str, const_str);
 
 	if (msglength >= maxsize)
 	{
@@ -120,7 +130,10 @@ navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer,
 		return navi_Error;
 	}
 
-	*nmwritten = msglength;
+	msglength = snprintf(buffer, maxsize, "%s", local_str);
+	if (nmwritten != NULL)
+		*nmwritten = msglength;
+
 	return navi_Ok;
 }
 
