@@ -34,6 +34,11 @@
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
 #include <libnavigate/apb.h>
+#include <libnavigate/bec.h>
+#include <libnavigate/bod.h>
+#include <libnavigate/bwc.h>
+#include <libnavigate/bwr.h>
+#include <libnavigate/bww.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -173,10 +178,45 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 		navi_init_apb((struct apb_t *)msg, tid);
 		return navi_parse_apb((struct apb_t *)msg, buffer + som + 7);
 	case navi_BEC:
+		if (msgsize < sizeof(struct bec_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bec((struct bec_t *)msg, tid);
+		return navi_parse_bec((struct bec_t *)msg, buffer + som + 7);
 	case navi_BOD:
+		if (msgsize < sizeof(struct bod_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bod((struct bod_t *)msg, tid);
+		return navi_parse_bod((struct bod_t *)msg, buffer + som + 7);
 	case navi_BWC:
+		if (msgsize < sizeof(struct bwc_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bwc((struct bwc_t *)msg, tid);
+		return navi_parse_bwc((struct bwc_t *)msg, buffer + som + 7);
 	case navi_BWR:
+		if (msgsize < sizeof(struct bwr_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bwr((struct bwr_t *)msg, tid);
+		return navi_parse_bwr((struct bwr_t *)msg, buffer + som + 7);
 	case navi_BWW:
+		if (msgsize < sizeof(struct bww_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bww((struct bww_t *)msg, tid);
+		return navi_parse_bww((struct bww_t *)msg, buffer + som + 7);
 	case navi_DBT:
 	case navi_DCN:
 	case navi_DPT:
