@@ -1,3 +1,8 @@
+2012-10-29  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* Implemented generators and parsers of APB, BEC,
+	  BOD, BWC, BWR and BWW sentences
+
 2012-10-08  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* ALM message restructured
