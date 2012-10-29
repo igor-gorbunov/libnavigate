@@ -23,7 +23,7 @@
 namespace libnavigate
 {
 
-	Bod_t::Bod_t(const TalkerId_t &tid) : Message_t(MessageType_t::APB)
+	Bod_t::Bod_t(const TalkerId_t &tid) : Message_t(MessageType_t::BOD)
 	{
 		navi_init_bod((struct bod_t *)(*this), tid.toTalkerIdCode());
 	}
