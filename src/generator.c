@@ -34,6 +34,11 @@
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
 #include <libnavigate/apb.h>
+#include <libnavigate/bec.h>
+#include <libnavigate/bod.h>
+#include <libnavigate/bwc.h>
+#include <libnavigate/bwr.h>
+#include <libnavigate/bww.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -134,10 +139,55 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		}
 		break;
 	case navi_BEC:
+		{
+			const struct bec_t *pbec = (const struct bec_t *)msg;
+			tid = navi_talkerid_str(pbec->tid);
+			sfmt = navi_sentencefmt_str(navi_BEC);
+
+			if (navi_create_bec(pbec, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BOD:
+		{
+			const struct bod_t *pbod = (const struct bod_t *)msg;
+			tid = navi_talkerid_str(pbod->tid);
+			sfmt = navi_sentencefmt_str(navi_BOD);
+
+			if (navi_create_bod(pbod, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BWC:
+		{
+			const struct bwc_t *pbwc = (const struct bwc_t *)msg;
+			tid = navi_talkerid_str(pbwc->tid);
+			sfmt = navi_sentencefmt_str(navi_BWC);
+
+			if (navi_create_bwc(pbwc, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BWR:
+		{
+			const struct bwr_t *pbwr = (const struct bwr_t *)msg;
+			tid = navi_talkerid_str(pbwr->tid);
+			sfmt = navi_sentencefmt_str(navi_BWR);
+
+			if (navi_create_bwr(pbwr, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BWW:
+		{
+			const struct bww_t *pbww = (const struct bww_t *)msg;
+			tid = navi_talkerid_str(pbww->tid);
+			sfmt = navi_sentencefmt_str(navi_BWW);
+
+			if (navi_create_bww(pbww, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_DBT:
 	case navi_DCN:
 	case navi_DPT:
