@@ -23,7 +23,7 @@
 namespace libnavigate
 {
 
-	Bec_t::Bec_t(const TalkerId_t &tid) : Message_t(MessageType_t::APB)
+	Bec_t::Bec_t(const TalkerId_t &tid) : Message_t(MessageType_t::BEC)
 	{
 		navi_init_bec((struct bec_t *)(*this), tid.toTalkerIdCode());
 	}
