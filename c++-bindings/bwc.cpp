@@ -23,7 +23,7 @@
 namespace libnavigate
 {
 
-	Bwc_t::Bwc_t(const TalkerId_t &tid) : Message_t(MessageType_t::APB)
+	Bwc_t::Bwc_t(const TalkerId_t &tid) : Message_t(MessageType_t::BWC)
 	{
 		navi_init_bwc((struct bwc_t *)(*this), tid.toTalkerIdCode());
 	}
