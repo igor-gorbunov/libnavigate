@@ -1,3 +1,139 @@
 <?xml version='1.0'?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="073E195C-7A9B-48B1-9403-BF7044662D5E" Name="libnavigate"
+           Language="1033" Version="0.4.0.0" Manufacturer="Igor Gorbunov"
+           UpgradeCode="37D8E853-39DB-4227-8198-874F880D4918">
+    <Package Description="libnavigate binary and source code distribution"
+             Comments="This package contains binary files, source code and SDK for creating libnavigate-based programs."
+             Manufacturer="Igor Gorbunov" InstallerVersion="200" Compressed="yes" />
+
+    <UIRef Id="WixUI_Advanced" />
+    <WixVariable Id="WixUILicenseRtf" Value="lgpl-3.0.rtf" />
+
+    <Media Id='1' Cabinet='libnavigate.cab' EmbedCab='yes' />
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='ProgramFiles'>
+        <Directory Id='APPLICATIONFOLDER' Name='libnavigate'>
+
+          <Directory Id='libnavigate_binary_files_folder' Name='bin'>
+            <Component Id='libnavigate_binary_files' Guid='4134BD1C-FCD9-4A9F-A60C-DEE910E1B58B'>
+              <File Id='navigate_dll_debug_x86' Name='navigate.dll' DiskId='1' Source='../../build/Debug/navigate.dll' />
+            </Component>
+          </Directory>
+
+          <Directory Id='libnavigate_root_include_folder' Name='include'>
+            <Component Id='libnavigate_root_include_files' Guid='C97C0E1E-982C-4DBC-8690-EAE4ED7E721F'>
+              <File Id='navigate_h_file' Name='navigate.h' DiskId='1' Source='../../include/navigate.h' />
+            </Component>
+            <Directory Id='libnavigate_include_folder' Name='libnavigate'>
+              <Component Id='libnavigate_include_files' Guid='B8D72A95-AFF8-4CA3-BF27-641C094284C6'>
+                <File Id='aam_h_file' Name='aam.h' DiskId='1' Source='../../include/libnavigate/aam.h' />
+                <File Id='ack_h_file' Name='ack.h' DiskId='1' Source='../../include/libnavigate/ack.h' />
+                <File Id='alm_h_file' Name='alm.h' DiskId='1' Source='../../include/libnavigate/alm.h' />
+                <File Id='alr_h_file' Name='alr.h' DiskId='1' Source='../../include/libnavigate/alr.h' />
+                <File Id='apb_h_file' Name='apb.h' DiskId='1' Source='../../include/libnavigate/apb.h' />
+                <File Id='bec_h_file' Name='bec.h' DiskId='1' Source='../../include/libnavigate/bec.h' />
+                <File Id='bod_h_file' Name='bod.h' DiskId='1' Source='../../include/libnavigate/bod.h' />
+                <File Id='bwc_h_file' Name='bwc.h' DiskId='1' Source='../../include/libnavigate/bwc.h' />
+                <File Id='bwr_h_file' Name='bwr.h' DiskId='1' Source='../../include/libnavigate/bwr.h' />
+                <File Id='bww_h_file' Name='bww.h' DiskId='1' Source='../../include/libnavigate/bww.h' />
+                <File Id='common_h_file' Name='common.h' DiskId='1' Source='../../include/libnavigate/common.h' />
+                <File Id='config_h_file' Name='config.h' DiskId='1' Source='../../include/libnavigate/config.h' />
+                <File Id='dtm_h_file' Name='dtm.h' DiskId='1' Source='../../include/libnavigate/dtm.h' />
+                <File Id='errors_h_file' Name='errors.h' DiskId='1' Source='../../include/libnavigate/errors.h' />
+                <File Id='gbs_h_file' Name='gbs.h' DiskId='1' Source='../../include/libnavigate/gbs.h' />
+                <File Id='generator_h_file' Name='generator.h' DiskId='1' Source='../../include/libnavigate/generator.h' />
+                <File Id='generic_h_file' Name='generic.h' DiskId='1' Source='../../include/libnavigate/generic.h' />
+                <File Id='gga_h_file' Name='gga.h' DiskId='1' Source='../../include/libnavigate/gga.h' />
+                <File Id='gll_h_file' Name='gll.h' DiskId='1' Source='../../include/libnavigate/gll.h' />
+                <File Id='gns_h_file' Name='gns.h' DiskId='1' Source='../../include/libnavigate/gns.h' />
+                <File Id='grs_h_file' Name='grs.h' DiskId='1' Source='../../include/libnavigate/grs.h' />
+                <File Id='gsa_h_file' Name='gsa.h' DiskId='1' Source='../../include/libnavigate/gsa.h' />
+                <File Id='gst_h_file' Name='gst.h' DiskId='1' Source='../../include/libnavigate/gst.h' />
+                <File Id='gsv_h_file' Name='gsv.h' DiskId='1' Source='../../include/libnavigate/gsv.h' />
+                <File Id='mla_h_file' Name='mla.h' DiskId='1' Source='../../include/libnavigate/mla.h' />
+                <File Id='parser_h_file' Name='parser.h' DiskId='1' Source='../../include/libnavigate/parser.h' />
+                <File Id='rmc_h_file' Name='rmc.h' DiskId='1' Source='../../include/libnavigate/rmc.h' />
+                <File Id='sentence_h_file' Name='sentence.h' DiskId='1' Source='../../include/libnavigate/sentence.h' />
+                <File Id='txt_h_file' Name='txt.h' DiskId='1' Source='../../include/libnavigate/txt.h' />
+                <File Id='vtg_h_file' Name='vtg.h' DiskId='1' Source='../../include/libnavigate/vtg.h' />
+                <File Id='zda_h_file' Name='zda.h' DiskId='1' Source='../../include/libnavigate/zda.h' />
+              </Component>
+            </Directory>
+          </Directory>
+
+          <Directory Id='libnavigate_lib_folder' Name='lib'>
+            <Component Id='libnavigate_lib_files' Guid='65095C90-0DD3-48FF-9099-19510AAA0FEC'>
+              <File Id='navigate_lib_file' Name='navigate.lib' DiskId='1' Source='../../build/Debug/navigate.lib' />
+            </Component>
+          </Directory>
+
+          <Directory Id='libnavigate_src_folder' Name='src'>
+            <Component Id='libnavigate_source_files' Guid='3649B30B-9108-4E29-84BC-495078FDBB4F'>
+              <File Id='aam_c_file' Name='aam.c' DiskId='1' Source='../../src/aam.c' />
+              <File Id='ack_c_file' Name='ack.c' DiskId='1' Source='../../src/ack.c' />
+              <File Id='alm_c_file' Name='alm.c' DiskId='1' Source='../../src/alm.c' />
+              <File Id='alr_c_file' Name='alr.c' DiskId='1' Source='../../src/alr.c' />
+              <File Id='apb_c_file' Name='apb.c' DiskId='1' Source='../../src/apb.c' />
+              <File Id='bec_c_file' Name='bec.c' DiskId='1' Source='../../src/bec.c' />
+              <File Id='bod_c_file' Name='bod.c' DiskId='1' Source='../../src/bod.c' />
+              <File Id='bwc_c_file' Name='bwc.c' DiskId='1' Source='../../src/bwc.c' />
+              <File Id='bwr_c_file' Name='bwr.c' DiskId='1' Source='../../src/bwr.c' />
+              <File Id='bww_c_file' Name='bww.c' DiskId='1' Source='../../src/bww.c' />
+              <File Id='common_c_file' Name='common.c' DiskId='1' Source='../../src/common.c' />
+              <File Id='config_c_file' Name='config.c' DiskId='1' Source='../../src/config.c' />
+              <File Id='dtm_c_file' Name='dtm.c' DiskId='1' Source='../../src/dtm.c' />
+              <File Id='errors_c_file' Name='errors.c' DiskId='1' Source='../../src/errors.c' />
+              <File Id='gbs_c_file' Name='gbs.c' DiskId='1' Source='../../src/gbs.c' />
+              <File Id='generator_c_file' Name='generator.c' DiskId='1' Source='../../src/generator.c' />
+              <File Id='gga_c_file' Name='gga.c' DiskId='1' Source='../../src/gga.c' />
+              <File Id='gll_c_file' Name='gll.c' DiskId='1' Source='../../src/gll.c' />
+              <File Id='gns_c_file' Name='gns.c' DiskId='1' Source='../../src/gns.c' />
+              <File Id='grs_c_file' Name='grs.c' DiskId='1' Source='../../src/grs.c' />
+              <File Id='gsa_c_file' Name='gsa.c' DiskId='1' Source='../../src/gsa.c' />
+              <File Id='gst_c_file' Name='gst.c' DiskId='1' Source='../../src/gst.c' />
+              <File Id='gsv_c_file' Name='gsv.c' DiskId='1' Source='../../src/gsv.c' />
+              <File Id='mla_c_file' Name='mla.c' DiskId='1' Source='../../src/mla.c' />
+              <File Id='parser_c_file' Name='parser.c' DiskId='1' Source='../../src/parser.c' />
+              <File Id='rmc_c_file' Name='rmc.c' DiskId='1' Source='../../src/rmc.c' />
+              <File Id='txt_c_file' Name='txt.c' DiskId='1' Source='../../src/txt.c' />
+              <File Id='version_file' Name='version' DiskId='1' Source='../../src/version' />
+              <File Id='version_h_file' Name='version.h' DiskId='1' Source='../../src/version.h' />
+              <File Id='version_h_in_file' Name='version.h.in' DiskId='1' Source='../../src/version.h.in' />
+              <File Id='vtg_c_file' Name='vtg.c' DiskId='1' Source='../../src/vtg.c' />
+              <File Id='zda_c_file' Name='zda.c' DiskId='1' Source='../../src/zda.c' />
+            </Component>
+            <Directory Id='libnavigate_win32_src_folder' Name='win32'>
+              <Component Id='libnavigate_win32_source_files' Guid='68B1908E-E74A-4C0A-B72D-1B7B72E8AE55'>
+                <File Id='nan_c_file' Name='nan.c' DiskId='1' Source='../../src/win32/nan.c' />
+                <File Id='navigate_rc_file' Name='navigate.rc' DiskId='1' Source='../../src/win32/navigate.rc' />
+                <File Id='round_c_file' Name='round.c' DiskId='1' Source='../../src/win32/round.c' />
+                <File Id='win32navi_h_file' Name='win32navi.h' DiskId='1' Source='../../src/win32/win32navi.h' />
+              </Component>
+            </Directory>
+          </Directory>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Property Id="ApplicationFolderName" Value="libnavigate" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+
+    <Feature Id='Install_Binary_Files' Title='Binary files' Level='1'>
+      <ComponentRef Id='libnavigate_binary_files' />
+    </Feature>
+
+    <Feature Id='Install_SDK_Files' Title='libnavigate SDK files' Level='1'>
+      <ComponentRef Id='libnavigate_root_include_files' />
+      <ComponentRef Id='libnavigate_include_files' />
+      <ComponentRef Id='libnavigate_lib_files' />
+      <Feature Id='Install_Source_Files' Title='libnavigate source files' Level='2'>
+        <ComponentRef Id='libnavigate_source_files' />
+        <ComponentRef Id='libnavigate_win32_source_files' />
+      </Feature>
+    </Feature>
+
+  </Product>
 </Wix>
