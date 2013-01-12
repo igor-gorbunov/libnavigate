@@ -33,6 +33,12 @@
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
+#include <libnavigate/apb.h>
+#include <libnavigate/bec.h>
+#include <libnavigate/bod.h>
+#include <libnavigate/bwc.h>
+#include <libnavigate/bwr.h>
+#include <libnavigate/bww.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -49,6 +55,10 @@
 #include <libnavigate/zda.h>
 
 #endif // NO_PARSER
+
+#ifdef _MSC_VER
+#include "win32/win32navi.h"
+#endif // MSVC_VER
 
 //
 // Talker IDs list
@@ -160,11 +170,53 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 		navi_init_alr((struct alr_t *)msg, tid);
 		return navi_parse_alr((struct alr_t *)msg, buffer + som + 7);
 	case navi_APB:
+		if (msgsize < sizeof(struct apb_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_apb((struct apb_t *)msg, tid);
+		return navi_parse_apb((struct apb_t *)msg, buffer + som + 7);
 	case navi_BEC:
+		if (msgsize < sizeof(struct bec_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bec((struct bec_t *)msg, tid);
+		return navi_parse_bec((struct bec_t *)msg, buffer + som + 7);
 	case navi_BOD:
+		if (msgsize < sizeof(struct bod_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bod((struct bod_t *)msg, tid);
+		return navi_parse_bod((struct bod_t *)msg, buffer + som + 7);
 	case navi_BWC:
+		if (msgsize < sizeof(struct bwc_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bwc((struct bwc_t *)msg, tid);
+		return navi_parse_bwc((struct bwc_t *)msg, buffer + som + 7);
 	case navi_BWR:
+		if (msgsize < sizeof(struct bwr_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bwr((struct bwr_t *)msg, tid);
+		return navi_parse_bwr((struct bwr_t *)msg, buffer + som + 7);
 	case navi_BWW:
+		if (msgsize < sizeof(struct bww_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bww((struct bww_t *)msg, tid);
+		return navi_parse_bww((struct bww_t *)msg, buffer + som + 7);
 	case navi_DBT:
 	case navi_DCN:
 	case navi_DPT:
@@ -366,12 +418,16 @@ navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset, s
 #ifndef NO_PARSER
 
 	double t;
-	int j = -1, state, c, s = 0, error = 0;
+	int j = -1, state, c, error = 0;
+	navi_offset_sign_t s = navi_offset_NULL;
 	size_t i = 0;
 
 	assert(buffer != NULL);
 	assert(offset != NULL);
 	assert(nmread != NULL);
+
+	if (navi_init_offset(offset) != navi_Ok)
+		return navi_Error;
 
 	t = 0.0;
 	state = PARSE_OFFSET_INIT;
@@ -454,6 +510,22 @@ navierr_status_t navi_parse_offset(char *buffer, struct navi_offset_t *offset, s
 			{
 				s = navi_West;
 			}
+			else if (c == 'L')
+			{
+				s = navi_Left;
+			}
+			else if (c == 'R')
+			{
+				s = navi_Right;
+			}
+			else if (c == 'T')
+			{
+				s = navi_True;
+			}
+			else if (c == 'M')
+			{
+				s = navi_Magnetic;
+			}
 			else
 			{
 				error = navi_InvalidMessage;
@@ -501,8 +573,8 @@ _Exit:
 #undef PARSE_OFFSET_FINI
 
 //
-// navi_parse_position_fix
-//
+// Parses position fix in the form of 'llll.ll,a,yyyyy.yy,a | ,,,'.
+// The field must end with ',' or '*'
 
 #define PARSE_POSITION_INIT				0
 #define PARSE_POSITION_LAT_INTEGRAL		1
@@ -526,6 +598,8 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 	assert(buffer != NULL);
 	assert(fix != NULL);
 	assert(nmread != NULL);
+
+	navi_init_position(fix);
 
 	state = PARSE_POSITION_INIT;
 	deg = min = 0.0;
@@ -588,7 +662,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{	// no, proceed to the latitude sign
 				state = PARSE_POSITION_LAT_SIGN;
-				fix->latitude = deg + min / 60.;
+				fix->latitude.offset = deg + min / 60.;
 			}
 			else
 			{	// invalid character
@@ -604,7 +678,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{
 				state = PARSE_POSITION_LAT_SIGN;
-				fix->latitude = deg + min / 60.;
+				fix->latitude.offset = deg + min / 60.;
 			}
 			else
 			{
@@ -615,11 +689,11 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 		case PARSE_POSITION_LAT_SIGN:
 			if (c == 'N')
 			{
-				fix->latsign = navi_North;
+				fix->latitude.sign = navi_North;
 			}
 			else if (c == 'S')
 			{
-				fix->latsign = navi_South;
+				fix->latitude.sign = navi_South;
 			}
 			else
 			{
@@ -631,7 +705,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			if (c == ',')
 			{
 				state = PARSE_POSITION_LON_INTEGRAL;
-				min = 0.;
+				min = 0.0;
 			}
 			else
 			{
@@ -679,7 +753,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{	// no, proceed to the longitude sign
 				state = PARSE_POSITION_LON_SIGN;
-				fix->longitude = deg + min / 60.;
+				fix->longitude.offset = deg + min / 60.;
 			}
 			else
 			{	// invalid character
@@ -695,7 +769,7 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 			else if (c == ',')
 			{
 				state = PARSE_POSITION_LON_SIGN;
-				fix->longitude = deg + min / 60.;
+				fix->longitude.offset = deg + min / 60.;
 			}
 			else
 			{
@@ -706,11 +780,11 @@ navierr_status_t navi_parse_position_fix(char *buffer, struct navi_position_t *f
 		case PARSE_POSITION_LON_SIGN:
 			if (c == 'E')
 			{
-				fix->lonsign = navi_East;
+				fix->longitude.sign = navi_East;
 			}
 			else if (c == 'W')
 			{
-				fix->lonsign = navi_West;
+				fix->longitude.sign = navi_West;
 			}
 			else
 			{
@@ -797,6 +871,8 @@ navierr_status_t navi_parse_utc(char *buffer, struct navi_utc_t *utc, size_t *nm
 	assert(buffer != NULL);
 	assert(utc != NULL);
 	assert(nmread != NULL);
+
+	navi_init_utc(utc);
 
 	state = PARSE_UTC_INIT;
 
@@ -948,6 +1024,8 @@ navierr_status_t navi_parse_number(char *buffer, double *parsed, size_t *nmread)
 	assert(buffer != NULL);
 	assert(parsed != NULL);
 	assert(nmread != NULL);
+
+	*parsed = nan("");
 
 	for ( ; ; )
 	{

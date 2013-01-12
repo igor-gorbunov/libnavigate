@@ -64,8 +64,8 @@ int main(void)
 
 	// ZDA
 	navi_init_zda(&zda, navi_GL);
-	zda.vfields = ZDA_VALID_UTC | ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
-	navi_init_utc(8, 12, 38.56, &zda.utc);
+	zda.vfields = ZDA_VALID_DATE | ZDA_VALID_LOCALZONE;
+	navi_init_utc_from_hhmmss(8, 12, 38.56, &zda.utc);
 	navi_init_date(1982, 5, 25, &zda.date);
 	zda.lzoffset = -240;
 
@@ -82,16 +82,15 @@ int main(void)
 	}
 
 	// DTM
-	dtm.tid = navi_GP;
-	dtm.vfields = DTM_VALID_LOCALDATUM | DTM_VALID_OFFSET |
-		DTM_VALID_ALTOFFSET | DTM_VALID_REFDATUM;
-	dtm.locdatum = navi_UserDefined;
-	dtm.latofs.offset = 0.2366;
-	dtm.latofs.sign = navi_North;
-	dtm.lonofs.offset = 0.31825;
-	dtm.lonofs.sign = navi_West;
-	dtm.altoffset = 3.446;
-	dtm.refdatum = navi_WGS84;
+	navi_init_dtm(&dtm, navi_GP);
+
+	dtm.local_dtm = navi_UserDefined;
+
+	navi_init_offset_from_degrees(0.2366, navi_North, &dtm.lat_offset);
+	navi_init_offset_from_degrees(0.31825, navi_West, &dtm.long_offset);
+
+	dtm.alt_offset = 3.446;
+	dtm.reference_dtm = navi_WGS84;
 
 	result = navi_create_msg(navi_DTM, &dtm, buffer + msglength,
 		remain, &nmwritten);
@@ -107,11 +106,10 @@ int main(void)
 
 	// GLL
 	gll.tid = navi_SN;
-	gll.vfields = GLL_VALID_POSITION_FIX | GLL_VALID_UTC;
-	gll.fix.latitude = 0.02;
-	gll.fix.latsign = navi_North;
-	gll.fix.longitude = 0.00000000999;
-	gll.fix.lonsign = navi_East;
+	gll.fix.latitude.offset = 0.02;
+	gll.fix.latitude.sign = navi_North;
+	gll.fix.longitude.offset = 0.00000000999;
+	gll.fix.longitude.sign = navi_East;
 	gll.utc.hour = 4;
 	gll.utc.min = 34;
 	gll.utc.sec = 18.4;
@@ -131,25 +129,17 @@ int main(void)
 	}
 
 	// GNS
-	gns.tid = navi_GL;
-	gns.vfields = GNS_VALID_UTC | GNS_VALID_POSITION_FIX | GNS_VALID_TOTALNMOFSATELLITES |
-		GNS_VALID_HDOP | GNS_VALID_ANTENNAALTITUDE | GNS_VALID_GEOIDALSEP |
-		GNS_VALID_AGEOFDIFFDATA | GNS_VALID_DIFFREFSTATIONID;
-	gns.utc.hour = 20;
-	gns.utc.min = 7;
-	gns.utc.sec = 1.;
-	gns.fix.latitude = 60.;
-	gns.fix.latsign = navi_North;
-	gns.fix.longitude = 30.;
-	gns.fix.lonsign = navi_East;
+	navi_init_gns(&gns, navi_GL);
+	navi_init_utc_from_hhmmss(20, 7, 1.0, &gns.utc);
+	navi_init_position_from_degrees(60.0, 30.0, &gns.fix);
 	gns.mi[0] = navi_Autonomous;
 	gns.mi[1] = navi_Differential;
 	gns.nmsatellites = 4;
 	gns.hdop = 2.3;
 	gns.antaltitude = 2.003;
 	gns.geoidalsep = 18.2;
-	gns.diffage = 4;
-	gns.id = 13;
+	gns.diffdata_age = 4;
+	gns.station_id = 13;
 
 	result = navi_create_msg(navi_GNS, &gns, buffer + msglength,
 		remain, &nmwritten);
@@ -164,24 +154,20 @@ int main(void)
 	}
 
 	// RMC
-	rmc.tid = navi_GL;
-	rmc.vfields = RMC_VALID_UTC | RMC_VALID_POSITION_FIX | RMC_VALID_DATE;
-	rmc.utc.hour = 9;
-	rmc.utc.min = 19;
-	rmc.utc.sec = 39.98;
+	navi_init_rmc(&rmc, navi_GL);
+
+	rmc.vfields = RMC_VALID_DATE;
+
+	navi_init_utc_from_hhmmss(9, 19, 39.98, &rmc.utc);
 	rmc.status = navi_status_V;
-	rmc.fix.latitude = 74.64772882;
-	rmc.fix.latsign = navi_South;
-	rmc.fix.longitude = 132.0000333;
-	rmc.fix.lonsign = navi_East;
-	rmc.speed = 1.03553;
-	rmc.courseTrue = 180.2112;
+	navi_init_position_from_degrees(-74.64772882, 132.0000333, &rmc.fix);
+
 	rmc.date.day = 18;
 	rmc.date.month = 3;
 	rmc.date.year = 2012;
-	rmc.magnetic.offset = 23.011;
-	rmc.magnetic.sign = navi_East;
+
 	rmc.mi = navi_Estimated;
+
 	// Part 1
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
@@ -194,9 +180,25 @@ int main(void)
 	{
 		printf("Composition of RMC failed (%d)\n", result);
 	}
+
 	// Part 2
-	rmc.vfields = RMC_VALID_UTC | RMC_VALID_SPEED | RMC_VALID_COURSETRUE |
-		RMC_VALID_DATE | RMC_VALID_MAGNVARIATION;
+	navi_init_rmc(&rmc, navi_GL);
+
+	rmc.vfields = RMC_VALID_DATE;
+
+	navi_init_utc_from_hhmmss(9, 19, 39.98, &rmc.utc);
+	rmc.status = navi_status_V;
+
+	rmc.speedN = 1.03553;
+	rmc.courseT = 180.2112;
+
+	rmc.date.day = 18;
+	rmc.date.month = 3;
+	rmc.date.year = 2012;
+
+	navi_init_offset_from_degrees(23.011, navi_East, &rmc.magnVariation);
+	rmc.mi = navi_Estimated;
+
 	result = navi_create_msg(navi_RMC, &rmc, buffer + msglength,
 		remain, &nmwritten);
 	if (result == navi_Ok)
@@ -211,10 +213,10 @@ int main(void)
 
 	// VTG
 	navi_init_vtg(&vtg, navi_VW);
-	vtg.vfields = VTG_VALID_COURSETRUE | VTG_VALID_COURSEMAGN | VTG_VALID_SPEED;
-	vtg.courseTrue = 0.223;
-	vtg.courseMagn = 22.203;
-	vtg.speed = 1.023;
+	vtg.courseT = 0.223;
+	vtg.courseM = 22.203;
+	vtg.speedN = MPS_TO_KNOTS(1.023);
+	vtg.speedK = MPS_TO_KMPH(1.023);
 	vtg.mi = navi_Simulator;
 
 	result = navi_create_msg(navi_VTG, &vtg, buffer + msglength,
@@ -251,20 +253,20 @@ int main(void)
 					printf("Received DTM:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(dtm->tid), dtm->tid);
 
-					if (dtm->vfields & DTM_VALID_LOCALDATUM)
-						printf("\tlocal datum = %d\n", dtm->locdatum);
-					if (dtm->vfields & DTM_VALID_LOCALDATUMSUB)
-						printf("\tlocal datum subdivision = %d\n", dtm->locdatumsub);
-					if (dtm->vfields & DTM_VALID_OFFSET)
-						printf("\tlatitude offset = %.8f %s (%d)\n", dtm->latofs.offset,
-							navi_fixsign_str(dtm->latofs.sign, 1), dtm->latofs.sign);
-					if (dtm->vfields & DTM_VALID_OFFSET)
-						printf("\tlongitude offset = %.8f %s (%d)\n", dtm->lonofs.offset,
-							navi_fixsign_str(dtm->lonofs.sign, 1), dtm->lonofs.sign);
-					if (dtm->vfields & DTM_VALID_ALTOFFSET)
-						printf("\taltitude offset = %.8f\n", dtm->altoffset);
-					if (dtm->vfields & DTM_VALID_REFDATUM)
-						printf("\treference datum = %d\n", dtm->refdatum);
+					if (dtm->local_dtm != navi_datum_NULL)
+						printf("\tlocal datum = %d\n", dtm->local_dtm);
+					if (dtm->local_dtmsd != navi_datumsub_NULL)
+						printf("\tlocal datum subdivision = %d\n", dtm->local_dtmsd);
+					if (dtm->lat_offset.sign != navi_offset_NULL)
+						printf("\tlatitude offset = %.8f %s (%d)\n", dtm->lat_offset.offset,
+							navi_fixsign_str(dtm->lat_offset.sign), dtm->lat_offset.sign);
+					if (dtm->long_offset.sign != navi_offset_NULL)
+						printf("\tlongitude offset = %.8f %s (%d)\n", dtm->long_offset.offset,
+							navi_fixsign_str(dtm->long_offset.sign), dtm->long_offset.sign);
+					if (navi_check_validity_number(dtm->alt_offset))
+						printf("\taltitude offset, m = %f\n", dtm->alt_offset);
+					if (dtm->reference_dtm != navi_datum_NULL)
+						printf("\treference datum = %d\n", dtm->reference_dtm);
 				}
 				break;
 			case navi_GLL:
@@ -273,15 +275,16 @@ int main(void)
 					printf("Received GLL:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gll->tid), gll->tid);
 
-					if (gll->vfields & GLL_VALID_POSITION_FIX)
-						printf("\tlatitude = %.12f %s (%d)\n", gll->fix.latitude,
-							navi_fixsign_str(gll->fix.latsign, 1), gll->fix.latsign);
-					if (gll->vfields & GLL_VALID_POSITION_FIX)
-						printf("\tlongitude = %.12f %s (%d)\n", gll->fix.longitude,
-							navi_fixsign_str(gll->fix.lonsign, 1), gll->fix.lonsign);
-					if (gll->vfields & GLL_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", gll->utc.hour,
-							gll->utc.min, gll->utc.sec);
+					if (gll->fix.latitude.sign != navi_offset_NULL)
+					{
+						printf("\tlatitude = %.12f %s (%d)\n", gll->fix.latitude.offset,
+							navi_fixsign_str(gll->fix.latitude.sign), gll->fix.latitude.sign);
+						printf("\tlongitude = %.12f %s (%d)\n", gll->fix.longitude.offset,
+							navi_fixsign_str(gll->fix.longitude.sign), gll->fix.longitude.sign);
+					}
+					if (navi_check_validity_utc(&gll->utc) == navi_Ok)
+						printf("\tutc = %02u:%02u:%06.3f\n", gll->utc.hour, gll->utc.min,
+						gll->utc.sec);
 
 					printf("\tstatus = %d\n", gll->status);
 					printf("\tmode indicator = %d\n", gll->mi);
@@ -293,28 +296,29 @@ int main(void)
 					printf("Received GNS:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gns->tid), gns->tid);
 
-					if (gns->vfields & GNS_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour,
-							gns->utc.min, gns->utc.sec);
-					if (gns->vfields & GNS_VALID_POSITION_FIX)
-						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude,
-							navi_fixsign_str(gns->fix.latsign, 1), gns->fix.latsign);
-					if (gns->vfields & GNS_VALID_POSITION_FIX)
-						printf("\tlongitude = %.12f %s (%d)\n", gns->fix.longitude,
-							navi_fixsign_str(gns->fix.lonsign, 1), gns->fix.lonsign);
+					if (navi_check_validity_utc(&gns->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour, gns->utc.min,
+						gns->utc.sec);
+					if (gns->fix.latitude.sign != navi_offset_NULL)
+					{
+						printf("\tlatitude = %.12f %s (%d)\n", gns->fix.latitude.offset,
+							navi_fixsign_str(gns->fix.latitude.sign), gns->fix.latitude.sign);
+						printf("\tlongitude = %.12f %s (%d)\n", gns->fix.longitude.offset,
+							navi_fixsign_str(gns->fix.longitude.sign), gns->fix.longitude.sign);
+					}
 					printf("\tmode indicator = %d %d\n", gns->mi[0], gns->mi[1]);
-					if (gns->vfields & GNS_VALID_TOTALNMOFSATELLITES)
+					if (gns->nmsatellites != -1)
 						printf("\tsatellites = %d\n", gns->nmsatellites);
-					if (gns->vfields & GNS_VALID_HDOP)
+					if (navi_check_validity_number(gns->hdop) == navi_Ok)
 						printf("\thdop = %.12f\n", gns->hdop);
-					if (gns->vfields & GNS_VALID_ANTENNAALTITUDE)
+					if (navi_check_validity_number(gns->antaltitude) == navi_Ok)
 						printf("\tantenna altitude = %.12f\n", gns->antaltitude);
-					if (gns->vfields & GNS_VALID_GEOIDALSEP)
+					if (navi_check_validity_number(gns->geoidalsep) == navi_Ok)
 						printf("\tgeoidal separation = %.12f\n", gns->geoidalsep);
-					if (gns->vfields & GNS_VALID_AGEOFDIFFDATA)
-						printf("\tage of dd = %if\n", gns->diffage);
-					if (gns->vfields & GNS_VALID_DIFFREFSTATIONID)
-						printf("\tid = %d\n", gns->id);
+					if (gns->diffdata_age != -1)
+						printf("\tage of dd = %if\n", gns->diffdata_age);
+					if (gns->station_id != -1)
+						printf("\tid = %d\n", gns->station_id);
 				}
 				break;
 			case navi_RMC:
@@ -323,26 +327,27 @@ int main(void)
 					printf("Received RMC:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(rmc->tid), rmc->tid);
 
-					if (rmc->vfields & RMC_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour,
-							rmc->utc.min, rmc->utc.sec);
+					if (navi_check_validity_utc(&rmc->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour, rmc->utc.min,
+						rmc->utc.sec);
 					printf("\tstatus = %d\n", rmc->status);
-					if (rmc->vfields & RMC_VALID_POSITION_FIX)
-						printf("\tlatitude = %.12f %s (%d)\n", rmc->fix.latitude,
-							navi_fixsign_str(rmc->fix.latsign, 1), rmc->fix.latsign);
-					if (rmc->vfields & RMC_VALID_POSITION_FIX)
-						printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude,
-							navi_fixsign_str(rmc->fix.lonsign, 1), rmc->fix.lonsign);
-					if (rmc->vfields & RMC_VALID_SPEED)
-						printf("\tspeed = %.12f\n", rmc->speed);
-					if (rmc->vfields & RMC_VALID_COURSETRUE)
-						printf("\tcourse, true = %.12f\n", rmc->courseTrue);
+					if (rmc->fix.latitude.sign != navi_offset_NULL)
+					{
+						printf("\tlatitude = %.12f %s (%d)\n", rmc->fix.latitude.offset,
+							navi_fixsign_str(rmc->fix.latitude.sign), rmc->fix.latitude.sign);
+						printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude.offset,
+							navi_fixsign_str(rmc->fix.longitude.sign), rmc->fix.longitude.sign);
+					}
+					if (navi_check_validity_number(rmc->speedN))
+						printf("\tspeed, knots = %f\n", rmc->speedN);
+					if (navi_check_validity_number(rmc->courseT))
+						printf("\tcourse, true = %f\n", rmc->courseT);
 					if (rmc->vfields & RMC_VALID_DATE)
 						printf("\tdate = %d %d %d\n", rmc->date.day,
 							rmc->date.month, rmc->date.year);
-					if (rmc->vfields & RMC_VALID_MAGNVARIATION)
-						printf("\tmagnetic variation = %.12f (%d)\n",
-							rmc->magnetic.offset, rmc->magnetic.sign);
+					if (navi_check_validity_offset(&rmc->magnVariation))
+						printf("\tmagnetic variation = %f (%d)\n",
+							rmc->magnVariation.offset, rmc->magnVariation.sign);
 					printf("\tmode indicator = %d\n", rmc->mi);
 				}
 				break;
@@ -352,12 +357,14 @@ int main(void)
 					printf("Received VTG:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(vtg->tid), vtg->tid);
 
-					if (vtg->vfields & VTG_VALID_COURSETRUE)
-						printf("\tcource, true = %.12f\n", vtg->courseTrue);
-					if (vtg->vfields & VTG_VALID_COURSEMAGN)
-						printf("\tcourse, magnetic = %.12f\n", vtg->courseMagn);
-					if (vtg->vfields & VTG_VALID_SPEED)
-						printf("\tspeed = %.12f\n", vtg->speed);
+					if (navi_check_validity_number(vtg->courseT))
+						printf("\tcource, true = %f\n", vtg->courseT);
+					if (navi_check_validity_number(vtg->courseM))
+						printf("\tcourse, magnetic = %f\n", vtg->courseM);
+					if (navi_check_validity_number(vtg->speedN))
+						printf("\tspeed, knots = %f\n", vtg->speedN);
+					if (navi_check_validity_number(vtg->speedK))
+						printf("\tspeed, km/h = %f\n", vtg->speedK);
 					printf("\tmode indicator = %d\n", vtg->mi);
 				}
 				break;
@@ -367,9 +374,9 @@ int main(void)
 					printf("Received ZDA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(zda->tid), zda->tid);
 
-					if (zda->vfields & ZDA_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour,
-							zda->utc.min, zda->utc.sec);
+					if (navi_check_validity_utc(&zda->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour, zda->utc.min,
+						zda->utc.sec);
 					if (zda->vfields & ZDA_VALID_DATE)
 						printf("\tdate = %04d-%02d-%02d\n", zda->date.year, zda->date.month,
 							zda->date.day);
@@ -433,18 +440,13 @@ int main(void)
 	remain = sizeof(buffer);
 
 	// GBS
-	gbs.tid = navi_GL;
+	navi_init_gbs(&gbs, navi_GL);
 
-	gbs.vfields = GBS_VALID_EXPERRLATLON | GBS_VALID_EXPERRALT |
-		GBS_VALID_ID | GBS_VALID_PROBABILITY | GBS_VALID_ESTIMATE |
-		GBS_VALID_DEVIATION;
-	gbs.utc.hour = 0;
-	gbs.utc.min = 34;
-	gbs.utc.sec = 16.;
+	navi_init_utc_from_hhmmss(0, 34, 16.0, &gbs.utc);
 	gbs.experrlat = 1.4;
 	gbs.experrlon = 0.12;
 	gbs.experralt = 1.1;
-	gbs.id = 66;
+	gbs.failed_id = 66;
 	gbs.probability = 0.12;
 	gbs.estimate = 1.1;
 	gbs.deviation = 1.3;
@@ -462,25 +464,16 @@ int main(void)
 	}
 
 	// GGA
-	gga.tid = navi_GP;
-
-	gga.vfields = GGA_VALID_UTC | GGA_VALID_FIX | GGA_VALID_NMSATELLITES |
-		GGA_VALID_HDOP | GGA_VALID_ANTALTITUDE | GGA_VALID_GEOIDALSEP |
-		GGA_VALID_DIFFAGE | GGA_VALID_ID;
-	gga.utc.hour = 0;
-	gga.utc.min = 34;
-	gga.utc.sec = 16.;
-	gga.fix.latitude = 12.0;
-	gga.fix.latsign = navi_South;
-	gga.fix.longitude = 112.01;
-	gga.fix.lonsign = navi_West;
+	navi_init_gga(&gga, navi_GP);
+	navi_init_utc_from_hhmmss(0, 34, 16.0, &gga.utc);
+	navi_init_position_from_degrees(-12.0, -112.01, &gga.fix);
 	gga.gpsindicator = navi_gps_Differential;
 	gga.nmsatellites = 8;
 	gga.hdop = 1.0;
 	gga.antaltitude = 8.1;
 	gga.geoidalsep = -1.2;
-	gga.diffage = 21;
-	gga.id = 1011;
+	gga.diffdata_age = 21;
+	gga.station_id = 1011;
 
 	result = navi_create_msg(navi_GGA, &gga, buffer + msglength,
 		remain, &nmwritten);
@@ -495,35 +488,17 @@ int main(void)
 	}
 
 	// GRS
-	memset(&grs, 0, sizeof(grs));
-	grs.tid = navi_GP;
-
-	grs.utc.hour = 0;
-	grs.utc.min = 34;
-	grs.utc.sec = 16.;
-
+	navi_init_grs(&grs, navi_GP);
+	navi_init_utc_from_hhmmss(0, 34, 16.0, &grs.utc);
 	grs.mode = 0;
 
-	grs.residuals[0].notnull = 1;
-	grs.residuals[0].residual = 1.0;
-
-	grs.residuals[1].notnull = 1;
-	grs.residuals[1].residual = 0.2;
-
-	grs.residuals[2].notnull = 1;
-	grs.residuals[2].residual = 0.34;
-
-	grs.residuals[3].notnull = 1;
-	grs.residuals[3].residual = 1.01;
-
-	grs.residuals[4].notnull = 1;
-	grs.residuals[4].residual = 0.98;
-
-	grs.residuals[7].notnull = 1;
-	grs.residuals[7].residual = 0.1;
-
-	grs.residuals[8].notnull = 1;
-	grs.residuals[8].residual = -103.7;
+	grs.residuals[0] = 1.0;
+	grs.residuals[1] = 0.2;
+	grs.residuals[2] = 0.34;
+	grs.residuals[3] = 1.01;
+	grs.residuals[4] = 0.98;
+	grs.residuals[7] = 0.1;
+	grs.residuals[8] = -103.7;
 
 	result = navi_create_msg(navi_GRS, &grs, buffer + msglength,
 		remain, &nmwritten);
@@ -538,39 +513,22 @@ int main(void)
 	}
 
 	// GSA
-	memset(&gsa, 0, sizeof(gsa));
-	gsa.tid = navi_GP;
+	navi_init_gsa(&gsa, navi_GP);
 
 	gsa.swmode = navi_gsa_Automatic;
 	gsa.fixmode = 3;
 
-	gsa.satellites[0].notnull = 1;
-	gsa.satellites[0].id = 1;
-
-	gsa.satellites[1].notnull = 1;
-	gsa.satellites[1].id = 12;
-
-	gsa.satellites[2].notnull = 1;
-	gsa.satellites[2].id = 3;
-
-	gsa.satellites[3].notnull = 1;
-	gsa.satellites[3].id = 2;
-
-	gsa.satellites[4].notnull = 1;
-	gsa.satellites[4].id = 18;
-
-	gsa.satellites[7].notnull = 1;
-	gsa.satellites[7].id = 24;
-
-	gsa.satellites[8].notnull = 1;
-	gsa.satellites[8].id = 14;
+	gsa.satellites[0] = 1;
+	gsa.satellites[1] = 12;
+	gsa.satellites[2] = 3;
+	gsa.satellites[3] = 2;
+	gsa.satellites[4] = 18;
+	gsa.satellites[7] = 24;
+	gsa.satellites[8] = 14;
 
 	gsa.hdop = 2.12;
-	gsa.vdop = .012;
+	gsa.vdop = 0.012;
 	gsa.pdop = 2.12003396;
-
-	gsa.vfields = GSA_VALID_SWITCHMODE | GSA_VALID_FIXMODE | GSA_VALID_PDOP |
-		GSA_VALID_HDOP | GSA_VALID_VDOP;
 
 	result = navi_create_msg(navi_GSA, &gsa, buffer + msglength,
 		remain, &nmwritten);
@@ -585,22 +543,17 @@ int main(void)
 	}
 
 	// GST
-	gst.tid = navi_GP;
+	navi_init_gst(&gst, navi_GP);
 
-	gst.vfields = GST_VALID_RMS | GST_VALID_STDDEVELLIPSE |
-		GST_VALID_DEVLATLONERR | GST_VALID_DEVALTERR;
-
-	gst.utc.hour = 14;
-	gst.utc.min = 8;
-	gst.utc.sec = 16;
+	navi_init_utc_from_hhmmss(14, 8, 16.0, &gst.utc);
 
 	gst.rms = 1.4;
-	gst.devmajor = .56;
+	gst.devmajor = 0.56;
 	gst.devminor = 3.2;
-	gst.orientmajor = 18.;
+	gst.orientmajor = 18.0;
 	gst.devlaterr = 0.2;
 	gst.devlonerr = 0.1;
-	gst.devalterr = 1.;
+	gst.devalterr = 1.0;
 
 	result = navi_create_msg(navi_GST, &gst, buffer + msglength,
 		remain, &nmwritten);
@@ -703,7 +656,7 @@ int main(void)
 
 	// ALR
 	navi_init_alr(&alr, navi_GL);
-	navi_init_utc(12, 8, 13, &alr.utc);
+	navi_init_utc_from_hhmmss(12, 8, 13, &alr.utc);
 	alr.alarmid = 846;
 	alr.condition = navi_status_A;
 	alr.ackstate = navi_status_V;
@@ -722,7 +675,7 @@ int main(void)
 
 	// ALR
 	navi_init_alr(&alr, navi_GL);
-	navi_init_utc(16, 12, 0, &alr.utc);
+	navi_init_utc_from_hhmmss(16, 12, 0, &alr.utc);
 	alr.alarmid = 7;
 	alr.condition = navi_status_V;
 	alr.ackstate = navi_status_V;
@@ -764,19 +717,19 @@ int main(void)
 						navi_talkerid_str(gbs->tid), gbs->tid);
 					printf("\tutc = %02u:%02u:%06.3f\n", gbs->utc.hour,
 						gbs->utc.min, gbs->utc.sec);
-					if (gbs->vfields & GBS_VALID_EXPERRLATLON)
+					if (navi_check_validity_number(gbs->experrlat) == navi_Ok)
 						printf("\tExpected error in latitude: %f\n", gbs->experrlat);
-					if (gbs->vfields & GBS_VALID_EXPERRLATLON)
+					if (navi_check_validity_number(gbs->experrlon) == navi_Ok)
 						printf("\tExpected error in longitude: %f\n", gbs->experrlon);
-					if (gbs->vfields & GBS_VALID_EXPERRALT)
+					if (navi_check_validity_number(gbs->experralt) == navi_Ok)
 						printf("\tExpected error in altitude: %f\n", gbs->experralt);
-					if (gbs->vfields & GBS_VALID_ID)
-						printf("\tFault station ID: %d\n", gbs->id);
-					if (gbs->vfields & GBS_VALID_PROBABILITY)
+					if (gbs->failed_id != 1)
+						printf("\tFault station ID: %d\n", gbs->failed_id);
+					if (navi_check_validity_number(gbs->probability) == navi_Ok)
 						printf("\tProbability: %f\n", gbs->probability);
-					if (gbs->vfields & GBS_VALID_ESTIMATE)
+					if (navi_check_validity_number(gbs->estimate) == navi_Ok)
 						printf("\tEstimated: %f\n", gbs->estimate);
-					if (gbs->vfields & GBS_VALID_DEVIATION)
+					if (navi_check_validity_number(gbs->deviation) == navi_Ok)
 						printf("\tDeviation: %f\n", gbs->deviation);
 				}
 				break;
@@ -786,28 +739,29 @@ int main(void)
 
 					printf("Received GGA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gga->tid), gga->tid);
-					if (gga->vfields & GGA_VALID_UTC)
-						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour,
-							gga->utc.min, gga->utc.sec);
-					if (gga->vfields & GGA_VALID_FIX)
-						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude,
-							navi_fixsign_str(gga->fix.latsign, 1), gga->fix.latsign);
-					if (gga->vfields & GGA_VALID_FIX)
-						printf("\tlongitude = %f %s (%d)\n", gga->fix.longitude,
-							navi_fixsign_str(gga->fix.lonsign, 1), gga->fix.lonsign);
+					if (navi_check_validity_utc(&gga->utc))
+						printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour, gga->utc.min,
+						gga->utc.sec);
+					if (navi_check_validity_position(&gga->fix) == navi_Ok)
+					{
+						printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude.offset,
+							navi_fixsign_str(gga->fix.latitude.sign), gga->fix.latitude.sign);
+						printf("\tlongitude = %f %s (%d)\n", gga->fix.longitude.offset,
+							navi_fixsign_str(gga->fix.longitude.sign), gga->fix.longitude.sign);
+					}
 					printf("\tGPS quality indicator: %i\n", gga->gpsindicator);
-					if (gga->vfields & GGA_VALID_NMSATELLITES)
+					if (gga->nmsatellites != -1)
 						printf("\tNm of satellites in use: %i\n", gga->nmsatellites);
-					if (gga->vfields & GGA_VALID_HDOP)
+					if (navi_check_validity_number(gga->hdop) == navi_Ok)
 						printf("\tHDOP: %f\n", gga->hdop);
-					if (gga->vfields & GGA_VALID_ANTALTITUDE)
+					if (navi_check_validity_number(gga->antaltitude) == navi_Ok)
 						printf("\tAntenna altitude: %f\n", gga->antaltitude);
-					if (gga->vfields & GGA_VALID_GEOIDALSEP)
+					if (navi_check_validity_number(gga->geoidalsep) == navi_Ok)
 						printf("\tGeoidal separation: %f\n", gga->geoidalsep);
-					if (gga->vfields & GGA_VALID_DIFFAGE)
-						printf("\tAge of differential GPS data: %i\n", gga->diffage);
-					if (gga->vfields & GGA_VALID_ID)
-						printf("\tRef. station ID: %i\n", gga->id);
+					if (gga->diffdata_age != -1)
+						printf("\tAge of differential GPS data: %i\n", gga->diffdata_age);
+					if (gga->station_id != -1)
+						printf("\tRef. station ID: %i\n", gga->station_id);
 				}
 				break;
 			case navi_GRS:
@@ -820,12 +774,10 @@ int main(void)
 					printf("\tutc = %02u:%02u:%06.3f\n", grs->utc.hour,
 							grs->utc.min, grs->utc.sec);
 					printf("\tmode = %i\n", grs->mode);
-					for (i = 0; i < 12; i++)
+					for (i = 0; i < GRS_MAX_SATELLITES; i++)
 					{
-						if (grs->residuals[i].notnull)
-						{
-							printf("\tResidual %i = %f\n", i, grs->residuals[i].residual);
-						}
+						if (navi_check_validity_number(grs->residuals[i]) == navi_Ok)
+							printf("\tResidual for %i = %f\n", i, grs->residuals[i]);
 					}
 				}
 				break;
@@ -836,22 +788,20 @@ int main(void)
 
 					printf("Received GSA:\n\ttalker id = %s (%d)\n",
 						navi_talkerid_str(gsa->tid), gsa->tid);
-					if (gsa->vfields & GSA_VALID_SWITCHMODE)
+					if (gsa->swmode !=  navi_gsa_NULL)
 						printf("\tswitchmode = %i\n", gsa->swmode);
-					if (gsa->vfields & GSA_VALID_FIXMODE)
+					if (gsa->fixmode != -1)
 						printf("\tfixmode = %i\n", gsa->fixmode);
-					for (i = 0; i < 12; i++)
+					for (i = 0; i < GSA_MAX_SATELLITES; i++)
 					{
-						if (gsa->satellites[i].notnull)
-						{
-							printf("\tSatellite %i = %i\n", i, gsa->satellites[i].id);
-						}
+						if (gsa->satellites[i] != -1)
+							printf("\tSatellite %i = %i\n", i, gsa->satellites[i]);
 					}
-					if (gsa->vfields & GSA_VALID_PDOP)
+					if (navi_check_validity_number(gsa->pdop))
 						printf("\tPDOP = %f\n", gsa->pdop);
-					if (gsa->vfields & GSA_VALID_HDOP)
+					if (navi_check_validity_number(gsa->hdop))
 						printf("\tHDOP = %f\n", gsa->hdop);
-					if (gsa->vfields & GSA_VALID_VDOP)
+					if (navi_check_validity_number(gsa->vdop))
 						printf("\tVDOP = %f\n", gsa->vdop);
 				}
 				break;
@@ -864,25 +814,21 @@ int main(void)
 					printf("\tutc = %02u:%02u:%06.3f\n", gst->utc.hour,
 						gst->utc.min, gst->utc.sec);
 
-					if (gst->vfields & GST_VALID_RMS)
-					{
+					if (navi_check_validity_number(gst->rms))
 						printf("\tRMS = %f\n", gst->rms);
-					}
-					if (gst->vfields & GST_VALID_STDDEVELLIPSE)
+					if (navi_check_validity_number(gst->devmajor))
 					{
 						printf("\tstd dev of semi-major = %f\n", gst->devmajor);
 						printf("\tstd dev of semi-minor = %f\n", gst->devminor);
 						printf("\torientation of semi-major = %f\n", gst->orientmajor);
 					}
-					if (gst->vfields & GST_VALID_DEVLATLONERR)
+					if (navi_check_validity_number(gst->devlaterr))
 					{
 						printf("\tstd dev of latitude err = %f\n", gst->devlaterr);
 						printf("\tstd dev of longitude err = %f\n", gst->devlonerr);
 					}
-					if (gst->vfields & GST_VALID_DEVALTERR)
-					{
+					if (navi_check_validity_number(gst->devalterr))
 						printf("\tstd dev of altitude err = %f\n", gst->devalterr);
-					}
 				}
 				break;
 			case navi_GSV:

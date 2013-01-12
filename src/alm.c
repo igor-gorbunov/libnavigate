@@ -57,14 +57,13 @@ navierr_status_t navi_create_alm(const struct alm_t *msg, char *buffer, size_t m
 		omega0[8], m0[8], af0[4], af1[4];
 	char bytes[8];
 
-	msglength = navi_print_number(msg->totalnm, totalnm, sizeof(totalnm), 1);
-	msglength += navi_print_number(msg->msgnm, msgnm, sizeof(msgnm), 1);
+	msglength = navi_print_number(msg->totalnm, totalnm, sizeof(totalnm));
+	msglength += navi_print_number(msg->msgnm, msgnm, sizeof(msgnm));
 
 	(void)navi_split_integer(msg->alm.satelliteprn, bytes, 2, 10);
 	msglength += navi_print_decfield(bytes, 2, prnnm, sizeof(prnnm));
 
-	msglength += navi_print_number(msg->alm.gpsweek, weeknm,
-		sizeof(weeknm), msg->alm.vfields & GPSALM_VALID_GPSWEEK);
+	msglength += navi_print_number(msg->alm.gpsweek, weeknm, sizeof(weeknm));
 
 	(void)navi_split_integer(msg->alm.svhealth, bytes, 2, 16);
 	msglength += navi_print_hexfield(bytes,

@@ -39,7 +39,7 @@ navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
 
 	msg->tid = tid;
 	msg->vfields = 0;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
+	navi_init_utc(&msg->utc);
 	navi_init_date(2000, 1, 1, &msg->date);
 	msg->lzoffset = 0;
 
@@ -55,8 +55,7 @@ navierr_status_t navi_create_zda(const struct zda_t *msg, char *buffer, size_t m
 	size_t msglength;
 	char utc[32], day[3], month[3], year[5], lzhours[4], lzmins[3];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc),
-		msg->vfields & ZDA_VALID_UTC);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
 	msglength += snprintf(day, sizeof(day),
 		(msg->vfields & ZDA_VALID_DATE) ? "%02u" : "", msg->date.day);
 	msglength += snprintf(month, sizeof(month),
@@ -107,21 +106,17 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 
 	msg->vfields = 0;
 
-	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= ZDA_VALID_UTC;
+			return navi_Error;
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -130,10 +125,10 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -142,10 +137,10 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_number(buffer + i, &d, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &d, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{
@@ -154,10 +149,10 @@ navierr_status_t navi_parse_zda(struct zda_t *msg, char *buffer)
 	}
 	i += nmread;
 
-	if (navi_parse_localzone(buffer + i, &msg->lzoffset, &nmread) != 0)
+	if (navi_parse_localzone(buffer + i, &msg->lzoffset, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	else
 	{

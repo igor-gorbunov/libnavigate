@@ -33,15 +33,24 @@
 
 struct aam_t
 {
-	navi_talkerid_t tid;	// talker identifier
-	navi_status_t circle;	// arrival circle status
-							// A = arrival circle entered
-							// V = not entered
-	navi_status_t perp;		// perpendicular status
-							// A = perpendicular passed at waypoint
-							// V = not passed
-	double radius;			// arrival circle radius, nautical miles
-	char wpid[60];			// waypoint id
+	// talker identifier
+	navi_talkerid_t tid;
+
+	// arrival circle status
+	// A = arrival circle entered
+	// V = not entered
+	navi_status_t circle;
+
+	// perpendicular status
+	// A = perpendicular passed at waypoint
+	// V = not passed
+	navi_status_t perp;
+
+	// arrival circle radius, nautical miles
+	double radius;
+
+	// waypoint id
+	char wpid[60];
 };
 
 NAVI_BEGIN_DECL

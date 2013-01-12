@@ -20,8 +20,12 @@
 #ifndef INCLUDE_win32navi_h
 #define INCLUDE_win32navi_h
 
+#include <float.h>
+
 #define snprintf	_snprintf
+#define isnan		_isnan
 
 extern double round(double x);
+extern double nan(const char *tagp);
 
 #endif	// INCLUDE_win32navi_h

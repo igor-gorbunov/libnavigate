@@ -31,24 +31,37 @@
 //
 struct rmc_t
 {
-	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of RMC_VALID_xxx
-	struct navi_utc_t utc;	// UTC time
-	navi_status_t status;	// status
-	struct navi_position_t fix;	// latitude, longitude fix
-	double speed;				// Speed over ground, knots
-	double courseTrue;			// Course over ground, degrees true
-	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
-	struct navi_offset_t magnetic;	// Magnetic variation, degrees,E/W
-	navi_modeindicator_t mi;		// mode indicator
+	// talker id
+	navi_talkerid_t tid;
+
+	unsigned int vfields;
+
+	// UTC time
+	struct navi_utc_t utc;
+
+	// status
+	navi_status_t status;
+
+	// latitude, longitude fix
+	struct navi_position_t fix;
+
+	// Speed over ground, knots
+	double speedN;
+
+	// Course over ground, degrees true
+	double courseT;
+
+	// Day (01 to 31), Month (01 to 12), Year (UTC)
+	struct navi_date_t date;
+
+	// Magnetic variation, degrees,E/W
+	struct navi_offset_t magnVariation;
+
+	// mode indicator
+	navi_modeindicator_t mi;
 };
 
-#define RMC_VALID_UTC				0x01
-#define RMC_VALID_POSITION_FIX		0x02
-#define RMC_VALID_SPEED				0x04
-#define RMC_VALID_COURSETRUE		0x08
 #define RMC_VALID_DATE				0x10
-#define RMC_VALID_MAGNVARIATION		0x20
 
 NAVI_BEGIN_DECL
 

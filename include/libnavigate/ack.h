@@ -32,8 +32,11 @@
 
 struct ack_t
 {
-	navi_talkerid_t tid;	// talker identifier
-	int alarmid;			// local alarm number
+	// talker identifier
+	navi_talkerid_t tid;
+
+	// local alarm number
+	int alarmid;
 };
 
 NAVI_BEGIN_DECL

@@ -48,16 +48,10 @@ void Gll_t::setTalkerId(const TalkerId_t &tid)
 	{ ((struct gll_t *)(*this))->tid = tid.toTalkerIdCode(); }
 
 void Gll_t::setPositionFix(const PositionFix_t &fix)
-{
-	((struct gll_t *)(*this))->fix = fix.toPosition();
-	((struct gll_t *)(*this))->vfields |= GLL_VALID_POSITION_FIX;
-}
+	{ ((struct gll_t *)(*this))->fix = fix.toPosition(); }
 
 void Gll_t::setUtc(const Utc_t &utc)
-{
-	((struct gll_t *)(*this))->utc = utc.toUtcStruct();
-	((struct gll_t *)(*this))->vfields |= GLL_VALID_UTC;
-}
+	{ ((struct gll_t *)(*this))->utc = utc.toUtcStruct(); }
 
 void Gll_t::setStatus(const Status_t &status)
 	{ ((struct gll_t *)(*this))->status = status.toStatusCode(); }
@@ -66,14 +60,10 @@ void Gll_t::setModeIndicator(const ModeIndicator_t &mi)
 	{ ((struct gll_t *)(*this))->mi = mi.toModeIndCode(); }
 
 bool Gll_t::isPositionValid() const
-{
-	return (((const struct gll_t *)(*this))->vfields & GLL_VALID_POSITION_FIX) != 0 ? true : false;
-}
+	{ return ((const struct gll_t *)(*this))->fix.latitude.sign != navi_offset_NULL; }
 
 bool Gll_t::isUtcValid() const
-{
-	return (((const struct gll_t *)(*this))->vfields & GLL_VALID_UTC) != 0 ? true : false;
-}
+	{ return navi_check_validity_utc(&((const struct gll_t *)(*this))->utc) == navi_Ok; }
 
 void Gll_t::clearMessage()
 	{ navi_init_gll((struct gll_t *)(*this), navi_talkerid_Unknown); }

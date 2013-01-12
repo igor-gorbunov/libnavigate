@@ -57,6 +57,12 @@ navierr_status_t navi_create_gsv(const struct gsv_t *msg, char *buffer, size_t m
 	char totalnm[2], msgnm[2], nmsatellites[4], id[4], elevation[4], azimuth[4], snr[4];
 	char bytes[4];
 
+	if (maxsize < NAVI_SENTENCE_MAXSIZE)
+	{
+		navierr_set_last(navi_NotEnoughBuffer);
+		return navi_Error;
+	}
+
 	(void)navi_split_integer(msg->totalnm, bytes, 1, 10);
 	msglength = navi_print_decfield(bytes, 1, totalnm, sizeof(totalnm));
 
@@ -73,11 +79,11 @@ navierr_status_t navi_create_gsv(const struct gsv_t *msg, char *buffer, size_t m
 		strcpy(nmsatellites, "");
 	}
 
-	strcpy(buffer, totalnm);
-	strcat(buffer, ",");
-	strcat(buffer, msgnm);
-	strcat(buffer, ",");
-	strcat(buffer, nmsatellites);
+	(void)strcpy(buffer, totalnm);
+	(void)strcat(buffer, ",");
+	(void)strcat(buffer, msgnm);
+	(void)strcat(buffer, ",");
+	(void)strcat(buffer, nmsatellites);
 
 	for (i = 0; i < GSV_MAX_SATELLITES_PER_MESSAGE && msg->info[i].id != 0; i++)
 	{

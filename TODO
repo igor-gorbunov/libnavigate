@@ -2,11 +2,6 @@ libnavigate --- TODO
 
 Library versions roadmap:
 
-	v0.4:
-	* implement generation/parsing of APB, BEC, BOD, BWC, BWR
-	  and BWW sentences
-	* implement building MSI package of libnavigate
-
 	v0.5:
 	* implement registration/unregistration and call to user-
 	  supplied generator/parser for proprietary sentences

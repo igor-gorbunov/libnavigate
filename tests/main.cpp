@@ -414,7 +414,7 @@ int main(void)
 	Vtg_t vtg(TalkerId_t::VW);
 	vtg.setCourseTrue(1.2);
 	vtg.setCourseMagnetic(1.68);
-	vtg.setSpeed(2.40);
+	vtg.setSpeedKnots(2.40);
 	vtg.setModeIndicator(ModeIndicator_t::Autonomous);
 
 	try
@@ -464,8 +464,10 @@ int main(void)
 						std::cout << "\tCourse, true: " << vtg.courseTrue() << "\n";
 					if (vtg.isCourseMagneticValid())
 						std::cout << "\tCourse, magnetic: " << vtg.courseMagnetic() << "\n";
-					if (vtg.isSpeedValid())
-						std::cout << "\tSpeed, m/s: " << vtg.speed() << "\n";
+					if (vtg.isSpeedKnotsValid())
+						std::cout << "\tSpeed, knots: " << vtg.speedKnots() << "\n";
+					if (vtg.isSpeedKmphValid())
+						std::cout << "\tSpeed, km/h: " << vtg.speedKmph() << "\n";
 					std::cout << "\tMode indicator: " << vtg.modeIndicator().toModeIndCode() << "\n";
 				}
 				break;

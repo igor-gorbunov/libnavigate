@@ -34,25 +34,29 @@
 
 struct gsa_t
 {
-	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of GSA_VALID_xxx
-	navi_gsaswitchmode_t swmode;	// Mode: Manula or Automatic
-	int fixmode;			// Mode: 1 = fix not available, 2 = 2D, 3 = 3D
-	struct
-	{
-		int notnull;		// 0 = null field, 1 = not null
-		int id;				// ID number of satellite used in solution
-	} satellites[GSA_MAX_SATELLITES];	// satellites ID numbers array
-	double pdop;			// Position dilution of precision
-	double hdop;			// Horizontal dilution of precision
-	double vdop;			// Vertical dilution of precision
-};
+	// talker id
+	navi_talkerid_t tid;
 
-#define GSA_VALID_SWITCHMODE	0x01
-#define GSA_VALID_FIXMODE		0x02
-#define GSA_VALID_PDOP			0x04
-#define GSA_VALID_HDOP			0x08
-#define GSA_VALID_VDOP			0x10
+	// Mode: Manual or Automatic
+	navi_gsaswitchmode_t swmode;
+
+	// Mode: 1 = fix not available, 2 = 2D, 3 = 3D, -1 = null field
+	int fixmode;
+
+	// satellites ID numbers array
+	// ID number of satellite used in solution,
+	// -1 if null field
+	int satellites[GSA_MAX_SATELLITES];
+
+	// Position dilution of precision
+	double pdop;
+
+	// Horizontal dilution of precision
+	double hdop;
+
+	// Vertical dilution of precision
+	double vdop;
+};
 
 NAVI_BEGIN_DECL
 

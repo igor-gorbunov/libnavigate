@@ -34,14 +34,18 @@
 // Initializes GSA sentence structure with default values
 navierr_status_t navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid)
 {
+	size_t i;
+
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
 	msg->swmode = navi_gsa_NULL;
-	msg->fixmode = 1;
-	memset(msg->satellites, 0, sizeof(msg->satellites));
-	msg->pdop = msg->hdop = msg->vdop = 0.0;
+	msg->fixmode = -1;
+	for (i = 0; i < GSA_MAX_SATELLITES; i++)
+		msg->satellites[i] = -1;
+	navi_init_number(&msg->pdop);
+	navi_init_number(&msg->hdop);
+	navi_init_number(&msg->vdop);
 
 	return navi_Ok;
 }
@@ -58,26 +62,22 @@ navierr_status_t navi_create_gsa(const struct gsa_t *msg, char *buffer, size_t m
 	char bytes[2];
 	char fixmode[2], satellites[12][4], pdop[16], hdop[16], vdop[16];
 
-	msglength = strlen(swmode = navi_gsamode_str(msg->swmode,
-		msg->vfields & GSA_VALID_SWITCHMODE));
+	msglength = strlen(swmode = navi_gsamode_str(msg->swmode));
 
 	(void)navi_split_integer(msg->fixmode, bytes, 1, 10);
-	msglength += navi_print_decfield(bytes,
-		msg->vfields & GSA_VALID_SWITCHMODE ? 1 : 0, fixmode, sizeof(fixmode));
+	msglength += navi_print_decfield(bytes, msg->fixmode == -1 ? 0 : 1,
+		fixmode, sizeof(fixmode));
 
-	for (i = 0; i < 12; i++)
+	for (i = 0; i < GSA_MAX_SATELLITES; i++)
 	{
-		(void)navi_split_integer(msg->satellites[i].id, bytes, 2, 10);
-		msglength += navi_print_decfield(bytes,
-			msg->satellites[i].notnull ? 2 : 0, satellites[i], sizeof(satellites[i]));
+		(void)navi_split_integer(msg->satellites[i], bytes, 2, 10);
+		msglength += navi_print_decfield(bytes, msg->satellites[i] == -1 ? 0 : 2,
+			satellites[i], sizeof(satellites[i]));
 	}
 
-	msglength += navi_print_number(msg->pdop, pdop, sizeof(pdop),
-		msg->vfields & GSA_VALID_PDOP);
-	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop),
-		msg->vfields & GSA_VALID_HDOP);
-	msglength += navi_print_number(msg->vdop, vdop, sizeof(vdop),
-		msg->vfields & GSA_VALID_VDOP);
+	msglength += navi_print_number(msg->pdop, pdop, sizeof(pdop));
+	msglength += navi_print_number(msg->hdop, hdop, sizeof(hdop));
+	msglength += navi_print_number(msg->vdop, vdop, sizeof(vdop));
 
 	if (msglength > maxsize)
 	{
@@ -104,16 +104,10 @@ navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 	size_t i = 0, j, nmread;
 	char bytes[2];
 
-	msg->vfields = 0;
-
 	if (navi_parse_gsamode(buffer + i, &msg->swmode, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GSA_VALID_SWITCHMODE;
 	}
 	i += nmread;
 
@@ -125,14 +119,11 @@ navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 	else
 	{
 		msg->fixmode = navi_compose_integer(bytes, 1, 10);
-		msg->vfields |= GSA_VALID_FIXMODE;
 	}
 	i += nmread;
 
-	for (j = 0; j < 12; j++)
+	for (j = 0; j < GSA_MAX_SATELLITES; j++)
 	{
-		msg->satellites[j].notnull = 0;
-
 		if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != 0)
 		{
 			if (navierr_get_last()->errclass != navi_NullField)
@@ -140,8 +131,7 @@ navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 		}
 		else
 		{
-			msg->satellites[j].notnull = 1;
-			msg->satellites[j].id = navi_compose_integer(bytes, 2, 10);
+			msg->satellites[j] = navi_compose_integer(bytes, 2, 10);
 		}
 		i += nmread;
 	}
@@ -151,10 +141,6 @@ navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GSA_VALID_PDOP;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->hdop, &nmread) != 0)
@@ -162,20 +148,12 @@ navierr_status_t navi_parse_gsa(struct gsa_t *msg, char *buffer)
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
-	else
-	{
-		msg->vfields |= GSA_VALID_HDOP;
-	}
 	i += nmread;
 
 	if (navi_parse_number(buffer + i, &msg->vdop, &nmread) != 0)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GSA_VALID_VDOP;
 	}
 
 	return navi_Ok;

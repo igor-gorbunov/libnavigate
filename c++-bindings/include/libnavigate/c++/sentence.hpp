@@ -215,14 +215,14 @@ private:
 NAVI_EXTERN_CLASS(Datum_t)
 {
 public:
-	static Datum_t fromDatumCode(int code);
+	static Datum_t fromDatumCode(navi_datum_t code);
 
 public:
 	enum datums_t
-		{ Unknown, WGS84, WGS72, SGS85, PE90, UserDefined };
+		{ Null, WGS84, WGS72, SGS85, PE90, UserDefined };
 
 public:
-	Datum_t(enum datums_t datum = Unknown);
+	Datum_t(enum datums_t datum = Null);
 	virtual ~Datum_t();
 
 public:
@@ -236,7 +236,7 @@ public:
 		{ return int(m_value); }
 
 public:
-	virtual int toDatumCode() const;
+	virtual navi_datum_t toDatumCode() const;
 
 private:
 	enum datums_t m_value;
@@ -245,14 +245,14 @@ private:
 NAVI_EXTERN_CLASS(DatumSubdivision_t)
 {
 public:
-	static DatumSubdivision_t fromDatumSubcode(int subcode);
+	static DatumSubdivision_t fromDatumSubcode(navi_datum_subdivision_t subcode);
 
 public:
 	enum datumsubcodes_t
-		{ Unknown };
+		{ Null };
 
 public:
-	DatumSubdivision_t(enum datumsubcodes_t datumsubcode = Unknown);
+	DatumSubdivision_t(enum datumsubcodes_t datumsubcode = Null);
 	virtual ~DatumSubdivision_t();
 
 public:
@@ -266,7 +266,7 @@ public:
 		{ return int(m_value); }
 
 public:
-	virtual int toDatumSubcode() const;
+	virtual navi_datum_subdivision_t toDatumSubcode() const;
 
 private:
 	enum datumsubcodes_t m_value;
@@ -343,15 +343,13 @@ NAVI_EXTERN_CLASS(Offset_t)
 {
 public:
 	enum quarters_t
-	{
-		Unknown, North, South, East, West
-	};
+		{ Null, North, South, East, West, Left, Right, True, Magnetic };
 
 public:
 	static Offset_t fromOffset(const struct navi_offset_t *offset);
 
-	static enum quarters_t quarterFromCode(int quarter);
-	static int quarterToCode(enum quarters_t quarter);
+	static enum quarters_t quarterFromCode(navi_offset_sign_t quarter);
+	static navi_offset_sign_t quarterToCode(enum quarters_t quarter);
 
 public:
 	Offset_t(double offset, enum quarters_t quarter);

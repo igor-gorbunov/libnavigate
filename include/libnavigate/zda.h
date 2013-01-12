@@ -31,14 +31,21 @@
 
 struct zda_t
 {
-	navi_talkerid_t tid;	// talker id
+	// talker id
+	navi_talkerid_t tid;
+
 	unsigned int vfields;	// valid fields, bitwise or of ZDA_VALID_xx
-	struct navi_utc_t utc;	// UTC time
-	struct navi_date_t date;	// Day (01 to 31), Month (01 to 12), Year (UTC)
-	int lzoffset;			// Local zone offset in minutes
+
+	// UTC time
+	struct navi_utc_t utc;
+
+	// Day (01 to 31), Month (01 to 12), Year (UTC)
+	struct navi_date_t date;
+
+	// Local zone offset in minutes
+	int lzoffset;
 };
 
-#define ZDA_VALID_UTC			0x1
 #define ZDA_VALID_DATE			0x2
 #define ZDA_VALID_LOCALZONE		0x4
 

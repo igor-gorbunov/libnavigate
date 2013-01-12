@@ -33,27 +33,39 @@
 
 struct gns_t
 {
-	navi_talkerid_t tid;	// talker id
-	unsigned int vfields;	// valid fields, bitwise or of GNS_VALID_xxx
-	struct navi_utc_t utc;		// UTC time
-	struct navi_position_t fix;	// latitude, longitude fix
-	int mi[GNS_MODEINDICATOR_SIZE];		// GPS, GLONASS
-	int nmsatellites;		// Total number of satellites in use, 00-99
-	double hdop;			// Horizontal Dilution of Precision
-	double antaltitude;		// Antenna altitude, m, re:mean-sea-level (geoid)
-	double geoidalsep;		// Geoidal separation, m
-	int diffage;			// Age of differential data, seconds
-	int id;					// Differential reference station ID, 1-1023
-};
+	// talker id
+	navi_talkerid_t tid;
 
-#define GNS_VALID_UTC					0x01
-#define GNS_VALID_POSITION_FIX			0x02
-#define GNS_VALID_TOTALNMOFSATELLITES	0x04
-#define GNS_VALID_HDOP					0x08
-#define GNS_VALID_ANTENNAALTITUDE		0x10
-#define GNS_VALID_GEOIDALSEP			0x20
-#define GNS_VALID_AGEOFDIFFDATA			0x40
-#define GNS_VALID_DIFFREFSTATIONID		0x80
+	// UTC time
+	struct navi_utc_t utc;
+
+	// latitude, longitude fix
+	struct navi_position_t fix;
+
+	// GPS, GLONASS
+	int mi[GNS_MODEINDICATOR_SIZE];
+
+	// Total number of satellites in use, 00-99
+	// -1, if null field
+	int nmsatellites;
+
+	// Horizontal Dilution of Precision
+	double hdop;
+
+	// Antenna altitude, m, re:mean-sea-level (geoid)
+	double antaltitude;
+
+	// Geoidal separation, m
+	double geoidalsep;
+
+	// Age of differential data, seconds
+	// -1, if null field
+	int diffdata_age;
+
+	// Differential reference station ID, 1-1023
+	// -1, if null field
+	int station_id;
+};
 
 NAVI_BEGIN_DECL
 

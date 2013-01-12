@@ -47,16 +47,15 @@ NAVI_EXTERN(const char *) navi_sentencefmt_str(navi_approved_fmt_t fmt);
 
 //
 // Returns the string representation of geodetic datum
-NAVI_EXTERN(const char *) navi_datum_str(navi_datum_t datum, int notnull);
+NAVI_EXTERN(const char *) navi_datum_str(navi_datum_t datum);
 
 //
-// Returns the string representation of geodetic datum
-NAVI_EXTERN(const char *) navi_datumsubdiv_str(navi_datum_subdivision_t datumsub,
-	int notnull);
+// Returns the string representation of geodetic datum subdivision code
+NAVI_EXTERN(const char *) navi_datumsubdiv_str(navi_datum_subdivision_t datumsub);
 
 //
 // Returns the offset or position fix sign
-NAVI_EXTERN(const char *) navi_fixsign_str(navi_offset_sign_t fixsign, int notnull);
+NAVI_EXTERN(const char *) navi_fixsign_str(navi_offset_sign_t fixsign);
 
 //
 // Returns the status
@@ -72,19 +71,24 @@ NAVI_EXTERN(const char *) navi_modeindicator_extended_str(navi_modeindicator_t m
 
 //
 // Returns the GSA 2D/3D switching mode
-NAVI_EXTERN(const char *) navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull);
+NAVI_EXTERN(const char *) navi_gsamode_str(navi_gsaswitchmode_t mode);
+
+//
+// Prints offset 'x.x,a', or null fields
+// Returns the number of printed characters
+NAVI_EXTERN(size_t) navi_print_offset(const struct navi_offset_t *offset,
+	char *buffer, size_t maxsize);
 
 //
 // Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
 // Returns the number of printed characters
 NAVI_EXTERN(size_t) navi_print_position_fix(const struct navi_position_t *fix,
-	char *buffer, size_t maxsize, int notnull);
+	char *buffer, size_t maxsize);
 
 //
 // Prints variable numbers
 // Returns the number of printed characters
-NAVI_EXTERN(size_t) navi_print_number(double value, char *buffer,
-	size_t maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_number(double value, char *buffer, size_t maxsize);
 
 //
 // Prints fixed length hexadecimal numbers, MSB on the left.
@@ -108,8 +112,8 @@ NAVI_EXTERN(size_t) navi_print_fixedfield(const char bytes[], int fieldwidth, in
 //
 // Prints UTC time
 // Returns the number of printed characters
-NAVI_EXTERN(size_t) navi_print_utc(const struct navi_utc_t *utc, char *buffer,
-	size_t maxsize, int notnull);
+NAVI_EXTERN(size_t) navi_print_utc(const struct navi_utc_t *utc,
+	char *buffer, size_t maxsize);
 
 //
 // Prints array of mode indicators

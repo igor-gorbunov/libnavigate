@@ -33,7 +33,7 @@
 #include <assert.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+#include "win32/win32navi.h"
 #endif // MSVC_VER
 
 //
@@ -193,7 +193,19 @@ size_t remove_trailing_zeroes(char *buffer, size_t length)
 }
 
 //
-// Fills position fix structure with given values in degrees.
+// Fills position fix structure with null values
+navierr_status_t navi_init_position(struct navi_position_t *fix)
+{
+	assert(fix != NULL);
+
+	(void)navi_init_offset(&fix->latitude);
+	(void)navi_init_offset(&fix->longitude);
+
+	return navi_Ok;
+}
+
+//
+// Fills position fix structure with given values in degrees
 navierr_status_t navi_init_position_from_degrees(double latitude,
 	double longitude, struct navi_position_t *fix)
 {
@@ -201,79 +213,100 @@ navierr_status_t navi_init_position_from_degrees(double latitude,
 	assert((longitude >= -180.0) && (longitude < +2. * 180.0));
 	assert(fix != NULL);
 
-	if (latitude >= 0.)
-	{
-		fix->latitude = latitude;
-		fix->latsign = navi_North;
-	}
+	if (latitude >= 0.0)
+		fix->latitude.sign = navi_North;
 	else
-	{
-		fix->latitude = fabs(latitude);
-		fix->latsign = navi_South;
-	}
+		fix->latitude.sign = navi_South;
+	fix->latitude.offset = fabs(latitude);
 
-	if ((longitude >= 0.) && (longitude < +90.0))
+	if ((longitude >= 0.0) && (longitude <= +180.0))
 	{
-		fix->longitude = longitude;
-		fix->lonsign = navi_East;
+		fix->longitude.offset = longitude;
+		fix->longitude.sign = navi_East;
 	}
-	else if (longitude >= +90.0)
+	else if (longitude > +180.0)
 	{
-		fix->longitude = longitude - 90.0;
-		fix->lonsign = navi_West;
+		fix->longitude.offset = longitude - 180.0;
+		fix->longitude.sign = navi_West;
 	}
 	else
 	{
-		fix->latitude = fabs(latitude);
-		fix->latsign = navi_West;
+		fix->longitude.offset = fabs(longitude);
+		fix->longitude.sign = navi_West;
 	}
 
 	return navi_Ok;
 }
 
 //
-// Fills position fix structure with given values in radians.
+// Fills position fix structure with given values in radians
 navierr_status_t navi_init_position_from_radians(double latitude,
 	double longitude, struct navi_position_t *fix)
 {
 	assert((latitude >= -M_PI) && (latitude <= +M_PI));
-	assert((longitude >= -M_PI) && (longitude < +2. * M_PI));
+	assert((longitude >= -M_PI) && (longitude < +2.0 * M_PI));
 	assert(fix != NULL);
 
-	if (latitude >= 0.)
-	{
-		fix->latitude = latitude * 180. / M_PI;
-		fix->latsign = navi_North;
-	}
+	if (latitude >= 0.0)
+		fix->latitude.sign = navi_North;
 	else
-	{
-		fix->latitude = fabs(latitude) * 180. / M_PI;
-		fix->latsign = navi_South;
-	}
+		fix->latitude.sign = navi_South;
+	fix->latitude.offset = fabs(latitude) * 180.0 / M_PI;
 
-	if ((longitude >= 0.) && (longitude < M_PI))
+	if ((longitude >= 0.0) && (longitude <= M_PI))
 	{
-		fix->longitude = longitude * 180. / M_PI;
-		fix->lonsign = navi_East;
+		fix->longitude.offset = longitude * 180.0 / M_PI;
+		fix->longitude.sign = navi_East;
 	}
-	else if (longitude >= M_PI)
+	else if (longitude > M_PI)
 	{
-		fix->longitude = (longitude - M_PI) * 180. / M_PI;
-		fix->lonsign = navi_West;
+		fix->longitude.offset = (longitude - M_PI) * 180.0 / M_PI;
+		fix->longitude.sign = navi_West;
 	}
 	else
 	{
-		fix->latitude = fabs(latitude) * 180. / M_PI;
-		fix->latsign = navi_West;
+		fix->longitude.offset = fabs(latitude) * 180.0 / M_PI;
+		fix->longitude.sign = navi_West;
 	}
 
 	return navi_Ok;
 }
 
+
 //
-// Fills offset structure with given values in degrees.
-navierr_status_t navi_init_offset_from_degrees(double offset,
-	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+// Checks if the position structure contains valid values
+navierr_status_t navi_check_validity_position(const struct navi_position_t *fix)
+{
+	navi_status_t status = navi_Ok;
+
+	assert(fix != NULL);
+
+	if ((navi_check_validity_offset(&fix->latitude) == navi_Error) ||
+		(navi_check_validity_offset(&fix->longitude) == navi_Error))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
+}
+
+//
+// Fills offset structure with null values
+navierr_status_t navi_init_offset(struct navi_offset_t *ofs)
+{
+	assert(ofs != NULL);
+
+	ofs->offset = nan("");
+	ofs->sign = navi_offset_NULL;
+
+	return navi_Ok;
+}
+
+//
+// Fills offset structure with given values in degrees
+navierr_status_t navi_init_offset_from_degrees(double offset, navi_offset_sign_t sign,
+	struct navi_offset_t *ofs)
 {
 	assert(ofs != NULL);
 
@@ -284,16 +317,33 @@ navierr_status_t navi_init_offset_from_degrees(double offset,
 }
 
 //
-// Fills position fix structure with given values in radians.
-navierr_status_t navi_init_offset_from_radians(double offset,
-	navi_offset_sign_t sign, struct navi_offset_t *ofs)
+// Fills offset structure with given values in radians
+navierr_status_t navi_init_offset_from_radians(double offset, navi_offset_sign_t sign,
+	struct navi_offset_t *ofs)
 {
 	assert(ofs != NULL);
 
-	ofs->offset = fabs(offset) * 180. / M_PI;
+	ofs->offset = fabs(offset) * 180.0 / M_PI;
 	ofs->sign = sign;
 
 	return navi_Ok;
+}
+
+//
+// Checks if the offset structure contains valid values
+navierr_status_t navi_check_validity_offset(const struct navi_offset_t *offset)
+{
+	navi_status_t status = navi_Ok;
+
+	assert(offset != NULL);
+
+	if ((offset->sign == navi_offset_NULL) || (isnan(offset->offset)))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
 }
 
 //
@@ -308,14 +358,14 @@ navierr_status_t navi_get_position(const struct navi_position_t *in,
 	assert(latitude != NULL);
 	assert(longitude != NULL);
 
-	d = in->latitude;
-	if (in->latsign == navi_North)
+	d = in->latitude.offset;
+	if (in->latitude.sign == navi_North)
 		*latitude = d;
 	else
 		*latitude = -d;
 
-	d = in->longitude;
-	if (in->lonsign == navi_East)
+	d = in->longitude.offset;
+	if (in->longitude.sign == navi_East)
 		*longitude = d;
 	else
 		*longitude = -d;
@@ -412,8 +462,22 @@ navi_char_type_t navi_get_character_type(int c)
 }
 
 //
+// Fills utc structure with null values
+navierr_status_t navi_init_utc(struct navi_utc_t *utc)
+{
+	assert(utc != NULL);
+
+	utc->hour = 0;
+	utc->min = 0;
+	utc->sec = nan("");
+
+	return navi_Ok;
+}
+
+//
 // Fills utc structure with given values
-navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc)
+navierr_status_t navi_init_utc_from_hhmmss(int hh, int mm, double ss,
+	struct navi_utc_t *utc)
 {
 	assert(utc != NULL);
 
@@ -422,6 +486,23 @@ navierr_status_t navi_init_utc(int hh, int mm, double ss, struct navi_utc_t *utc
 	utc->sec = ss;
 
 	return navi_Ok;
+}
+
+//
+// Checks if the utc structure contains valid values
+navierr_status_t navi_check_validity_utc(const struct navi_utc_t *utc)
+{
+	navierr_status_t status = navi_Ok;
+
+	assert(utc != NULL);
+
+	if (isnan(utc->sec))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
 }
 
 //
@@ -435,6 +516,32 @@ navierr_status_t navi_init_date(int yy, int mm, int dd, struct navi_date_t *date
 	date->day = dd;
 
 	return navi_Ok;
+}
+
+//
+// Fills variable number with null value
+navierr_status_t navi_init_number(double *number)
+{
+	assert(number != NULL);
+
+	*number = nan("");
+
+	return navi_Ok;
+}
+
+//
+// Checks if the variable number is valid
+navierr_status_t navi_check_validity_number(double value)
+{
+	navierr_status_t status = navi_Ok;
+
+	if (isnan(value))
+	{
+		navierr_set_last(navi_NullField);
+		status = navi_Error;
+	}
+
+	return status;
 }
 
 const char *navi_fmtlist[] =

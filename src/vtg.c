@@ -37,10 +37,12 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
-	msg->courseTrue = 0.;
-	msg->courseMagn = 0.;
-	msg->speed = 0.;
+
+	navi_init_number(&msg->courseT);
+	navi_init_number(&msg->courseM);
+	navi_init_number(&msg->speedN);
+	navi_init_number(&msg->speedK);
+
 	msg->mi = navi_DataNotValid;
 
 	return navi_Ok;
@@ -50,41 +52,88 @@ NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t t
 
 //
 // Creates VTG message
-navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, size_t maxsize, size_t *nmwritten)
+navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer,
+	size_t maxsize, size_t *nmwritten)
 {
-	size_t msglength;
+	size_t msglength = 0;
 
-	const char *mi;
-	char ctrue[32], courseT[2], cmagn[32], courseM[2], snots[32],
-		speedN[4], skmph[32], speedK[2];
+	const char *const_str;
+	char local_str[NAVI_SENTENCE_MAXSIZE];
 
-	msglength = navi_print_number(msg->courseTrue, ctrue, sizeof(ctrue),
-		msg->vfields & VTG_VALID_COURSETRUE);
-	msglength += snprintf(courseT, sizeof(courseT),
-		(msg->vfields & VTG_VALID_COURSETRUE) ? "T" : "");
-	msglength += navi_print_number(msg->courseMagn, cmagn, sizeof(cmagn),
-		msg->vfields & VTG_VALID_COURSEMAGN);
-	msglength += snprintf(courseM, sizeof(courseM),
-		(msg->vfields & VTG_VALID_COURSEMAGN) ? "M" : "");
-	msglength += navi_print_number(MPS_TO_KNOTS(msg->speed), snots,
-		sizeof(snots), msg->vfields & VTG_VALID_SPEED);
-	msglength += snprintf(speedN, sizeof(speedN),
-		(msg->vfields & VTG_VALID_SPEED) ? "N" : "");
-	msglength += navi_print_number(MPS_TO_KMPH(msg->speed), skmph,
-		sizeof(skmph), msg->vfields & VTG_VALID_SPEED);
-	msglength += snprintf(speedK, sizeof(speedK),
-		(msg->vfields & VTG_VALID_SPEED) ? "K" : "");
+	assert(msg != NULL);
+	assert(buffer != NULL);
+	assert(maxsize > 0);
 
-	msglength += strlen(mi = navi_modeindicator_str(msg->mi));
+	if (navi_check_validity_number(msg->courseT) == navi_Ok)
+	{
+		msglength += navi_print_number(msg->courseT, local_str + msglength,
+			sizeof(local_str) - msglength);
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",T,");
+	}
+	else
+	{
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",,");
+	}
 
-	if (msglength > maxsize)
+	if (navi_check_validity_number(msg->courseM) == navi_Ok)
+	{
+		msglength += navi_print_number(msg->courseM, local_str + msglength,
+			sizeof(local_str) - msglength);
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",M,");
+	}
+	else
+	{
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",,");
+	}
+
+	if (navi_check_validity_number(msg->speedN) == navi_Ok)
+	{
+		msglength += navi_print_number(msg->speedN, local_str + msglength,
+			sizeof(local_str) - msglength);
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",N,");
+	}
+	else
+	{
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",,");
+	}
+
+	if (navi_check_validity_number(msg->speedK) == navi_Ok)
+	{
+		msglength += navi_print_number(msg->speedK, local_str + msglength,
+			sizeof(local_str) - msglength);
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",K,");
+	}
+	else
+	{
+		msglength += snprintf(local_str + msglength,
+			sizeof(local_str) - msglength, ",,");
+	}
+
+	msglength += strlen(const_str = navi_modeindicator_str(msg->mi));
+	if (msglength + 1 > sizeof(local_str))
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+	(void)strcat(local_str, const_str);
+
+	if (msglength >= maxsize)
 	{
 		navierr_set_last(navi_NotEnoughBuffer);
 		return navi_Error;
 	}
 
-	*nmwritten = snprintf(buffer, maxsize, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
-		ctrue, courseT, cmagn, courseM, snots, speedN, skmph, speedK, mi);
+	msglength = snprintf(buffer, maxsize, "%s", local_str);
+	if (nmwritten != NULL)
+		*nmwritten = msglength;
+
 	return navi_Ok;
 }
 
@@ -97,18 +146,11 @@ navierr_status_t navi_create_vtg(const struct vtg_t *msg, char *buffer, size_t m
 navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 {
 	size_t i = 0, nmread;
-	double speedknots, speedkmph;
 
-	msg->vfields = 0;
-
-	if (navi_parse_number(buffer + i, &msg->courseTrue, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->courseT, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= VTG_VALID_COURSETRUE;
+			return navi_Error;
 	}
 	i += nmread;
 
@@ -122,14 +164,10 @@ navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 	}
 	i += 1;
 
-	if (navi_parse_number(buffer + i, &msg->courseMagn, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->courseM, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
-	}
-	else
-	{
-		msg->vfields |= VTG_VALID_COURSEMAGN;
+			return navi_Error;
 	}
 	i += nmread;
 
@@ -143,11 +181,10 @@ navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 	}
 	i += 1;
 
-	speedknots = -1.0;
-	if (navi_parse_number(buffer + i, &speedknots, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->speedN, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	i += nmread;
 
@@ -161,11 +198,10 @@ navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 	}
 	i += 1;
 
-	speedkmph = -1.0;
-	if (navi_parse_number(buffer + i, &speedkmph, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->speedK, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
-			return -1;
+			return navi_Error;
 	}
 	i += nmread;
 
@@ -179,21 +215,10 @@ navierr_status_t navi_parse_vtg(struct vtg_t *msg, char *buffer)
 	}
 	i += 1;
 
-	if (speedkmph > -1.0)
-	{
-		msg->speed = KMPH_TO_MPS(speedkmph);
-		msg->vfields |= VTG_VALID_SPEED;
-	}
-	else if (speedknots > -1.0)
-	{
-		msg->speed = KNOTS_TO_MPS(speedknots);
-		msg->vfields |= VTG_VALID_SPEED;
-	}
-
-	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != 0)
+	if (navi_parse_modeindicator(buffer + i, &msg->mi, &nmread) != navi_Ok)
 	{	// cannot be null field
 		navierr_set_last(navi_InvalidMessage);
-		return -1;
+		return navi_Error;
 	}
 
 	return navi_Ok;

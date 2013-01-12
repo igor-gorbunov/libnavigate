@@ -36,16 +36,14 @@ navierr_status_t navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid)
 	assert(msg != NULL);
 
 	msg->tid = tid;
-	msg->vfields = 0;
-	navi_init_utc(0, 0, 0.0, &msg->utc);
-
-	msg->experrlat = 0.0;
-	msg->experrlon = 0.0;
-	msg->experralt = 0.0;
-	msg->id = 0;
-	msg->probability = 0.0;
-	msg->estimate = 0.0;
-	msg->deviation = 0.0;
+	navi_init_utc(&msg->utc);
+	navi_init_number(&msg->experrlat);
+	navi_init_number(&msg->experrlon);
+	navi_init_number(&msg->experralt);
+	msg->failed_id = -1;
+	navi_init_number(&msg->probability);
+	navi_init_number(&msg->estimate);
+	navi_init_number(&msg->deviation);
 
 	return navi_Ok;
 }
@@ -62,24 +60,18 @@ navierr_status_t navi_create_gbs(const struct gbs_t *msg, char *buffer, size_t m
 	char utc[32], experrlat[32], experrlon[32], experralt[32],
 		id[4], probability[32], estimate[32], deviation[32];
 
-	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc), 1);
-	msglength += navi_print_number(msg->experrlat, experrlat, sizeof(experrlat),
-		msg->vfields & GBS_VALID_EXPERRLATLON);
-	msglength += navi_print_number(msg->experrlon, experrlon, sizeof(experrlon),
-		msg->vfields & GBS_VALID_EXPERRLATLON);
-	msglength += navi_print_number(msg->experralt, experralt, sizeof(experralt),
-		msg->vfields & GBS_VALID_EXPERRALT);
+	msglength = navi_print_utc(&msg->utc, utc, sizeof(utc));
+	msglength += navi_print_number(msg->experrlat, experrlat, sizeof(experrlat));
+	msglength += navi_print_number(msg->experrlon, experrlon, sizeof(experrlon));
+	msglength += navi_print_number(msg->experralt, experralt, sizeof(experralt));
 
-	(void)navi_split_integer(msg->id, bytes, 2, 10);
-	msglength += navi_print_decfield(bytes, msg->vfields & GBS_VALID_ID ? 2 : 0,
+	(void)navi_split_integer(msg->failed_id, bytes, 2, 10);
+	msglength += navi_print_decfield(bytes, msg->failed_id == -1 ? 0 : 2,
 		id, sizeof(id));
 
-	msglength += navi_print_number(msg->probability, probability, sizeof(probability),
-		msg->vfields & GBS_VALID_PROBABILITY);
-	msglength += navi_print_number(msg->estimate, estimate, sizeof(estimate),
-		msg->vfields & GBS_VALID_ESTIMATE);
-	msglength += navi_print_number(msg->deviation, deviation, sizeof(deviation),
-		msg->vfields & GBS_VALID_DEVIATION);
+	msglength += navi_print_number(msg->probability, probability, sizeof(probability));
+	msglength += navi_print_number(msg->estimate, estimate, sizeof(estimate));
+	msglength += navi_print_number(msg->deviation, deviation, sizeof(deviation));
 
 	if (msglength > maxsize)
 	{
@@ -103,95 +95,65 @@ navierr_status_t navi_parse_gbs(struct gbs_t *msg, char *buffer)
 	size_t i = 0, nmread;
 	char bytes[4];
 
-	msg->vfields = 0;
-
-	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != 0)
+	if (navi_parse_utc(buffer + i, &msg->utc, &nmread) != navi_Ok)
 	{
 		return navi_Error;
 	}
 	i += nmread;
 
 	msg->experrlat = 0.;
-	if (navi_parse_number(buffer + i, &msg->experrlat, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->experrlat, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GBS_VALID_EXPERRLATLON;
 	}
 	i += nmread;
 
 	msg->experrlon = 0.;
-	if (navi_parse_number(buffer + i, &msg->experrlon, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->experrlon, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GBS_VALID_EXPERRLATLON;
 	}
 	i += nmread;
 
 	msg->experralt = 0.0;
-	if (navi_parse_number(buffer + i, &msg->experralt, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->experralt, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GBS_VALID_EXPERRALT;
 	}
 	i += nmread;
 
-	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != 0)
+	if (navi_parse_decfield(buffer + i, 2, bytes, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
 	}
 	else
 	{
-		msg->id = navi_compose_integer(bytes, 2, 10);
-		msg->vfields |= GBS_VALID_ID;
+		msg->failed_id = navi_compose_integer(bytes, 2, 10);
 	}
 	i += nmread;
 
-	msg->probability = 0.;
-	if (navi_parse_number(buffer + i, &msg->probability, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->probability, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GBS_VALID_PROBABILITY;
 	}
 	i += nmread;
 
-	msg->estimate = 0.;
-	if (navi_parse_number(buffer + i, &msg->estimate, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->estimate, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GBS_VALID_ESTIMATE;
 	}
 	i += nmread;
 
-	msg->deviation = 0.;
-	if (navi_parse_number(buffer + i, &msg->deviation, &nmread) != 0)
+	if (navi_parse_number(buffer + i, &msg->deviation, &nmread) != navi_Ok)
 	{
 		if (navierr_get_last()->errclass != navi_NullField)
 			return navi_Error;
-	}
-	else
-	{
-		msg->vfields |= GBS_VALID_DEVIATION;
 	}
 
 	return navi_Ok;

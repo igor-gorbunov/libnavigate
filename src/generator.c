@@ -33,6 +33,12 @@
 #include <libnavigate/ack.h>
 #include <libnavigate/alm.h>
 #include <libnavigate/alr.h>
+#include <libnavigate/apb.h>
+#include <libnavigate/bec.h>
+#include <libnavigate/bod.h>
+#include <libnavigate/bwc.h>
+#include <libnavigate/bwr.h>
+#include <libnavigate/bww.h>
 #include <libnavigate/dtm.h>
 #include <libnavigate/gbs.h>
 #include <libnavigate/gga.h>
@@ -123,11 +129,65 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		}
 		break;
 	case navi_APB:
+		{
+			const struct apb_t *papb = (const struct apb_t *)msg;
+			tid = navi_talkerid_str(papb->tid);
+			sfmt = navi_sentencefmt_str(navi_APB);
+
+			if (navi_create_apb(papb, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BEC:
+		{
+			const struct bec_t *pbec = (const struct bec_t *)msg;
+			tid = navi_talkerid_str(pbec->tid);
+			sfmt = navi_sentencefmt_str(navi_BEC);
+
+			if (navi_create_bec(pbec, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BOD:
+		{
+			const struct bod_t *pbod = (const struct bod_t *)msg;
+			tid = navi_talkerid_str(pbod->tid);
+			sfmt = navi_sentencefmt_str(navi_BOD);
+
+			if (navi_create_bod(pbod, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BWC:
+		{
+			const struct bwc_t *pbwc = (const struct bwc_t *)msg;
+			tid = navi_talkerid_str(pbwc->tid);
+			sfmt = navi_sentencefmt_str(navi_BWC);
+
+			if (navi_create_bwc(pbwc, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BWR:
+		{
+			const struct bwr_t *pbwr = (const struct bwr_t *)msg;
+			tid = navi_talkerid_str(pbwr->tid);
+			sfmt = navi_sentencefmt_str(navi_BWR);
+
+			if (navi_create_bwr(pbwr, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_BWW:
+		{
+			const struct bww_t *pbww = (const struct bww_t *)msg;
+			tid = navi_talkerid_str(pbww->tid);
+			sfmt = navi_sentencefmt_str(navi_BWW);
+
+			if (navi_create_bww(pbww, msgbody, sizeof(msgbody), &msglen) < 0)
+				return navi_Error;
+		}
+		break;
 	case navi_DBT:
 	case navi_DCN:
 	case navi_DPT:
@@ -372,13 +432,9 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 }
 
 //
-// navi_datum_to_string
-//
-const char *navi_datum_str(navi_datum_t datum, int notnull)
+// Returns the string representation of geodetic datum
+const char *navi_datum_str(navi_datum_t datum)
 {
-	if (!notnull)
-		datum = navi_datum_NULL;
-
 	switch (datum)
 	{
 	case navi_WGS84:
@@ -399,13 +455,9 @@ const char *navi_datum_str(navi_datum_t datum, int notnull)
 }
 
 //
-// navi_datumsubdiv_str
-//
-const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub, int notnull)
+// Returns the string representation of geodetic datum subdivision code
+const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub)
 {
-	if (!notnull)
-		datumsub = navi_datumsub_NULL;
-
 	switch (datumsub)
 	{
 	case navi_datumsub_NULL:
@@ -416,13 +468,9 @@ const char *navi_datumsubdiv_str(navi_datum_subdivision_t datumsub, int notnull)
 }
 
 //
-// navi_fixsign_str
-//
-const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
+// Returns the offset or position fix sign
+const char *navi_fixsign_str(navi_offset_sign_t fixsign)
 {
-	if (!notnull)
-		fixsign = navi_offsetsign_NULL;
-
 	switch (fixsign)
 	{
 	case navi_North:
@@ -433,7 +481,15 @@ const char *navi_fixsign_str(navi_offset_sign_t fixsign, int notnull)
 		return "E";
 	case navi_West:
 		return "W";
-	case navi_offsetsign_NULL:
+	case navi_Left:
+		return "L";
+	case navi_Right:
+		return "R";
+	case navi_True:
+		return "T";
+	case navi_Magnetic:
+		return "M";
+	case navi_offset_NULL:
 		return "";
 	default:
 		return NULL;
@@ -451,6 +507,8 @@ const char *navi_status_str(navi_status_t status)
 		return "A";
 	case navi_status_V:
 		return "V";
+	case navi_status_NULL:
+		return "";
 	default:
 		return NULL;
 	}
@@ -511,51 +569,77 @@ const char *navi_modeindicator_extended_str(navi_modeindicator_t mi)
 }
 
 //
-// navi_gsamode_str
-//
-const char *navi_gsamode_str(navi_gsaswitchmode_t mode, int notnull)
+// Returns the GSA 2D/3D switching mode
+const char *navi_gsamode_str(navi_gsaswitchmode_t mode)
 {
-	if (notnull)
+	switch (mode)
 	{
-		switch (mode)
-		{
-		case navi_gsa_Manual:
-			return "M";
-		case navi_gsa_Automatic:
-			return "A";
-		default:
-			return NULL;
-		}
-	}
-	else
-	{
+	case navi_gsa_Manual:
+		return "M";
+	case navi_gsa_Automatic:
+		return "A";
+	case navi_gsa_NULL:
 		return "";
+	default:
+		return NULL;
 	}
 }
 
 //
-// navi_print_position_fix
-//
-size_t navi_print_position_fix(const struct navi_position_t *fix,
-	char *buffer, size_t maxsize, int notnull)
+// Prints offset 'x.x,a', or null fields
+size_t navi_print_offset(const struct navi_offset_t *offset, char *buffer, size_t maxsize)
 {
-	if (notnull)
+	size_t nmwritten = 0;
+
+	assert(offset != NULL);
+	assert(buffer != NULL);
+	assert(maxsize > 0);
+
+	if (navi_check_validity_offset(offset) == navi_Ok)
+	{
+		const char *s;
+
+		nmwritten += navi_print_number(offset->offset, buffer, maxsize);
+
+		(void)strncat(buffer, ",", maxsize);
+		nmwritten++;
+
+		nmwritten += strlen(s = navi_fixsign_str(offset->sign));
+		(void)strncat(buffer, s, maxsize);
+	}
+	else
+	{
+		nmwritten += snprintf(buffer, maxsize, ",");
+	}
+
+	return nmwritten;
+}
+
+//
+// Prints position fix 'llll.ll,a,yyyyy.yy,a', or null fields
+size_t navi_print_position_fix(const struct navi_position_t *fix, char *buffer,
+	size_t maxsize)
+{
+	size_t nmwritten = 0;
+
+	assert(fix != NULL);
+	assert(buffer != NULL);
+
+	if (navi_check_validity_position(fix) == navi_Ok)
 	{
 		int precision;
-		size_t nmwritten;
 		double degrees, fraction;
 
 		const char *s;
 		char *oldlocale = setlocale(LC_NUMERIC, NULL);
-		setlocale(LC_NUMERIC, "POSIX");
+		(void)setlocale(LC_NUMERIC, "POSIX");
 
-		nmwritten = 0;
 		precision = naviconf_get_presicion();
 
 		// extract and print latitude
-		fraction = modf(fix->latitude, &degrees);
-		degrees = degrees * 100.;
-		fraction = fraction * 60.;
+		fraction = modf(fix->latitude.offset, &degrees);
+		degrees = degrees * 100.0;
+		fraction = fraction * 60.0;
 		fraction = fraction + degrees;
 
 		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
@@ -563,18 +647,18 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
+		nmwritten++;
 
-		nmwritten += strlen(s = navi_fixsign_str(fix->latsign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(fix->latitude.sign));
 		(void)strncat(buffer, s, maxsize);
 
 		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
+		nmwritten++;
 
 		// extract and print longitude
-		fraction = modf(fix->longitude, &degrees);
-		degrees = degrees * 100.;
-		fraction = fraction * 60.;
+		fraction = modf(fix->longitude.offset, &degrees);
+		degrees = degrees * 100.0;
+		fraction = fraction * 60.0;
 		fraction = fraction + degrees;
 
 		nmwritten += snprintf(buffer + nmwritten, maxsize, "%0*.*f",
@@ -582,27 +666,26 @@ size_t navi_print_position_fix(const struct navi_position_t *fix,
 		nmwritten = remove_trailing_zeroes(buffer, nmwritten);
 
 		(void)strncat(buffer, ",", maxsize);
-		nmwritten += 1;
+		nmwritten++;
 
-		nmwritten += strlen(s = navi_fixsign_str(fix->lonsign, notnull));
+		nmwritten += strlen(s = navi_fixsign_str(fix->longitude.sign));
 		(void)strncat(buffer, s, maxsize);
 
 		setlocale(LC_NUMERIC, oldlocale);
-		return nmwritten;
 	}
 	else
 	{
-		(void)strncpy(buffer, ",,,", maxsize);
-		return 3;
+		nmwritten += snprintf(buffer, maxsize, ",,,");
 	}
+
+	return nmwritten;
 }
 
 //
-// navi_print_number
-//
-size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull)
+// Prints variable numbers
+size_t navi_print_number(double value, char *buffer, size_t maxsize)
 {
-	if (notnull)
+	if (navi_check_validity_number(value) == navi_Ok)
 	{
 		int result, precision;
 		char *oldlocale = setlocale(LC_NUMERIC, NULL);
@@ -622,11 +705,12 @@ size_t navi_print_number(double value, char *buffer, size_t maxsize, int notnull
 }
 
 //
-// navi_print_utc
-//
-size_t navi_print_utc(const struct navi_utc_t *utc, char *buffer, size_t maxsize, int notnull)
+// Prints UTC time
+size_t navi_print_utc(const struct navi_utc_t *utc, char *buffer, size_t maxsize)
 {
-	if (notnull)
+	assert(utc != NULL);
+
+	if (navi_check_validity_utc(utc) == navi_Ok)
 	{
 		int result, precision;
 		char *oldlocale = setlocale(LC_NUMERIC, NULL);
