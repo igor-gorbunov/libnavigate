@@ -39,6 +39,9 @@ NAVI_BEGIN_DECL
 //
 enum _navi_approved_fmt_t
 {
+	// Proprietary sentence
+	navi_approvedfmt_Proprietary = -2,
+
 	// Unknown or undefined sentence formatter
 	navi_approvedfmt_Unknown = -1,
 
@@ -124,6 +127,9 @@ typedef int navi_approved_fmt_t;
 //
 enum _navi_talkerid_t
 {
+	// Proprietary sentence
+	navi_talkerid_Proprietary = -2,
+
 	// Unknown or undefined talker id
 	navi_talkerid_Unknown = -1,
 
@@ -195,9 +201,7 @@ enum _navi_talkerid_t
 	navi_ZQ,	// quartz
 	navi_ZV,	// radio update
 	// Weather instruments
-	navi_WI,
-	// Proprietary code
-	navi_P
+	navi_WI
 };
 
 typedef int navi_talkerid_t;

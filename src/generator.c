@@ -54,6 +54,8 @@
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>
 
+#include <libnavigate/proprietarymsg.h>
+
 #endif // NO_GENERATOR
 
 #ifdef _MSC_VER
@@ -395,6 +397,10 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 	case navi_ZTG:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
+	case navi_approvedfmt_Proprietary:
+		if (navi_create_proprietary(msg, msgbody, sizeof(msgbody), &msglen) < 0)
+			return navi_Error;
+		break;
 	default:
 		navierr_set_last(navi_MsgNotSupported);
 		return navi_Error;
@@ -769,7 +775,7 @@ const char *navi_sentencefmt_str(navi_approved_fmt_t fmt)
 //
 const char *navi_talkerid_str(navi_talkerid_t tid)
 {
-	assert((tid >= navi_AG) && (tid <= navi_P));
+	assert((tid >= navi_AG) && (tid <= navi_WI));
 	return navi_tidlist[tid];
 }
 

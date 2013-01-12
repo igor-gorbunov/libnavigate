@@ -54,6 +54,8 @@
 #include <libnavigate/vtg.h>
 #include <libnavigate/zda.h>
 
+#include <libnavigate/proprietarymsg.h>
+
 #endif // NO_PARSER
 
 #ifdef _MSC_VER
@@ -387,6 +389,8 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 	case navi_ZFO:
 	case navi_ZTG:
 		break;
+	case navi_approvedfmt_Proprietary:
+		return navi_parse_proprietary(msg, buffer + som + 2);
 	default:
 		break;
 	}
@@ -1440,8 +1444,16 @@ size_t navi_parse_address(char *buffer, navi_talkerid_t *tid, navi_approved_fmt_
 
 	*tid = navi_parse_talkerid(buffer, &nmread);
 	result = nmread;
-	*msgtype = navi_parse_sentencefmt(buffer + result, &nmread);
-	result += nmread;
+
+	if (*tid == navi_talkerid_Proprietary)
+	{
+		*msgtype = navi_approvedfmt_Proprietary;
+	}
+	else
+	{
+		*msgtype = navi_parse_sentencefmt(buffer + result, &nmread);
+		result += nmread;
+	}
 
 	return result;
 }
@@ -1454,7 +1466,7 @@ navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread)
 	if (buffer[0] == 'P')
 	{
 		*nmread = 1;
-		return navi_P;
+		return navi_talkerid_Proprietary;
 	}
 
 	*nmread = 2;

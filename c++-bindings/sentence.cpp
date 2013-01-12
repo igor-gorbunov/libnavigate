@@ -247,7 +247,7 @@ TalkerId_t TalkerId_t::fromTalkerIdCode(navi_talkerid_t tid)
 	case navi_ZQ: return ZQ;
 	case navi_ZV: return ZV;
 	case navi_WI: return WI;
-	case navi_P: return P;
+	case navi_talkerid_Proprietary: return P;
 	default:
 		return Unknown;
 	}
@@ -298,7 +298,7 @@ navi_talkerid_t TalkerId_t::toTalkerIdCode() const
 	case ZQ: return navi_ZQ;
 	case ZV: return navi_ZV;
 	case WI: return navi_WI;
-	case P: return navi_P;
+	case P: return navi_talkerid_Proprietary;
 	default:
 		return navi_talkerid_Unknown;
 	}
