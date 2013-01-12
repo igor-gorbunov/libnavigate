@@ -2,9 +2,6 @@ libnavigate --- TODO
 
 Library versions roadmap:
 
-	v0.4:
-	* implement building MSI package of libnavigate
-
 	v0.5:
 	* implement registration/unregistration and call to user-
 	  supplied generator/parser for proprietary sentences
