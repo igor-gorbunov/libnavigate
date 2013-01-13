@@ -54,6 +54,7 @@
                 <File Id='gsv_h_file' Name='gsv.h' DiskId='1' Source='../../include/libnavigate/gsv.h' />
                 <File Id='mla_h_file' Name='mla.h' DiskId='1' Source='../../include/libnavigate/mla.h' />
                 <File Id='parser_h_file' Name='parser.h' DiskId='1' Source='../../include/libnavigate/parser.h' />
+                <File Id='proprietarymsg_h_file' Name='proprietarymsg.h' DiskId='1' Source='../../include/libnavigate/proprietarymsg.h' />
                 <File Id='rmc_h_file' Name='rmc.h' DiskId='1' Source='../../include/libnavigate/rmc.h' />
                 <File Id='sentence_h_file' Name='sentence.h' DiskId='1' Source='../../include/libnavigate/sentence.h' />
                 <File Id='txt_h_file' Name='txt.h' DiskId='1' Source='../../include/libnavigate/txt.h' />
@@ -96,6 +97,7 @@
               <File Id='gsv_c_file' Name='gsv.c' DiskId='1' Source='../../src/gsv.c' />
               <File Id='mla_c_file' Name='mla.c' DiskId='1' Source='../../src/mla.c' />
               <File Id='parser_c_file' Name='parser.c' DiskId='1' Source='../../src/parser.c' />
+              <File Id='proprietarymsg_c_file' Name='proprietarymsg.c' DiskId='1' Source='../../src/proprietarymsg.c' />
               <File Id='rmc_c_file' Name='rmc.c' DiskId='1' Source='../../src/rmc.c' />
               <File Id='txt_c_file' Name='txt.c' DiskId='1' Source='../../src/txt.c' />
               <File Id='version_file' Name='version' DiskId='1' Source='../../src/version' />

@@ -33,11 +33,10 @@
 
 //
 // Initializes ZDA sentence structure with default values
-navierr_status_t navi_init_zda(struct zda_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_zda(struct zda_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->vfields = 0;
 	navi_init_utc(&msg->utc);
 	navi_init_date(2000, 1, 1, &msg->date);

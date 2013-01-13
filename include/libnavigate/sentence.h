@@ -35,13 +35,30 @@ NAVI_BEGIN_DECL
 #define NAVI_SENTENCE_MAXSIZE		82
 
 //
+// Address field types
+//
+enum _navi_addrfield_t
+{
+	// Unknown or undefined type
+	navi_af_Unknown = -1,
+
+	// Approved address field
+	navi_af_Approved = 0,
+
+	// Query address field
+	navi_af_Query,
+
+	// Proprietary address field
+	navi_af_Proprietary
+};
+
+typedef int navi_addrfield_t;
+
+//
 // Approved sentence formatters
 //
 enum _navi_approved_fmt_t
 {
-	// Proprietary sentence
-	navi_approvedfmt_Proprietary = -2,
-
 	// Unknown or undefined sentence formatter
 	navi_approvedfmt_Unknown = -1,
 
@@ -127,9 +144,6 @@ typedef int navi_approved_fmt_t;
 //
 enum _navi_talkerid_t
 {
-	// Proprietary sentence
-	navi_talkerid_Proprietary = -2,
-
 	// Unknown or undefined talker id
 	navi_talkerid_Unknown = -1,
 
@@ -205,6 +219,24 @@ enum _navi_talkerid_t
 };
 
 typedef int navi_talkerid_t;
+
+//
+// Approved address field components
+//
+struct approved_field_t
+{
+	navi_approved_fmt_t afmt;
+	navi_talkerid_t tid;
+};
+
+//
+// Query address field components
+//
+struct query_field_t
+{
+	navi_talkerid_t from;
+	navi_talkerid_t to;
+};
 
 //
 // Local/reference datums

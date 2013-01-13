@@ -32,11 +32,9 @@
 
 //
 // Initializes VTG sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t tid)
+NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg)
 {
 	assert(msg != NULL);
-
-	msg->tid = tid;
 
 	navi_init_number(&msg->courseT);
 	navi_init_number(&msg->courseM);

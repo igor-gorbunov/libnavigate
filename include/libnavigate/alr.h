@@ -32,9 +32,6 @@
 
 struct alr_t
 {
-	// talker identifier
-	navi_talkerid_t tid;
-
 	// time of alarm condition change
 	struct navi_utc_t utc;
 
@@ -59,12 +56,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes ALR sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_alr(struct alr_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_alr(struct alr_t *msg);
 
 //
 // Creates ALR message
-NAVI_EXTERN(navierr_status_t) navi_create_alr(const struct alr_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_alr(const struct alr_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ALR message

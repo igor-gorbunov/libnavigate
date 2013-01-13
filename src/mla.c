@@ -32,11 +32,10 @@
 
 //
 // Initializes MLA sentence structure with default values
-navierr_status_t navi_init_mla(struct mla_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_mla(struct mla_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->totalnm = 1;
 	msg->msgnm = 1;
 	memset(&msg->alm, 0, sizeof(msg->alm));
@@ -140,19 +139,26 @@ navierr_status_t navi_create_mla_sequence(navi_talkerid_t tid, int nmofsatellite
 	size_t offset = 0, nmofcharswritten = 0;
 
 	struct mla_t mla;
+	struct approved_field_t s;
 
 	assert((nmofsatellites > 0) && (nmofsatellites <= MLA_MAX_SATELLITES));
 	assert(buffer != NULL);
 
+	s.afmt = navi_MLA;
+	s.tid = tid;
+
 	for (messagenm = 1; messagenm <= nmofsatellites; messagenm++)
 	{
-		navi_init_mla(&mla, tid);
+		navi_init_mla(&mla);
 		mla.totalnm = nmofsatellites;
 		mla.msgnm = messagenm;
 		memmove(&mla.alm, &almanaclist[messagenm - 1], sizeof(mla.alm));
 
-		if (navi_create_msg(navi_MLA, &mla, buffer + offset, maxsize - offset, &nmofcharswritten) != navi_Ok)
+		if (navi_create_msg(navi_af_Approved, &s, &mla, buffer + offset,
+			maxsize - offset, &nmofcharswritten) != navi_Ok)
+		{
 			return navi_Error;
+		}
 		offset += nmofcharswritten;
 	}
 

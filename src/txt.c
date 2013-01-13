@@ -32,11 +32,10 @@
 
 //
 // Initializes TXT sentence structure with default values
-navierr_status_t navi_init_txt(struct txt_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_txt(struct txt_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->totalnm = msg->msgnm = msg->textid = 1;
 	memset(msg->textmsg, 0, sizeof(msg->textmsg));
 
@@ -88,6 +87,10 @@ navierr_status_t navi_create_txt_sequence(navi_talkerid_t tid, int textid,
 	size_t offset = 0, nmofcharswritten = 0;
 
 	struct txt_t txt;
+	struct approved_field_t s;
+
+	s.afmt = navi_TXT;
+	s.tid = tid;
 
 	i = 0, j = 0;
 	while (i < MAX_TEXT_SIZE && msg[i] != '\0')
@@ -113,7 +116,7 @@ navierr_status_t navi_create_txt_sequence(navi_talkerid_t tid, int textid,
 	totalnm = j / MAX_TEXT_MESSAGE_SIZE + (j % MAX_TEXT_MESSAGE_SIZE ? 1 : 0);
 	for (messagenm = 1; messagenm <= totalnm; messagenm++)
 	{
-		navi_init_txt(&txt, tid);
+		navi_init_txt(&txt);
 		txt.totalnm = totalnm;
 		txt.msgnm = messagenm;
 		txt.textid = textid;
@@ -125,8 +128,11 @@ navierr_status_t navi_create_txt_sequence(navi_talkerid_t tid, int textid,
 			txt.textmsg[k++] = msg[i++];
 		}
 
-		if (navi_create_msg(navi_TXT, &txt, buffer + offset, maxsize - offset, &nmofcharswritten) != navi_Ok)
+		if (navi_create_msg(navi_af_Approved, &s, &txt, buffer + offset,
+			maxsize - offset, &nmofcharswritten) != navi_Ok)
+		{
 			return navi_Error;
+		}
 		offset += nmofcharswritten;
 	}
 

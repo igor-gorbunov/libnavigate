@@ -60,9 +60,6 @@ struct navi_satinfo_t
 
 struct gsv_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// total number of messages
 	int totalnm;
 
@@ -82,12 +79,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes GSV sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_gsv(struct gsv_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_gsv(struct gsv_t *msg);
 
 //
 // Creates GSV message
-NAVI_EXTERN(navierr_status_t) navi_create_gsv(const struct gsv_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_gsv(const struct gsv_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Creates GSV message sequence from satellites array

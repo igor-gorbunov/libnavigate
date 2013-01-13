@@ -71,18 +71,23 @@ extern const char *navi_tidlist[];
 extern const char *navi_fmtlist[];
 
 //
+// Creates approved sentence
+static navierr_status_t navi_create_approved(struct approved_field_t *address,
+	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
+
+//
+// Creates query sentence
+static navierr_status_t navi_create_query(struct query_field_t *address,
+	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
+
+//
 // IEC message generator
 //
-navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
-	char *buffer, size_t maxsize, size_t *nmwritten)
+navierr_status_t navi_create_msg(navi_addrfield_t type, const void *address,
+	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
 
 #ifndef NO_GENERATOR
-
-	const char *tid = NULL, *sfmt = NULL;
-	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
-
-	size_t msglen = 0;
 
 	assert(msg != NULL);
 	assert(buffer != NULL);
@@ -90,104 +95,109 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 
 	switch (type)
 	{
-	case navi_AAM:
-		{
-			const struct aam_t *paam = (const struct aam_t *)msg;
-			tid = navi_talkerid_str(paam->tid);
-			sfmt = navi_sentencefmt_str(navi_AAM);
+	case navi_af_Approved:
+		return navi_create_approved((struct approved_field_t *)address,
+			msg, buffer, maxsize, nmwritten);
+	case navi_af_Query:
+		return navi_create_query((struct query_field_t *)address,
+			msg, buffer, maxsize, nmwritten);
+	case navi_af_Proprietary:
+		return navi_create_proprietary(msg, buffer, maxsize, nmwritten);
+	case navi_af_Unknown:
+	default:
+		navierr_set_last(navi_InvalidParameter);
+		return navi_Error;
+	}
 
-			if (navi_create_aam(paam, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+#else
+
+	navierr_set_last(navi_NotImplemented);
+	return navi_Error;
+
+#endif // NO_GENERATOR
+
+}
+
+//
+// Creates approved sentence
+static navierr_status_t navi_create_approved(struct approved_field_t *address,
+	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten)
+{
+	const char *tid = NULL, *sfmt = NULL;
+	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
+
+	size_t msglen = 0;
+
+	switch (address->afmt)
+	{
+	case navi_AAM:
+		if (navi_create_aam((const struct aam_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
+		{
+			return navi_Error;
 		}
 		break;
 	case navi_ACK:
+		if (navi_create_ack((const struct ack_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct ack_t *pack = (const struct ack_t *)msg;
-			tid = navi_talkerid_str(pack->tid);
-			sfmt = navi_sentencefmt_str(navi_ACK);
-
-			if (navi_create_ack(pack, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_ALM:
+		if (navi_create_alm((const struct alm_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct alm_t *palm = (const struct alm_t *)msg;
-			tid = navi_talkerid_str(palm->tid);
-			sfmt = navi_sentencefmt_str(navi_ALM);
-
-			if (navi_create_alm(palm, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_ALR:
+		if (navi_create_alr((const struct alr_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct alr_t *palr = (const struct alr_t *)msg;
-			tid = navi_talkerid_str(palr->tid);
-			sfmt = navi_sentencefmt_str(navi_ALR);
-
-			if (navi_create_alr(palr, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_APB:
+		if (navi_create_apb((const struct apb_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct apb_t *papb = (const struct apb_t *)msg;
-			tid = navi_talkerid_str(papb->tid);
-			sfmt = navi_sentencefmt_str(navi_APB);
-
-			if (navi_create_apb(papb, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_BEC:
+		if (navi_create_bec((const struct bec_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct bec_t *pbec = (const struct bec_t *)msg;
-			tid = navi_talkerid_str(pbec->tid);
-			sfmt = navi_sentencefmt_str(navi_BEC);
-
-			if (navi_create_bec(pbec, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_BOD:
+		if (navi_create_bod((const struct bod_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct bod_t *pbod = (const struct bod_t *)msg;
-			tid = navi_talkerid_str(pbod->tid);
-			sfmt = navi_sentencefmt_str(navi_BOD);
-
-			if (navi_create_bod(pbod, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_BWC:
+		if (navi_create_bwc((const struct bwc_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct bwc_t *pbwc = (const struct bwc_t *)msg;
-			tid = navi_talkerid_str(pbwc->tid);
-			sfmt = navi_sentencefmt_str(navi_BWC);
-
-			if (navi_create_bwc(pbwc, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_BWR:
+		if (navi_create_bwr((const struct bwr_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct bwr_t *pbwr = (const struct bwr_t *)msg;
-			tid = navi_talkerid_str(pbwr->tid);
-			sfmt = navi_sentencefmt_str(navi_BWR);
-
-			if (navi_create_bwr(pbwr, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_BWW:
+		if (navi_create_bww((const struct bww_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct bww_t *pbww = (const struct bww_t *)msg;
-			tid = navi_talkerid_str(pbww->tid);
-			sfmt = navi_sentencefmt_str(navi_BWW);
-
-			if (navi_create_bww(pbww, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_DBT:
@@ -200,99 +210,72 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_DTM:
+		if (navi_create_dtm((const struct dtm_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct dtm_t *pdtm = (const struct dtm_t *)msg;
-			tid = navi_talkerid_str(pdtm->tid);
-			sfmt = navi_sentencefmt_str(navi_DTM);
-
-			if (navi_create_dtm(pdtm, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_FSI:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_GBS:
+		if (navi_create_gbs((const struct gbs_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gbs_t *pgbs = (const struct gbs_t *)msg;
-			tid = navi_talkerid_str(pgbs->tid);
-			sfmt = navi_sentencefmt_str(navi_GBS);
-
-			if (navi_create_gbs(pgbs, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GGA:
+		if (navi_create_gga((const struct gga_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gga_t *pgga = (const struct gga_t *)msg;
-			tid = navi_talkerid_str(pgga->tid);
-			sfmt = navi_sentencefmt_str(navi_GGA);
-
-			if (navi_create_gga(pgga, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GLC:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_GLL:
+		if (navi_create_gll((const struct gll_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gll_t *pgll = (const struct gll_t *)msg;
-			tid = navi_talkerid_str(pgll->tid);
-			sfmt = navi_sentencefmt_str(navi_GLL);
-
-			if (navi_create_gll(pgll, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GNS:
+		if (navi_create_gns((const struct gns_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gns_t *pgns = (const struct gns_t *)msg;
-			tid = navi_talkerid_str(pgns->tid);
-			sfmt = navi_sentencefmt_str(navi_GNS);
-
-			if (navi_create_gns(pgns, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GRS:
+		if (navi_create_grs((const struct grs_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct grs_t *pgrs = (const struct grs_t *)msg;
-			tid = navi_talkerid_str(pgrs->tid);
-			sfmt = navi_sentencefmt_str(navi_GRS);
-
-			if (navi_create_grs(pgrs, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GSA:
+		if (navi_create_gsa((const struct gsa_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gsa_t *pgsa = (const struct gsa_t *)msg;
-			tid = navi_talkerid_str(pgsa->tid);
-			sfmt = navi_sentencefmt_str(navi_GSA);
-
-			if (navi_create_gsa(pgsa, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GST:
+		if (navi_create_gst((const struct gst_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gst_t *pgst = (const struct gst_t *)msg;
-			tid = navi_talkerid_str(pgst->tid);
-			sfmt = navi_sentencefmt_str(navi_GST);
-
-			if (navi_create_gst(pgst, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_GSV:
+		if (navi_create_gsv((const struct gsv_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct gsv_t *pgsv = (const struct gsv_t *)msg;
-			tid = navi_talkerid_str(pgsv->tid);
-			sfmt = navi_sentencefmt_str(navi_GSV);
-
-			if (navi_create_gsv(pgsv, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_HDG:
@@ -306,13 +289,10 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_MLA:
+		if (navi_create_mla((const struct mla_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct mla_t *pmla = (const struct mla_t *)msg;
-			tid = navi_talkerid_str(pmla->tid);
-			sfmt = navi_sentencefmt_str(navi_MLA);
-
-			if (navi_create_mla(pmla, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_MSK:
@@ -326,13 +306,10 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_RMC:
+		if (navi_create_rmc((const struct rmc_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct rmc_t *prmc = (const struct rmc_t *)msg;
-			tid = navi_talkerid_str(prmc->tid);
-			sfmt = navi_sentencefmt_str(navi_RMC);
-
-			if (navi_create_rmc(prmc, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_ROT:
@@ -348,13 +325,10 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_TXT:
+		if (navi_create_txt((const struct txt_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct txt_t *ptxt = (const struct txt_t *)msg;
-			tid = navi_talkerid_str(ptxt->tid);
-			sfmt = navi_sentencefmt_str(navi_TXT);
-
-			if (navi_create_txt(ptxt, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_VBW:
@@ -365,13 +339,10 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_VTG:
+		if (navi_create_vtg((const struct vtg_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct vtg_t *pvtg = (const struct vtg_t *)msg;
-			tid = navi_talkerid_str(pvtg->tid);
-			sfmt = navi_sentencefmt_str(navi_VTG);
-
-			if (navi_create_vtg(pvtg, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_WCV:
@@ -383,13 +354,10 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
 	case navi_ZDA:
+		if (navi_create_zda((const struct zda_t *)msg, msgbody,
+			sizeof(msgbody), &msglen) != navi_Ok)
 		{
-			const struct zda_t *pzda = (const struct zda_t *)msg;
-			tid = navi_talkerid_str(pzda->tid);
-			sfmt = navi_sentencefmt_str(navi_ZDA);
-
-			if (navi_create_zda(pzda, msgbody, sizeof(msgbody), &msglen) < 0)
-				return navi_Error;
+			return navi_Error;
 		}
 		break;
 	case navi_ZDL:
@@ -397,10 +365,6 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 	case navi_ZTG:
 		navierr_set_last(navi_NotImplemented);
 		return navi_Error;
-	case navi_approvedfmt_Proprietary:
-		if (navi_create_proprietary(msg, msgbody, sizeof(msgbody), &msglen) < 0)
-			return navi_Error;
-		break;
 	default:
 		navierr_set_last(navi_MsgNotSupported);
 		return navi_Error;
@@ -418,6 +382,9 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 		return navi_Error;
 	}
 
+	tid = navi_talkerid_str(address->tid);
+	sfmt = navi_sentencefmt_str(address->afmt);
+
 	msglen = snprintf(buffer, maxsize, "$%s%s,%s*", tid, sfmt, msgbody);
 	if (navi_checksum(buffer, msglen, csstr, NULL) != navi_Ok)
 		return navi_Error;
@@ -427,14 +394,15 @@ navierr_status_t navi_create_msg(navi_approved_fmt_t type, const void *msg,
 	*nmwritten = msglen + 4;
 
 	return navi_Ok;
+}
 
-#else
-
+//
+// Creates query sentence
+static navierr_status_t navi_create_query(struct query_field_t *address,
+	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten)
+{
 	navierr_set_last(navi_NotImplemented);
 	return navi_Error;
-
-#endif // NO_GENERATOR
-
 }
 
 //

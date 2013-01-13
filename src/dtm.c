@@ -31,11 +31,9 @@
 
 //
 // Initializes DTM sentence structure with default values
-navierr_status_t navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_dtm(struct dtm_t *msg)
 {
 	assert(msg != NULL);
-
-	msg->tid = tid;
 
 	msg->local_dtm = navi_datum_NULL;
 	msg->local_dtmsd = navi_datumsub_NULL;

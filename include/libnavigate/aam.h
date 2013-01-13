@@ -33,9 +33,6 @@
 
 struct aam_t
 {
-	// talker identifier
-	navi_talkerid_t tid;
-
 	// arrival circle status
 	// A = arrival circle entered
 	// V = not entered
@@ -57,12 +54,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes AAM sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *msg);
 
 //
 // Creates AAM message
-NAVI_EXTERN(navierr_status_t) navi_create_aam(const struct aam_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_aam(const struct aam_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses AAM message

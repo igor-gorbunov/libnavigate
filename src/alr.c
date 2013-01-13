@@ -32,11 +32,10 @@
 
 //
 // Initializes ALR sentence structure with default values
-navierr_status_t navi_init_alr(struct alr_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_alr(struct alr_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	navi_init_utc(&msg->utc);
 	msg->alarmid = 0;
 	msg->condition = navi_status_V;

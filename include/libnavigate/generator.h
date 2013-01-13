@@ -34,8 +34,9 @@ NAVI_BEGIN_DECL
 // Returns 0 if succeeded, -1 otherwise
 // Call navierr_get_last() to get the error description
 //
-NAVI_EXTERN(navierr_status_t) navi_create_msg(navi_approved_fmt_t type,
-	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_msg(navi_addrfield_t type,
+	const void *address, const void *msg, char *buffer,
+	size_t maxsize, size_t *nmwritten);
 
 //
 // Returns the string representation of talker identifier

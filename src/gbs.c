@@ -31,11 +31,10 @@
 
 //
 // Initializes GBS sentence structure with default values
-navierr_status_t navi_init_gbs(struct gbs_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_gbs(struct gbs_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	navi_init_utc(&msg->utc);
 	navi_init_number(&msg->experrlat);
 	navi_init_number(&msg->experrlon);

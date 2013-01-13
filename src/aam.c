@@ -31,11 +31,10 @@
 
 //
 // Initializes AAM sentence structure with default values
-navierr_status_t navi_init_aam(struct aam_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_aam(struct aam_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->circle = navi_status_V;
 	msg->perp = navi_status_V;
 	navi_init_number(&msg->radius);

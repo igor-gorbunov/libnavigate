@@ -32,13 +32,12 @@
 
 //
 // Initializes GRS sentence structure with default values
-navierr_status_t navi_init_grs(struct grs_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_grs(struct grs_t *msg)
 {
 	size_t i;
 
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	navi_init_utc(&msg->utc);
 	msg->mode = 0;
 	for (i = 0; i < GRS_MAX_SATELLITES; i++)

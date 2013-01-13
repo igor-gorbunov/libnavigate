@@ -31,9 +31,6 @@
 
 struct gst_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// UTC time
 	struct navi_utc_t utc;
 
@@ -64,12 +61,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes GST sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_gst(struct gst_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_gst(struct gst_t *msg);
 
 //
 // Creates GST message
-NAVI_EXTERN(navierr_status_t) navi_create_gst(const struct gst_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_gst(const struct gst_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GST message

@@ -84,9 +84,6 @@ struct navi_gpsalm_t
 // Holder of information for all the almanacs
 struct alm_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// total number of messages
 	int totalnm;
 
@@ -101,19 +98,20 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes ALM sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_alm(struct alm_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_alm(struct alm_t *msg);
 
 #ifndef NO_GENERATOR
 
 //
 // Creates ALM message
-NAVI_EXTERN(navierr_status_t) navi_create_alm(const struct alm_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_alm(const struct alm_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Creates ALM message sequence from satellites array
-NAVI_EXTERN(navierr_status_t) navi_create_alm_sequence(navi_talkerid_t tid, int nmofsatellites,
-	const struct navi_gpsalm_t almanaclist[], char *buffer, size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_alm_sequence(navi_talkerid_t tid,
+	int nmofsatellites, const struct navi_gpsalm_t almanaclist[],
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 #endif // NO_GENERATOR
 

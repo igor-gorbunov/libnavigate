@@ -33,9 +33,6 @@
 
 struct grs_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// UTC time
 	struct navi_utc_t utc;
 
@@ -54,12 +51,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes GRS sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_grs(struct grs_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_grs(struct grs_t *msg);
 
 //
 // Creates GRS message
-NAVI_EXTERN(navierr_status_t) navi_create_grs(const struct grs_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_grs(const struct grs_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GRS message

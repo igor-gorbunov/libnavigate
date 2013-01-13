@@ -70,9 +70,6 @@ struct navi_gloalm_t
 // Holder of information for all the almanacs
 struct mla_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// total number of messages
 	int totalnm;
 
@@ -87,14 +84,14 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes MLA sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_mla(struct mla_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_mla(struct mla_t *msg);
 
 #ifndef NO_GENERATOR
 
 //
 // Creates MLA message
-NAVI_EXTERN(navierr_status_t) navi_create_mla(const struct mla_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_mla(const struct mla_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Creates MLA message sequence from satellites array

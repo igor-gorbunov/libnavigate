@@ -32,13 +32,12 @@
 
 //
 // Initializes GNS sentence structure with default values
-navierr_status_t navi_init_gns(struct gns_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_gns(struct gns_t *msg)
 {
 	size_t i;
 
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	navi_init_utc(&msg->utc);
 	navi_init_position(&msg->fix);
 	for (i = 0; i < GNS_MODEINDICATOR_SIZE; i++)

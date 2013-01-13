@@ -41,11 +41,13 @@ Library versions roadmap:
 
 	v0.14:
 	* implement generation/parsing of XTE and XTR sentences
-	* implement full testing of libnavigation work
 	* implement fine tuning of what is built into the library
 
 	v0.15:
 	* implement full documentation of libnavigation api
+
+	v0.16:
+	* implement full testing of libnavigation work
 
 	v1.0:
 	* release the library

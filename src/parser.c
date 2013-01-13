@@ -71,15 +71,38 @@ extern const char *navi_tidlist[];
 extern const char *navi_fmtlist[];
 
 //
+// Determines the type of address field of sentence
+static navi_addrfield_t navi_get_address_field_type(char *buffer);
+
+//
+// Determines the talker id and sentence formatter
+// Returns the number of bytes read
+static size_t navi_parse_approved_address(char *buffer, struct approved_field_t *afield);
+
+//
+// Looks up Talker ID
+static navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread);
+
+//
+// Looks up sentence formatter
+static navi_approved_fmt_t navi_parse_sentencefmt(char *buffer, size_t *nmread);
+
+//
+// Parses the approved sentence
+static navierr_status_t navi_parse_approved(char *msgstring, size_t maxout, void *msg);
+
+//
+// Parses the query sentence
+static navierr_status_t navi_parse_query(char *msgstring, size_t maxout, void *msg);
+
+//
 // IEC message parser
 //
-navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, void *msg,
-	navi_approved_fmt_t *msgtype, size_t *nmread)
+navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize,
+	navi_addrfield_t *type, void *msg, size_t *nmread)
 {
 
 #ifndef NO_PARSER
-
-	navi_talkerid_t tid;	// talker id
 
 	size_t som;	// start of message index
 	size_t eom;	// end of message index
@@ -103,9 +126,7 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 	for (eom = som + 1; eom < maxsize; eom++)
 	{
 		if (buffer[eom - 1] == '\r' && buffer[eom] == '\n')
-		{
 			break;
-		}
 	}
 	if (eom >= maxsize)
 	{	// No valid message
@@ -131,268 +152,15 @@ navierr_status_t navi_parse_msg(char *buffer, size_t maxsize, size_t msgsize, vo
 	}
 
 	// Determine the talker ID and message type
-	if (navi_parse_address(buffer + som + 1, &tid, msgtype) < 0)
+	*type = navi_get_address_field_type(buffer + som + 1);
+	switch (*type)
 	{
-		return navi_Error;
-	}
-
-	// Parse the message fields
-	switch (*msgtype)
-	{
-	case navi_AAM:
-		if (msgsize < sizeof(struct aam_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_aam((struct aam_t *)msg, tid);
-		return navi_parse_aam((struct aam_t *)msg, buffer + som + 7);
-	case navi_ACK:
-		if (msgsize < sizeof(struct ack_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_ack((struct ack_t *)msg, tid);
-		return navi_parse_ack((struct ack_t *)msg, buffer + som + 7);
-	case navi_ALM:
-		if (msgsize < sizeof(struct alm_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_alm((struct alm_t *)msg, tid);
-		return navi_parse_alm((struct alm_t *)msg, buffer + som + 7);
-	case navi_ALR:
-		if (msgsize < sizeof(struct alr_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_alr((struct alr_t *)msg, tid);
-		return navi_parse_alr((struct alr_t *)msg, buffer + som + 7);
-	case navi_APB:
-		if (msgsize < sizeof(struct apb_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_apb((struct apb_t *)msg, tid);
-		return navi_parse_apb((struct apb_t *)msg, buffer + som + 7);
-	case navi_BEC:
-		if (msgsize < sizeof(struct bec_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_bec((struct bec_t *)msg, tid);
-		return navi_parse_bec((struct bec_t *)msg, buffer + som + 7);
-	case navi_BOD:
-		if (msgsize < sizeof(struct bod_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_bod((struct bod_t *)msg, tid);
-		return navi_parse_bod((struct bod_t *)msg, buffer + som + 7);
-	case navi_BWC:
-		if (msgsize < sizeof(struct bwc_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_bwc((struct bwc_t *)msg, tid);
-		return navi_parse_bwc((struct bwc_t *)msg, buffer + som + 7);
-	case navi_BWR:
-		if (msgsize < sizeof(struct bwr_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_bwr((struct bwr_t *)msg, tid);
-		return navi_parse_bwr((struct bwr_t *)msg, buffer + som + 7);
-	case navi_BWW:
-		if (msgsize < sizeof(struct bww_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_bww((struct bww_t *)msg, tid);
-		return navi_parse_bww((struct bww_t *)msg, buffer + som + 7);
-	case navi_DBT:
-	case navi_DCN:
-	case navi_DPT:
-	case navi_DSC:
-	case navi_DSE:
-	case navi_DSI:
-	case navi_DSR:
-		break;
-	case navi_DTM:
-		if (msgsize < sizeof(struct dtm_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_dtm((struct dtm_t *)msg, tid);
-		return navi_parse_dtm((struct dtm_t *)msg, buffer + som + 7);
-	case navi_FSI:
-		break;
-	case navi_GBS:
-		if (msgsize < sizeof(struct gbs_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gbs((struct gbs_t *)msg, tid);
-		return navi_parse_gbs((struct gbs_t *)msg, buffer + som + 7);
-	case navi_GGA:
-		if (msgsize < sizeof(struct gga_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gga((struct gga_t *)msg, tid);
-		return navi_parse_gga((struct gga_t *)msg, buffer + som + 7);
-	case navi_GLC:
-		break;
-	case navi_GLL:
-		if (msgsize < sizeof(struct gll_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gll((struct gll_t *)msg, tid);
-		return navi_parse_gll((struct gll_t *)msg, buffer + som + 7);
-	case navi_GNS:
-		if (msgsize < sizeof(struct gns_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gns((struct gns_t *)msg, tid);
-		return navi_parse_gns((struct gns_t *)msg, buffer + som + 7);
-	case navi_GRS:
-		if (msgsize < sizeof(struct grs_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_grs((struct grs_t *)msg, tid);
-		return navi_parse_grs((struct grs_t *)msg, buffer + som + 7);
-	case navi_GSA:
-		if (msgsize < sizeof(struct gsa_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gsa((struct gsa_t *)msg, tid);
-		return navi_parse_gsa((struct gsa_t *)msg, buffer + som + 7);
-	case navi_GST:
-		if (msgsize < sizeof(struct gst_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gst((struct gst_t *)msg, tid);
-		return navi_parse_gst((struct gst_t *)msg, buffer + som + 7);
-	case navi_GSV:
-		if (msgsize < sizeof(struct gsv_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_gsv((struct gsv_t *)msg, tid);
-		return navi_parse_gsv((struct gsv_t *)msg, buffer + som + 7);
-	case navi_HDG:
-	case navi_HDT:
-	case navi_HMR:
-	case navi_HMS:
-	case navi_HSC:
-	case navi_HTC:
-	case navi_HTD:
-	case navi_LCD:
-		break;
-	case navi_MLA:
-		if (msgsize < sizeof(struct mla_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		((struct mla_t *)msg)->tid = tid;
-		return navi_parse_mla((struct mla_t *)msg, buffer + som + 7);
-	case navi_MSK:
-	case navi_MSS:
-	case navi_MTW:
-	case navi_MWD:
-	case navi_MWV:
-	case navi_OSD:
-	case navi_RMA:
-	case navi_RMB:
-		break;
-	case navi_RMC:
-		if (msgsize < sizeof(struct rmc_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_rmc((struct rmc_t *)msg, tid);
-		return navi_parse_rmc((struct rmc_t *)msg, buffer + som + 7);
-	case navi_ROT:
-	case navi_RPM:
-	case navi_RSA:
-	case navi_RSD:
-	case navi_RTE:
-	case navi_SFI:
-	case navi_STN:
-	case navi_TLB:
-	case navi_TLL:
-	case navi_TTM:
-		break;
-	case navi_TXT:
-		if (msgsize < sizeof(struct txt_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_txt((struct txt_t *)msg, tid);
-		return navi_parse_txt((struct txt_t *)msg, buffer + som + 7);
-	case navi_VBW:
-	case navi_VDR:
-	case navi_VHW:
-	case navi_VLW:
-	case navi_VPW:
-		break;
-	case navi_VTG:
-		if (msgsize < sizeof(struct vtg_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		((struct vtg_t *)msg)->tid = tid;
-		return navi_parse_vtg((struct vtg_t *)msg, buffer + som + 7);
-	case navi_WCV:
-	case navi_WNC:
-	case navi_WPL:
-	case navi_XDR:
-	case navi_XTE:
-	case navi_XTR:
-		break;
-	case navi_ZDA:
-		if (msgsize < sizeof(struct zda_t))
-		{
-			navierr_set_last(navi_NotEnoughBuffer);
-			return navi_Error;
-		}
-		navi_init_zda((struct zda_t *)msg, tid);
-		return navi_parse_zda((struct zda_t *)msg, buffer + som + 7);
-	case navi_ZDL:
-	case navi_ZFO:
-	case navi_ZTG:
-		break;
-	case navi_approvedfmt_Proprietary:
-		return navi_parse_proprietary(msg, buffer + som + 2);
-	default:
-		break;
+	case navi_af_Approved:
+		return navi_parse_approved(buffer + som + 1, msgsize, msg);
+	case navi_af_Query:
+		return navi_parse_query(buffer + som + 1, msgsize, msg);
+	case navi_af_Proprietary:
+		return navi_parse_proprietary(msg, buffer + som + 1);
 	}
 
 	navierr_set_last(navi_MsgNotSupported);
@@ -1437,37 +1205,36 @@ _Exit:
 #undef PARSE_LOCALZONE_MINUTES
 #undef PARSE_LOCALZONE_FINI
 
+//
+// Determines the type of address field of sentence
+static navi_addrfield_t navi_get_address_field_type(char *buffer)
+{
+	if (buffer[0] == 'P')
+		return navi_af_Proprietary;
+	else if (buffer[4] == 'Q')
+		return navi_af_Proprietary;
+	else
+		return navi_af_Approved;
+}
+
 // Talker identifier and sentence formatter
-size_t navi_parse_address(char *buffer, navi_talkerid_t *tid, navi_approved_fmt_t *msgtype)
+static size_t navi_parse_approved_address(char *buffer, struct approved_field_t *afield)
 {
 	size_t result, nmread;
 
-	*tid = navi_parse_talkerid(buffer, &nmread);
+	afield->tid = navi_parse_talkerid(buffer, &nmread);
 	result = nmread;
 
-	if (*tid == navi_talkerid_Proprietary)
-	{
-		*msgtype = navi_approvedfmt_Proprietary;
-	}
-	else
-	{
-		*msgtype = navi_parse_sentencefmt(buffer + result, &nmread);
-		result += nmread;
-	}
+	afield->afmt = navi_parse_sentencefmt(buffer + result, &nmread);
+	result += nmread;
 
-	return result;
+	return result + 1;
 }
 
 // Looks up Talker ID
-navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread)
+static navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread)
 {
 	int i;
-
-	if (buffer[0] == 'P')
-	{
-		*nmread = 1;
-		return navi_talkerid_Proprietary;
-	}
 
 	*nmread = 2;
 
@@ -1481,7 +1248,7 @@ navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread)
 }
 
 // Looks up sentence formatter
-navi_approved_fmt_t navi_parse_sentencefmt(char *buffer, size_t *nmread)
+static navi_approved_fmt_t navi_parse_sentencefmt(char *buffer, size_t *nmread)
 {
 	int i;
 
@@ -1664,4 +1431,281 @@ navierr_status_t navi_parse_character_field(const char *from, char *to, size_t m
 	*nmread = i + 1;
 
 	return navi_Ok;
+}
+
+//
+// Parses the approved sentence
+static navierr_status_t navi_parse_approved(char *msgstring, size_t maxout, void *msg)
+{
+	struct approved_field_t s;
+
+	msgstring += navi_parse_approved_address(msgstring, &s);
+
+	memmove(msg, &s, sizeof(s));
+	msg = (char *)msg + sizeof(s);
+	maxout -= sizeof(s);
+
+	// Parse the message fields
+	switch (s.afmt)
+	{
+	case navi_AAM:
+		if (maxout < sizeof(struct aam_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_aam((struct aam_t *)msg);
+		return navi_parse_aam((struct aam_t *)msg, msgstring);
+	case navi_ACK:
+		if (maxout < sizeof(struct ack_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_ack((struct ack_t *)msg);
+		return navi_parse_ack((struct ack_t *)msg, msgstring);
+	case navi_ALM:
+		if (maxout < sizeof(struct alm_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_alm((struct alm_t *)msg);
+		return navi_parse_alm((struct alm_t *)msg, msgstring);
+	case navi_ALR:
+		if (maxout < sizeof(struct alr_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_alr((struct alr_t *)msg);
+		return navi_parse_alr((struct alr_t *)msg, msgstring);
+	case navi_APB:
+		if (maxout < sizeof(struct apb_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_apb((struct apb_t *)msg);
+		return navi_parse_apb((struct apb_t *)msg, msgstring);
+	case navi_BEC:
+		if (maxout < sizeof(struct bec_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bec((struct bec_t *)msg);
+		return navi_parse_bec((struct bec_t *)msg, msgstring);
+	case navi_BOD:
+		if (maxout < sizeof(struct bod_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bod((struct bod_t *)msg);
+		return navi_parse_bod((struct bod_t *)msg, msgstring);
+	case navi_BWC:
+		if (maxout < sizeof(struct bwc_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bwc((struct bwc_t *)msg);
+		return navi_parse_bwc((struct bwc_t *)msg, msgstring);
+	case navi_BWR:
+		if (maxout < sizeof(struct bwr_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bwr((struct bwr_t *)msg);
+		return navi_parse_bwr((struct bwr_t *)msg, msgstring);
+	case navi_BWW:
+		if (maxout < sizeof(struct bww_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_bww((struct bww_t *)msg);
+		return navi_parse_bww((struct bww_t *)msg, msgstring);
+	case navi_DBT:
+	case navi_DCN:
+	case navi_DPT:
+	case navi_DSC:
+	case navi_DSE:
+	case navi_DSI:
+	case navi_DSR:
+		break;
+	case navi_DTM:
+		if (maxout < sizeof(struct dtm_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_dtm((struct dtm_t *)msg);
+		return navi_parse_dtm((struct dtm_t *)msg, msgstring);
+	case navi_FSI:
+		break;
+	case navi_GBS:
+		if (maxout < sizeof(struct gbs_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gbs((struct gbs_t *)msg);
+		return navi_parse_gbs((struct gbs_t *)msg, msgstring);
+	case navi_GGA:
+		if (maxout < sizeof(struct gga_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gga((struct gga_t *)msg);
+		return navi_parse_gga((struct gga_t *)msg, msgstring);
+	case navi_GLC:
+		break;
+	case navi_GLL:
+		if (maxout < sizeof(struct gll_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gll((struct gll_t *)msg);
+		return navi_parse_gll((struct gll_t *)msg, msgstring);
+	case navi_GNS:
+		if (maxout < sizeof(struct gns_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gns((struct gns_t *)msg);
+		return navi_parse_gns((struct gns_t *)msg, msgstring);
+	case navi_GRS:
+		if (maxout < sizeof(struct grs_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_grs((struct grs_t *)msg);
+		return navi_parse_grs((struct grs_t *)msg, msgstring);
+	case navi_GSA:
+		if (maxout < sizeof(struct gsa_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gsa((struct gsa_t *)msg);
+		return navi_parse_gsa((struct gsa_t *)msg, msgstring);
+	case navi_GST:
+		if (maxout < sizeof(struct gst_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gst((struct gst_t *)msg);
+		return navi_parse_gst((struct gst_t *)msg, msgstring);
+	case navi_GSV:
+		if (maxout < sizeof(struct gsv_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_gsv((struct gsv_t *)msg);
+		return navi_parse_gsv((struct gsv_t *)msg, msgstring);
+	case navi_HDG:
+	case navi_HDT:
+	case navi_HMR:
+	case navi_HMS:
+	case navi_HSC:
+	case navi_HTC:
+	case navi_HTD:
+	case navi_LCD:
+		break;
+	case navi_MLA:
+		if (maxout < sizeof(struct mla_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		return navi_parse_mla((struct mla_t *)msg, msgstring);
+	case navi_MSK:
+	case navi_MSS:
+	case navi_MTW:
+	case navi_MWD:
+	case navi_MWV:
+	case navi_OSD:
+	case navi_RMA:
+	case navi_RMB:
+		break;
+	case navi_RMC:
+		if (maxout < sizeof(struct rmc_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_rmc((struct rmc_t *)msg);
+		return navi_parse_rmc((struct rmc_t *)msg, msgstring);
+	case navi_ROT:
+	case navi_RPM:
+	case navi_RSA:
+	case navi_RSD:
+	case navi_RTE:
+	case navi_SFI:
+	case navi_STN:
+	case navi_TLB:
+	case navi_TLL:
+	case navi_TTM:
+		break;
+	case navi_TXT:
+		if (maxout < sizeof(struct txt_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_txt((struct txt_t *)msg);
+		return navi_parse_txt((struct txt_t *)msg, msgstring);
+	case navi_VBW:
+	case navi_VDR:
+	case navi_VHW:
+	case navi_VLW:
+	case navi_VPW:
+		break;
+	case navi_VTG:
+		if (maxout < sizeof(struct vtg_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		return navi_parse_vtg((struct vtg_t *)msg, msgstring);
+	case navi_WCV:
+	case navi_WNC:
+	case navi_WPL:
+	case navi_XDR:
+	case navi_XTE:
+	case navi_XTR:
+		break;
+	case navi_ZDA:
+		if (maxout < sizeof(struct zda_t))
+		{
+			navierr_set_last(navi_NotEnoughBuffer);
+			return navi_Error;
+		}
+		navi_init_zda((struct zda_t *)msg);
+		return navi_parse_zda((struct zda_t *)msg, msgstring);
+	case navi_ZDL:
+	case navi_ZFO:
+	case navi_ZTG:
+		break;
+	}
+
+	navierr_set_last(navi_MsgNotSupported);
+	return navi_Error;
+}
+
+//
+// Parses the query sentence
+static navierr_status_t navi_parse_query(char *msgstring, size_t maxout, void *msg)
+{
+	navierr_set_last(navi_NotImplemented);
+	return navi_Error;
 }

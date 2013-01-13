@@ -32,7 +32,7 @@ int main(void)
 	char inbuffer[1024], outbuffer[256];
 	struct navi_gpsalm_t almanaclist[8];
 
-	navi_approved_fmt_t msgtype;
+	navi_addrfield_t msgtype;
 	const navi_error_t *lasterr;
 
 	msglength = 0;
@@ -92,51 +92,57 @@ int main(void)
 	do
 	{
 		while ((result = navi_parse_msg(inbuffer + parsed, sizeof(inbuffer) - parsed,
-			sizeof(outbuffer), outbuffer, &msgtype, &nmread)) == navi_Ok)
+			sizeof(outbuffer), &msgtype, outbuffer, &nmread)) == navi_Ok)
 		{
 			parsed += nmread;
 
-			switch (msgtype)
+			if (msgtype == navi_af_Approved)
 			{
-			case navi_ALM:
+				struct approved_field_t s;
+				memmove(&s, outbuffer, sizeof(s));
+
+				switch (s.afmt)
 				{
-					struct alm_t *alm = (struct alm_t *)outbuffer;
+				case navi_ALM:
+					{
+						struct alm_t *alm = (struct alm_t *)((char *)outbuffer + sizeof(s));
 
-					printf("Received ALM:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_str(alm->tid), alm->tid);
-					printf("\tTotal nm of messages: %i\n", alm->totalnm);
-					printf("\tMessage number: %i\n", alm->msgnm);
+						printf("Received ALM:\n\ttalker id = %s (%d)\n",
+							navi_talkerid_str(s.tid), s.tid);
+						printf("\tTotal nm of messages: %i\n", alm->totalnm);
+						printf("\tMessage number: %i\n", alm->msgnm);
 
-					printf("\tSatellite PRN number: %u\n", alm->alm.satelliteprn);
-					if (alm->alm.vfields & GPSALM_VALID_GPSWEEK)
-						printf("\tGPS week number: %u\n", alm->alm.gpsweek);
-					if (alm->alm.vfields & GPSALM_VALID_SVHEALTH)
-						printf("\tSV health: 0x%x\n", alm->alm.svhealth);
-					if (alm->alm.vfields & GPSALM_VALID_E)
-						printf("\tEccentricity: 0x%x\n", alm->alm.e);
-					if (alm->alm.vfields & GPSALM_VALID_TOA)
-						printf("\tAlmanac reference time: 0x%x\n", alm->alm.toa);
-					if (alm->alm.vfields & GPSALM_VALID_SIGMAI)
-						printf("\tInclination angle: 0x%x\n", alm->alm.sigmai);
-					if (alm->alm.vfields & GPSALM_VALID_OMEGADOT)
-						printf("\tRate of ascension: 0x%x\n", alm->alm.omegadot);
-					if (alm->alm.vfields & GPSALM_VALID_SQRTSEMIAXIS)
-						printf("\tRoot of semi-major axis: 0x%x\n",
+						printf("\tSatellite PRN number: %u\n", alm->alm.satelliteprn);
+						if (alm->alm.vfields & GPSALM_VALID_GPSWEEK)
+							printf("\tGPS week number: %u\n", alm->alm.gpsweek);
+						if (alm->alm.vfields & GPSALM_VALID_SVHEALTH)
+							printf("\tSV health: 0x%x\n", alm->alm.svhealth);
+						if (alm->alm.vfields & GPSALM_VALID_E)
+							printf("\tEccentricity: 0x%x\n", alm->alm.e);
+						if (alm->alm.vfields & GPSALM_VALID_TOA)
+							printf("\tAlmanac reference time: 0x%x\n", alm->alm.toa);
+						if (alm->alm.vfields & GPSALM_VALID_SIGMAI)
+							printf("\tInclination angle: 0x%x\n", alm->alm.sigmai);
+						if (alm->alm.vfields & GPSALM_VALID_OMEGADOT)
+							printf("\tRate of ascension: 0x%x\n", alm->alm.omegadot);
+						if (alm->alm.vfields & GPSALM_VALID_SQRTSEMIAXIS)
+							printf("\tRoot of semi-major axis: 0x%x\n",
 							alm->alm.sqrtsemiaxis);
-					if (alm->alm.vfields & GPSALM_VALID_OMEGA)
-						printf("\tArgument of perigee: 0x%x\n", alm->alm.omega);
-					if (alm->alm.vfields & GPSALM_VALID_OMEGA0)
-						printf("\tLongitude of ascension: 0x%x\n", alm->alm.omega0);
-					if (alm->alm.vfields & GPSALM_VALID_M0)
-						printf("\tMean anomaly: 0x%x\n", alm->alm.m0);
-					if (alm->alm.vfields & GPSALM_VALID_AF0)
-						printf("\tClock parameter 1: 0x%x\n", alm->alm.af0);
-					if (alm->alm.vfields & GPSALM_VALID_AF1)
-						printf("\tClock parameter 2: 0x%x\n", alm->alm.af1);
+						if (alm->alm.vfields & GPSALM_VALID_OMEGA)
+							printf("\tArgument of perigee: 0x%x\n", alm->alm.omega);
+						if (alm->alm.vfields & GPSALM_VALID_OMEGA0)
+							printf("\tLongitude of ascension: 0x%x\n", alm->alm.omega0);
+						if (alm->alm.vfields & GPSALM_VALID_M0)
+							printf("\tMean anomaly: 0x%x\n", alm->alm.m0);
+						if (alm->alm.vfields & GPSALM_VALID_AF0)
+							printf("\tClock parameter 1: 0x%x\n", alm->alm.af0);
+						if (alm->alm.vfields & GPSALM_VALID_AF1)
+							printf("\tClock parameter 2: 0x%x\n", alm->alm.af1);
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			default:
-				break;
 			}
 		}
 

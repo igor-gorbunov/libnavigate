@@ -30,12 +30,15 @@ NAVI_BEGIN_DECL
 //
 // Parses the next IEC sentence up to <cr><lf> read from buffer.
 // Stores the result to msg which has the maximum size of msgsize.
-// The type of parsed message is stored to msgtype and the number of
+// The type of parsed message is stored to type and the number of
 // parsed characters is put to nmread.
+// If the parsed sentence is an approved sentence, the approved_field_t
+// structure is put ath beginning of msg, and the message body is put
+// after that structure.
 // Returns the analysis status
 //
 NAVI_EXTERN(navierr_status_t) navi_parse_msg(char *buffer, size_t maxsize,
-	size_t msgsize, void *msg, navi_approved_fmt_t *msgtype, size_t *nmread);
+	size_t msgsize, navi_addrfield_t *type, void *msg, size_t *nmread);
 
 //
 // Parses offset field in the form of 'x.x,a | ,'.
@@ -156,19 +159,6 @@ NAVI_EXTERN(navierr_status_t) navi_parse_date(char *buffer, struct navi_date_t *
 // @returns 0 if parsed successfully, or navi_Error in the case of an error
 //
 NAVI_EXTERN(navierr_status_t) navi_parse_localzone(char *buffer, int *offset, size_t *nmread);
-
-//
-// Determines the talker id and sentence formatter
-// Returns the number of bytes read
-NAVI_EXTERN(size_t) navi_parse_address(char *buffer, navi_talkerid_t *tid, navi_approved_fmt_t *msgtype);
-
-//
-// Looks up Talker ID
-NAVI_EXTERN(navi_talkerid_t) navi_parse_talkerid(char *buffer, size_t *nmread);
-
-//
-// Looks up sentence formatter
-NAVI_EXTERN(navi_approved_fmt_t) navi_parse_sentencefmt(char *buffer, size_t *nmread);
 
 //
 // Extracts the latitude and longitude from the navi_position_t structure and

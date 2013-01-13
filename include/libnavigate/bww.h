@@ -31,9 +31,6 @@
 //
 struct bww_t
 {
-	// Talker id
-	navi_talkerid_t tid;
-
 	// Bearing, degrees true
 	struct navi_offset_t bearingT;
 
@@ -51,12 +48,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes BWW sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_bww(struct bww_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_bww(struct bww_t *msg);
 
 //
 // Creates BWW message
-NAVI_EXTERN(navierr_status_t) navi_create_bww(const struct bww_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_bww(const struct bww_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses BWW message

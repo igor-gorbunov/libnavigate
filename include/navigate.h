@@ -24,6 +24,8 @@
 #include "libnavigate/vtg.h"
 #include "libnavigate/zda.h"
 
+#include <libnavigate/proprietarymsg.h>
+
 #include "libnavigate/generator.h"
 #include "libnavigate/parser.h"
 
