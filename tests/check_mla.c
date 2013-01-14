@@ -32,7 +32,7 @@ int main(void)
 	char inbuffer[1024], outbuffer[256];
 	struct navi_gloalm_t almanaclist[8];
 
-	navi_approved_fmt_t msgtype;
+	navi_addrfield_t msgtype;
 	const navi_error_t *lasterr;
 
 	msglength = 0;
@@ -84,6 +84,9 @@ int main(void)
 		printf("Composition of MLA failed (%d)\n", navierr_get_last()->errclass);
 	}
 
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", inbuffer);
+
 	finished = 0;
 	parsed = 0;
 	nmread = 0;
@@ -91,51 +94,59 @@ int main(void)
 	do
 	{
 		while ((result = navi_parse_msg(inbuffer + parsed, sizeof(inbuffer) - parsed,
-			sizeof(outbuffer), outbuffer, &msgtype, &nmread)) == navi_Ok)
+			sizeof(outbuffer), &msgtype, outbuffer, &nmread)) == navi_Ok)
 		{
 			parsed += nmread;
 
-			switch (msgtype)
+			if (msgtype == navi_af_Approved)
 			{
-			case navi_MLA:
+				struct approved_field_t s;
+				memmove(&s, outbuffer, sizeof(s));
+
+				switch (s.afmt)
 				{
-					struct mla_t *mla = (struct mla_t *)outbuffer;
+				case navi_MLA:
+					{
+						struct mla_t *mla = (struct mla_t *)((char *)outbuffer + sizeof(s));
 
-					printf("Received MLA:\n\ttalker id = %s (%d)\n",
-						navi_talkerid_str(mla->tid), mla->tid);
-					printf("\tTotal nm of messages: %i\n", mla->totalnm);
-					printf("\tMessage number: %i\n", mla->msgnm);
+						printf("Received MLA:\n\ttalker id = %s (%d)\n",
+							navi_talkerid_str(s.tid), s.tid);
+						printf("\tTotal nm of messages: %i\n", mla->totalnm);
+						printf("\tMessage number: %i\n", mla->msgnm);
 
-					printf("\tSatellite slot number: %u\n", mla->alm.satslot);
-					if (mla->alm.vfields & GLOALM_VALID_DAYCOUNT)
-						printf("\tDays count: %u\n", mla->alm.daycount);
-					if (mla->alm.vfields & GLOALM_VALID_SVHEALTH)
-						printf("\tSV health: 0x%x\n", mla->alm.svhealth);
-					if (mla->alm.vfields & GLOALM_VALID_E)
-						printf("\tEccentricity: 0x%x\n", mla->alm.e);
-					if (mla->alm.vfields & GLOALM_VALID_DOT)
-						printf("\tDOT: 0x%x\n", mla->alm.dot);
-					if (mla->alm.vfields & GLOALM_VALID_OMEGA)
-						printf("\tOmega n: 0x%x\n", mla->alm.omega);
-					if (mla->alm.vfields & GLOALM_VALID_TAUC)
-						printf("\tTau c (high): 0x%x\n", mla->alm.tauc_high);
-					if (mla->alm.vfields & GLOALM_VALID_DELTAT)
-						printf("\tDelta T n: 0x%x\n",
-							mla->alm.deltat);
-					if (mla->alm.vfields & GLOALM_VALID_T)
-						printf("\tt n: 0x%x\n", mla->alm.t);
-					if (mla->alm.vfields & GLOALM_VALID_LAMBDA)
-						printf("\tLambda n: 0x%x\n", mla->alm.lambda);
-					if (mla->alm.vfields & GLOALM_VALID_DELTAI)
-						printf("\tDelta i n: 0x%x\n", mla->alm.deltai);
-					if (mla->alm.vfields & GLOALM_VALID_TAUC)
-						printf("\tTau c (low): 0x%x\n", mla->alm.tauc_low);
-					if (mla->alm.vfields & GLOALM_VALID_TAUN)
-						printf("\tTau n: 0x%x\n", mla->alm.taun);
+						printf("\tSatellite slot number: %u\n", mla->alm.satslot);
+						if (mla->alm.vfields & GLOALM_VALID_DAYCOUNT)
+							printf("\tDays count: %u\n", mla->alm.daycount);
+						if (mla->alm.vfields & GLOALM_VALID_SVHEALTH)
+							printf("\tSV health: 0x%x\n", mla->alm.svhealth);
+						if (mla->alm.vfields & GLOALM_VALID_E)
+							printf("\tEccentricity: 0x%x\n", mla->alm.e);
+						if (mla->alm.vfields & GLOALM_VALID_DOT)
+							printf("\tDOT: 0x%x\n", mla->alm.dot);
+						if (mla->alm.vfields & GLOALM_VALID_OMEGA)
+							printf("\tOmega n: 0x%x\n", mla->alm.omega);
+						if (mla->alm.vfields & GLOALM_VALID_TAUC)
+							printf("\tTau c (high): 0x%x\n", mla->alm.tauc_high);
+						if (mla->alm.vfields & GLOALM_VALID_DELTAT)
+						{
+							printf("\tDelta T n: 0x%x\n",
+								mla->alm.deltat);
+						}
+						if (mla->alm.vfields & GLOALM_VALID_T)
+							printf("\tt n: 0x%x\n", mla->alm.t);
+						if (mla->alm.vfields & GLOALM_VALID_LAMBDA)
+							printf("\tLambda n: 0x%x\n", mla->alm.lambda);
+						if (mla->alm.vfields & GLOALM_VALID_DELTAI)
+							printf("\tDelta i n: 0x%x\n", mla->alm.deltai);
+						if (mla->alm.vfields & GLOALM_VALID_TAUC)
+							printf("\tTau c (low): 0x%x\n", mla->alm.tauc_low);
+						if (mla->alm.vfields & GLOALM_VALID_TAUN)
+							printf("\tTau n: 0x%x\n", mla->alm.taun);
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			default:
-				break;
 			}
 		}
 

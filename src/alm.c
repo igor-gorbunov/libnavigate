@@ -32,11 +32,10 @@
 
 //
 // Initializes ALM sentence structure with default values
-navierr_status_t navi_init_alm(struct alm_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_alm(struct alm_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->totalnm = 1;
 	msg->msgnm = 1;
 	memset(&msg->alm, 0, sizeof(msg->alm));
@@ -140,19 +139,26 @@ navierr_status_t navi_create_alm_sequence(navi_talkerid_t tid, int nmofsatellite
 	size_t offset = 0, nmofcharswritten = 0;
 
 	struct alm_t alm;
+	struct approved_field_t s;
 
 	assert((nmofsatellites > 0) && (nmofsatellites <= ALM_MAX_SATELLITES));
 	assert(buffer != NULL);
 
+	s.afmt = navi_ALM;
+	s.tid = tid;
+
 	for (messagenm = 1; messagenm <= nmofsatellites; messagenm++)
 	{
-		navi_init_alm(&alm, tid);
+		navi_init_alm(&alm);
 		alm.totalnm = nmofsatellites;
 		alm.msgnm = messagenm;
 		memmove(&alm.alm, &almanaclist[messagenm - 1], sizeof(alm.alm));
 
-		if (navi_create_msg(navi_ALM, &alm, buffer + offset, maxsize - offset, &nmofcharswritten) != navi_Ok)
+		if (navi_create_msg(navi_af_Approved, &s, &alm, buffer + offset,
+			maxsize - offset, &nmofcharswritten) != navi_Ok)
+		{
 			return navi_Error;
+		}
 		offset += nmofcharswritten;
 	}
 

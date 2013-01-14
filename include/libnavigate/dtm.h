@@ -35,9 +35,6 @@
 
 struct dtm_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// local datum
 	navi_datum_t local_dtm;
 
@@ -61,12 +58,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes DTM sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_dtm(struct dtm_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_dtm(struct dtm_t *msg);
 
 //
 // Creates DTM message
-NAVI_EXTERN(navierr_status_t) navi_create_dtm(const struct dtm_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_dtm(const struct dtm_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses DTM message

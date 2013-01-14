@@ -562,5 +562,5 @@ const char *navi_tidlist[] =
 	"AG", "AP", "AI", "CD", "CR", "CS", "CT", "CV", "CX", "DE", "DF",
 	"EC", "EI", "EP", "ER", "GA", "GP", "GL", "GN", "GW", "HC", "HE",
 	"HN", "II", "IN", "LC", "RA", "SD", "SN", "SS", "TI", "VD", "VM",
-	"VW", "VR", "YX", "ZA", "ZC", "ZQ", "ZV", "WI", "P", NULL
+	"VW", "VR", "YX", "ZA", "ZC", "ZQ", "ZV", "WI", NULL
 };

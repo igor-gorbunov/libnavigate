@@ -31,9 +31,6 @@
 
 struct zda_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	unsigned int vfields;	// valid fields, bitwise or of ZDA_VALID_xx
 
 	// UTC time
@@ -53,12 +50,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes ZDA sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_zda(struct zda_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_zda(struct zda_t *msg);
 
 //
 // Creates ZDA message
-NAVI_EXTERN(navierr_status_t) navi_create_zda(const struct zda_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_zda(const struct zda_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ZDA message

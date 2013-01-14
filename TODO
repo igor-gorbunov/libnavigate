@@ -2,10 +2,6 @@ libnavigate --- TODO
 
 Library versions roadmap:
 
-	v0.5:
-	* implement registration/unregistration and call to user-
-	  supplied generator/parser for proprietary sentences
-
 	v0.6:
 	* implement generation/parsing of Query sentences
 
@@ -41,11 +37,18 @@ Library versions roadmap:
 
 	v0.14:
 	* implement generation/parsing of XTE and XTR sentences
-	* implement full testing of libnavigation work
-	* implement fine tuning of what is built into the library
 
 	v0.15:
+	* implement fine tuning of what is built into the library
+
+	v0.16:
+	* implement C++ API bindings
+
+	v0.17:
 	* implement full documentation of libnavigation api
+
+	v0.18:
+	* implement full testing of libnavigation work
 
 	v1.0:
 	* release the library

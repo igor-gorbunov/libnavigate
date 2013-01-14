@@ -35,9 +35,6 @@
 
 struct txt_t
 {
-	// talker identifier
-	navi_talkerid_t tid;
-
 	// total number of messages (01-99)
 	int totalnm;
 
@@ -55,14 +52,14 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes TXT sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_txt(struct txt_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_txt(struct txt_t *msg);
 
 #ifndef NO_GENERATOR
 
 //
 // Creates TXT message
-NAVI_EXTERN(navierr_status_t) navi_create_txt(const struct txt_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_txt(const struct txt_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Creates TXT message sequence from text string

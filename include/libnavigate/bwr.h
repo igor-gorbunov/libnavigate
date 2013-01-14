@@ -33,9 +33,6 @@
 //
 struct bwr_t
 {
-	// Talker id
-	navi_talkerid_t tid;
-
 	// UTC of observation
 	struct navi_utc_t utc;
 
@@ -62,12 +59,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes BWR sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_bwr(struct bwr_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_bwr(struct bwr_t *msg);
 
 //
 // Creates BWR message
-NAVI_EXTERN(navierr_status_t) navi_create_bwr(const struct bwr_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_bwr(const struct bwr_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses BWR message

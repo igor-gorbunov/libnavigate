@@ -34,9 +34,6 @@
 
 struct gsa_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// Mode: Manual or Automatic
 	navi_gsaswitchmode_t swmode;
 
@@ -62,12 +59,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes GSA sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_gsa(struct gsa_t *msg);
 
 //
 // Creates GSA message
-NAVI_EXTERN(navierr_status_t) navi_create_gsa(const struct gsa_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_gsa(const struct gsa_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GSA message

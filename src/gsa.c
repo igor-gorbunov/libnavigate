@@ -32,13 +32,12 @@
 
 //
 // Initializes GSA sentence structure with default values
-navierr_status_t navi_init_gsa(struct gsa_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_gsa(struct gsa_t *msg)
 {
 	size_t i;
 
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->swmode = navi_gsa_NULL;
 	msg->fixmode = -1;
 	for (i = 0; i < GSA_MAX_SATELLITES; i++)

@@ -34,9 +34,6 @@
 //
 struct apb_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// A = Data Valid, V = LORAN-C blink or SNR warning,
 	// V = genearl warning flag for other navigation systems
 	// when a reliable fix is not available
@@ -75,12 +72,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes APB sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_apb(struct apb_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_apb(struct apb_t *msg);
 
 //
 // Creates APB message
-NAVI_EXTERN(navierr_status_t) navi_create_apb(const struct apb_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_apb(const struct apb_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses APB message

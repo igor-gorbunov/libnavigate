@@ -32,11 +32,10 @@
 
 //
 // Initializes GSV sentence structure with default values
-navierr_status_t navi_init_gsv(struct gsv_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_gsv(struct gsv_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	msg->totalnm = 1;
 	msg->msgnm = 1;
 	msg->nmsatellites = -1;
@@ -135,15 +134,18 @@ navierr_status_t navi_create_gsv_sequence(navi_talkerid_t tid, int nmofsatellite
 	size_t offset = 0, nmofcharswritten = 0;
 
 	struct gsv_t gsv;
+	struct approved_field_t s;
 
 	totalmsgnm = nmofsatellites / GSV_MAX_SATELLITES_PER_MESSAGE +
 		(nmofsatellites % GSV_MAX_SATELLITES_PER_MESSAGE ? 1 : 0);
 
 	j = 0;
+	s.afmt = navi_GSV;
+	s.tid = tid;
 
 	for (messagenm = 1; messagenm <= totalmsgnm; messagenm++)
 	{
-		navi_init_gsv(&gsv, tid);
+		navi_init_gsv(&gsv);
 		gsv.totalnm = totalmsgnm;
 		gsv.msgnm = messagenm;
 		gsv.nmsatellites = messagenm == 1 ? nmofsatellites : -1;
@@ -154,8 +156,11 @@ navierr_status_t navi_create_gsv_sequence(navi_talkerid_t tid, int nmofsatellite
 			memmove(&gsv.info[i++], &satlist[j++], sizeof(gsv.info[0]));
 		}
 
-		if (navi_create_msg(navi_GSV, &gsv, buffer + offset, maxsize - offset, &nmofcharswritten) != navi_Ok)
+		if (navi_create_msg(navi_af_Approved, &s, &gsv, buffer + offset,
+			maxsize - offset, &nmofcharswritten) != navi_Ok)
+		{
 			return navi_Error;
+		}
 		offset += nmofcharswritten;
 	}
 

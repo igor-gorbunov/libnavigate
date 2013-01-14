@@ -32,9 +32,6 @@
 
 struct ack_t
 {
-	// talker identifier
-	navi_talkerid_t tid;
-
 	// local alarm number
 	int alarmid;
 };
@@ -43,12 +40,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes ACK sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_ack(struct ack_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_ack(struct ack_t *msg);
 
 //
 // Creates ACK message
-NAVI_EXTERN(navierr_status_t) navi_create_ack(const struct ack_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_ack(const struct ack_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses ACK message

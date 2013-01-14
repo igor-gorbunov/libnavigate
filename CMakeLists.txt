@@ -118,6 +118,9 @@ IF(BUILD_TESTS)
 	ADD_EXECUTABLE(check_mla tests/check_mla.c)
 	TARGET_LINK_LIBRARIES(check_mla navigate)
 
+	ADD_EXECUTABLE(check_proprietary tests/check_proprietary.c)
+	TARGET_LINK_LIBRARIES(check_proprietary navigate)
+
 	IF(UNIX)
 		TARGET_LINK_LIBRARIES(test m)
 		TARGET_LINK_LIBRARIES(check_alm m)

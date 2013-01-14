@@ -32,11 +32,10 @@
 
 //
 // Initializes GST sentence structure with default values
-navierr_status_t navi_init_gst(struct gst_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_gst(struct gst_t *msg)
 {
 	assert(msg != NULL);
 
-	msg->tid = tid;
 	navi_init_utc(&msg->utc);
 	navi_init_number(&msg->rms);
 	navi_init_number(&msg->devmajor);

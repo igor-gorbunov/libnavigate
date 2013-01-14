@@ -31,9 +31,6 @@
 
 struct gga_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// UTC time
 	struct navi_utc_t utc;
 
@@ -69,12 +66,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes GGA sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_gga(struct gga_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_gga(struct gga_t *msg);
 
 //
 // Creates GGA message
-NAVI_EXTERN(navierr_status_t) navi_create_gga(const struct gga_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_gga(const struct gga_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses GGA message

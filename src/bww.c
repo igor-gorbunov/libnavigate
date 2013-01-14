@@ -31,11 +31,9 @@
 
 //
 // Initializes BWW sentence structure with default values
-navierr_status_t navi_init_bww(struct bww_t *msg, navi_talkerid_t tid)
+navierr_status_t navi_init_bww(struct bww_t *msg)
 {
 	assert(msg != NULL);
-
-	msg->tid = tid;
 
 	navi_init_offset(&msg->bearingT);
 	navi_init_offset(&msg->bearingM);

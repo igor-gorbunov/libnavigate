@@ -32,9 +32,6 @@
 //
 struct bod_t
 {
-	// Talker id
-	navi_talkerid_t tid;
-
 	// Bearing, degrees true
 	struct navi_offset_t bearingT;
 
@@ -52,12 +49,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes BOD sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_bod(struct bod_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_bod(struct bod_t *msg);
 
 //
 // Creates BOD message
-NAVI_EXTERN(navierr_status_t) navi_create_bod(const struct bod_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_bod(const struct bod_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses BOD message

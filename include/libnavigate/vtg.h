@@ -30,9 +30,6 @@
 //
 struct vtg_t
 {
-	// talker id
-	navi_talkerid_t tid;
-
 	// Course over ground, degrees true
 	double courseT;
 
@@ -53,12 +50,12 @@ NAVI_BEGIN_DECL
 
 //
 // Initializes VTG sentence structure with default values
-NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg, navi_talkerid_t tid);
+NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg);
 
 //
 // Creates VTG message
-NAVI_EXTERN(navierr_status_t) navi_create_vtg(const struct vtg_t *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
+NAVI_EXTERN(navierr_status_t) navi_create_vtg(const struct vtg_t *msg,
+	char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // Parses VTG message

@@ -35,6 +35,26 @@ NAVI_BEGIN_DECL
 #define NAVI_SENTENCE_MAXSIZE		82
 
 //
+// Address field types
+//
+enum _navi_addrfield_t
+{
+	// Unknown or undefined type
+	navi_af_Unknown = -1,
+
+	// Approved address field
+	navi_af_Approved = 0,
+
+	// Query address field
+	navi_af_Query,
+
+	// Proprietary address field
+	navi_af_Proprietary
+};
+
+typedef int navi_addrfield_t;
+
+//
 // Approved sentence formatters
 //
 enum _navi_approved_fmt_t
@@ -195,12 +215,28 @@ enum _navi_talkerid_t
 	navi_ZQ,	// quartz
 	navi_ZV,	// radio update
 	// Weather instruments
-	navi_WI,
-	// Proprietary code
-	navi_P
+	navi_WI
 };
 
 typedef int navi_talkerid_t;
+
+//
+// Approved address field components
+//
+struct approved_field_t
+{
+	navi_approved_fmt_t afmt;
+	navi_talkerid_t tid;
+};
+
+//
+// Query address field components
+//
+struct query_field_t
+{
+	navi_talkerid_t from;
+	navi_talkerid_t to;
+};
 
 //
 // Local/reference datums
