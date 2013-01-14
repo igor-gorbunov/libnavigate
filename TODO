@@ -2,10 +2,6 @@ libnavigate --- TODO
 
 Library versions roadmap:
 
-	v0.5:
-	* implement registration/unregistration and call to user-
-	  supplied generator/parser for proprietary sentences
-
 	v0.6:
 	* implement generation/parsing of Query sentences
 

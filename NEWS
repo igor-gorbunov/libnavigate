@@ -1,3 +1,9 @@
+2013-01-14  Igor Gorbunov  <igor.genius@gmail.com>
+
+	* implemented registration/unregistration and call to user-
+	  supplied generator/parser for proprietary sentences
+	* released version 0.5
+
 2013-01-12  Igor Gorbunov  <igor.genius@gmail.com>
 
 	* implemented building of MSI-package of libnavigate
