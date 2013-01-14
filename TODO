@@ -3,48 +3,65 @@ libnavigate --- TODO
 Library versions roadmap:
 
 	v0.7:
+	* refactor the API interface
+
+	v0.8:
 	* implement generation/parsing of DBT and DPT sentences
+
+	v0.9:
 	* implement generation/parsing of HDG, HDT, HMR, HMS, HSC, HTC
 	  and HTD sentences
 
-	v0.8:
-	* implement generation/parsing of DCN, LCD and GLC sentences
-	* implement generation/parsing of RMA and RMB sentences
-
-	v0.9:
-	* implement generation/parsing of TLB, TLL and TTM sentences
-	* implement generation/parsing of ZDL, ZFO and ZTG sentences
-
 	v0.10:
-	* implement generation/parsing of DSC, DSE, DSI and DSR sentences
-	* implement generation/parsing of FSI, ROT and RPM sentences
+	* implement generation/parsing of DCN, LCD and GLC sentences
 
 	v0.11:
-	* implement generation/parsing of MSK and MSS sentences
-	* implement generation/parsing of SFI, STN and XDR sentences
+	* implement generation/parsing of RMA and RMB sentences
 
 	v0.12:
+	* implement generation/parsing of TLB, TLL and TTM sentences
+
+	v0.13:
+	* implement generation/parsing of ZDL, ZFO and ZTG sentences
+
+	v0.14:
+	* implement generation/parsing of DSC, DSE, DSI and DSR sentences
+
+	v0.15:
+	* implement generation/parsing of FSI, ROT and RPM sentences
+
+	v0.16:
+	* implement generation/parsing of MSK and MSS sentences
+
+	v0.17:
+	* implement generation/parsing of SFI, STN and XDR sentences
+
+	v0.18:
 	* implement generation/parsing of MTW, MWD and MWV sentences
+
+	v0.19:
 	* implement generation/parsing of VBW, VDR, VHW, VLW and VPW
 	  sentences
 
-	v0.13:
+	v0.20:
 	* implement generation/parsing of OSD, RSA, RSD and RTE sentences
+
+	v0.21:
 	* implement generation/parsing of WCV, WNC and WPL sentences
 
-	v0.14:
+	v0.22:
 	* implement generation/parsing of XTE and XTR sentences
 
-	v0.15:
+	v0.23:
 	* implement fine tuning of what is built into the library
 
-	v0.16:
+	v0.24:
 	* implement C++ API bindings
 
-	v0.17:
+	v0.25:
 	* implement full documentation of libnavigation api
 
-	v0.18:
+	v0.26:
 	* implement full testing of libnavigation work
 
 	v1.0:
