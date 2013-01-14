@@ -78,7 +78,7 @@ static navierr_status_t navi_create_approved(struct approved_field_t *address,
 //
 // Creates query sentence
 static navierr_status_t navi_create_query(struct query_field_t *address,
-	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
+	navi_approved_fmt_t msg, char *buffer, size_t maxsize, size_t *nmwritten);
 
 //
 // IEC message generator
@@ -100,7 +100,7 @@ navierr_status_t navi_create_msg(navi_addrfield_t type, const void *address,
 			msg, buffer, maxsize, nmwritten);
 	case navi_af_Query:
 		return navi_create_query((struct query_field_t *)address,
-			msg, buffer, maxsize, nmwritten);
+			*(navi_approved_fmt_t *)msg, buffer, maxsize, nmwritten);
 	case navi_af_Proprietary:
 		return navi_create_proprietary(msg, buffer, maxsize, nmwritten);
 	case navi_af_Unknown:
@@ -399,10 +399,28 @@ static navierr_status_t navi_create_approved(struct approved_field_t *address,
 //
 // Creates query sentence
 static navierr_status_t navi_create_query(struct query_field_t *address,
-	const void *msg, char *buffer, size_t maxsize, size_t *nmwritten)
+	navi_approved_fmt_t msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
-	navierr_set_last(navi_NotImplemented);
-	return navi_Error;
+	const char *from_tid = NULL, *to_tid = NULL;
+	const char *requested_fmt = NULL;
+	char csstr[3];
+
+	size_t msglen = 0;
+
+	from_tid = navi_talkerid_str(address->from);
+	to_tid = navi_talkerid_str(address->to);
+
+	requested_fmt = navi_sentencefmt_str(msg);
+
+	msglen = snprintf(buffer, maxsize, "$%s%sQ,%s*", from_tid, to_tid, requested_fmt);
+	if (navi_checksum(buffer, msglen, csstr, NULL) != navi_Ok)
+		return navi_Error;
+	strcat(buffer, csstr);
+	strcat(buffer, "\r\n");
+
+	*nmwritten = msglen + 4;
+
+	return navi_Ok;
 }
 
 //

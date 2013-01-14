@@ -1,5 +1,5 @@
 /*
- * check_proprietary.c - proprietary messages generating/parsing tests and usage examples.
+ * check_query.c - query messages generating/parsing tests and usage examples.
  *
  * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
  *
@@ -23,11 +23,6 @@
 #include <errno.h>
 #include <string.h>
 
-navierr_status_t proprietary_msg_generator(const void *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten);
-
-navierr_status_t proprietary_msg_parser(void *msg, char *buffer);
-
 int main(void)
 {
 	navierr_status_t result;
@@ -35,17 +30,20 @@ int main(void)
 	int finished;
 
 	char inbuffer[1024], outbuffer[256];
-	int proprietary_data = 42;
+
+	navi_approved_fmt_t data = navi_GLL;
 
 	navi_addrfield_t msgtype;
 	const navi_error_t *lasterr;
 
+	struct query_field_t s;
+
 	msglength = 0;
 
-	navi_register_proprietary_generator(proprietary_msg_generator);
-	navi_register_proprietary_parser(proprietary_msg_parser);
+	s.from = navi_GL;
+	s.to = navi_VW;
 
-	result = navi_create_msg(navi_af_Proprietary, NULL, &proprietary_data,
+	result = navi_create_msg(navi_af_Query, &s, &data,
 		inbuffer, sizeof(inbuffer), &nmwritten);
 	if (result == navi_Ok)
 	{
@@ -53,7 +51,7 @@ int main(void)
 	}
 	else
 	{
-		printf("Composition of proprietary message failed (%d)\n", navierr_get_last()->errclass);
+		printf("Composition of query message failed (%d)\n", navierr_get_last()->errclass);
 	}
 
 	printf("msglength = %d\n", msglength);
@@ -62,6 +60,9 @@ int main(void)
 	finished = 0;
 	parsed = 0;
 	nmread = 0;
+
+	memset(&s, 0, sizeof(s));
+	data = navi_approvedfmt_Unknown;
 
 	do
 	{
@@ -72,8 +73,12 @@ int main(void)
 
 			switch (msgtype)
 			{
-			case navi_af_Proprietary:
-				printf("Received proprietary message:\n");
+			case navi_af_Query:
+				memmove(&s, outbuffer, sizeof(s));
+				memmove(&data, outbuffer + sizeof(s), sizeof(data));
+				printf("Received query sentence: from '%s (%d)' to '%s (%d)' requests '%s (%d)'\n",
+					navi_talkerid_str(s.from), s.from, navi_talkerid_str(s.to), s.to,
+					navi_sentencefmt_str(data), data);
 				break;
 			default:
 				break;
@@ -113,21 +118,4 @@ int main(void)
 	} while (!finished);
 
 	return 0;
-}
-
-navierr_status_t proprietary_msg_generator(const void *msg, char *buffer,
-	size_t maxsize, size_t *nmwritten)
-{
-	maxsize = maxsize;
-
-	*nmwritten = sprintf(buffer, "%s,%d", "SRD", *(int *)msg);
-	return navi_Ok;
-}
-
-navierr_status_t proprietary_msg_parser(void *msg, char *buffer)
-{
-	msg = msg;
-
-	printf("proprietary_msg_parser : '%s'\n", buffer);
-	return navi_Ok;
 }
