@@ -80,6 +80,12 @@ static navi_addrfield_t navi_get_address_field_type(char *buffer);
 static size_t navi_parse_approved_address(char *buffer, struct approved_field_t *afield);
 
 //
+// Determines the talker id of requester and the talker id for device from which
+// data is being requested
+// Returns the number of bytes read
+static size_t navi_parse_query_address(char *buffer, struct query_field_t *qfield);
+
+//
 // Looks up Talker ID
 static navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread);
 
@@ -1212,7 +1218,7 @@ static navi_addrfield_t navi_get_address_field_type(char *buffer)
 	if (buffer[0] == 'P')
 		return navi_af_Proprietary;
 	else if (buffer[4] == 'Q')
-		return navi_af_Proprietary;
+		return navi_af_Query;
 	else
 		return navi_af_Approved;
 }
@@ -1236,7 +1242,8 @@ static navi_talkerid_t navi_parse_talkerid(char *buffer, size_t *nmread)
 {
 	int i;
 
-	*nmread = 2;
+	if (nmread)
+		*nmread = 2;
 
 	for (i = 0; navi_tidlist[i] != NULL; i++)
 	{
@@ -1252,7 +1259,8 @@ static navi_approved_fmt_t navi_parse_sentencefmt(char *buffer, size_t *nmread)
 {
 	int i;
 
-	*nmread = 3;
+	if (nmread)
+		*nmread = 3;
 
 	for (i = 0; navi_fmtlist[i] != NULL; i++)
 	{
@@ -1706,6 +1714,33 @@ static navierr_status_t navi_parse_approved(char *msgstring, size_t maxout, void
 // Parses the query sentence
 static navierr_status_t navi_parse_query(char *msgstring, size_t maxout, void *msg)
 {
-	navierr_set_last(navi_NotImplemented);
-	return navi_Error;
+	struct query_field_t s;
+
+	msgstring += navi_parse_query_address(msgstring, &s);
+
+	memmove(msg, &s, sizeof(s));
+	msg = (char *)msg + sizeof(s);
+	maxout -= sizeof(s);
+
+	// Parse the message field
+	*(navi_approved_fmt_t *)msg = navi_parse_sentencefmt(msgstring, NULL);
+
+	return navi_Ok;
+}
+
+//
+// Determines the talker id of requester and the talker id for device from which
+// data is being requested
+// Returns the number of bytes read
+static size_t navi_parse_query_address(char *buffer, struct query_field_t *qfield)
+{
+	size_t result, nmread;
+
+	qfield->from = navi_parse_talkerid(buffer, &nmread);
+	result = nmread;
+
+	qfield->to = navi_parse_talkerid(buffer + result, &nmread);
+	result += nmread;
+
+	return result + 2;
 }
