@@ -118,12 +118,16 @@ int main(void)
 navierr_status_t proprietary_msg_generator(const void *msg, char *buffer,
 	size_t maxsize, size_t *nmwritten)
 {
+	maxsize = maxsize;
+
 	*nmwritten = sprintf(buffer, "%s,%d", "SRD", *(int *)msg);
 	return navi_Ok;
 }
 
 navierr_status_t proprietary_msg_parser(void *msg, char *buffer)
 {
+	msg = msg;
+
 	printf("proprietary_msg_parser : '%s'\n", buffer);
 	return navi_Ok;
 }
