@@ -17,7 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include <libnavigate/proprietarymsg.h>
+#include <libnavigate/common.h>
+#include <libnavigate/sentence.h>
+
+#ifdef _MSC_VER
+	#include "win32/win32navi.h"
+#endif // MSVC_VER
 
 static proprietary_msg_generator_t user_generator_callback = NULL;
 static proprietary_msg_parser_t user_parser_callback = NULL;
@@ -79,13 +88,41 @@ navierr_status_t navi_unregister_proprietary_parser()
 //
 navierr_status_t navi_create_proprietary(const void *msg, char *buffer, size_t maxsize, size_t *nmwritten)
 {
+	const char *tid = "P";
+	char msgbody[NAVI_SENTENCE_MAXSIZE + 1], csstr[3];
+
+	size_t msglen = 0;
+
 	if (user_generator_callback == NULL)
 	{
 		navierr_set_last(navi_MsgNotSupported);
 		return navi_Error;
 	}
 
-	return user_generator_callback(msg, buffer, maxsize, nmwritten);
+	if (user_generator_callback(msg, msgbody, sizeof(msgbody), &msglen) != navi_Ok)
+		return navi_Error;
+
+	if (msglen + 12 > NAVI_SENTENCE_MAXSIZE)
+	{
+		navierr_set_last(navi_MsgExceedsMaxSize);
+		return navi_Error;
+	}
+
+	if (msglen + 12 > maxsize)
+	{
+		navierr_set_last(navi_NotEnoughBuffer);
+		return navi_Error;
+	}
+
+	msglen = snprintf(buffer, maxsize, "$%s%s*", tid, msgbody);
+	if (navi_checksum(buffer, msglen, csstr, NULL) != navi_Ok)
+		return navi_Error;
+	strcat(buffer, csstr);
+	strcat(buffer, "\r\n");
+
+	*nmwritten = msglen + 4;
+
+	return navi_Ok;
 }
 
 //
@@ -99,5 +136,5 @@ navierr_status_t navi_parse_proprietary(void *msg, char *buffer)
 		return navi_Error;
 	}
 
-	return user_parser_callback(msg, buffer);
+	return user_parser_callback(msg, buffer + 1);
 }

@@ -124,5 +124,6 @@ navierr_status_t proprietary_msg_generator(const void *msg, char *buffer,
 
 navierr_status_t proprietary_msg_parser(void *msg, char *buffer)
 {
-	return navi_Error;
+	printf("proprietary_msg_parser : '%s'\n", buffer);
+	return navi_Ok;
 }
