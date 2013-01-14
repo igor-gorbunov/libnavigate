@@ -1,5 +1,10 @@
 2013-01-14  Igor Gorbunov  <igor.genius@gmail.com>
 
+	* implemented generation/parsing of Query sentences
+	* released version 0.6
+
+2013-01-14  Igor Gorbunov  <igor.genius@gmail.com>
+
 	* implemented registration/unregistration and call to user-
 	  supplied generator/parser for proprietary sentences
 	* released version 0.5

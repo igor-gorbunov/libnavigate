@@ -2,9 +2,6 @@ libnavigate --- TODO
 
 Library versions roadmap:
 
-	v0.6:
-	* implement generation/parsing of Query sentences
-
 	v0.7:
 	* implement generation/parsing of DBT and DPT sentences
 	* implement generation/parsing of HDG, HDT, HMR, HMS, HSC, HTC
