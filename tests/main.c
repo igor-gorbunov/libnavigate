@@ -323,7 +323,7 @@ int main(void)
 						printf("Received GNS:\n\ttalker id = %s (%d)\n",
 							navi_talkerid_str(s.tid), s.tid);
 
-						if (navi_check_validity_utc(&gns->utc))
+						if (navi_check_validity_utc(&gns->utc) == navi_Ok)
 							printf("\tutc = %02u:%02u:%06.3f\n", gns->utc.hour, gns->utc.min,
 							gns->utc.sec);
 						if (gns->fix.latitude.sign != navi_offset_NULL)
@@ -354,7 +354,7 @@ int main(void)
 						printf("Received RMC:\n\ttalker id = %s (%d)\n",
 							navi_talkerid_str(s.tid), s.tid);
 
-						if (navi_check_validity_utc(&rmc->utc))
+						if (navi_check_validity_utc(&rmc->utc) == navi_Ok)
 							printf("\tutc = %02u:%02u:%06.3f\n", rmc->utc.hour, rmc->utc.min,
 							rmc->utc.sec);
 						printf("\tstatus = %d\n", rmc->status);
@@ -365,16 +365,20 @@ int main(void)
 							printf("\tlongitude = %.12f %s (%d)\n", rmc->fix.longitude.offset,
 								navi_fixsign_str(rmc->fix.longitude.sign), rmc->fix.longitude.sign);
 						}
-						if (navi_check_validity_number(rmc->speedN))
+						if (navi_check_validity_number(rmc->speedN) == navi_Ok)
 							printf("\tspeed, knots = %f\n", rmc->speedN);
-						if (navi_check_validity_number(rmc->courseT))
+						if (navi_check_validity_number(rmc->courseT) == navi_Ok)
 							printf("\tcourse, true = %f\n", rmc->courseT);
 						if (rmc->vfields & RMC_VALID_DATE)
-							printf("\tdate = %d %d %d\n", rmc->date.day,
-							rmc->date.month, rmc->date.year);
-						if (navi_check_validity_offset(&rmc->magnVariation))
+						{
+							printf("\tdate = %04d-%02d-%02d\n", rmc->date.year + 2000, rmc->date.month,
+								rmc->date.day);
+						}
+						if (navi_check_validity_offset(&rmc->magnVariation) == navi_Ok)
+						{
 							printf("\tmagnetic variation = %f (%d)\n",
-							rmc->magnVariation.offset, rmc->magnVariation.sign);
+								rmc->magnVariation.offset, rmc->magnVariation.sign);
+						}
 						printf("\tmode indicator = %d\n", rmc->mi);
 					}
 					break;
@@ -384,13 +388,13 @@ int main(void)
 						printf("Received VTG:\n\ttalker id = %s (%d)\n",
 							navi_talkerid_str(s.tid), s.tid);
 
-						if (navi_check_validity_number(vtg->courseT))
+						if (navi_check_validity_number(vtg->courseT) == navi_Ok)
 							printf("\tcource, true = %f\n", vtg->courseT);
-						if (navi_check_validity_number(vtg->courseM))
+						if (navi_check_validity_number(vtg->courseM) == navi_Ok)
 							printf("\tcourse, magnetic = %f\n", vtg->courseM);
-						if (navi_check_validity_number(vtg->speedN))
+						if (navi_check_validity_number(vtg->speedN) == navi_Ok)
 							printf("\tspeed, knots = %f\n", vtg->speedN);
-						if (navi_check_validity_number(vtg->speedK))
+						if (navi_check_validity_number(vtg->speedK) == navi_Ok)
 							printf("\tspeed, km/h = %f\n", vtg->speedK);
 						printf("\tmode indicator = %d\n", vtg->mi);
 					}
@@ -402,11 +406,15 @@ int main(void)
 							navi_talkerid_str(s.tid), s.tid);
 
 						if (navi_check_validity_utc(&zda->utc) == navi_Ok)
+						{
 							printf("\tutc = %02u:%02u:%06.3f\n", zda->utc.hour, zda->utc.min,
-							zda->utc.sec);
+								zda->utc.sec);
+						}
 						if (zda->vfields & ZDA_VALID_DATE)
+						{
 							printf("\tdate = %04d-%02d-%02d\n", zda->date.year, zda->date.month,
-							zda->date.day);
+								zda->date.day);
+						}
 						if (zda->vfields & ZDA_VALID_LOCALZONE)
 							printf("\tlocal zone offset = %d\n", zda->lzoffset);
 					}
@@ -783,7 +791,7 @@ int main(void)
 							printf("\tExpected error in longitude: %f\n", gbs->experrlon);
 						if (navi_check_validity_number(gbs->experralt) == navi_Ok)
 							printf("\tExpected error in altitude: %f\n", gbs->experralt);
-						if (gbs->failed_id != 1)
+						if (gbs->failed_id != -1)
 							printf("\tFault station ID: %d\n", gbs->failed_id);
 						if (navi_check_validity_number(gbs->probability) == navi_Ok)
 							printf("\tProbability: %f\n", gbs->probability);
@@ -799,9 +807,11 @@ int main(void)
 
 						printf("Received GGA:\n\ttalker id = %s (%d)\n",
 							navi_talkerid_str(s.tid), s.tid);
-						if (navi_check_validity_utc(&gga->utc))
+						if (navi_check_validity_utc(&gga->utc) == navi_Ok)
+						{
 							printf("\tutc = %02u:%02u:%06.3f\n", gga->utc.hour, gga->utc.min,
-							gga->utc.sec);
+								gga->utc.sec);
+						}
 						if (navi_check_validity_position(&gga->fix) == navi_Ok)
 						{
 							printf("\tlatitude = %f %s (%d)\n", gga->fix.latitude.offset,
@@ -857,11 +867,11 @@ int main(void)
 							if (gsa->satellites[i] != -1)
 								printf("\tSatellite %i = %i\n", i, gsa->satellites[i]);
 						}
-						if (navi_check_validity_number(gsa->pdop))
+						if (navi_check_validity_number(gsa->pdop) == navi_Ok)
 							printf("\tPDOP = %f\n", gsa->pdop);
-						if (navi_check_validity_number(gsa->hdop))
+						if (navi_check_validity_number(gsa->hdop) == navi_Ok)
 							printf("\tHDOP = %f\n", gsa->hdop);
-						if (navi_check_validity_number(gsa->vdop))
+						if (navi_check_validity_number(gsa->vdop) == navi_Ok)
 							printf("\tVDOP = %f\n", gsa->vdop);
 					}
 					break;
@@ -874,20 +884,20 @@ int main(void)
 						printf("\tutc = %02u:%02u:%06.3f\n", gst->utc.hour,
 							gst->utc.min, gst->utc.sec);
 
-						if (navi_check_validity_number(gst->rms))
+						if (navi_check_validity_number(gst->rms) == navi_Ok)
 							printf("\tRMS = %f\n", gst->rms);
-						if (navi_check_validity_number(gst->devmajor))
+						if (navi_check_validity_number(gst->devmajor) == navi_Ok)
 						{
 							printf("\tstd dev of semi-major = %f\n", gst->devmajor);
 							printf("\tstd dev of semi-minor = %f\n", gst->devminor);
 							printf("\torientation of semi-major = %f\n", gst->orientmajor);
 						}
-						if (navi_check_validity_number(gst->devlaterr))
+						if (navi_check_validity_number(gst->devlaterr) == navi_Ok)
 						{
 							printf("\tstd dev of latitude err = %f\n", gst->devlaterr);
 							printf("\tstd dev of longitude err = %f\n", gst->devlonerr);
 						}
-						if (navi_check_validity_number(gst->devalterr))
+						if (navi_check_validity_number(gst->devalterr) == navi_Ok)
 							printf("\tstd dev of altitude err = %f\n", gst->devalterr);
 					}
 					break;
@@ -950,9 +960,7 @@ int main(void)
 						printf("\tAcknowledge state: %s\n", alr->ackstate == navi_status_A ?
 							"acknowledged" : "unacknowledged");
 						if (strlen(alr->description) > 0)
-						{
 							printf("\tAlarm's description: %s\n", alr->description);
-						}
 					}
 					break;
 				default:
