@@ -84,6 +84,9 @@ int main(void)
 		printf("Composition of MLA failed (%d)\n", navierr_get_last()->errclass);
 	}
 
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", inbuffer);
+
 	finished = 0;
 	parsed = 0;
 	nmread = 0;
@@ -125,8 +128,10 @@ int main(void)
 						if (mla->alm.vfields & GLOALM_VALID_TAUC)
 							printf("\tTau c (high): 0x%x\n", mla->alm.tauc_high);
 						if (mla->alm.vfields & GLOALM_VALID_DELTAT)
+						{
 							printf("\tDelta T n: 0x%x\n",
-							mla->alm.deltat);
+								mla->alm.deltat);
+						}
 						if (mla->alm.vfields & GLOALM_VALID_T)
 							printf("\tt n: 0x%x\n", mla->alm.t);
 						if (mla->alm.vfields & GLOALM_VALID_LAMBDA)

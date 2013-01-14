@@ -85,6 +85,9 @@ int main(void)
 		printf("Composition of ALM failed (%d)\n", navierr_get_last()->errclass);
 	}
 
+	printf("msglength = %d\n", msglength);
+	printf("message = '%s'\n", inbuffer);
+
 	finished = 0;
 	parsed = 0;
 	nmread = 0;
@@ -126,8 +129,10 @@ int main(void)
 						if (alm->alm.vfields & GPSALM_VALID_OMEGADOT)
 							printf("\tRate of ascension: 0x%x\n", alm->alm.omegadot);
 						if (alm->alm.vfields & GPSALM_VALID_SQRTSEMIAXIS)
+						{
 							printf("\tRoot of semi-major axis: 0x%x\n",
-							alm->alm.sqrtsemiaxis);
+								alm->alm.sqrtsemiaxis);
+						}
 						if (alm->alm.vfields & GPSALM_VALID_OMEGA)
 							printf("\tArgument of perigee: 0x%x\n", alm->alm.omega);
 						if (alm->alm.vfields & GPSALM_VALID_OMEGA0)
