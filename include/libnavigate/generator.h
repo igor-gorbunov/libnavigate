@@ -1,7 +1,7 @@
 /*
  * generator.h - interface to IEC message generator
  *
- * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
+ * Copyright (C) 2012, 2013 I. S. Gorbunov <igor.genius at gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! \file generator.h
+ *  \brief This header file declares API-calls for generating messages.
+ *
+ * This header file contains declarations for the main generator function
+ * and some helpful utilities for use in generation of proprietary messages.
+ */
+
 #ifndef INCLUDE_navi_generator_h
 #define INCLUDE_navi_generator_h
 
@@ -25,15 +32,14 @@
 
 NAVI_BEGIN_DECL
 
-//
-// Generator for IEC 61162-1 (2000-07) messages
-//
-// Generates IEC sentence by its description given by type and msg.
-// Stores the result to buffer which has the maximum size of maxsize.
-// The number of stored characters is stored to nmwritten.
-// Returns 0 if succeeded, -1 otherwise
-// Call navierr_get_last() to get the error description
-//
+/*! \brief Generator for IEC 61162-1 (2000-07) messages
+ *
+ * Generates IEC sentence by its description given by type and msg.
+ * Stores the result to buffer which has the maximum size of maxsize.
+ * The number of stored characters is stored to nmwritten.
+ * Returns 0 if succeeded, -1 otherwise
+ * Call navierr_get_last() to get the error description
+*/
 NAVI_EXTERN(navierr_status_t) navi_create_msg(navi_addrfield_t type,
 	const void *address, const void *msg, char *buffer,
 	size_t maxsize, size_t *nmwritten);

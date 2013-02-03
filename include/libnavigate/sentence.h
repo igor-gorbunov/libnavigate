@@ -1,7 +1,7 @@
 /*
  * sentence.h - supported IEC message definitions
  *
- * Copyright (C) 2012 I. S. Gorbunov <igor.genius at gmail.com>
+ * Copyright (C) 2012, 2013 I. S. Gorbunov <igor.genius at gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,9 +139,10 @@ enum _navi_approved_fmt_t
 
 typedef int navi_approved_fmt_t;
 
-//
-// Talker Identifier Mnemonics
-//
+/*! \enum _navi_talkerid_t
+ *  \brief Talker Identifier Mnemonics.
+ *
+ */
 enum _navi_talkerid_t
 {
 	// Unknown or undefined talker id
@@ -220,13 +221,13 @@ enum _navi_talkerid_t
 
 typedef int navi_talkerid_t;
 
-//
-// Approved address field components
-//
+/*! \brief Approved address field components.
+ *
+ */
 struct approved_field_t
 {
-	navi_approved_fmt_t afmt;
-	navi_talkerid_t tid;
+	navi_approved_fmt_t afmt;	//!< Approved formatter
+	navi_talkerid_t tid;		//!< Talker identifier of the sentence
 };
 
 //
@@ -501,31 +502,6 @@ NAVI_EXTERN(navierr_status_t) navi_init_number(double *number);
 // Returns navi_Ok, if the field is not null, otherwise returns navi_Error
 // and sets last error to navi_NullField
 NAVI_EXTERN(navierr_status_t) navi_check_validity_number(double value);
-
-//	// Bearing and distance to waypoint, dead reckoning
-//	struct bec_t
-//	{
-//	};
-
-//	// Bearing, origin to destination
-//	struct bod_t
-//	{
-//	};
-
-//	// Bearing and distance to waypoint
-//	struct bwc_t
-//	{
-//	};
-
-//	// Bearing and distance to waypoint, rhumb line
-//	struct bwr_t
-//	{
-//	};
-
-//	// Bearing, waypoint to waypoint
-//	struct bww_t
-//	{
-//	};
 
 //	// Depth below transducer
 //	struct dbt_t
