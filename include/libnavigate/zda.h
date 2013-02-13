@@ -17,30 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file zda.h
+ *  @brief Declares the structure and handling utilities for ZDA sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of ZDA sentence.
+ */
+
 #ifndef INCLUDE_navi_zda_h
 #define INCLUDE_navi_zda_h
 
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
-//
-// ZDA - Time and date
-// UTC, day, month, year and local time zone.
-// $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<cr><lf>
-//
-
+/*! @brief ZDA - Time and date
+ *
+ *  UTC, day, month, year and local time zone.
+ *  $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh[cr][lf]
+ */
 struct zda_t
 {
-	unsigned int vfields;	// valid fields, bitwise or of ZDA_VALID_xx
-
-	// UTC time
-	struct navi_utc_t utc;
-
-	// Day (01 to 31), Month (01 to 12), Year (UTC)
-	struct navi_date_t date;
-
-	// Local zone offset in minutes
-	int lzoffset;
+	unsigned int vfields;		//!< valid fields, bitwise or of ZDA_VALID_xx
+	struct navi_utc_t utc;		//!< UTC time
+	struct navi_date_t date;	//!< Day (01 to 31), Month (01 to 12), Year (UTC)
+	int lzoffset;				//!< Local zone offset in minutes
 };
 
 #define ZDA_VALID_DATE			0x2

@@ -17,34 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file txt.h
+ *  @brief Declares the structure and handling utilities for TXT sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of TXT sentence.
+ */
+
 #ifndef INCLUDE_navi_txt_h
 #define INCLUDE_navi_txt_h
 
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
-//
-// TXT - Text transmission
-//
-// For the transmission of short messages.
-// $--TXT,xx,xx,xx,c--c*hh<cr><lf>
-//
-
 #define MAX_TEXT_MESSAGE_SIZE	61
 #define MAX_TEXT_SIZE			(99 * MAX_TEXT_MESSAGE_SIZE)
 
+/*! @brief TXT - Text transmission
+ *
+ * For the transmission of short messages.
+ * $--TXT,xx,xx,xx,c--c*hh[cr][lf]
+ */
 struct txt_t
 {
-	// total number of messages (01-99)
-	int totalnm;
+	int totalnm;	//!< total number of messages (01-99)
+	int msgnm;		//!< message number (01-99)
+	int textid;		//!< text identifier (01-99)
 
-	// message number (01-99)
-	int msgnm;
-
-	// text identifier (01-99)
-	int textid;
-
-	// text message with null terminator
+	//! text message with null terminator
 	char textmsg[MAX_TEXT_MESSAGE_SIZE + 1];
 };
 

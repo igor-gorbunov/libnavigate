@@ -17,33 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file vtg.h
+ *  @brief Declares the structure and handling utilities for VTG sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of VTG sentence.
+ */
+
 #ifndef INCLUDE_navi_vtg_h
 #define INCLUDE_navi_vtg_h
 
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
-//
-// VTG - Course over ground and ground speed
-// The actual course and speed relative to the ground.
-// $--VTG,x.x,T,x.x,M,x.x,N,x.x,K,a*hh<cr><lf>
-//
+/*! @brief VTG - Course over ground and ground speed
+ *
+ * The actual course and speed relative to the ground.
+ * $--VTG,x.x,T,x.x,M,x.x,N,x.x,K,a*hh[cr][lf]
+ */
 struct vtg_t
 {
-	// Course over ground, degrees true
-	double courseT;
-
-	// Course over ground, degrees magnetic
-	double courseM;
-
-	// Speed over ground, knots
-	double speedN;
-
-	// Speed over ground, kmph
-	double speedK;
-
-	// Mode indicator
-	navi_modeindicator_t mi;
+	double courseT;		//!< Course over ground, degrees true
+	double courseM;		//!< Course over ground, degrees magnetic
+	double speedN;		//!< Speed over ground, knots
+	double speedK;		//!< Speed over ground, kmph
+	navi_modeindicator_t mi;	//!< Mode indicator
 };
 
 NAVI_BEGIN_DECL

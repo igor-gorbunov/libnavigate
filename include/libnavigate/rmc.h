@@ -17,45 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file rmc.h
+ *  @brief Declares the structure and handling utilities for RMC sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of RMC sentence.
+ */
+
 #ifndef INCLUDE_navi_rmc_h
 #define INCLUDE_navi_rmc_h
 
 #include <libnavigate/errors.h>
 #include <libnavigate/sentence.h>
 
-//
-// RMC - Recommended minimum specific GNSS data
-// Time, date, position, course and speed data provided by a GNSS navigation
-// receiver.
-// $--RMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,xxxxxx,x.x,a,a*hh<cr><lf>
-//
+/*! @brief RMC - Recommended minimum specific GNSS data
+ *
+ * Time, date, position, course and speed data provided by a GNSS navigation
+ * receiver.
+ * $--RMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,xxxxxx,x.x,a,a*hh[cr][lf]
+ */
 struct rmc_t
 {
 	unsigned int vfields;
+	struct navi_utc_t utc;	//!< UTC time
+	navi_status_t status;	//!< status
 
-	// UTC time
-	struct navi_utc_t utc;
+	struct navi_position_t fix;		//!< latitude, longitude fix
 
-	// status
-	navi_status_t status;
-
-	// latitude, longitude fix
-	struct navi_position_t fix;
-
-	// Speed over ground, knots
 	double speedN;
+	double courseT;			//!< Course over ground, degrees true
 
-	// Course over ground, degrees true
-	double courseT;
-
-	// Day (01 to 31), Month (01 to 12), Year (UTC)
+	//! Day (01 to 31), Month (01 to 12), Year (UTC)
 	struct navi_date_t date;
 
-	// Magnetic variation, degrees,E/W
-	struct navi_offset_t magnVariation;
-
-	// mode indicator
-	navi_modeindicator_t mi;
+	struct navi_offset_t magnVariation; //!< Magnetic variation, degrees, E/W
+	navi_modeindicator_t mi;			//!< mode indicator
 };
 
 #define RMC_VALID_DATE				0x10

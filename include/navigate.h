@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*! \file navigate.h
- *  \brief This is the main include header file for libnavigate.
+/*! @file navigate.h
+ *  @brief The main include header file for libnavigate.
  *
- * When one intends to use libnavigate in his project he must include this file.
+ *  When one intends to use libnavigate in his project he must include this file.
  */
 
 #ifndef INCLUDE_navi_navigate_h

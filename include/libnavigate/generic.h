@@ -17,10 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file generic.h
+ *  @brief Declares helpful macros.
+ *
+ *  Contains declarations for helpful macros, used at the other parts
+ *  of the program.
+ */
+
 #ifndef INCLUDE_navi_generic_h
 #define INCLUDE_navi_generic_h
 
 #include <stddef.h>
+
+/*! @def NAVI_BEGIN_DECL
+ *  @brief Declares the beginning of function declarations.
+ *
+ */
+
+/*! @def NAVI_END_DECL
+ *  @brief Declares the end of function declarations.
+ *
+ */
 
 #ifdef __cplusplus
 
@@ -34,6 +51,9 @@
 
 #endif //  __cplusplus
 
+/*! @brief Declares the type as extern.
+ *
+ */
 #if defined(navigate_EXPORTS)
 	#if defined(__GNUC__) && __GNUC__ >= 4
 		#define NAVI_EXTERN(type)		extern __attribute__((visibility("default"))) type

@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*! \file generator.h
- *  \brief This header file declares API-calls for generating messages.
+/*! @file generator.h
+ *  @brief Declares API-calls for generating messages.
  *
- * This header file contains declarations for the main generator function
- * and some helpful utilities for use in generation of proprietary messages.
+ *  Contains declarations for the main generator function and some helpful
+ *  utilities for use in generation of proprietary messages.
  */
 
 #ifndef INCLUDE_navi_generator_h
@@ -32,14 +32,22 @@
 
 NAVI_BEGIN_DECL
 
-/*! \brief Generator for IEC 61162-1 (2000-07) messages
+/*! @brief Generator for IEC 61162-1 (2000-07) messages
  *
  * Generates IEC sentence by its description given by type and msg.
  * Stores the result to buffer which has the maximum size of maxsize.
  * The number of stored characters is stored to nmwritten.
  * Returns 0 if succeeded, -1 otherwise
  * Call navierr_get_last() to get the error description
-*/
+ *
+ * @param[in] type the type of address field
+ * @param[in] address the target address
+ * @param[in] msg the message body
+ * @param[out] buffer the output buffer
+ * @param[in] maxsize the size of the output buffer
+ * @param[out] nmwritten the amount of bytes written to the output buffer
+ * @return the status of operation
+ */
 NAVI_EXTERN(navierr_status_t) navi_create_msg(navi_addrfield_t type,
 	const void *address, const void *msg, char *buffer,
 	size_t maxsize, size_t *nmwritten);

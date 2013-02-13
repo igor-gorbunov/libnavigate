@@ -17,6 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file sentence.h
+ *  @brief Declares the common structures and functions.
+ *
+ *  Contains declarations for structures describing address fields,
+ *  approved formatters.
+ */
+
 #ifndef INCLUDE_navi_sentence_h
 #define INCLUDE_navi_sentence_h
 
@@ -139,8 +146,7 @@ enum _navi_approved_fmt_t
 
 typedef int navi_approved_fmt_t;
 
-/*! \enum _navi_talkerid_t
- *  \brief Talker Identifier Mnemonics.
+/*! @brief Talker Identifier Mnemonics.
  *
  */
 enum _navi_talkerid_t
@@ -221,7 +227,7 @@ enum _navi_talkerid_t
 
 typedef int navi_talkerid_t;
 
-/*! \brief Approved address field components.
+/*! @brief Approved address field components.
  *
  */
 struct approved_field_t
@@ -230,13 +236,13 @@ struct approved_field_t
 	navi_talkerid_t tid;		//!< Talker identifier of the sentence
 };
 
-//
-// Query address field components
-//
+/*! @brief Query address field components
+ *
+ */
 struct query_field_t
 {
-	navi_talkerid_t from;
-	navi_talkerid_t to;
+	navi_talkerid_t from;	//!< source talker identifier
+	navi_talkerid_t to;		//!< target talker identifier
 };
 
 //
@@ -365,12 +371,14 @@ enum _navi_gsaswitchmode_t
 
 typedef int navi_gsaswitchmode_t;
 
-//
-// Holds UTC time (hours, minutes and seconds)
+/*! @brief Holds UTC time (hours, minutes and seconds)
+ *
+ */
 struct navi_utc_t
 {
-	int hour, min;
-	double sec;
+	int hour;	//!< UTC hours
+	int min;	//!< UTC minutes
+	double sec;	//!< UTC seconds
 };
 
 //
