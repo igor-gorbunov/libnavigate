@@ -17,39 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file alr.h
+ *  @brief Declares the structure and handling utilities for ALR sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of ALR sentence.
+ */
+
 #ifndef INCLUDE_navi_alr_h
 #define INCLUDE_navi_alr_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// ALR - Set alarm state
-//
-// Local alarm condition and status.
-// $--ALR,hhmmss.ss,xxx,A,A,c--c*hh<cr><lf>
-//
-
+/*! @brief ALR - Set alarm state
+ *
+ * Local alarm condition and status.
+ * $--ALR,hhmmss.ss,xxx,A,A,c--c*hh[cr][lf]
+ */
 struct alr_t
 {
-	// time of alarm condition change
-	struct navi_utc_t utc;
+	struct navi_utc_t utc;		//!< time of alarm condition change
+	int alarmid;				//!< local alarm number
 
-	// local alarm number
-	int alarmid;
+	navi_status_t condition;	//!< alarm condition
+								//!< A = threshold exceeded
+								//!< V = not exceeded
 
-	// alarm condition
-	// A = threshold exceeded
-	// V = not exceeded
-	navi_status_t condition;
+	navi_status_t ackstate;		//!< alarm's acknowledge state
+								//!< A = acknowledged
+								//!< V = unacknowledged
 
-	// alarm's acknowledge state
-	// A = acknowledged
-	// V = unacknowledged
-	navi_status_t ackstate;
-
-	// alarm's description text
-	char description[60];
+	char description[60];		//!< alarm's description text
 };
 
 NAVI_BEGIN_DECL

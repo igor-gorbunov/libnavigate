@@ -17,26 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file parser.h
+ *  @brief Declares API-calls for parsing messages.
+ *
+ *  Contains declarations for the main parser function and some helpful
+ *  utilities for use in parsing of messages.
+ */
+
 #ifndef INCLUDE_navi_parser_h
 #define INCLUDE_navi_parser_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 NAVI_BEGIN_DECL
 
-//
-// Parser of IEC 61162-1 (2000-07) messages
-//
-// Parses the next IEC sentence up to <cr><lf> read from buffer.
-// Stores the result to msg which has the maximum size of msgsize.
-// The type of parsed message is stored to type and the number of
-// parsed characters is put to nmread.
-// If the parsed sentence is an approved sentence, the approved_field_t
-// structure is put ath beginning of msg, and the message body is put
-// after that structure.
-// Returns the analysis status
-//
+/*! @brief Parser of IEC 61162-1 (2000-07) messages
+ *
+ * Parses the next IEC sentence up to [cr][lf] read from buffer.
+ * Stores the result to msg which has the maximum size of msgsize.
+ * The type of parsed message is stored to type and the number of
+ * parsed characters is put to nmread.
+ * If the parsed sentence is an approved sentence, the approved_field_t
+ * structure is put ath beginning of msg, and the message body is put
+ * after that structure.
+ * Returns the analysis status
+ */
 NAVI_EXTERN(navierr_status_t) navi_parse_msg(char *buffer, size_t maxsize,
 	size_t msgsize, navi_addrfield_t *type, void *msg, size_t *nmread);
 

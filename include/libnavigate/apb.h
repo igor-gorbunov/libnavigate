@@ -17,54 +17,78 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file apb.h
+ *  @brief Declares the structure and handling utilities for APB sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of APB sentence.
+ */
+
 #ifndef INCLUDE_navi_apb_h
 #define INCLUDE_navi_apb_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// APB - Heading/Track controller (autopilot) sentence B
-// Navigation receiver warning flag status, cross-track-error, waypoint
-// arrival status, initial bearing from origin waypoint to the destination,
-// continuous bearing from present position to destination and recommended
-// heading to steer to destination waypoint for the active navigation leg
-// of the journey.
-// $--APB,A,A,x.x,a,N,A,A,x.x,a,c--c,x.x,a,x.x,a,a*hh<cr><lf>
-//
+/*! @brief APB - Heading/Track controller (autopilot) sentence B
+ *
+ * Navigation receiver warning flag status, cross-track-error, waypoint
+ * arrival status, initial bearing from origin waypoint to the destination,
+ * continuous bearing from present position to destination and recommended
+ * heading to steer to destination waypoint for the active navigation leg
+ * of the journey.
+ * $--APB,A,A,x.x,a,N,A,A,x.x,a,c--c,x.x,a,x.x,a,a*hh[cr][lf]
+ */
 struct apb_t
 {
-	// A = Data Valid, V = LORAN-C blink or SNR warning,
-	// V = genearl warning flag for other navigation systems
-	// when a reliable fix is not available
+	/*! @brief Fix status
+	 *
+	 *  A = Data Valid, V = LORAN-C blink or SNR warning,
+	 *  V = general warning flag for other navigation systems
+	 *  when a reliable fix is not available
+	 */
 	navi_status_t status_0;
 
-	// A = OK or not used, V = LORAN-C cycle lock warning flag
+	/*! @brief LORAN-C cycle lock status
+	 *
+	 *  A = OK or not used, V = LORAN-C cycle lock warning flag
+	 */
 	navi_status_t status_1;
 
-	// Magnitude of XTE (cross-track-error) and
-	// direction to steer, L/R
+	/*! @brief Magnitude of XTE (cross-track-error) and
+	 *  direction to steer, L/R
+	 */
 	struct navi_offset_t xte_magnitude;
 
-	// A = arrival circle entered, V = not entered
+	/*! @brief Status of arrival
+	 *
+	 *  A = arrival circle entered, V = not entered
+	 */
 	navi_status_t arrival_circle;
 
-	// A = perpendicular passed at waypoint, V = not passed
+	/*! @brief Status of perpendicular
+	 *
+	 *  A = perpendicular passed at waypoint, V = not passed
+	 */
 	navi_status_t perpendicular;
 
-	// Bearing origin to destination, M/T
+	/*! @brief Bearing origin to destination, M/T
+	 */
 	struct navi_offset_t bearing_origin;
 
-	// Destination waipoint ID
+	/*! @brief Destination waipoint ID
+	 */
 	char waypoint_id[21];
 
-	// Bearing, present position to destination, M/T
+	/*! @brief Bearing, present position to destination, M/T
+	 */
 	struct navi_offset_t bearing_present;
 
-	// Heading to steer to destination waypoint, M/T
+	/*! @brief Heading to steer to destination waypoint, M/T
+	 */
 	struct navi_offset_t heading;
 
-	// Mode indicator
+	/*! @brief Mode indicator
+	 */
 	navi_modeindicator_t mode_indicator;
 };
 

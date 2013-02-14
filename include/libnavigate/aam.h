@@ -17,37 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file aam.h
+ *  @brief Declares the structure and handling utilities for AAM sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of AAM sentence.
+ */
+
 #ifndef INCLUDE_navi_aam_h
 #define INCLUDE_navi_aam_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// AAM - Waypoint arrival alarm
-//
-// Status of arrival (entering the arrival circle, or passing the perpendicular
-// of the course line) at waypoint c--c.
-// $--AAM,A,A,x.x,N,c--c*hh<cr><lf>
-//
-
+/*! @brief AAM - Waypoint arrival alarm
+ *
+ * Status of arrival (entering the arrival circle, or passing the perpendicular
+ * of the course line) at waypoint c--c.
+ * $--AAM,A,A,x.x,N,c--c*hh[cr][lf]
+ */
 struct aam_t
 {
-	// arrival circle status
-	// A = arrival circle entered
-	// V = not entered
-	navi_status_t circle;
+	navi_status_t circle; 	//!< arrival circle status
+							//!< A = arrival circle entered
+							//!< V = not entered
 
-	// perpendicular status
-	// A = perpendicular passed at waypoint
-	// V = not passed
-	navi_status_t perp;
+	navi_status_t perp;		//!< perpendicular status
+							//!< A = perpendicular passed at waypoint
+							//!< V = not passed
 
-	// arrival circle radius, nautical miles
-	double radius;
+	double radius;		//!< arrival circle radius, nautical miles
 
-	// waypoint id
-	char wpid[60];
+	char wpid[60];		//!< waypoint id
 };
 
 NAVI_BEGIN_DECL

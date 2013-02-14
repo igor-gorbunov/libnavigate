@@ -17,44 +17,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gst.h
+ *  @brief Declares the structure and handling utilities for GST sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GST sentence.
+ */
+
 #ifndef INCLUDE_navi_gst_h
 #define INCLUDE_navi_gst_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// GST - GNSS pseudorange noise statistics
-// This message is used to support RAIM.
-// $--GST,hhmmss.ss,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
-//
-
+/*! @brief GST - GNSS pseudorange noise statistics
+ *
+ *  This message is used to support RAIM.
+ *  $--GST,hhmmss.ss,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh[cr][lf]
+ */
 struct gst_t
 {
-	// UTC time
-	struct navi_utc_t utc;
+	struct navi_utc_t utc;		//!< UTC time
+	double rms;					//!< RMS value of the standard deviation
 
-	// RMS value of the standard deviation
-	double rms;
-
-	// Standard deviation of semi-major axis of error ellipse, m
+	//! @brief Standard deviation of semi-major axis of error ellipse, m
 	double devmajor;
 
-	// Standard deviation of semi-minor axis of error ellipse, m
+	//! @brief Standard deviation of semi-minor axis of error ellipse, m
 	double devminor;
 
-	// Orientation of semi-major axis of error ellipse,
-	// degrees from true north
+	/*! @brief Orientation of semi-major axis of error ellipse,
+	 *  degrees from true north
+	 */
 	double orientmajor;
 
-	// Standard deviation of latitude error, m
-	double devlaterr;
-
-	// Standard deviation of longitude error, m
-	double devlonerr;
-
-	// Standard deviation of altitude error, m
-	double devalterr;
+	double devlaterr;	//!< Standard deviation of latitude error, m
+	double devlonerr;	//!< Standard deviation of longitude error, m
+	double devalterr;	//!< Standard deviation of altitude error, m
 };
 
 NAVI_BEGIN_DECL

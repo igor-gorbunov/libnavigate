@@ -17,50 +17,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gns.h
+ *  @brief Declares the structure and handling utilities for GNS sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GNS sentence.
+ */
+
 #ifndef INCLUDE_navi_gns_h
 #define INCLUDE_navi_gns_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
-
-//
-// GNS - GNSS fix data
-// Fix data for single or combined sattelite navigation systems (GNSS).
-// $--GNS,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
-//
+#include "sentence.h"
 
 #define GNS_MODEINDICATOR_SIZE		2
 
+/*! @brief GNS - GNSS fix data
+ *
+ *  Fix data for single or combined sattelite navigation systems (GNSS).
+ *  $--GNS,hhmmss.ss,llll.ll,a,yyyyy.yy,a,c--c,xx,x.x,x.x,x.x,x.x,x.x*hh[cr][lf]
+ */
 struct gns_t
 {
-	// UTC time
-	struct navi_utc_t utc;
+	struct navi_utc_t utc;				//!< UTC time
+	struct navi_position_t fix;			//!< latitude, longitude fix
+	int mi[GNS_MODEINDICATOR_SIZE];		//!< GPS, GLONASS
 
-	// latitude, longitude fix
-	struct navi_position_t fix;
-
-	// GPS, GLONASS
-	int mi[GNS_MODEINDICATOR_SIZE];
-
-	// Total number of satellites in use, 00-99
-	// -1, if null field
+	/*! @brief Total number of satellites in use, 00-99
+	 *
+	 *  -1, if null field
+	 */
 	int nmsatellites;
 
-	// Horizontal Dilution of Precision
-	double hdop;
+	double hdop;			//!< Horizontal Dilution of Precision
+	double antaltitude;		//!< Antenna altitude, m, re:mean-sea-level (geoid)
+	double geoidalsep;		//!< Geoidal separation, m
 
-	// Antenna altitude, m, re:mean-sea-level (geoid)
-	double antaltitude;
-
-	// Geoidal separation, m
-	double geoidalsep;
-
-	// Age of differential data, seconds
-	// -1, if null field
+	/*! @brief Age of differential data, seconds
+	 *
+	 *  -1, if null field
+	 */
 	int diffdata_age;
 
-	// Differential reference station ID, 1-1023
-	// -1, if null field
+	/*! @brief Differential reference station ID, 1-1023
+	 *
+	 *  -1, if null field
+	 */
 	int station_id;
 };
 

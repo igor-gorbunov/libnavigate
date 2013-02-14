@@ -17,31 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file bww.h
+ *  @brief Declares the structure and handling utilities for BWW sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of BWW sentence.
+ */
+
 #ifndef INCLUDE_navi_bww_h
 #define INCLUDE_navi_bww_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// BWW - Bearing waypoint to waypoint
-// Bearing angle of the line, between the TO and the FROM waypoints,
-// calculated at the FROM waypoint for any two arbitrary waypoints.
-// $--BWW,x.x,T,x.x,M,c--c,c--c*hh<cr><lf>
-//
+/*! @brief BWW - Bearing waypoint to waypoint
+ *
+ *  Bearing angle of the line, between the TO and the FROM waypoints,
+ *  calculated at the FROM waypoint for any two arbitrary waypoints.
+ *  $--BWW,x.x,T,x.x,M,c--c,c--c*hh[cr][lf]
+ */
 struct bww_t
 {
-	// Bearing, degrees true
-	struct navi_offset_t bearingT;
-
-	// Bearing, degrees magnetic
-	struct navi_offset_t bearingM;
-
-	// TO waypoint ID
-	char to_waypoint[21];
-
-	// FROM waypoint ID
-	char from_waypoint[21];
+	struct navi_offset_t bearingT;	//!< Bearing, degrees true
+	struct navi_offset_t bearingM;	//!< Bearing, degrees magnetic
+	char to_waypoint[21];			//!< TO waypoint ID
+	char from_waypoint[21];			//!< FROM waypoint ID
 };
 
 NAVI_BEGIN_DECL

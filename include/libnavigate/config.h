@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_config_h
 #define INCLUDE_navi_config_h
 
-#include <libnavigate/generic.h>
+#include "generic.h"
 
 NAVI_BEGIN_DECL
 

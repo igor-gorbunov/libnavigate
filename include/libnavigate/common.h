@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_common_h
 #define INCLUDE_navi_common_h
 
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 NAVI_BEGIN_DECL
 

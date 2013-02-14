@@ -27,8 +27,7 @@
 #ifndef INCLUDE_navi_rmc_h
 #define INCLUDE_navi_rmc_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 /*! @brief RMC - Recommended minimum specific GNSS data
  *
@@ -38,14 +37,14 @@
  */
 struct rmc_t
 {
-	unsigned int vfields;
-	struct navi_utc_t utc;	//!< UTC time
-	navi_status_t status;	//!< status
+	unsigned int vfields;		//!< valid fields
+	struct navi_utc_t utc;		//!< UTC time
+	navi_status_t status;		//!< status
 
-	struct navi_position_t fix;		//!< latitude, longitude fix
+	struct navi_position_t fix;	//!< latitude, longitude fix
 
-	double speedN;
-	double courseT;			//!< Course over ground, degrees true
+	double speedN;				//!< speed, knots
+	double courseT;				//!< Course over ground, degrees true
 
 	//! Day (01 to 31), Month (01 to 12), Year (UTC)
 	struct navi_date_t date;

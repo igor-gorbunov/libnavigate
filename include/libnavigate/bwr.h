@@ -17,42 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file bwr.h
+ *  @brief Declares the structure and handling utilities for BWR sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of BWR sentence.
+ */
+
 #ifndef INCLUDE_navi_bwr_h
 #define INCLUDE_navi_bwr_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// BWR - Bearing and distance to waypoint - rhumb line
-// Time (UTC) and distance and bearing to, and location of,
-// a specified waypoint from present position. BWR data is calculated
-// along the rhumb line from present position rather than along the
-// great circle path.
-// $--BWR,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c,a*hh<cr><lf>
-//
+/*! @brief BWR - Bearing and distance to waypoint - rhumb line
+ *
+ *  Time (UTC) and distance and bearing to, and location of,
+ *  a specified waypoint from present position. BWR data is calculated
+ *  along the rhumb line from present position rather than along the
+ *  great circle path.
+ *  $--BWR,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c,a*hh[cr][lf]
+ */
 struct bwr_t
 {
-	// UTC of observation
-	struct navi_utc_t utc;
-
-	// Waypoint coordinates
-	struct navi_position_t waypointfix;
-
-	// Bearing, degrees true
-	struct navi_offset_t bearingT;
-
-	// Bearing, degrees magnetic
-	struct navi_offset_t bearingM;
-
-	// Distance, nautical miles
-	double distance;
-
-	// Waypoint ID
-	char waypoint_id[21];
-
-	// Mode indicator
-	navi_modeindicator_t mi;
+	struct navi_utc_t utc;				//!< UTC of observation
+	struct navi_position_t waypointfix;	//!< Waypoint coordinates
+	struct navi_offset_t bearingT;		//!< Bearing, degrees true
+	struct navi_offset_t bearingM;		//!< Bearing, degrees magnetic
+	double distance;					//!< Distance, nautical miles
+	char waypoint_id[21];				//!< Waypoint ID
+	navi_modeindicator_t mi;			//!< Mode indicator
 };
 
 NAVI_BEGIN_DECL

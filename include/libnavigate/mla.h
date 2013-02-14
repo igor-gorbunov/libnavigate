@@ -17,41 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file mla.h
+ *  @brief Declares the structure and handling utilities for MLA sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of MLA sentence.
+ */
+
 #ifndef INCLUDE_navi_mla_h
 #define INCLUDE_navi_mla_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
-
-//
-// MLA - GLONASS almanac data
-// Contains complete almanac data for one GLONASS satellite.
-// $--MLA,x.x,x.x,xx,x.x,hh,hhhh,hh,hhhh,hhhh,hhhhhh,hhhhhh,hhhhhh,hhhhhh,hhh,hhh*hh<cr><lf>
-//
+#include "sentence.h"
 
 #define MLA_MAX_SATELLITES		32
 
-//
-// Holds GLONASS almanac data for one satellite
-//
+/*! @brief MLA - GLONASS almanac data
+ *
+ *  Contains complete almanac data for one GLONASS satellite.
+ *  $--MLA,x.x,x.x,xx,x.x,hh,hhhh,hh,hhhh,hhhh,hhhhhh,hhhhhh,hhhhhh,hhhhhh,hhh,hhh*hh[cr][lf]
+ */
 struct navi_gloalm_t
 {
-	unsigned vfields;	// valid fields, bitwise or of GLOALM_VALID_xxx
-	unsigned satslot;	// 01 to 24
-	unsigned daycount;	// calendar day count within the four-year period,
-						// beginning with the previous leap year
-	unsigned svhealth;	// generalized health and carrier frequency number
-	unsigned e;			// eccentricity
-	unsigned dot;		// rate of change of the draconic circling time
-	unsigned omega;		// argument of perigee
-	unsigned tauc_high;	// 16 MSB of system time scale correction
-	unsigned deltat;	// correction to the average value of the
-						// draconic circling time
-	unsigned t;			// time of the ascension node almanac reference time
-	unsigned lambda;	// Greenwich longitude of the ascension node
-	unsigned deltai;	// correction to the average value of the inclination angle
-	unsigned tauc_low;	// 12 LSB of system time scale correction
-	unsigned taun;		// course value of the time scale shift
+	unsigned vfields;	//!< valid fields, bitwise or of GLOALM_VALID_xxx
+	unsigned satslot;	//!< 01 to 24
+	unsigned daycount;	//!< calendar day count within the four-year period,
+						//!< beginning with the previous leap year
+	unsigned svhealth;	//!< generalized health and carrier frequency number
+	unsigned e;			//!< eccentricity
+	unsigned dot;		//!< rate of change of the draconic circling time
+	unsigned omega;		//!< argument of perigee
+	unsigned tauc_high;	//!< 16 MSB of system time scale correction
+	unsigned deltat;	//!< correction to the average value of the
+						//!< draconic circling time
+	unsigned t;			//!< time of the ascension node almanac reference time
+	unsigned lambda;	//!< Greenwich longitude of the ascension node
+	unsigned deltai;	//!< correction to the average value of the inclination angle
+	unsigned tauc_low;	//!< 12 LSB of system time scale correction
+	unsigned taun;		//!< course value of the time scale shift
 };
 
 #define GLOALM_VALID_DAYCOUNT		0x001
@@ -66,18 +68,14 @@ struct navi_gloalm_t
 #define GLOALM_VALID_DELTAI			0x200
 #define GLOALM_VALID_TAUN			0x400
 
-//
-// Holder of information for all the almanacs
+/*! @brief Holder of information for all the almanacs
+ *
+ */
 struct mla_t
 {
-	// total number of messages
-	int totalnm;
-
-	// number of received message
-	int msgnm;
-
-	// almanac of a GLONASS satellite
-	struct navi_gloalm_t alm;
+	int totalnm;	//!< total number of messages
+	int msgnm;		//!< number of received message
+	struct navi_gloalm_t alm;	//!< almanac of a GLONASS satellite
 };
 
 NAVI_BEGIN_DECL

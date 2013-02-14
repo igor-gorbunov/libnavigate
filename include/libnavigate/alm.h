@@ -17,54 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file alm.h
+ *  @brief Declares the structure and handling utilities for ALM sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of ALM sentence.
+ */
+
 #ifndef INCLUDE_navi_alm_h
 #define INCLUDE_navi_alm_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
-
-//
-// ALM - GPS almanac data
-// Contains GPS week number, satellite health and the complete almanac data
-// for one satellite. Multiple messages may be transmitted, one for each
-// satellite in the GPS constellation, up to a maximum of 32 messages.
-// $--ALM,x.x,x.x,xx,x.x,hh,hhhh,hh,hhhh,hhhh,hhhhhh,hhhhhh,hhhhhh,hhhhhh,hhh,hhh*hh<cr><lf>
-//
+#include "sentence.h"
 
 #define ALM_MAX_SATELLITES		32
 
-//
-// Holds GPS almanac data for one satellite
+/*! @brief ALM - GPS almanac data
+ *
+ * Contains GPS week number, satellite health and the complete almanac data
+ * for one satellite. Multiple messages may be transmitted, one for each
+ * satellite in the GPS constellation, up to a maximum of 32 messages.
+ * $--ALM,x.x,x.x,xx,x.x,hh,hhhh,hh,hhhh,hhhh,hhhhhh,hhhhhh,hhhhhh,hhhhhh,hhh,hhh*hh[cr][lf]
+ */
 struct navi_gpsalm_t
 {
-	// valid fields, bitwise or of GPSALM_VALID_xxx
-	unsigned int vfields;
-	// 01 to 32
-	unsigned int satelliteprn;
-	// 0 to 9999
-	unsigned int gpsweek;
-	// SV health
-	unsigned int svhealth;
-	// eccentricity
-	unsigned int e;
-	// almanac reference time
-	unsigned int toa;
-	// inclination angle
-	unsigned int sigmai;
-	// rate of right ascension
-	unsigned int omegadot;
-	// root of semi-major axis
-	unsigned int sqrtsemiaxis;
-	// argument of perigee
-	unsigned int omega;
-	// longitude of ascension node
-	unsigned int omega0;
-	// mean anomaly
-	unsigned int m0;
-	// clock parameter
-	unsigned int af0;
-	// clock parameter
-	unsigned int af1;
+	unsigned int vfields;		//!< valid fields, bitwise or of GPSALM_VALID_xxx
+	unsigned int satelliteprn;	//!< 01 to 32
+	unsigned int gpsweek;		//!< 0 to 9999
+	unsigned int svhealth;		//!< sattelite in view health
+	unsigned int e;				//!< eccentricity
+	unsigned int toa;			//!< almanac reference time
+	unsigned int sigmai;		//!< inclination angle
+	unsigned int omegadot;		//!< rate of right ascension
+	unsigned int sqrtsemiaxis;	//!< root of semi-major axis
+	unsigned int omega;			//!< argument of perigee
+	unsigned int omega0;		//!< longitude of ascension node
+	unsigned int m0;			//!< mean anomaly
+	unsigned int af0;			//!< clock parameter
+	unsigned int af1;			//!< clock parameter
 };
 
 #define GPSALM_VALID_GPSWEEK			0x001
@@ -80,18 +69,14 @@ struct navi_gpsalm_t
 #define GPSALM_VALID_AF0				0x400
 #define GPSALM_VALID_AF1				0x800
 
-//
-// Holder of information for all the almanacs
+/*! @brief Holds information for all the almanacs
+ *
+ */
 struct alm_t
 {
-	// total number of messages
-	int totalnm;
-
-	// number of received message
-	int msgnm;
-
-	// almanacs of a GPS satellite
-	struct navi_gpsalm_t alm;
+	int totalnm;		//!< total number of messages
+	int msgnm;			//!< number of received message
+	struct navi_gpsalm_t alm;	//!< almanacs of a GPS satellite
 };
 
 NAVI_BEGIN_DECL

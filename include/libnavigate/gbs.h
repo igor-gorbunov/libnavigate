@@ -17,45 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gbs.h
+ *  @brief Declares the structure and handling utilities for GBS sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GBS sentence.
+ */
+
 #ifndef INCLUDE_navi_gbs_h
 #define INCLUDE_navi_gbs_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// GBS - GNSS satellite fault detection
-// This message shall be used for reporting RAIM information.
-// $--GBS,hhmmss.ss,x.x,x.x,x.x,xx,x.x,x.x,x.x*hh<cr><lf>
-//
-
+/*! @brief GBS - GNSS satellite fault detection
+ *
+ *  This message shall be used for reporting RAIM information.
+ *  $--GBS,hhmmss.ss,x.x,x.x,x.x,xx,x.x,x.x,x.x*hh[cr][lf]
+ */
 struct gbs_t
 {
-	// UTC time
-	struct navi_utc_t utc;
+	struct navi_utc_t utc;	//!< UTC time
+	double experrlat;		//!< expected error in latitude
+	double experrlon;		//!< expected error in longitude
+	double experralt;		//!< expected error in altitude
 
-	// expected error in latitude
-	double experrlat;
-
-	// expected error in longitude
-	double experrlon;
-
-	// expected error in altitude
-	double experralt;
-
-	// ID number of most likely failed satellite,
-	// -1 if null field
+	/*! @brief ID number of most likely failed satellite,
+	 *
+	 *  -1 if null field
+	 */
 	int failed_id;
 
-	// probability of missed detection for most likely
-	// failed satellite
+	/*! @brief probability of missed detection for most likely
+	 * failed satellite
+	 */
 	double probability;
 
-	// estimate of bias on most likely failed satellite
-	double estimate;
-
-	// standard deviation of bias estimate
-	double deviation;
+	double estimate;	//!< estimate of bias on most likely failed satellite
+	double deviation;	//!< standard deviation of bias estimate
 };
 
 NAVI_BEGIN_DECL

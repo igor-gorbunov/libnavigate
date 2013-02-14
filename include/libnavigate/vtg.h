@@ -27,8 +27,7 @@
 #ifndef INCLUDE_navi_vtg_h
 #define INCLUDE_navi_vtg_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 /*! @brief VTG - Course over ground and ground speed
  *

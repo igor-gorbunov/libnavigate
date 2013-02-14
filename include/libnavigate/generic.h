@@ -51,7 +51,7 @@
 
 #endif //  __cplusplus
 
-/*! @brief Declares the type as extern.
+/*! @brief Declares the \a type as extern.
  *
  */
 #if defined(navigate_EXPORTS)

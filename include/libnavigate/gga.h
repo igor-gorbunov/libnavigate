@@ -17,48 +17,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gga.h
+ *  @brief Declares the structure and handling utilities for GGA sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GGA sentence.
+ */
+
 #ifndef INCLUDE_navi_gga_h
 #define INCLUDE_navi_gga_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// GGA - Global positioning system (GPS) fix data
-// Time, position and fix-related data for a GPS receiver.
-// $--GGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh<cr><lf>
-//
-
+/*! @brief GGA - Global positioning system (GPS) fix data
+ *
+ *  Time, position and fix-related data for a GPS receiver.
+ *  $--GGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh[cr][lf]
+ */
 struct gga_t
 {
-	// UTC time
-	struct navi_utc_t utc;
+	struct navi_utc_t utc;				//!< UTC time
+	struct navi_position_t fix;			//!< latitude, longitude fix
+	navi_gpsindicator_t gpsindicator;	//!< GPS quality indicator
 
-	// latitude, longitude fix
-	struct navi_position_t fix;
-
-	// GPS quality indicator
-	navi_gpsindicator_t gpsindicator;
-
-	// Number of satellites in use (00-12)
-	// -1, if null field
+	/*! @brief Number of satellites in use (00-12)
+	 *
+	 *  -1, if null field
+	 */
 	int nmsatellites;
 
-	// Horizontal dilution of precision
-	double hdop;
+	double hdop;			//!< Horizontal dilution of precision
+	double antaltitude;		//!< Antenna altitude above/below mean sea level (geoid)
+	double geoidalsep;		//!< Geoidal separation
 
-	// Antenna altitude above/below mean sea level (geoid)
-	double antaltitude;
-
-	// Geoidal separation
-	double geoidalsep;
-
-	// Age of differential GPS data, seconds
-	// -1, if null field
+	/*! @brief Age of differential GPS data, seconds
+	 *
+	 *  -1, if null field
+	 */
 	int diffdata_age;
 
-	// Differential reference station ID, 1-1023
-	// -1, if null field
+	/*! @brief Differential reference station ID, 1-1023
+	 *
+	 *  -1, if null field
+	 */
 	int station_id;
 };
 

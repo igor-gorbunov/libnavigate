@@ -21,14 +21,13 @@
  *  @brief Declares API-calls for generating messages.
  *
  *  Contains declarations for the main generator function and some helpful
- *  utilities for use in generation of proprietary messages.
+ *  utilities for use in generation of messages.
  */
 
 #ifndef INCLUDE_navi_generator_h
 #define INCLUDE_navi_generator_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 NAVI_BEGIN_DECL
 

@@ -17,34 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file grs.h
+ *  @brief Declares the structure and handling utilities for GRS sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GRS sentence.
+ */
+
 #ifndef INCLUDE_navi_grs_h
 #define INCLUDE_navi_grs_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
-
-//
-// GRS - GNSS range residuals
-// This message is used to support receiver autonomous integrity monitoring (RAIM).
-// $--GRS,hhmmss.ss,x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh<cr><lf>
-//
+#include "sentence.h"
 
 #define GRS_MAX_SATELLITES	12
 
+/*! @brief GRS - GNSS range residuals
+ *
+ * This message is used to support receiver autonomous integrity monitoring (RAIM).
+ * $--GRS,hhmmss.ss,x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x,x.x*hh[cr][lf]
+ */
 struct grs_t
 {
-	// UTC time
-	struct navi_utc_t utc;
+	struct navi_utc_t utc;	//!< UTC time
 
-	// Mode:
-	// 0 = residuals were used to calculate the position
-	// given in the matching GGA or GNS sentence
-	// 1 = residuals were recomputed after the GGA or GNS
-	// position was computed
+	/*! @brief Mode
+	 *
+	 *  0 = residuals were used to calculate the position
+	 *  given in the matching GGA or GNS sentence
+	 *  1 = residuals were recomputed after the GGA or GNS
+	 *  position was computed
+	 */
 	int mode;
 
-	// range residuals array
-	double residuals[GRS_MAX_SATELLITES];
+	double residuals[GRS_MAX_SATELLITES];	//!< range residuals array
 };
 
 NAVI_BEGIN_DECL

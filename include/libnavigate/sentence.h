@@ -27,8 +27,8 @@
 #ifndef INCLUDE_navi_sentence_h
 #define INCLUDE_navi_sentence_h
 
-#include <libnavigate/generic.h>
-#include <libnavigate/errors.h>
+#include "generic.h"
+#include "errors.h"
 
 NAVI_BEGIN_DECL
 
@@ -396,11 +396,15 @@ NAVI_EXTERN(navierr_status_t) navi_init_utc_from_hhmmss(int hh, int mm, double s
 // and sets last error to navi_NullField
 NAVI_EXTERN(navierr_status_t) navi_check_validity_utc(const struct navi_utc_t *utc);
 
-//
-// Holds UTC date
+/*! @brief Holds UTC date
+ *
+ *  Contains UTC day, month and year.
+ */
 struct navi_date_t
 {
-	int day, month, year;
+	int day;	//!< UTC day
+	int month;	//!< UTC month
+	int year;	//!< UTC year
 };
 
 //
@@ -435,12 +439,13 @@ enum _navi_offset_sign_t
 
 typedef int navi_offset_sign_t;
 
-//
-// Holds offset data
+/*! @brief Holds offset data
+ *
+ */
 struct navi_offset_t
 {
-	double offset;				// degrees, nautical miles or other
-	navi_offset_sign_t sign;	// N/S, E/W, L/R, M/T, or null field
+	double offset;				//!< degrees, nautical miles or other
+	navi_offset_sign_t sign;	//!< N/S, E/W, L/R, M/T, or null field
 };
 
 //
@@ -463,12 +468,13 @@ NAVI_EXTERN(navierr_status_t) navi_init_offset_from_radians(double offset,
 // and sets last error to navi_NullField
 NAVI_EXTERN(navierr_status_t) navi_check_validity_offset(const struct navi_offset_t *offset);
 
-//
-// Holds position data
+/*! @brief Holds position data
+ *
+ */
 struct navi_position_t
 {
-	struct navi_offset_t latitude;		// (degrees, N/S) or null field
-	struct navi_offset_t longitude;		// (degrees, E/W) or null field
+	struct navi_offset_t latitude;		//!< (degrees, N/S) or null field
+	struct navi_offset_t longitude;		//!< (degrees, E/W) or null field
 };
 
 //

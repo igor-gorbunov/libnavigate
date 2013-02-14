@@ -17,41 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file dtm.h
+ *  @brief Declares the structure and handling utilities for DTM sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of DTM sentence.
+ */
+
 #ifndef INCLUDE_navi_dtm_h
 #define INCLUDE_navi_dtm_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// DTM - Datum reference
-// Local geodetic datum and datum offsets from a reference datum. This sentence
-// is used to define the datum to which a position location, and geographic
-// locations in subsequent sentences, are referenced. Lattitude, longitude and
-// altitude offsets from the reference datum, and the selection of the reference
-// datum, are also provided.
-// $--DTM,ccc,a,x.x,a,x.x,a,x.x,ccc*hh<cr><lf>
-//
-
+/*! @brief DTM - Datum reference
+ *
+ *  Local geodetic datum and datum offsets from a reference datum. This sentence
+ *  is used to define the datum to which a position location, and geographic
+ *  locations in subsequent sentences, are referenced. Lattitude, longitude and
+ *  altitude offsets from the reference datum, and the selection of the reference
+ *  datum, are also provided.
+ *  $--DTM,ccc,a,x.x,a,x.x,a,x.x,ccc*hh[cr][lf]
+ */
 struct dtm_t
 {
-	// local datum
-	navi_datum_t local_dtm;
-
-	// local datum subdivision code
-	navi_datum_subdivision_t local_dtmsd;
-
-	// latitude offset, (degrees, N/S)
-	struct navi_offset_t lat_offset;
-
-	// longitude offset, (degrees, E/W)
-	struct navi_offset_t long_offset;
-
-	// altitude offset, m
-	double alt_offset;
-
-	// reference datum
-	navi_datum_t reference_dtm;
+	navi_datum_t local_dtm;					//!< local datum
+	navi_datum_subdivision_t local_dtmsd;	//!< local datum subdivision code
+	struct navi_offset_t lat_offset;		//!< latitude offset (degrees, N/S)
+	struct navi_offset_t long_offset;		//!< longitude offset (degrees, E/W)
+	double alt_offset;						//!< altitude offset, m
+	navi_datum_t reference_dtm;				//!< reference datum
 };
 
 NAVI_BEGIN_DECL

@@ -17,32 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gll.h
+ *  @brief Declares the structure and handling utilities for GLL sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GLL sentence.
+ */
+
 #ifndef INCLUDE_navi_gll_h
 #define INCLUDE_navi_gll_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// GLL - Geographic position - latitude/longitude
-// Latitude and longitude of vessel position, time of
-// position fix and status.
-// $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh<cr><lf>
-//
-
+/*! @brief GLL - Geographic position - latitude/longitude
+ *
+ *  Latitude and longitude of vessel position, time of
+ *  position fix and status.
+ *  $--GLL,llll.ll,a,yyyyy.yy,a,hhmmss.ss,A,a*hh[cr][lf]
+ */
 struct gll_t
 {
-	// latitude, longitude fix
-	struct navi_position_t fix;
-
-	// UTC time
-	struct navi_utc_t utc;
-
-	// status
-	navi_status_t status;
-
-	// mode indicator
-	navi_modeindicator_t mi;
+	struct navi_position_t fix;	//!< latitude, longitude fix
+	struct navi_utc_t utc;		//!< UTC time
+	navi_status_t status;		//!< status
+	navi_modeindicator_t mi;	//!< mode indicator
 };
 
 NAVI_BEGIN_DECL

@@ -27,8 +27,7 @@
 #ifndef INCLUDE_navi_zda_h
 #define INCLUDE_navi_zda_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 /*! @brief ZDA - Time and date
  *
@@ -43,7 +42,10 @@ struct zda_t
 	int lzoffset;				//!< Local zone offset in minutes
 };
 
+//! the date field is valid
 #define ZDA_VALID_DATE			0x2
+
+//! the local zone offset field is valid
 #define ZDA_VALID_LOCALZONE		0x4
 
 NAVI_BEGIN_DECL

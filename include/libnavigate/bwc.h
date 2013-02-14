@@ -17,40 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file bwc.h
+ *  @brief Declares the structure and handling utilities for BWC sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of BWC sentence.
+ */
+
 #ifndef INCLUDE_navi_bwc_h
 #define INCLUDE_navi_bwc_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// BWC - Bearing and distance to waypoint
-// Time (UTC) and distance and bearing to, and location of,
-// a specified waypoint from present position.
-// $--BWC,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c,a*hh<cr><lf>
-//
+/*! @brief BWC - Bearing and distance to waypoint
+ *
+ *  Time (UTC) and distance and bearing to, and location of,
+ *  a specified waypoint from present position.
+ *  $--BWC,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c,a*hh[cr][lf]
+ */
 struct bwc_t
 {
-	// UTC of observation
-	struct navi_utc_t utc;
-
-	// Waypoint coordinates
-	struct navi_position_t waypointfix;
-
-	// Bearing, degrees true
-	struct navi_offset_t bearingT;
-
-	// Bearing, degrees magnetic
-	struct navi_offset_t bearingM;
-
-	// Distance, nautical miles
-	double distance;
-
-	// Waypoint ID
-	char waypoint_id[21];
-
-	// Mode indicator
-	navi_modeindicator_t mi;
+	struct navi_utc_t utc;				//!< UTC of observation
+	struct navi_position_t waypointfix;	//!< Waypoint coordinates
+	struct navi_offset_t bearingT;		//!< Bearing, degrees true
+	struct navi_offset_t bearingM;		//!< Bearing, degrees magnetic
+	double distance;					//!< Distance, nautical miles
+	char waypoint_id[21];				//!< Waypoint ID
+	navi_modeindicator_t mi;			//!< Mode indicator
 };
 
 NAVI_BEGIN_DECL

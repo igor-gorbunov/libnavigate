@@ -22,11 +22,14 @@
 
 #include "version.h"
 
+/*! @brief Contains libnavigate configuration
+ *
+ */
 struct navi_config_t
 {
-	unsigned int caps;		// capabilities of the library
-	const char *version;	// version of the library
-	int presicion;			// precision of generated variable numbers
+	unsigned int caps;		//!< capabilities of the library
+	const char *version;	//!< version of the library
+	int presicion;			//!< precision of generated variable numbers
 };
 
 static struct navi_config_t g_navi_config_t =

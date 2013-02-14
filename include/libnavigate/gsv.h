@@ -17,59 +17,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gsv.h
+ *  @brief Declares the structure and handling utilities for GSV sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GSV sentence.
+ */
+
 #ifndef INCLUDE_navi_gsv_h
 #define INCLUDE_navi_gsv_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
-
-//
-// GSV - GNSS satellites in view
-// Number of satellites in view, satellite ID numbers, elevation, azimuth and
-// SNR value. Four satellites maximum per transmission. Null fields are not
-// required for unused sets when less than four sets are transmitted.
-// $--GSV,x,x,xx,xx,xx,xxx,xx......,xx,xx,xxx,xx*hh<cr><lf>
-//
+#include "sentence.h"
 
 #define GSV_MAX_SATELLITES_PER_MESSAGE	4
 #define GSV_MAX_SATELLITES				(9 * GSV_MAX_SATELLITES_PER_MESSAGE)
 
-//
-// Holds satellite information for one satellite
-//
+/*! @brief Holds information per one satellite
+ *
+ * Contains satellite id, elevation, azimuth and signal-to-noise
+ * ratio.
+ */
 struct navi_satinfo_t
 {
-	// valid fields, bitwise or of SATINFO_VALID_xxx
-	unsigned int vfields;
+	unsigned int vfields;	//!< valid fields, bitwise or of SATINFO_VALID_xxx
 
-	// satellite ID number (if id == 0, the structure is empty)
+	//! satellite ID number (if id == 0, the structure is empty)
 	int id;
 
-	// degrees 00-90
-	int elevation;
+	int elevation;		//!< degrees 00-90
+	int azimuth;		//!< degrees true, 000-359
 
-	// degrees true, 000-359
-	int azimuth;
-
-	// signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
+	//! signal-to-noise ratio, 00-99 dB-Hz, null if not tracking
 	int snr;
 };
 
 #define SATINFO_VALID_ORIENTATION	0x1
 #define SATINFO_VALID_SNR			0x2
 
+/*! @brief GSV - GNSS satellites in view
+ *
+ *  Number of satellites in view, satellite ID numbers, elevation, azimuth and
+ *  SNR value. Four satellites maximum per transmission. Null fields are not
+ *  required for unused sets when less than four sets are transmitted.
+ *  $--GSV,x,x,xx,xx,xx,xxx,xx......,xx,xx,xxx,xx*hh[cr][lf]
+ */
 struct gsv_t
 {
-	// total number of messages
-	int totalnm;
-
-	// number of received message
-	int msgnm;
-
-	// total number of satellites in view, -1 if null
-	int nmsatellites;
-
-	// satellite info array
+	int totalnm;		//!< total number of messages
+	int msgnm;			//!< number of received message
+	int nmsatellites;	//!< total number of satellites in view, -1 if null
+	
+	//! @brief satellite info array
 	struct navi_satinfo_t info[GSV_MAX_SATELLITES_PER_MESSAGE];
 };
 

@@ -27,8 +27,7 @@
 #ifndef INCLUDE_navi_txt_h
 #define INCLUDE_navi_txt_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
 #define MAX_TEXT_MESSAGE_SIZE	61
 #define MAX_TEXT_SIZE			(99 * MAX_TEXT_MESSAGE_SIZE)

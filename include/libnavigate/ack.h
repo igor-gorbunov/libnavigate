@@ -17,23 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file ack.h
+ *  @brief Declares the structure and handling utilities for ACK sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of ACK sentence.
+ */
+
 #ifndef INCLUDE_navi_ack_h
 #define INCLUDE_navi_ack_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// ACK - Acknowledge alarm
-//
-// Acknowledge device alarm.
-// $--ACK,xxx*hh<cr><lf>
-//
-
+/*! @brief ACK - Acknowledge alarm
+ *
+ * Acknowledge device alarm.
+ * $--ACK,xxx*hh[cr][lf]
+ */
 struct ack_t
 {
-	// local alarm number
-	int alarmid;
+	int alarmid;	//!< local alarm number
 };
 
 NAVI_BEGIN_DECL

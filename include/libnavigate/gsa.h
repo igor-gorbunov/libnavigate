@@ -17,42 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file gsa.h
+ *  @brief Declares the structure and handling utilities for GSA sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of GSA sentence.
+ */
+
 #ifndef INCLUDE_navi_gsa_h
 #define INCLUDE_navi_gsa_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
-
-//
-// GSA - GNSS DOP and active satellites
-// GNSS receiver operating mode, satellites used in the navigation solution
-// reported by the GGA or GNS sentences, and DOP values.
-// $--GSA,a,x,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,x.x,x.x,x.x*hh<cr><lf>
-//
+#include "sentence.h"
 
 #define GSA_MAX_SATELLITES	12
 
+/*! @brief GSA - GNSS DOP and active satellites
+ *
+ *  GNSS receiver operating mode, satellites used in the navigation solution
+ *  reported by the GGA or GNS sentences, and DOP values.
+ *  $--GSA,a,x,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,xx,x.x,x.x,x.x*hh[cr][lf]
+ */
 struct gsa_t
 {
-	// Mode: Manual or Automatic
-	navi_gsaswitchmode_t swmode;
+	navi_gsaswitchmode_t swmode;	//!< Mode: Manual or Automatic
 
-	// Mode: 1 = fix not available, 2 = 2D, 3 = 3D, -1 = null field
+	//! Mode: 1 = fix not available, 2 = 2D, 3 = 3D, -1 = null field
 	int fixmode;
 
-	// satellites ID numbers array
-	// ID number of satellite used in solution,
-	// -1 if null field
+	/*! @brief satellites ID numbers array
+	 *
+	 *  ID number of satellite used in solution,
+	 *  -1 if null field
+	 */
 	int satellites[GSA_MAX_SATELLITES];
 
-	// Position dilution of precision
-	double pdop;
-
-	// Horizontal dilution of precision
-	double hdop;
-
-	// Vertical dilution of precision
-	double vdop;
+	double pdop;	//!< Position dilution of precision
+	double hdop;	//!< Horizontal dilution of precision
+	double vdop;	//!< Vertical dilution of precision
 };
 
 NAVI_BEGIN_DECL

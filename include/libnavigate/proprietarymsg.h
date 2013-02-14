@@ -20,7 +20,7 @@
 #ifndef INCLUDE_navi_proprietarymsg_h
 #define INCLUDE_navi_proprietarymsg_h
 
-#include <libnavigate/errors.h>
+#include "errors.h"
 
 NAVI_BEGIN_DECL
 

@@ -17,32 +17,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file bod.h
+ *  @brief Declares the structure and handling utilities for BOD sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of BOD sentence.
+ */
+
 #ifndef INCLUDE_navi_bod_h
 #define INCLUDE_navi_bod_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// BOD - Bearing origin to destination
-// Bearing angle of the line, calculated at the origin waypont, extending
-// to the destination waypoint from the origin waypoint for the active
-// navigation leg ot the journey.
-// $--BOD,x.x,T,x.x,M,c--c,c--c*hh<cr><lf>
-//
+/*! @brief BOD - Bearing origin to destination
+ *
+ *  Bearing angle of the line, calculated at the origin waypont, extending
+ *  to the destination waypoint from the origin waypoint for the active
+ *  navigation leg ot the journey.
+ *  $--BOD,x.x,T,x.x,M,c--c,c--c*hh[cr][lf]
+ */
 struct bod_t
 {
-	// Bearing, degrees true
-	struct navi_offset_t bearingT;
-
-	// Bearing, degrees magnetic
-	struct navi_offset_t bearingM;
-
-	// Destination waypoint ID
-	char dest_waypoint[21];
-
-	// Origin waypoint ID
-	char orig_waypoint[21];
+	struct navi_offset_t bearingT;	//!< Bearing, degrees true
+	struct navi_offset_t bearingM;	//!< Bearing, degrees magnetic
+	char dest_waypoint[21];			//!< Destination waypoint ID
+	char orig_waypoint[21];			//!< Origin waypoint ID
 };
 
 NAVI_BEGIN_DECL

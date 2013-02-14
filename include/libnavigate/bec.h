@@ -17,37 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file bec.h
+ *  @brief Declares the structure and handling utilities for BEC sentence.
+ *
+ *  Contains declarations for structure, initilizer, generator and parser
+ *  of BEC sentence.
+ */
+
 #ifndef INCLUDE_navi_bec_h
 #define INCLUDE_navi_bec_h
 
-#include <libnavigate/errors.h>
-#include <libnavigate/sentence.h>
+#include "sentence.h"
 
-//
-// BEC - Bearing and distance to waypoint - dead reckoning
-// Time (UTC) and distance and bearing to, and location of,
-// a specified waypoint from the dead-reckoned present position.
-// $--BEC,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c*hh<cr><lf>
-//
+/*! @brief BEC - Bearing and distance to waypoint - dead reckoning
+ *
+ * Time (UTC) and distance and bearing to, and location of,
+ * a specified waypoint from the dead-reckoned present position.
+ * $--BEC,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x.x,T,x.x,M,x.x,N,c--c*hh[cr][lf]
+ */
 struct bec_t
 {
-	// UTC of observation
-	struct navi_utc_t utc;
-
-	// Waypoint coordinates
-	struct navi_position_t waypointfix;
-
-	// Bearing, degrees true
-	struct navi_offset_t bearingT;
-
-	// Bearing, degrees magnetic
-	struct navi_offset_t bearingM;
-
-	// Distance, nautical miles
-	double distance;
-
-	// Waipoint ID
-	char waypoint_id[21];
+	struct navi_utc_t utc;				//!< UTC of observation
+	struct navi_position_t waypointfix;	//!< Waypoint coordinates
+	struct navi_offset_t bearingT;		//!< Bearing, degrees true
+	struct navi_offset_t bearingM;		//!< Bearing, degrees magnetic
+	double distance;					//!< Distance, nautical miles
+	char waypoint_id[21];				//!< Waipoint ID
 };
 
 NAVI_BEGIN_DECL

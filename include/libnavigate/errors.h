@@ -17,10 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file errors.h
+ *  @brief Declares the structure and enumerations for error handling.
+ *
+ *  Contains declarations for structure, enumerations and typedefs
+ *  for error handling utilities of the project.
+ */
+
 #ifndef INCLUDE_navi_errors_h
 #define INCLUDE_navi_errors_h
 
-#include <libnavigate/generic.h>
+#include "generic.h"
 
 NAVI_BEGIN_DECL
 
@@ -53,9 +60,13 @@ enum _navierr_class_t
 typedef int navierr_status_t;
 typedef int navierr_class_t;
 
+/*! @brief Holds last error information
+ *
+ *  The structure holds the last error iformation.
+ */
 typedef struct _navi_error_t
 {
-	navierr_class_t errclass;
+	navierr_class_t errclass;	//!< the class of last error
 } navi_error_t;
 
 /**
