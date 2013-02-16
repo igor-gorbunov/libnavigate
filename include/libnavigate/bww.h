@@ -45,17 +45,14 @@ struct bww_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes BWW sentence structure with default values
+//! @brief Initializes BWW sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_bww(struct bww_t *msg);
 
-//
-// Creates BWW message
+//! @brief Creates BWW message
 NAVI_EXTERN(navierr_status_t) navi_create_bww(const struct bww_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses BWW message
+//! @brief Parses BWW message
 NAVI_EXTERN(navierr_status_t) navi_parse_bww(struct bww_t *msg, char *buffer);
 
 NAVI_END_DECL

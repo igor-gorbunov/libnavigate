@@ -94,17 +94,14 @@ struct apb_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes APB sentence structure with default values
+//! @brief Initializes APB sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_apb(struct apb_t *msg);
 
-//
-// Creates APB message
+//! @brief Creates APB message
 NAVI_EXTERN(navierr_status_t) navi_create_apb(const struct apb_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses APB message
+//! @brief Parses APB message
 NAVI_EXTERN(navierr_status_t) navi_parse_apb(struct apb_t *msg, char *buffer);
 
 NAVI_END_DECL

@@ -29,6 +29,7 @@
 
 #include "sentence.h"
 
+//! @brief Maximum satellites per message
 #define GSA_MAX_SATELLITES	12
 
 /*! @brief GSA - GNSS DOP and active satellites
@@ -44,11 +45,10 @@ struct gsa_t
 	//! Mode: 1 = fix not available, 2 = 2D, 3 = 3D, -1 = null field
 	int fixmode;
 
-	/*! @brief satellites ID numbers array
-	 *
-	 *  ID number of satellite used in solution,
-	 *  -1 if null field
-	 */
+	//! @brief satellites ID numbers array
+	//!
+	//! ID number of satellite used in solution,
+	//! -1 if null field
 	int satellites[GSA_MAX_SATELLITES];
 
 	double pdop;	//!< Position dilution of precision
@@ -58,17 +58,14 @@ struct gsa_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GSA sentence structure with default values
+//! @brief Initializes GSA sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gsa(struct gsa_t *msg);
 
-//
-// Creates GSA message
+//! @brief Creates GSA message
 NAVI_EXTERN(navierr_status_t) navi_create_gsa(const struct gsa_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GSA message
+//! @brief Parses GSA message
 NAVI_EXTERN(navierr_status_t) navi_parse_gsa(struct gsa_t *msg, char *buffer);
 
 NAVI_END_DECL

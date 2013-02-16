@@ -31,50 +31,46 @@
 
 NAVI_BEGIN_DECL
 
-//
-// Return statuses for libnavigate methods
-//
+//! @brief Return statuses for libnavigate methods
 enum _navierr_status_t
 {
-	navi_Error = -1,		// error
-	navi_Ok = 0				// no error
+	navi_Error = -1,		//!< error
+	navi_Ok = 0				//!< no error
 };
 
-//
-// Error classes
-//
+//! @brief Error classes
 enum _navierr_class_t
 {
-	navi_Undefined = 0,			// undefined or no error
-	navi_MsgExceedsMaxSize = 1,	// message too long
-	navi_CrcEror = 2,			// crc error
-	navi_NotEnoughBuffer = 3,	// not enough space in output buffer
-	navi_MsgNotSupported = 4,	// message type not supported
-	navi_NoValidMessage = 5,	// no valid message in buffer
-	navi_NullField = 6,			// null field in a message, where it is not allowed
-	navi_InvalidMessage = 7,	// message does not conform to protocol
-	navi_NotImplemented = 8,	// method not implemented
-	navi_InvalidParameter = 9	// invalid parameter to method
+	navi_Undefined = 0,			//!< undefined or no error
+	navi_MsgExceedsMaxSize = 1,	//!< message too long
+	navi_CrcEror = 2,			//!< crc error
+	navi_NotEnoughBuffer = 3,	//!< not enough space in output buffer
+	navi_MsgNotSupported = 4,	//!< message type not supported
+	navi_NoValidMessage = 5,	//!< no valid message in buffer
+	navi_NullField = 6,			//!< null field in a message, where it is not allowed
+	navi_InvalidMessage = 7,	//!< message does not conform to protocol
+	navi_NotImplemented = 8,	//!< method not implemented
+	navi_InvalidParameter = 9	//!< invalid parameter to method
 };
 
+//! @brief Error status
 typedef int navierr_status_t;
+//! @brief Error classe
 typedef int navierr_class_t;
 
-/*! @brief Holds last error information
- *
- *  The structure holds the last error iformation.
- */
+//! @brief Holds last error information
+//!
+//! The structure holds the last error iformation.
 typedef struct _navi_error_t
 {
 	navierr_class_t errclass;	//!< the class of last error
 } navi_error_t;
 
-/**
- * Return the pointer to 'navi_error_t' object that holds the last library error
- * that occurred for this thread.
- */
+//! @brief Returns the pointer to 'navi_error_t' object that holds the last library error
+//! that occurred for this thread.
 NAVI_EXTERN(const navi_error_t *) navierr_get_last(void);
 
+//! @brief Sets the last error
 NAVI_EXTERN(void) navierr_set_last(navierr_class_t errclass);
 
 NAVI_END_DECL

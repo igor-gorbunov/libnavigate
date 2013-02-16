@@ -53,21 +53,19 @@ struct rmc_t
 	navi_modeindicator_t mi;			//!< mode indicator
 };
 
+//! @brief The date field is valid
 #define RMC_VALID_DATE				0x10
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes RMC sentence structure with default values
+//! @brief Initializes RMC sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_rmc(struct rmc_t *msg);
 
-//
-// Creates RMC message
+//! @brief Creates RMC message
 NAVI_EXTERN(navierr_status_t) navi_create_rmc(const struct rmc_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses RMC message
+//! @brief Parses RMC message
 NAVI_EXTERN(navierr_status_t) navi_parse_rmc(struct rmc_t *msg, char *buffer);
 
 NAVI_END_DECL

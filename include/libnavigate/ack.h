@@ -41,17 +41,14 @@ struct ack_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes ACK sentence structure with default values
+//! @brief Initializes ACK sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_ack(struct ack_t *msg);
 
-//
-// Creates ACK message
+//! @brief Creates ACK message
 NAVI_EXTERN(navierr_status_t) navi_create_ack(const struct ack_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses ACK message
+//! @brief Parses ACK message
 NAVI_EXTERN(navierr_status_t) navi_parse_ack(struct ack_t *msg, char *buffer);
 
 NAVI_END_DECL

@@ -47,17 +47,14 @@ struct bec_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes BEC sentence structure with default values
+//! @brief Initializes BEC sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_bec(struct bec_t *msg);
 
-//
-// Creates BEC message
+//! @brief Creates BEC message
 NAVI_EXTERN(navierr_status_t) navi_create_bec(const struct bec_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses BEC message
+//! @brief Parses BEC message
 NAVI_EXTERN(navierr_status_t) navi_parse_bec(struct bec_t *msg, char *buffer);
 
 NAVI_END_DECL

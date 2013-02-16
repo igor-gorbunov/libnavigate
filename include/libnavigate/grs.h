@@ -29,6 +29,7 @@
 
 #include "sentence.h"
 
+//! @brief Maximum satellites per message
 #define GRS_MAX_SATELLITES	12
 
 /*! @brief GRS - GNSS range residuals
@@ -54,17 +55,14 @@ struct grs_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GRS sentence structure with default values
+//! @brief Initializes GRS sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_grs(struct grs_t *msg);
 
-//
-// Creates GRS message
+//! @brief Creates GRS message
 NAVI_EXTERN(navierr_status_t) navi_create_grs(const struct grs_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GRS message
+//! @brief Parses GRS message
 NAVI_EXTERN(navierr_status_t) navi_parse_grs(struct grs_t *msg, char *buffer);
 
 NAVI_END_DECL

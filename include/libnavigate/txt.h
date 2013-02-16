@@ -29,7 +29,9 @@
 
 #include "sentence.h"
 
+//! @brief Maximum characters per message
 #define MAX_TEXT_MESSAGE_SIZE	61
+//! @brief Maximum characters per TXT sentence sequence
 #define MAX_TEXT_SIZE			(99 * MAX_TEXT_MESSAGE_SIZE)
 
 /*! @brief TXT - Text transmission
@@ -49,19 +51,19 @@ struct txt_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes TXT sentence structure with default values
+/*! @brief Initializes TXT sentence structure with default values
+ */
 NAVI_EXTERN(navierr_status_t) navi_init_txt(struct txt_t *msg);
 
 #ifndef NO_GENERATOR
 
-//
-// Creates TXT message
+/*! @brief Creates TXT message
+ */
 NAVI_EXTERN(navierr_status_t) navi_create_txt(const struct txt_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Creates TXT message sequence from text string
+/*! @brief Creates TXT message sequence from text string
+ */
 NAVI_EXTERN(navierr_status_t) navi_create_txt_sequence(navi_talkerid_t tid, int textid,
 	const char *msg, char *buffer, size_t maxsize, size_t *nmwritten);
 
@@ -69,8 +71,8 @@ NAVI_EXTERN(navierr_status_t) navi_create_txt_sequence(navi_talkerid_t tid, int 
 
 #ifndef NO_PARSER
 
-//
-// Parses TXT message
+/*! @brief Parses TXT message
+ */
 NAVI_EXTERN(navierr_status_t) navi_parse_txt(struct txt_t *msg, char *buffer);
 
 #endif // NO_PARSER

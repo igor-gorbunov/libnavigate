@@ -45,9 +45,8 @@ struct gst_t
 	//! @brief Standard deviation of semi-minor axis of error ellipse, m
 	double devminor;
 
-	/*! @brief Orientation of semi-major axis of error ellipse,
-	 *  degrees from true north
-	 */
+	//! @brief Orientation of semi-major axis of error ellipse,
+	//! degrees from true north
 	double orientmajor;
 
 	double devlaterr;	//!< Standard deviation of latitude error, m
@@ -57,17 +56,14 @@ struct gst_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GST sentence structure with default values
+//! @brief Initializes GST sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gst(struct gst_t *msg);
 
-//
-// Creates GST message
+//! @brief Creates GST message
 NAVI_EXTERN(navierr_status_t) navi_create_gst(const struct gst_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GST message
+//! @brief Parses GST message
 NAVI_EXTERN(navierr_status_t) navi_parse_gst(struct gst_t *msg, char *buffer);
 
 NAVI_END_DECL

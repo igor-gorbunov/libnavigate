@@ -65,17 +65,14 @@ struct gga_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GGA sentence structure with default values
+//! @brief Initializes GGA sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gga(struct gga_t *msg);
 
-//
-// Creates GGA message
+//! @brief Creates GGA message
 NAVI_EXTERN(navierr_status_t) navi_create_gga(const struct gga_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GGA message
+//! @brief Parses GGA message
 NAVI_EXTERN(navierr_status_t) navi_parse_gga(struct gga_t *msg, char *buffer);
 
 NAVI_END_DECL

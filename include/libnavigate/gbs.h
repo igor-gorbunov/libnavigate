@@ -58,17 +58,14 @@ struct gbs_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GBS sentence structure with default values
+//! @brief Initializes GBS sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gbs(struct gbs_t *msg);
 
-//
-// Creates GBS message
+//! @brief Creates GBS message
 NAVI_EXTERN(navierr_status_t) navi_create_gbs(const struct gbs_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GBS message
+//! @brief Parses GBS message
 NAVI_EXTERN(navierr_status_t) navi_parse_gbs(struct gbs_t *msg, char *buffer);
 
 NAVI_END_DECL

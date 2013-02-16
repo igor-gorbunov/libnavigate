@@ -45,17 +45,17 @@ struct vtg_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes VTG sentence structure with default values
+/*! @brief Initializes VTG sentence structure with default values
+ */
 NAVI_EXTERN(navierr_status_t) navi_init_vtg(struct vtg_t *msg);
 
-//
-// Creates VTG message
+/*! @brief Creates VTG message
+ */
 NAVI_EXTERN(navierr_status_t) navi_create_vtg(const struct vtg_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses VTG message
+/*! @brief Parses VTG message
+ */
 NAVI_EXTERN(navierr_status_t) navi_parse_vtg(struct vtg_t *msg, char *buffer);
 
 NAVI_END_DECL

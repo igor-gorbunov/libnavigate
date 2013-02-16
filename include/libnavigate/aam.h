@@ -52,17 +52,14 @@ struct aam_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes AAM sentence structure with default values
+//! @brief Initializes AAM sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_aam(struct aam_t *msg);
 
-//
-// Creates AAM message
+//! @brief Creates AAM message
 NAVI_EXTERN(navierr_status_t) navi_create_aam(const struct aam_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses AAM message
+//! @brief Parses AAM message
 NAVI_EXTERN(navierr_status_t) navi_parse_aam(struct aam_t *msg, char *buffer);
 
 NAVI_END_DECL

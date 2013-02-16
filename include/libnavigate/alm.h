@@ -29,6 +29,7 @@
 
 #include "sentence.h"
 
+//! @brief Maximum number of satellites
 #define ALM_MAX_SATELLITES		32
 
 /*! @brief ALM - GPS almanac data
@@ -56,22 +57,32 @@ struct navi_gpsalm_t
 	unsigned int af1;			//!< clock parameter
 };
 
+//! @brief GPS week field is valid
 #define GPSALM_VALID_GPSWEEK			0x001
+//! @brief SV health field is valid
 #define GPSALM_VALID_SVHEALTH			0x002
+//! @brief Eccentricity field is valid
 #define GPSALM_VALID_E					0x004
+//! @brief TOA field is valid
 #define GPSALM_VALID_TOA				0x008
+//! @brief Sigma I field is valid
 #define GPSALM_VALID_SIGMAI				0x010
+//! @brief Omega dot field is valid
 #define GPSALM_VALID_OMEGADOT			0x020
+//! @brief Square root of semi-major axis field is valid
 #define GPSALM_VALID_SQRTSEMIAXIS		0x040
+//! @brief Omega field is valid
 #define GPSALM_VALID_OMEGA				0x080
+//! @brief Omega 0 field is valid
 #define GPSALM_VALID_OMEGA0				0x100
+//! @brief M0 field is valid
 #define GPSALM_VALID_M0					0x200
+//! @brief AF0 field is valid
 #define GPSALM_VALID_AF0				0x400
+//! @brief AF1 field is valid
 #define GPSALM_VALID_AF1				0x800
 
-/*! @brief Holds information for all the almanacs
- *
- */
+//! @brief Holds information for all the almanacs
 struct alm_t
 {
 	int totalnm;		//!< total number of messages
@@ -81,19 +92,16 @@ struct alm_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes ALM sentence structure with default values
+//! @brief Initializes ALM sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_alm(struct alm_t *msg);
 
 #ifndef NO_GENERATOR
 
-//
-// Creates ALM message
+//! @brief Creates ALM message
 NAVI_EXTERN(navierr_status_t) navi_create_alm(const struct alm_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Creates ALM message sequence from satellites array
+//! @brief Creates ALM message sequence from satellites array
 NAVI_EXTERN(navierr_status_t) navi_create_alm_sequence(navi_talkerid_t tid,
 	int nmofsatellites, const struct navi_gpsalm_t almanaclist[],
 	char *buffer, size_t maxsize, size_t *nmwritten);
@@ -102,8 +110,7 @@ NAVI_EXTERN(navierr_status_t) navi_create_alm_sequence(navi_talkerid_t tid,
 
 #ifndef NO_PARSER
 
-//
-// Parses ALM message
+//! @brief Parses ALM message
 NAVI_EXTERN(navierr_status_t) navi_parse_alm(struct alm_t *msg, char *buffer);
 
 #endif // NO_PARSER

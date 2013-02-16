@@ -50,17 +50,14 @@ struct bwr_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes BWR sentence structure with default values
+//! @brief Initializes BWR sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_bwr(struct bwr_t *msg);
 
-//
-// Creates BWR message
+//! @brief Creates BWR message
 NAVI_EXTERN(navierr_status_t) navi_create_bwr(const struct bwr_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses BWR message
+//! @brief Parses BWR message
 NAVI_EXTERN(navierr_status_t) navi_parse_bwr(struct bwr_t *msg, char *buffer);
 
 NAVI_END_DECL

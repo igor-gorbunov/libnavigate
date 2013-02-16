@@ -29,6 +29,7 @@
 
 #include "sentence.h"
 
+//! @brief The size of mode indicator field
 #define GNS_MODEINDICATOR_SIZE		2
 
 /*! @brief GNS - GNSS fix data
@@ -67,17 +68,14 @@ struct gns_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GNS sentence structure with default values
+//! @brief Initializes GNS sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gns(struct gns_t *msg);
 
-//
-// Creates GNS message
+//! @brief Creates GNS message
 NAVI_EXTERN(navierr_status_t) navi_create_gns(const struct gns_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GNS message
+//! @brief Parses GNS message
 NAVI_EXTERN(navierr_status_t) navi_parse_gns(struct gns_t *msg, char *buffer);
 
 NAVI_END_DECL

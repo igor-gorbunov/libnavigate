@@ -50,17 +50,14 @@ struct dtm_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes DTM sentence structure with default values
+//! @brief Initializes DTM sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_dtm(struct dtm_t *msg);
 
-//
-// Creates DTM message
+//! @brief Creates DTM message
 NAVI_EXTERN(navierr_status_t) navi_create_dtm(const struct dtm_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses DTM message
+//! @brief Parses DTM message
 NAVI_EXTERN(navierr_status_t) navi_parse_dtm(struct dtm_t *msg, char *buffer);
 
 NAVI_END_DECL

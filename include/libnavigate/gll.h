@@ -45,17 +45,14 @@ struct gll_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes GLL sentence structure with default values
+//! @brief Initializes GLL sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gll(struct gll_t *msg);
 
-//
-// Creates GLL message
+//! @brief Creates GLL message
 NAVI_EXTERN(navierr_status_t) navi_create_gll(const struct gll_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses GLL message
+//! @brief Parses GLL message
 NAVI_EXTERN(navierr_status_t) navi_parse_gll(struct gll_t *msg, char *buffer);
 
 NAVI_END_DECL

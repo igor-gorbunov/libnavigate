@@ -29,7 +29,9 @@
 
 #include "sentence.h"
 
+//! @brief Maximum satellites per GSV message
 #define GSV_MAX_SATELLITES_PER_MESSAGE	4
+//! @brief Maximum satellites per GSV message sequence
 #define GSV_MAX_SATELLITES				(9 * GSV_MAX_SATELLITES_PER_MESSAGE)
 
 /*! @brief Holds information per one satellite
@@ -51,7 +53,9 @@ struct navi_satinfo_t
 	int snr;
 };
 
+//! @brief Satellite orientation field valid
 #define SATINFO_VALID_ORIENTATION	0x1
+//! @brief S-to-N ratio field valid
 #define SATINFO_VALID_SNR			0x2
 
 /*! @brief GSV - GNSS satellites in view
@@ -75,17 +79,14 @@ NAVI_BEGIN_DECL
 
 #ifndef NO_GENERATOR
 
-//
-// Initializes GSV sentence structure with default values
+//! @brief Initializes GSV sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_gsv(struct gsv_t *msg);
 
-//
-// Creates GSV message
+//! @brief Creates GSV message
 NAVI_EXTERN(navierr_status_t) navi_create_gsv(const struct gsv_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Creates GSV message sequence from satellites array
+//! @brief Creates GSV message sequence from satellites array
 NAVI_EXTERN(navierr_status_t) navi_create_gsv_sequence(navi_talkerid_t tid, int nmofsatellites,
 	const struct navi_satinfo_t satlist[], char *buffer, size_t maxsize, size_t *nmwritten);
 
@@ -93,8 +94,7 @@ NAVI_EXTERN(navierr_status_t) navi_create_gsv_sequence(navi_talkerid_t tid, int 
 
 #ifndef NO_PARSER
 
-//
-// Parses GSV message
+//! @brief Parses GSV message
 NAVI_EXTERN(navierr_status_t) navi_parse_gsv(struct gsv_t *msg, char *buffer);
 
 #endif // NO_PARSER

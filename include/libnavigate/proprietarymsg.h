@@ -17,6 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*! @file proprietarymsg.h
+ *  @brief Contains declarations of utilities used for
+ *  registering/unregistering proprietary messages generators
+ *  and parsers.
+ */
+
 #ifndef INCLUDE_navi_proprietarymsg_h
 #define INCLUDE_navi_proprietarymsg_h
 
@@ -24,40 +30,30 @@
 
 NAVI_BEGIN_DECL
 
+//! @brief Proprietary message generator callback
 typedef navierr_status_t (*proprietary_msg_generator_t)
 	(const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
 
+//! @brief Proprietary message parser callback
 typedef navierr_status_t (*proprietary_msg_parser_t)
 	(void *msg, char *buffer);
 
-//
-// Registers proprietary message generator
-//
+//! @brief Registers proprietary message generator
 NAVI_EXTERN(navierr_status_t) navi_register_proprietary_generator(proprietary_msg_generator_t callback);
 
-//
-// Unregisters proprietary message generator
-//
+//! @brief Unregisters proprietary message generator
 NAVI_EXTERN(navierr_status_t) navi_unregister_proprietary_generator();
 
-//
-// Registers proprietary message parser
-//
+//! @brief Registers proprietary message parser
 NAVI_EXTERN(navierr_status_t) navi_register_proprietary_parser(proprietary_msg_parser_t callback);
 
-//
-// Unregisters proprietary message parser
-//
+//! @brief Unregisters proprietary message parser
 NAVI_EXTERN(navierr_status_t) navi_unregister_proprietary_parser();
 
-//
-// Creates proprietary message, if the user proprietary message generator is registered
-//
+//! @brief Creates proprietary message, if the user proprietary message generator is registered
 NAVI_EXTERN(navierr_status_t) navi_create_proprietary(const void *msg, char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses proprietary message, if the user proprietary message parser is registered
-//
+//! @brief Parses proprietary message, if the user proprietary message parser is registered
 NAVI_EXTERN(navierr_status_t) navi_parse_proprietary(void *msg, char *buffer);
 
 NAVI_END_DECL

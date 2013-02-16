@@ -18,7 +18,7 @@
  */
 
 /*! @file zda.h
- *  @brief Declares the structure and handling utilities for ZDA sentence.
+ *  @brief Declares the utilities used for handling of ZDA sentence.
  *
  *  Contains declarations for structure, initilizer, generator and parser
  *  of ZDA sentence.
@@ -50,17 +50,17 @@ struct zda_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes ZDA sentence structure with default values
+/*! @brief Initializes ZDA sentence structure with default values
+ */
 NAVI_EXTERN(navierr_status_t) navi_init_zda(struct zda_t *msg);
 
-//
-// Creates ZDA message
+/*! @brief Creates ZDA message
+ */
 NAVI_EXTERN(navierr_status_t) navi_create_zda(const struct zda_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses ZDA message
+/*! @brief Parses ZDA message
+ */
 NAVI_EXTERN(navierr_status_t) navi_parse_zda(struct zda_t *msg, char *buffer);
 
 NAVI_END_DECL

@@ -46,17 +46,14 @@ struct bod_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes BOD sentence structure with default values
+//! @brief Initializes BOD sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_bod(struct bod_t *msg);
 
-//
-// Creates BOD message
+//! @brief Creates BOD message
 NAVI_EXTERN(navierr_status_t) navi_create_bod(const struct bod_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses BOD message
+//! @brief Parses BOD message
 NAVI_EXTERN(navierr_status_t) navi_parse_bod(struct bod_t *msg, char *buffer);
 
 NAVI_END_DECL

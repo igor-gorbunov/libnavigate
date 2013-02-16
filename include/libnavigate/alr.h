@@ -52,17 +52,14 @@ struct alr_t
 
 NAVI_BEGIN_DECL
 
-//
-// Initializes ALR sentence structure with default values
+//! @brief Initializes ALR sentence structure with default values
 NAVI_EXTERN(navierr_status_t) navi_init_alr(struct alr_t *msg);
 
-//
-// Creates ALR message
+//! @brief Creates ALR message
 NAVI_EXTERN(navierr_status_t) navi_create_alr(const struct alr_t *msg,
 	char *buffer, size_t maxsize, size_t *nmwritten);
 
-//
-// Parses ALR message
+//! @brief Parses ALR message
 NAVI_EXTERN(navierr_status_t) navi_parse_alr(struct alr_t *msg, char *buffer);
 
 NAVI_END_DECL
